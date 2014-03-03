@@ -1,11 +1,13 @@
 #ifndef BACKYARDBRAINS_WIDGETS_FILEDIALOGMAC_H
 #define BACKYARDBRAINS_WIDGETS_FILEDIALOGMAC_H
 
+#include "../FileDialog.h"
+
 namespace BackyardBrains {
 namespace Widgets {
 namespace FileDialogMac {
 
-int openFileDialog(std::string *str);
+FileDialog::DialogState openFileDialog(std::string *str);
 
 }
 }

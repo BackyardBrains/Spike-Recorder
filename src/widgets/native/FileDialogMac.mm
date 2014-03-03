@@ -1,5 +1,5 @@
 #include "FileDialogMac.h"
-#include "FileDialog.h"
+#include "../FileDialog.h"
 
 namespace BackyardBrains {
 namespace Widgets {
