@@ -43,8 +43,8 @@ ifeq ($(UNAME_S),Darwin)
 	OBJECTS += src/widgets/native/FileDialogMac.o
 	OBJCFILES = support/SDLMain.m src/widgets/native/FileDialogMac.mm
 
-	CFLAGS += -I/Library/Frameworks/SDL.framework/Headers -I/Library/Frameworks/SDL_image.framework/Headers # for Mac OS X
-	LIBS = libbass.dylib $(OBJCFILES) -framework Cocoa -framework SDL -framework SDL_image -framework OpenGL -framework GLUT # for Mac OS X
+	CFLAGS += -I./SDL.framework/Headers -I./SDL_image.framework/Headers # for Mac OS X
+	LIBS = libbass.dylib $(OBJCFILES)  -L. -framework SDL -framework Cocoa -framework SDL_image -framework OpenGL -framework GLUT # for Mac OS X
 else
 	CFLAGS += `$(BINPREFIX)sdl-config --cflags` # for Windows/Linux
 	EXTRA_CMD = 

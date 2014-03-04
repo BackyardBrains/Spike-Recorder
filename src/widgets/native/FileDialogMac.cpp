@@ -14,7 +14,7 @@ void *FileDialog::startThread(void *arg) {
 }
 
 void FileDialog::openDialog() {
-	_state = FileDialogMac::openFileDialogMac(&_fileName);
+	_state = (DialogState)FileDialogMac::openFileDialog(&_fileName);
 	_opened = false;
 }
 

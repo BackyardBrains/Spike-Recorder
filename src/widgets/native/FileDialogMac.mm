@@ -1,21 +1,22 @@
 #include "FileDialogMac.h"
 #include "../FileDialog.h"
+#import <Cocoa/Cocoa.h>
 
 namespace BackyardBrains {
 namespace Widgets {
 namespace FileDialogMac {
 
 
-- (FileDialog::DialogState)openFileDialog: (std::string *) res {
+FileDialog::DialogState openFileDialog(std::string *fn) {
 	NSOpenPanel *panel = [NSOpenPanel openPanel];
-	NSInteger res = [zOpenPanel runModal];
+	NSInteger res = [panel runModal];
 	if (res == NSFileHandlingPanelCancelButton)
-		return 1;
+		return FileDialog::CANCELED;
 
 	NSURL *url = [panel URL];
 	NSString *str = [url absoluteString];
-	res->assign([str UTF8String]);
-	return 1;
+	fn->assign([str UTF8String]);
+	return FileDialog::SUCCESS;
 }
 
 }
