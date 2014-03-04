@@ -5,8 +5,6 @@
 #include <SDL_opengl.h>
 #include <iostream>
 #include <cstdlib>
-#ifdef _WIN32
-#endif
 #include "../support/bass.h"
 
 namespace BackyardBrains {

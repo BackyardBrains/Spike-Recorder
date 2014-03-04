@@ -142,11 +142,11 @@ void AudioView::paintNormal() {
 }
 
 void AudioView::paintThreshMode() {
-	Widgets::TextureGL::get("data/pin.png")->bind();
+	Widgets::TextureGL::get("data/circlepin.png")->bind();
 	for(unsigned int i = 0; i < views.size(); i++) {
 		Widgets::Color tmp = CHANNEL_COLORS[i%(sizeof(CHANNEL_COLORS)/sizeof(CHANNEL_COLORS[0]))];
 		if((int)i != selectedChannel)
-			tmp.setAlpha(90);
+			tmp.setAlpha(40);
 		Widgets::Painter::setColor(tmp);
 		Widgets::Painter::drawTexRect(Widgets::Rect(MOVEPIN_SIZE/2, rect().height()*(i+0.5f)/views.size()-MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
 	}

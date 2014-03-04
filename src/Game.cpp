@@ -107,7 +107,8 @@ Game::Game()
 
  	_manager.setChannelCount(3);
 	_manager.setChannelVirtualDevice(0, 0);
-// 	_manager.setChannelVirtualDevice(1, 2);
+	_manager.setChannelVirtualDevice(1, 2);
+	_manager.setChannelVirtualDevice(2, 3);
 }
 
 Game::~Game() {
@@ -180,6 +181,7 @@ void Game::loadResources() {
 
 	Widgets::TextureGL::load("data/pin.png");
 	Widgets::TextureGL::load("data/threshpin.png");
+	Widgets::TextureGL::load("data/circlepin.png");
 }
 
 void Game::advance() {
