@@ -15,7 +15,9 @@ namespace BackyardBrains {
 
 Game::Game()
 {
+	std::cout << "Loading Resources...\n";
 	loadResources();
+	std::cout << "Creating Window...\n";
 	createWindow(800,600);
 
 	_audioView = new AudioView(mainWidget(), &_manager);
@@ -99,6 +101,8 @@ Game::Game()
 	vbox->setGeometry(Widgets::Rect(0, 0, 800, 600));
 
 	setWindowTitle("BYB Spike Recorder");
+
+	std::cout << "Starting GUI...\n";
 
 	_manager.setChannelCount(2);
 	_manager.setChannelVirtualDevice(0, 0);

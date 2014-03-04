@@ -1,6 +1,6 @@
 #include "TextureGL.h"
 #include "LoadTexture.h"
-#include <cassert>
+#include <cstdlib>
 #include <cstdio>
 
 namespace BackyardBrains {
@@ -61,7 +61,7 @@ const TextureGL* TextureGL::get(const char *filename) {
 	for(InstanceSet::iterator it = instances.begin(); it != instances.end(); it++)
 		if((*it).filename == filename)
 			return &*it;
-	assert(false);
+	exit(1);
 	return NULL;
 }
 

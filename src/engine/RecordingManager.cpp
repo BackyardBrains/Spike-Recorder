@@ -2,6 +2,7 @@
 #include "SampleBuffer.h"
 
 #include <iostream>
+#include <cstdlib>
 
 namespace BackyardBrains {
 
@@ -9,7 +10,11 @@ const int RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX = -2;
 
 RecordingManager::RecordingManager() : _pos(0), _paused(false)
 {
-	BASS_Init(-1, RecordingManager::SAMPLE_RATE, 0, 0, NULL);
+	std::cout << "Initializing libbass...\n";
+	if(!BASS_Init(-1, RecordingManager::SAMPLE_RATE, 0, 0, NULL)) {
+		std::cerr << "Bass Error: Initialization failed: " << BASS_ErrorGetCode() << "\n";
+		exit(1);
+	}
 
 	_recordingDevices = _EnumerateRecordingDevices();
 }
