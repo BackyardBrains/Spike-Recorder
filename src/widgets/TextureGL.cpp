@@ -30,7 +30,7 @@ void TextureGL::load(const char *f)
 {
 	TextureGL tex;
 	tex.filename.assign(f);
-	tex.id = LoadTexture(f);
+// 	tex.id = LoadTexture(f); // do that later.
 	std::cout << "Texture '" << f << "' loaded.\n";
 	instances.push_back(tex);
 
