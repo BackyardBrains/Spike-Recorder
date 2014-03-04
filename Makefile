@@ -46,7 +46,7 @@ ifeq ($(UNAME_S),Darwin)
 	CFLAGS += -I./SDL.framework/Headers -I./SDL_image.framework/Headers # for Mac OS X
 	LIBS = libbass.dylib $(OBJCFILES) -F. -framework SDL -framework Cocoa -framework SDL_image -framework OpenGL -framework GLUT
 	ifneq ($(FRAMEWORK_PATH),)
-		LIBS += -L$(FRAMEWORK_PATH)
+		LIBS += -F$(FRAMEWORK_PATH)
 	endif
 
 else
