@@ -2,3 +2,5 @@
 *.exe
 *.app
 SpikeRecorder
+SDL.framework
+SDL_image.framework
