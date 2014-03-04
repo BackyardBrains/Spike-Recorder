@@ -32,6 +32,7 @@ Game::Game()
 	Widgets::PushButton *threshButton = new Widgets::PushButton(mainWidget());
 	threshButton->setNormalTex(Widgets::TextureGL::get("data/thresh.png"));
 	threshButton->setHoverTex(Widgets::TextureGL::get("data/threshhigh.png"));
+	threshButton->clicked.connect(_audioView, &AudioView::toggleThreshMode);
 	Widgets::PushButton *recordButton = new Widgets::PushButton(mainWidget());
 	recordButton->setNormalTex(Widgets::TextureGL::get("data/rec.png"));
 	recordButton->setHoverTex(Widgets::TextureGL::get("data/rechigh.png"));
@@ -104,9 +105,9 @@ Game::Game()
 
 	std::cout << "Starting GUI...\n";
 
-	_manager.setChannelCount(2);
+ 	_manager.setChannelCount(3);
 	_manager.setChannelVirtualDevice(0, 0);
-// 	_manager.setChannelVirtualDevice(1, 3);
+// 	_manager.setChannelVirtualDevice(1, 2);
 }
 
 Game::~Game() {
@@ -178,6 +179,7 @@ void Game::loadResources() {
 	Widgets::TextureGL::load("data/filehigh.png");
 
 	Widgets::TextureGL::load("data/pin.png");
+	Widgets::TextureGL::load("data/threshpin.png");
 }
 
 void Game::advance() {

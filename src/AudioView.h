@@ -19,11 +19,14 @@ public:
 	void setRelOffset(int reloffset); // in per mille
 	int offset();
 
+
+	void toggleThreshMode();
 	// signals:
 	sigslot::signal1<int> relOffsetChanged;
 private:
 	struct ViewData {
 		float gain;
+		float thresh;
 		float pos;
 	};
 
@@ -35,10 +38,14 @@ private:
 
 	int channelOffset;
 
+	int selectedChannel; // in thresh mode
+	bool threshMode;
+
 	RecordingManager *manager;
 	std::vector<ViewData> views;
 
-	float displayScale;
+	float timeScale;
+	static const float ampScale = .001f;
 
 	float scaleLenFactor();
 
@@ -48,12 +55,18 @@ private:
 	void resizeEvent(Widgets::ResizeEvent *e);
 
 	int determineSliderHover(int x, int y);
+	int determineThreshHover(int x, int y);
 
 	float scaleWidth(); //pixels per second of audio
 	float screenWidth();
 	float sampleCount(float screenw, float scalew);
 
 	void paintEvent();
+	void paintNormal();
+	void paintThreshMode();
+
+	void drawScale();
+	void drawData(int channel, int samples, float x, float y, float width);
 };
 
 

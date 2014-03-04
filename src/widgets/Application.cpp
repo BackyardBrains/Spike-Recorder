@@ -96,6 +96,16 @@ static bool close_cond(Widget *w) {
 	return w->closed();
 }
 
+void Application::removeClosed(Application::WidgetList &w) {
+	Application::WidgetList tmp;
+	for(Application::WidgetList::const_iterator it = w.begin(); it != w.end(); ++it)
+		if((*it)->closed())
+			tmp.push_back(*it);
+	w.remove_if(close_cond);
+	for(Application::WidgetList::const_iterator it = tmp.begin(); it != tmp.end(); ++it)
+		delete *it;
+}
+
 void Application::run()
 {
 	_running = true;
@@ -105,15 +115,8 @@ void Application::run()
 	{
 
 		// Delete closed windows/popups
-		for(WidgetList::const_iterator it = _windowStack.begin(); it != _windowStack.end(); ++it)
-			if((*it)->closed())
-				delete *it;
-		for (WidgetList::const_iterator it = _popupStack.begin(); it != _popupStack.end(); ++it)
-			if((*it)->closed())
-				delete *it;
-
-		_windowStack.remove_if(close_cond);
-		_popupStack.remove_if(close_cond);
+		removeClosed(_windowStack);
+		removeClosed(_popupStack);
 
 		// Call step functions of widgets that actually need them. Are there any?
 		for (WidgetList::const_iterator it = _windowStack.begin(); it != _windowStack.end(); ++it)

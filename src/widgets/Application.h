@@ -52,10 +52,11 @@ private:
 	Widget * _GetWidgetAt(const Point &point) const;
 
 	void _SetHoverWidget(Widget *widget);
+	void removeClosed(WidgetList &w);
 
 	Widget *_mainwidget;
-
 	std::string _windowTitle;
+
 };
 
 } // namespace Widgets

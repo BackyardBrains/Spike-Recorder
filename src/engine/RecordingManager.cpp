@@ -78,17 +78,6 @@ void RecordingManager::setChannelVirtualDevice(unsigned int channelIndex, int vi
 	_devices.incRef(_channels[channelIndex].virtualDeviceIndex, _pos, _paused);
 }
 
-const RecordingManager::Color &RecordingManager::channelColor(int channelIndex) const {
-	return _channels.at(channelIndex).color;
-}
-
-void RecordingManager::setChannelColor(int channel, uint8_t r, uint8_t g, uint8_t b) {
-	Channel &ch = _channels.at(channel);
-	ch.color.r = r;
-	ch.color.g = g;
-	ch.color.b = b;
-}
-
 // TODO: consolidate this function somewhere
 static int64_t snapTo(int64_t val, int64_t increments)
 {

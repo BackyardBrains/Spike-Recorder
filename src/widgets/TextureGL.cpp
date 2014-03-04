@@ -62,7 +62,7 @@ const TextureGL* TextureGL::get(const char *filename) {
 		if((*it).filename == filename)
 			return &*it;
 	std::cerr << "Fatal: Texture '" << filename << "' not loaded!\n";
-	exit(1);
+	_Exit(1); // to skip bass atexit crap
 	return NULL;
 }
 
