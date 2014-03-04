@@ -63,6 +63,8 @@ GLuint LoadTexture(const char *filename)
 
 		// Edit the texture object's image data using the information SDL_Surface gives us
 		glTexImage2D(GL_TEXTURE_2D, 0, nOfColors, surface->w, surface->h, 0, texture_format, GL_UNSIGNED_BYTE, surface->pixels);
+
+		SDL_FreeSurface(surface);
 	}
 	else
 	{
@@ -70,9 +72,7 @@ GLuint LoadTexture(const char *filename)
 		return -1;
 	}
 
-	// Free the SDL_Surface only if it was successfully created
-	if (surface)
-		SDL_FreeSurface(surface);
+
 
 	return texture;
 }

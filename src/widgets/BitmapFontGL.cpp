@@ -1,5 +1,6 @@
 #include "BitmapFontGL.h"
 #include <cstring>
+#include <iostream>
 
 namespace BackyardBrains {
 
@@ -10,6 +11,7 @@ static const int strideX = 8;
 static const int strideY = 16;
 
 BitmapFontGL::BitmapFontGL() {
+	std::cout << "Initializing font...\n";
 	characters = TextureGL::get("data/ascii.png");
 }
 

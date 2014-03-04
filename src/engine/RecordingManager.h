@@ -19,6 +19,11 @@ class RecordingManager : public sigslot::has_slots<>
 public:
 	static const int SAMPLE_RATE = 44100;
 
+	struct Color {
+		uint8_t r;
+		uint8_t g;
+		uint8_t b;
+	};
 	struct VirtualDevice
 	{
 		int index;
@@ -36,12 +41,15 @@ public:
 	std::vector< std::pair<int16_t, int16_t> > channelSamplesEnvelope(unsigned int channelIndex, int64_t offset, int64_t len, int sampleSkip) const;
 	bool paused() const {return _paused;}
 	int channelVirtualDevice(unsigned int channelIndex) const;
+	const Color &channelColor(int channelIndex) const;
 // public slots:
+	void setChannelColor(int channel, uint8_t r, uint8_t g, uint8_t b);
 	void setChannelCount(int numChannels);
 	void setChannelVirtualDevice(unsigned int channelIndex, int virtualDeviceIndex);
 	void setPaused(bool pausing);
 	void togglePaused();
 // signals:
+	sigslot::signal2<int /*channel idx*/, Color> colorChanged;
 	sigslot::signal2<int64_t /*offset*/, int64_t /*len*/> samplesAdded;
 	sigslot::signal1<int /*numChannels*/> channelCountChanged;
 	sigslot::signal2<int /*channelIndex*/, int /*virtualDeviceIndex*/> channelVirtualDeviceChanged;
@@ -53,10 +61,9 @@ private:
 
 	struct Channel
 	{
-		Channel() : virtualDeviceIndex(INVALID_VIRTUAL_DEVICE_INDEX)
-		{
-		}
+		Channel() : virtualDeviceIndex(INVALID_VIRTUAL_DEVICE_INDEX) {}
 		int virtualDeviceIndex;
+		Color color;
 	};
 	struct Device
 	{
