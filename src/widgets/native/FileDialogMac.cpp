@@ -1,8 +1,6 @@
 #include "../FileDialog.h"
 #include "FileDialogMac.h"
-#include <pthread.h>
 #include <stdio.h>
-#include <sys/wait.h>
 
 namespace BackyardBrains {
 namespace Widgets {
@@ -21,8 +19,6 @@ namespace Widgets {
 // }
 
 int FileDialog::open() {
-	pthread_t thread;
-
 	_state = (DialogState)FileDialogMac::openFileDialog(&_fileName, _type);
 
 	return 1;
