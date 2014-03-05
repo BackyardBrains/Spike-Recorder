@@ -33,6 +33,9 @@ private:
 	static const int MOVEPIN_SIZE = 30;
 	static const int RESOLUTION = 800;
 
+	int clickedGain;
+	float prevGain;
+	
 	int clickedSlider;
 	int clickedPixelOffset;
 
@@ -47,7 +50,7 @@ private:
 	std::vector<ViewData> views;
 
 	float timeScale;
-	static const float ampScale = .001f;
+	static const float ampScale;
 
 	float scaleLenFactor();
 

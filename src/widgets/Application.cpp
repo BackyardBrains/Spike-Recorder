@@ -298,8 +298,11 @@ void Application::_HandleEvent(const void *eventRaw)
 	else if (event.type == SDL_SYSWMEVENT) {}
 	else if (event.type == SDL_VIDEORESIZE)
 	{
-		for(WidgetList::iterator it = _windowStack.begin(); it != _windowStack.end(); it++)
-			(*it)->setSize(Size(event.resize.w - _windowStack.front()->geometry().x, event.resize.h - _windowStack.front()->geometry().y));
+		if(event.resize.w >= MIN_WINDOW_W && event.resize.h > MIN_WINDOW_H) {
+			for(WidgetList::iterator it = _windowStack.begin(); it != _windowStack.end(); it++)
+				(*it)->setSize(Size(event.resize.w - _windowStack.front()->geometry().x, event.resize.h - _windowStack.front()->geometry().y));
+		}
+
 		createWindow(event.resize.w, event.resize.h);
 	}
 	else if (event.type == SDL_VIDEOEXPOSE) {}

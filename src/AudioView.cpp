@@ -9,9 +9,11 @@
 #include <iostream>
 #include <sstream>
 #include <cmath>
+#include <cassert>
 
 namespace BackyardBrains {
 
+const float AudioView::ampScale = .001f;
 
 static const Widgets::Color CHANNEL_COLORS[] = {
 	Widgets::Color(225,252,90),
@@ -20,7 +22,8 @@ static const Widgets::Color CHANNEL_COLORS[] = {
 };
 
 AudioView::AudioView(Widgets::Widget *parent, RecordingManager *mngr)
-	: Widgets::Widget(parent), clickedSlider(-1), clickedPixelOffset(0), clickedThresh(false), channelOffset(0), selectedChannel(0), threshMode(false), manager(mngr), timeScale(0.1f)  {
+	: Widgets::Widget(parent), clickedGain(-1), clickedSlider(-1), clickedPixelOffset(0),
+	clickedThresh(false), channelOffset(0), selectedChannel(0), threshMode(false), manager(mngr), timeScale(0.1f)  {
 }
 
 void AudioView::updateView(int n) {
@@ -123,9 +126,10 @@ void AudioView::paintEvent() {
 	int screenw = rect().width()-MOVEPIN_SIZE*1.5f;
 	if(threshMode)
 		screenw -= MOVEPIN_SIZE*1.5f;
+	screenw = std::max(0,screenw);
 	int samples = sampleCount(screenw, scalew);
 
-	for(unsigned int i = 0; i < views.size(); i++) {
+	for(int i = views.size() - 1; i >= 0; i--) {
 		float yoff = views[i].pos*rect().height();
 		Widgets::Painter::setColor(CHANNEL_COLORS[i%(sizeof(CHANNEL_COLORS)/sizeof(CHANNEL_COLORS[0]))]);
 		if(manager->channelVirtualDevice(i) != RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX) {
@@ -150,7 +154,7 @@ void AudioView::drawThreshold(int screenw) {
 		Widgets::Painter::drawTexRect(Widgets::Rect(rect().width()-MOVEPIN_SIZE*1.5f, thresholdPos()-MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
 		glBindTexture(GL_TEXTURE_2D, 0);
 
-		int dotw = 20;
+		const int dotw = 20;
 		int movement = SDL_GetTicks()/20%dotw;
 		int y = thresholdPos();
 		for(int i = 0; i <= screenw/dotw+1; i++) {
@@ -178,11 +182,12 @@ int AudioView::determineSliderHover(int x, int y, int *yoffset) {
 	xx *= xx;
 
 	for(unsigned int i = 0; i < views.size(); i++) {
-		int yy = rect().height()*views[i].pos - y;
-		if(yoffset)
-			*yoffset = yy;
-		yy *= yy;
+		int dy = rect().height()*views[i].pos - y;
+
+		int yy = dy*dy;
 		if(xx + yy < MOVEPIN_SIZE*MOVEPIN_SIZE*0.25f) {
+			if(yoffset)
+				*yoffset = dy;
 			return i;
 		}
 	}
@@ -193,14 +198,18 @@ int AudioView::determineSliderHover(int x, int y, int *yoffset) {
 int AudioView::determineThreshHover(int x, int y, int *yoffset) {
 
 	int xx = rect().width()-MOVEPIN_SIZE-x;
-	int yy = std::max(MOVEPIN_SIZE/2.f, thresholdPos()) - y;
-	if(yoffset)
-		*yoffset = yy;
+	int dy = std::max(MOVEPIN_SIZE/2.f, thresholdPos()) - y;
 
+	int yy = dy*dy;
 	xx *= xx;
-	yy *= yy;
 
-	return xx + yy < MOVEPIN_SIZE*MOVEPIN_SIZE*0.25f;
+	if(xx + yy < MOVEPIN_SIZE*MOVEPIN_SIZE*0.25f) {
+		if(yoffset)
+			*yoffset = dy;
+		return 1;
+	}
+
+	return 0;
 }
 
 void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
@@ -215,7 +224,25 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 				selectedChannel = clickedSlider;
 				event->accept();
 			}
+		} else if(clickedGain == -1 && (!threshMode || x <= rect().width()-MOVEPIN_SIZE*1.5f)) { // if in thresh mode we don't want it to react on the tresh slider area
+			int yy;
+			unsigned int i;
+			for(i = 0; i < views.size(); i++) {
+				yy = rect().height()*views[i].pos-event->pos().y;
+				if(yy < 0)
+					yy *= -1;
+				if(yy < 40+20*views[i].gain)
+					break;
+			}
+
+			if(i != views.size()) {
+				clickedGain = i;
+				clickedPixelOffset = yy;
+				prevGain = views[i].gain;
+				event->accept();
+			}
 		}
+
 
 		if(threshMode) {
 			clickedThresh = determineThreshHover(x, y, &clickedPixelOffset);
@@ -242,11 +269,15 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 		}
 		event->accept();
 	}
+	assert((clickedGain != -1) + (clickedSlider != -1) + clickedThresh <= 1);
 }
 
 void AudioView::mouseReleaseEvent(Widgets::MouseEvent *event) {
-	if(event->button() == Widgets::LeftButton)
+	if(event->button() == Widgets::LeftButton) {
 		clickedSlider = -1;
+		clickedThresh = false;
+		clickedGain = -1;
+	}
 }
 
 void AudioView::mouseMotionEvent(Widgets::MouseEvent *event) {
@@ -257,6 +288,11 @@ void AudioView::mouseMotionEvent(Widgets::MouseEvent *event) {
 		t = std::max(MOVEPIN_SIZE/(float)rect().height(), t);
 		t = std::min(views[selectedChannel].pos, t);
 		views[selectedChannel].thresh = (views[selectedChannel].pos - t)/views[selectedChannel].gain;
+	}
+
+	if(clickedGain != -1) {
+		float newGain = prevGain*std::fabs((rect().height()*views[clickedGain].pos-event->pos().y)/(float)clickedPixelOffset);
+		views[clickedGain].gain = std::max(0.001f, std::min(10.f, newGain));
 	}
 
 }
