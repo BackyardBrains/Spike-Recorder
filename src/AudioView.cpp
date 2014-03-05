@@ -49,7 +49,10 @@ float AudioView::scaleWidth() {
 }
 
 float AudioView::screenWidth() {
-	return rect().width() - MOVEPIN_SIZE*1.48f;
+	int screenw = rect().width()-MOVEPIN_SIZE*1.5f;
+	if(threshMode)
+		screenw -= MOVEPIN_SIZE*1.5f;
+	return screenw;
 }
 
 float AudioView::sampleCount(float screenw, float scalew) {
@@ -123,10 +126,7 @@ void AudioView::drawData(int channel, int samples, float x, float y, float width
 void AudioView::paintEvent() {
 	float scalew = scaleWidth();
 	float xoff = MOVEPIN_SIZE*1.48f;
-	int screenw = rect().width()-MOVEPIN_SIZE*1.5f;
-	if(threshMode)
-		screenw -= MOVEPIN_SIZE*1.5f;
-	screenw = std::max(0,screenw);
+	int screenw = screenWidth();
 	int samples = sampleCount(screenw, scalew);
 
 	for(int i = views.size() - 1; i >= 0; i--) {
@@ -252,18 +252,20 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 
 	} else if(event->button() == Widgets::WheelUpButton) {
 		int s = -1;
-		if(x < MOVEPIN_SIZE*3/2 && (s = determineSliderHover(x,y,NULL)) != -1) {
-			views[s].gain = std::min(10.f, views[s].gain*1.2f);
-		} else {
+		if(x < MOVEPIN_SIZE*3/2) {
+			if((s = determineSliderHover(x,y,NULL)) != -1)
+				views[s].gain = std::min(10.f, views[s].gain*1.2f);
+		} else if(!threshMode || x < rect().width()-MOVEPIN_SIZE*3/2) {
 			timeScale = std::max(1.f/RecordingManager::SAMPLE_RATE, timeScale*0.8f);
 			setOffset(channelOffset);
 		}
 		event->accept();
 	} else if(event->button() == Widgets::WheelDownButton) {
 		int s = -1;
-		if(x < MOVEPIN_SIZE*3/2 && (s = determineSliderHover(x,y,NULL)) != -1) {
+		if(x < MOVEPIN_SIZE*3/2) {
+			if((s = determineSliderHover(x,y,NULL)) != -1)
 			views[s].gain = std::max(0.001f, views[s].gain*0.8f);
-		} else {
+		} else if(!threshMode || x < rect().width()-MOVEPIN_SIZE*3/2) {
 			timeScale = std::min(2.f, timeScale*1.2f);
 			setOffset(channelOffset); // or else the buffer end will become shown
 		}
