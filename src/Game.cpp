@@ -130,10 +130,14 @@ void Game::pausePressed() {
 }
 
 void Game::backwardPressed() {
-	_audioView->setOffset(_audioView->offset()-30*RecordingManager::SAMPLE_RATE);
+	_audioView->setOffset(_audioView->offset()-5*RecordingManager::SAMPLE_RATE);
+	if(_manager.paused())
+		pausePressed();
 }
 void Game::forwardPressed() {
 	_audioView->setOffset(0);
+	if(_manager.paused())
+		pausePressed();
 }
 
 void Game::filePressed() {

@@ -20,7 +20,7 @@ static const Widgets::Color CHANNEL_COLORS[] = {
 };
 
 AudioView::AudioView(Widgets::Widget *parent, RecordingManager *mngr)
-	: Widgets::Widget(parent), clickedSlider(-1), clickedPixelOffset(0), channelOffset(0), selectedChannel(0), threshMode(false), manager(mngr), timeScale(0.1f)  {
+	: Widgets::Widget(parent), clickedSlider(-1), clickedPixelOffset(0), clickedThresh(false), channelOffset(0), selectedChannel(0), threshMode(false), manager(mngr), timeScale(0.1f)  {
 }
 
 void AudioView::updateView(int n) {
@@ -51,6 +51,10 @@ float AudioView::screenWidth() {
 
 float AudioView::sampleCount(float screenw, float scalew) {
 	return screenw*RecordingManager::SAMPLE_RATE/scalew;
+}
+
+float AudioView::thresholdPos() {
+	return rect().height()*(views[selectedChannel].pos-views[selectedChannel].thresh*views[selectedChannel].gain);
 }
 
 void AudioView::setOffset(int offset) {
@@ -86,13 +90,6 @@ static const char *get_unit_str(int unit) {
 	}
 }
 
-void AudioView::paintEvent() {
-	if(threshMode) {
-		paintThreshMode();
-	} else {
-		paintNormal();
-	}
-}
 
 void AudioView::drawScale() {
 	int unit = -std::log(timeScale)/std::log(10);
@@ -120,16 +117,19 @@ void AudioView::drawData(int channel, int samples, float x, float y, float width
 	glEnd();
 }
 
-void AudioView::paintNormal() {
+void AudioView::paintEvent() {
 	float scalew = scaleWidth();
-	int samples = sampleCount(screenWidth(), scalew);
 	float xoff = MOVEPIN_SIZE*1.48f;
+	int screenw = rect().width()-MOVEPIN_SIZE*1.5f;
+	if(threshMode)
+		screenw -= MOVEPIN_SIZE*1.5f;
+	int samples = sampleCount(screenw, scalew);
 
 	for(unsigned int i = 0; i < views.size(); i++) {
 		float yoff = views[i].pos*rect().height();
 		Widgets::Painter::setColor(CHANNEL_COLORS[i%(sizeof(CHANNEL_COLORS)/sizeof(CHANNEL_COLORS[0]))]);
 		if(manager->channelVirtualDevice(i) != RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX) {
-			drawData(i, samples, xoff, yoff, screenWidth());
+			drawData(i, samples, xoff, yoff, screenw);
 
 			Widgets::TextureGL::get("data/pin.png")->bind();
 			Widgets::Painter::drawTexRect(Widgets::Rect(MOVEPIN_SIZE/2, views[i].pos*rect().height()-MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
@@ -137,56 +137,50 @@ void AudioView::paintNormal() {
 		}
 	}
 
+	if(threshMode)
+		drawThreshold(screenw);
 	drawScale();
-
 }
 
-void AudioView::paintThreshMode() {
-	Widgets::TextureGL::get("data/circlepin.png")->bind();
-	for(unsigned int i = 0; i < views.size(); i++) {
-		Widgets::Color tmp = CHANNEL_COLORS[i%(sizeof(CHANNEL_COLORS)/sizeof(CHANNEL_COLORS[0]))];
-		if((int)i != selectedChannel)
-			tmp.setAlpha(40);
-		Widgets::Painter::setColor(tmp);
-		Widgets::Painter::drawTexRect(Widgets::Rect(MOVEPIN_SIZE/2, rect().height()*(i+0.5f)/views.size()-MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
-	}
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	int screenw = rect().width() - MOVEPIN_SIZE*3.5f;
+void AudioView::drawThreshold(int screenw) {
 	Widgets::Painter::setColor(CHANNEL_COLORS[selectedChannel%(sizeof(CHANNEL_COLORS)/sizeof(CHANNEL_COLORS[0]))]);
-	drawData(selectedChannel, sampleCount(screenw, scaleWidth()), MOVEPIN_SIZE*2, rect().height()/2, screenw);
 
-	Widgets::TextureGL::get("data/threshpin.png")->bind();
+	if(thresholdPos() > MOVEPIN_SIZE/2) {
+		Widgets::TextureGL::get("data/threshpin.png")->bind();
+		Widgets::Painter::drawTexRect(Widgets::Rect(rect().width()-MOVEPIN_SIZE*1.5f, thresholdPos()-MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
+		glBindTexture(GL_TEXTURE_2D, 0);
 
-	float threshh = views[selectedChannel].thresh*views[selectedChannel].gain;
-	Widgets::Painter::drawTexRect(Widgets::Rect(rect().width()-MOVEPIN_SIZE*1.5f, rect().height()*(0.5f-threshh)-MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
-	glBindTexture(GL_TEXTURE_2D, 0);
+		int dotw = 20;
+		int movement = SDL_GetTicks()/20%dotw;
+		int y = thresholdPos();
+		for(int i = 0; i <= screenw/dotw+1; i++) {
+			float x = MOVEPIN_SIZE*1.5f+dotw*i-movement;
 
-	int dotw = 20;
-	int movement = SDL_GetTicks()/20%dotw;
-	int y = rect().height()*(0.5f-threshh);
-	for(int i = 0; i <= screenw/dotw+1; i++) {
-		float x = MOVEPIN_SIZE*2+dotw*i-movement;
-
-		glBegin(GL_LINES);
-		glVertex3f(std::max(MOVEPIN_SIZE*2.f, x), y, 0.f);
-		glVertex3f(std::min(MOVEPIN_SIZE*2.f+screenw, x+dotw*0.7f), y, 0.f);
-		glEnd();
+			glBegin(GL_LINES);
+			glVertex3f(std::max(MOVEPIN_SIZE*1.5f, std::min(MOVEPIN_SIZE*1.5f+screenw, x)), y, 0.f);
+			glVertex3f(std::max(MOVEPIN_SIZE*1.5f, std::min(MOVEPIN_SIZE*1.5f+screenw, x+dotw*0.7f)), y, 0.f);
+			glEnd();
+		}
+		drawScale();
+	} else {
+		Widgets::TextureGL::get("data/threshpin.png")->bind();
+		glPushMatrix();
+		glTranslatef(rect().width()-MOVEPIN_SIZE, MOVEPIN_SIZE*0.5f, 0);
+		glRotatef(90,0,0,1);
+		Widgets::Painter::drawTexRect(Widgets::Rect(-MOVEPIN_SIZE/2, -MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
+		glPopMatrix();
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
-	drawScale();
 }
 
-int AudioView::determineSliderHover(int x, int y) {
+int AudioView::determineSliderHover(int x, int y, int *yoffset) {
 	int xx = MOVEPIN_SIZE-x;
 	xx *= xx;
 
 	for(unsigned int i = 0; i < views.size(); i++) {
-		int yy;
-		if(!threshMode)
-			yy = rect().height()*views[i].pos - y;
-		else
-			yy = rect().height()*(i+0.5f)/views.size() - y;
-
+		int yy = rect().height()*views[i].pos - y;
+		if(yoffset)
+			*yoffset = yy;
 		yy *= yy;
 		if(xx + yy < MOVEPIN_SIZE*MOVEPIN_SIZE*0.25f) {
 			return i;
@@ -196,15 +190,17 @@ int AudioView::determineSliderHover(int x, int y) {
 	return -1;
 }
 
-int AudioView::determineThreshHover(int x, int y) {
+int AudioView::determineThreshHover(int x, int y, int *yoffset) {
 
 	int xx = rect().width()-MOVEPIN_SIZE-x;
-	int yy = rect().height()*(0.5f-views[selectedChannel].thresh*views[selectedChannel].gain) - y;
+	int yy = std::max(MOVEPIN_SIZE/2.f, thresholdPos()) - y;
+	if(yoffset)
+		*yoffset = yy;
 
 	xx *= xx;
 	yy *= yy;
 
-	return xx + yy < MOVEPIN_SIZE*MOVEPIN_SIZE*0.25f ? 1 : -1;
+	return xx + yy < MOVEPIN_SIZE*MOVEPIN_SIZE*0.25f;
 }
 
 void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
@@ -213,34 +209,24 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 
 	if(event->button() == Widgets::LeftButton) {
 
-		if(!threshMode) {
-			if(clickedSlider == -1 || x >= MOVEPIN_SIZE*1.5f) {
-				clickedSlider = determineSliderHover(x,y);
-				if(clickedSlider != -1) {
-
-					clickedPixelOffset = rect().height()*views[clickedSlider].pos-y;
-					event->accept();
-				}
-			}
-		} else {
-			int i = determineSliderHover(x, y);
-			if(i != -1) {
-				selectedChannel = i;
-				event->accept();
-			}
-
-			clickedSlider = determineThreshHover(x, y);
+		if(clickedSlider == -1 && x <= MOVEPIN_SIZE*1.5f) {
+			clickedSlider = determineSliderHover(x,y,&clickedPixelOffset);
 			if(clickedSlider != -1) {
-				clickedPixelOffset = rect().height()*(0.5f-views[selectedChannel].thresh*views[selectedChannel].gain) - y;
+				selectedChannel = clickedSlider;
 				event->accept();
 			}
 		}
 
+		if(threshMode) {
+			clickedThresh = determineThreshHover(x, y, &clickedPixelOffset);
+			if(clickedThresh)
+				event->accept();
+		}
+
 	} else if(event->button() == Widgets::WheelUpButton) {
 		int s = -1;
-		if(x < MOVEPIN_SIZE*3/2 && (s = determineSliderHover(x,y)) != -1) {
+		if(x < MOVEPIN_SIZE*3/2 && (s = determineSliderHover(x,y,NULL)) != -1) {
 			views[s].gain = std::min(10.f, views[s].gain*1.2f);
-			views[s].thresh = std::max(0.f,std::min(0.5f, views[s].thresh*views[s].gain))/views[s].gain;
 		} else {
 			timeScale = std::max(1.f/RecordingManager::SAMPLE_RATE, timeScale*0.8f);
 			setOffset(channelOffset);
@@ -248,9 +234,8 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 		event->accept();
 	} else if(event->button() == Widgets::WheelDownButton) {
 		int s = -1;
-		if(x < MOVEPIN_SIZE*3/2 && (s = determineSliderHover(x,y)) != -1) {
+		if(x < MOVEPIN_SIZE*3/2 && (s = determineSliderHover(x,y,NULL)) != -1) {
 			views[s].gain = std::max(0.001f, views[s].gain*0.8f);
-			views[s].thresh = std::max(0.f,std::min(0.5f, views[s].thresh*views[s].gain))/views[s].gain;
 		} else {
 			timeScale = std::min(2.f, timeScale*1.2f);
 			setOffset(channelOffset); // or else the buffer end will become shown
@@ -265,13 +250,15 @@ void AudioView::mouseReleaseEvent(Widgets::MouseEvent *event) {
 }
 
 void AudioView::mouseMotionEvent(Widgets::MouseEvent *event) {
-	if(clickedSlider != -1) {
-		if(!threshMode) {
-			views[clickedSlider].pos = std::max(0.05f,std::min(0.95f, (event->pos().y+clickedPixelOffset)/(float)rect().height()));
-		} else {
-			views[selectedChannel].thresh = std::max(0.f,std::min(0.5f, (rect().height()/2-event->pos().y+clickedPixelOffset)/(float)rect().height()))/views[selectedChannel].gain;
-		}
+	if(clickedSlider != -1)
+		views[clickedSlider].pos = std::max(0.05f,std::min(0.95f, (event->pos().y+clickedPixelOffset)/(float)rect().height()));
+	if(clickedThresh) {
+		float t = (event->pos().y-clickedPixelOffset)/(float)rect().height();
+		t = std::max(MOVEPIN_SIZE/(float)rect().height(), t);
+		t = std::min(views[selectedChannel].pos, t);
+		views[selectedChannel].thresh = (views[selectedChannel].pos - t)/views[selectedChannel].gain;
 	}
+
 }
 
 void AudioView::resizeEvent(Widgets::ResizeEvent *e) {

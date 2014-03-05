@@ -8,10 +8,6 @@ CC  = gcc
 # BINPREFIX = /usr/i686-w64-mingw32/bin/
 # EXT = .exe
 
-# ARCH =
-# BINPREFIX =
-# EXT =
-
 TARGET = SpikeRecorder
 OBJECTS = \
 	src/engine/RecordingManager.o \

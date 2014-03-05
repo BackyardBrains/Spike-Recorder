@@ -36,6 +36,8 @@ private:
 	int clickedSlider;
 	int clickedPixelOffset;
 
+	bool clickedThresh;
+
 	int channelOffset;
 
 	int selectedChannel; // in thresh mode
@@ -54,17 +56,17 @@ private:
 	void mouseReleaseEvent(Widgets::MouseEvent *event);
 	void resizeEvent(Widgets::ResizeEvent *e);
 
-	int determineSliderHover(int x, int y);
-	int determineThreshHover(int x, int y);
+	int determineSliderHover(int x, int y, int *yoffset);
+	int determineThreshHover(int x, int y, int *yoffset);
 
+	float thresholdPos();
 	float scaleWidth(); //pixels per second of audio
 	float screenWidth();
 	float sampleCount(float screenw, float scalew);
 
 	void paintEvent();
-	void paintNormal();
-	void paintThreshMode();
 
+	void drawThreshold(int screenw);
 	void drawScale();
 	void drawData(int channel, int samples, float x, float y, float width);
 };
