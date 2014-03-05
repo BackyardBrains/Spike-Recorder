@@ -7,7 +7,7 @@ namespace BackyardBrains {
 namespace Widgets {
 namespace FileDialogMac {
 
-FileDialog::DialogState openFileDialog(std::string *str);
+FileDialog::DialogState openFileDialog(std::string *str, FileDialog::DialogType type);
 
 }
 }

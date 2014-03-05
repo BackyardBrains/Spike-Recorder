@@ -7,6 +7,8 @@
 namespace BackyardBrains {
 namespace Widgets {
 
+/* OS X implementation does not support running in parallel.
+ * But that isn’t used at the moment anyway. */
 
 // void *FileDialog::startThread(void *arg) {
 // 	reinterpret_cast<FileDialog *>(arg)->openDialog();
@@ -21,9 +23,9 @@ namespace Widgets {
 int FileDialog::open() {
 	pthread_t thread;
 
-	_state = (DialogState)FileDialogMac::openFileDialog(&_fileName);
+	_state = (DialogState)FileDialogMac::openFileDialog(&_fileName, _type);
 
-	return !rc;
+	return 1;
 }
 
 

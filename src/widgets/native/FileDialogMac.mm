@@ -7,8 +7,14 @@ namespace Widgets {
 namespace FileDialogMac {
 
 
-FileDialog::DialogState openFileDialog(std::string *fn) {
-	NSOpenPanel *panel = [NSOpenPanel openPanel];
+FileDialog::DialogState openFileDialog(std::string *fn, FileDialog::DialogType type) {
+	NSPanel *panel;
+	if(type == FileDialog::SaveFile) {
+		panel = [NSSavePanel savePanel];
+	} else {
+		panel = [NSOpenPanel openPanel];
+	}
+
 	NSInteger res = [panel runModal];
 	if (res == NSFileHandlingPanelCancelButton)
 		return FileDialog::CANCELED;
