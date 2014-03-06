@@ -141,7 +141,7 @@ void Game::forwardPressed() {
 }
 
 void Game::filePressed() {
-	Widgets::FileDialog d(Widgets::FileDialog::SaveFile);
+	Widgets::FileDialog d(Widgets::FileDialog::OpenFile);
 
 	d.open();
 	while(d.isOpen())
