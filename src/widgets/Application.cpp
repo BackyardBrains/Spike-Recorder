@@ -290,7 +290,11 @@ void Application::_HandleEvent(const void *eventRaw)
 			}
 		}
 	}
-	else if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {}
+	else if (event.type == SDL_KEYDOWN) {
+		const SDL_KeyboardEvent &kevent = *reinterpret_cast<const SDL_KeyboardEvent*>(&event);
+		if(kevent.keysym.sym == SDLK_q && kevent.keysym.mod | KMOD_CTRL)
+			_running = false;
+	}
 	else if (event.type == SDL_QUIT)
 	{
 		_running = false; // TODO generate an event instead of directly shutting down the event loop

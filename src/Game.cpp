@@ -46,7 +46,6 @@ Widgets::Widget *Game::makeThreshavgGroup() {
 	group->setSizeHint(Widgets::Size(width, 20));
 	bar->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Fixed, Widgets::SizePolicy::Expanding));
 
-	std::cout << bar->sizeHint().w << "\n";
 	return group;
 }
 
