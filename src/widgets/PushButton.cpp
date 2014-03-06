@@ -9,15 +9,16 @@ namespace BackyardBrains {
 
 namespace Widgets {
 
-PushButton::PushButton(Widget *parent) : Widget(parent), _normaltex(NULL), _hovertex(NULL), _size(48,48), _hover(false)
+PushButton::PushButton(Widget *parent) : Widget(parent), _normaltex(NULL), _hovertex(NULL), _hover(false)
 {
+	setSizeHint(Size(48,48));
 	// setMouseTracking(true);
 }
 
-Size PushButton::sizeHint() const
-{
-	return _size;
-}
+// Size PushButton::sizeHint() const
+// {
+// 	return Widget::sizeHint();
+// }
 
 void PushButton::paintEvent()
 {
@@ -42,10 +43,6 @@ void PushButton::setNormalTex(const TextureGL *tex) {
 
 void PushButton::setHoverTex(const TextureGL *tex) {
 	_hovertex = tex;
-}
-
-void PushButton::setCustomSize(const Size &s) {
-	_size = s;
 }
 
 void PushButton::mousePressEvent(MouseEvent *event)

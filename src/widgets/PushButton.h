@@ -16,8 +16,7 @@ public:
 
 	void setNormalTex(const TextureGL *tex);
 	void setHoverTex(const TextureGL *tex);
-	Size sizeHint() const;
-	void setCustomSize(const Size &s);
+// 	Size sizeHint() const;
 
 	sigslot::signal0<> clicked;
 private:
@@ -37,7 +36,6 @@ private:
 	const TextureGL *_normaltex;
 	const TextureGL *_hovertex;
 
-	Size _size;
 	bool _hover;
 };
 

@@ -45,7 +45,8 @@ public:
 	int width() const;
 	int height() const;
 
-	virtual Size sizeHint() const;
+	Size sizeHint() const;
+	void setSizeHint(const Size &hint);
 
 	SizePolicy sizePolicy() const;
 	void setSizePolicy(const SizePolicy &newPolicy);
@@ -84,6 +85,7 @@ private:
 	WidgetVector _children;
 	Rect _rect;
 	SizePolicy _sizePolicy;
+	Size _sizeHint;
 	struct WidgetState
 	{
 		WidgetState() {memset(this, 0, sizeof(*this));}

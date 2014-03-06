@@ -22,6 +22,7 @@ OBJECTS = \
 	src/widgets/BitmapFontGL.o \
 	src/widgets/TextureGL.o \
 	src/widgets/LoadTexture.o \
+	src/widgets/Label.o \
 	src/Game.o \
 	src/main.o \
 	src/AudioView.o \

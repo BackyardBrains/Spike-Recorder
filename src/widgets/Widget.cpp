@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iostream>
 #include <typeinfo>
+#include <cassert>
 
 namespace BackyardBrains {
 
@@ -68,8 +69,7 @@ void Widget::setGeometry(const Rect &newRect)
 {
 	const Size oldSize = _rect.size();
 	_rect = newRect;
-// 	if (!parentWidget() && SDL_GetVideoSurface() && !_windowStack.empty() && _windowStack.front() == this)
-// 		_CreateWindow(Size(_rect.x + _rect.w, _rect.y + _rect.h));
+	
 	if (_layout)
 		_layout->setGeometry(newRect.translated(-geometry().topLeft()));
 	const Size newSize = _rect.size();
@@ -127,7 +127,11 @@ int Widget::height() const
 
 Size Widget::sizeHint() const
 {
-	return Size();
+	return 	_sizeHint;
+}
+
+void Widget::setSizeHint(const Size &hint) {
+	_sizeHint = hint;
 }
 
 SizePolicy Widget::sizePolicy() const
@@ -142,12 +146,12 @@ void Widget::setSizePolicy(const SizePolicy &newPolicy)
 
 Widget *Widget::_GetWidgetAt(const Point &point)
 {
-	if (!geometry().contains(point))
+	if (!geometry().contains(point) || !isVisible())
 		return NULL;
 	for (WidgetVector::const_reverse_iterator it = _children.rbegin(); it != _children.rend(); ++it)
 	{
 		Widget *result = (*it)->_GetWidgetAt(point - geometry().topLeft());
-		if(result && result->isVisible())
+		if(result)
 			return result;
 	}
 	return this;

@@ -32,7 +32,6 @@ public:
 	sigslot::signal1<int> valueChanged;
 	// sigslot::signal1<int> rangeChanged;
 
-	Size sizeHint() const;
 private:
 	void paintEvent();
 	void mousePressEvent(MouseEvent *event);

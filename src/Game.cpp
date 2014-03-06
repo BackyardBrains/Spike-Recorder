@@ -5,6 +5,7 @@
 #include "widgets/TextureGL.h"
 #include "widgets/ScrollBar.h"
 #include "widgets/FileDialog.h"
+#include "widgets/Label.h"
 #include "AudioView.h"
 #include "ConfigView.h"
 #include <SDL_opengl.h>
@@ -12,6 +13,38 @@
 #include <iostream>
 
 namespace BackyardBrains {
+
+Widgets::Widget *Game::makeThreshavgGroup() {
+ 	Widgets::Widget *group = new Widgets::Widget(mainWidget());
+ 	group->setVisible(false);
+
+
+	Widgets::ScrollBar *bar = new Widgets::ScrollBar(Widgets::Horizontal,group);
+	bar->setRange(1,50);
+	bar->setPageStep(5);
+
+	bar->setSizeHint(Widgets::Size(250,20));
+	bar->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Fixed, Widgets::SizePolicy::Maximum));
+
+	Widgets::Label *label = new Widgets::Label(group);
+	bar->valueChanged.connect(label, &Widgets::Label::setText);
+	bar->setValue(1);
+
+	Widgets::Label *label2 = new Widgets::Label(group);
+	label2->setText("samples averaged");
+
+	Widgets::BoxLayout *layout = new Widgets::BoxLayout(Widgets::Horizontal, group);
+	layout->addWidget(bar);
+	layout->addWidget(label, Widgets::AlignVCenter);
+	layout->addWidget(label2, Widgets::AlignVCenter);
+
+	int width = bar->sizeHint().w+label->sizeHint().w+label2->sizeHint().w;
+	group->setSizeHint(Widgets::Size(width, 20));
+	bar->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Fixed, Widgets::SizePolicy::Expanding));
+
+	std::cout << group->width() << "\n";
+	return group;
+}
 
 Game::Game()
 {
@@ -32,7 +65,7 @@ Game::Game()
 	Widgets::PushButton *threshButton = new Widgets::PushButton(mainWidget());
 	threshButton->setNormalTex(Widgets::TextureGL::get("data/thresh.png"));
 	threshButton->setHoverTex(Widgets::TextureGL::get("data/threshhigh.png"));
-	threshButton->clicked.connect(_audioView, &AudioView::toggleThreshMode);
+	threshButton->clicked.connect(this, &Game::threshPressed);
 	Widgets::PushButton *recordButton = new Widgets::PushButton(mainWidget());
 	recordButton->setNormalTex(Widgets::TextureGL::get("data/rec.png"));
 	recordButton->setHoverTex(Widgets::TextureGL::get("data/rechigh.png"));
@@ -45,18 +78,18 @@ Game::Game()
 	_pauseButton->clicked.connect(this, &Game::pausePressed);
 	_pauseButton->setNormalTex(Widgets::TextureGL::get("data/pause.png"));
 	_pauseButton->setHoverTex(Widgets::TextureGL::get("data/pausehigh.png"));
-	_pauseButton->setCustomSize(Widgets::Size(64,64));
+	_pauseButton->setSizeHint(Widgets::Size(64,64));
 
 	Widgets::PushButton * const backwardButton = new Widgets::PushButton(mainWidget());
 	backwardButton->setNormalTex(Widgets::TextureGL::get("data/backward.png"));
 	backwardButton->setHoverTex(Widgets::TextureGL::get("data/backwardhigh.png"));
-	backwardButton->setCustomSize(Widgets::Size(32,32));
+	backwardButton->setSizeHint(Widgets::Size(32,32));
 	backwardButton->clicked.connect(this, &Game::backwardPressed);
 
 	Widgets::PushButton * const forwardButton = new Widgets::PushButton(mainWidget());
 	forwardButton->setNormalTex(Widgets::TextureGL::get("data/forward.png"));
 	forwardButton->setHoverTex(Widgets::TextureGL::get("data/forwardhigh.png"));
-	forwardButton->setCustomSize(Widgets::Size(32,32));
+	forwardButton->setSizeHint(Widgets::Size(32,32));
 	forwardButton->clicked.connect(this, &Game::forwardPressed);
 
 	_seekBar = new Widgets::ScrollBar(Widgets::Horizontal,mainWidget());
@@ -67,11 +100,15 @@ Game::Game()
 	_seekBar->valueChanged.connect(_audioView, &AudioView::setRelOffset);
  	_audioView->relOffsetChanged.connect(_seekBar, &Widgets::ScrollBar::updateValue);
 
+	_threshavgGroup = makeThreshavgGroup();
+
 	Widgets::BoxLayout *topBar = new Widgets::BoxLayout(Widgets::Horizontal);
 	topBar->addSpacing(10);
 	topBar->addWidget(configButton);
 	topBar->addSpacing(5);
 	topBar->addWidget(threshButton);
+	topBar->addSpacing(5);
+	topBar->addWidget(_threshavgGroup, Widgets::AlignVCenter);
 	topBar->addStretch();
 	topBar->addWidget(recordButton);
 	topBar->addSpacing(5);
@@ -99,7 +136,6 @@ Game::Game()
 	vbox->addLayout(seekBarBox);
 	vbox->addSpacing(10);
 	vbox->update();
-	vbox->setGeometry(Widgets::Rect(0, 0, 800, 600));
 
 	setWindowTitle("BYB Spike Recorder");
 
@@ -138,6 +174,14 @@ void Game::forwardPressed() {
 	_audioView->setOffset(0);
 	if(_manager.paused())
 		pausePressed();
+}
+
+void Game::threshPressed() {
+	_audioView->toggleThreshMode();
+	if(_audioView->thresholdMode())
+		_threshavgGroup->setVisible(true);
+	else
+		_threshavgGroup->setVisible(false);
 }
 
 void Game::filePressed() {

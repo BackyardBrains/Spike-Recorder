@@ -20,6 +20,7 @@ public:
 	int offset();
 
 
+	bool thresholdMode();
 	void toggleThreshMode();
 	// signals:
 	sigslot::signal1<int> relOffsetChanged;
@@ -64,8 +65,8 @@ private:
 
 	float thresholdPos();
 	float scaleWidth(); //pixels per second of audio
-	float screenWidth();
-	float sampleCount(float screenw, float scalew);
+	int screenWidth();
+	int sampleCount(int screenw, float scalew);
 
 	void paintEvent();
 

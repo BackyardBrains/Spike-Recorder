@@ -20,9 +20,11 @@ public:
 private:
 	Widgets::PushButton *_pauseButton;
 	Widgets::ScrollBar *_seekBar;
+	Widgets::Widget *_threshavgGroup;
 	AudioView *_audioView;
 
-	void paintEvent();
+	Widgets::Widget *makeThreshavgGroup();
+
 	void loadResources();
 	RecordingManager _manager;
 
@@ -33,6 +35,7 @@ private:
 	void backwardPressed();
 	void forwardPressed();
 
+	void threshPressed();
 	void filePressed();
 	void configPressed();
 	void test(int state, std::string str);

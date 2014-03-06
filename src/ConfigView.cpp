@@ -31,7 +31,7 @@ void ConfigView::paintEvent() {
 	Widgets::Painter::drawRect(rect());
 	Widgets::Painter::setColor(Widgets::Colors::white);
 
-	Widgets::Application::getInstance()->font()->draw("Config", 100, 35, Widgets::AlignCenter);
+	Widgets::Application::font()->draw("Config", 100, 35, Widgets::AlignCenter);
 	
 }
 

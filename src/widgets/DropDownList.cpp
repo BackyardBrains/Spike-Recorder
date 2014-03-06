@@ -24,16 +24,18 @@ DropDownList::DropDownList(Widget *parent) : Widget(parent), /*_state2(WAITING_F
 		snprintf(buffer, sizeof(buffer), "Test %i!", i);
 		_entries.push_back(std::string(buffer));
 	}
+
+	setSizeHint(Size(Application::font()->characterWidth()*24 + 2*BORDER_WIDTH, Application::font()->characterHeight() + 2*BORDER_WIDTH));
 }
 
 DropDownList::~DropDownList()
 {
 }
 
-Size DropDownList::sizeHint() const
-{
-	return Size(Application::font()->characterWidth()*24 + 2*BORDER_WIDTH, Application::font()->characterHeight() + 2*BORDER_WIDTH);
-}
+// Size DropDownList::sizeHint() const
+// {
+// 	return Size(Application::font()->characterWidth()*24 + 2*BORDER_WIDTH, Application::font()->characterHeight() + 2*BORDER_WIDTH);
+// }
 
 void DropDownList::clear()
 {

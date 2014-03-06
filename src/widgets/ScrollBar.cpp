@@ -14,6 +14,10 @@ static const int SLIDER_MIN_SIZE = 8;
 ScrollBar::ScrollBar(Orientation orientation, Widget *parent) : Widget(parent), _orientation(orientation), _minimum(0), _maximum(0), _value(0), _singleStep(1), _pageStep(1), _clickState(CLICKED_NONE), _sliderClickedPixelOffset(0), _draggingSliderOffset(0)
 {
 	setSizePolicy((_orientation == Horizontal) ? SizePolicy(SizePolicy::Expanding, SizePolicy::Fixed) : SizePolicy(SizePolicy::Fixed, SizePolicy::Expanding));
+	if (_orientation == Vertical)
+		setSizeHint(Size(SCROLL_BUTTON_SIZE, SCROLL_BUTTON_SIZE*2));
+	else
+		setSizeHint(Size(SCROLL_BUTTON_SIZE*2, SCROLL_BUTTON_SIZE));
 }
 
 ScrollBar::~ScrollBar()
@@ -81,14 +85,6 @@ int ScrollBar::pageStep() const
 void ScrollBar::setPageStep(int val)
 {
 	_pageStep = val;
-}
-
-Size ScrollBar::sizeHint() const
-{
-	if (_orientation == Vertical)
-		return Size(SCROLL_BUTTON_SIZE, SCROLL_BUTTON_SIZE*2);
-	else
-		return Size(SCROLL_BUTTON_SIZE*2, SCROLL_BUTTON_SIZE);
 }
 
 void ScrollBar::paintEvent()
@@ -192,9 +188,9 @@ int ScrollBar::_SliderLength() const
 Rect ScrollBar::_GutterRect() const
 {
 	if (_orientation == Horizontal)
-		return Rect(SCROLL_BUTTON_SIZE, 0, _GutterLength(), SCROLL_BUTTON_SIZE);
+		return Rect(SCROLL_BUTTON_SIZE, 0, _GutterLength(), height());
 	else // if (_orientation == Vertical)
-		return Rect(0, SCROLL_BUTTON_SIZE, SCROLL_BUTTON_SIZE, _GutterLength());
+		return Rect(0, SCROLL_BUTTON_SIZE, width(), _GutterLength());
 }
 
 Rect ScrollBar::_SliderRect() const
@@ -203,9 +199,9 @@ Rect ScrollBar::_SliderRect() const
 	const int sliderOffset = _ValueToSliderOffset(_value);
 	// const int sliderOffset = _ValueToSliderOffset(_value);
 	if (_orientation == Horizontal)
-		return Rect(SCROLL_BUTTON_SIZE + sliderOffset, 0, sliderLength, SCROLL_BUTTON_SIZE);
+		return Rect(SCROLL_BUTTON_SIZE + sliderOffset, 0, sliderLength, height());
 	else // if (_orientation == Vertical)
-		return Rect(0, SCROLL_BUTTON_SIZE + sliderOffset, SCROLL_BUTTON_SIZE, sliderLength);
+		return Rect(0, SCROLL_BUTTON_SIZE + sliderOffset, width(), sliderLength);
 }
 
 Rect ScrollBar::_LessButtonRect() const
