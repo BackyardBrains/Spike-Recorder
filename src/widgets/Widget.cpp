@@ -48,6 +48,10 @@ void Widget::setParentWidget(Widget *w)
 	}
 }
 
+Layout *Widget::layout() {
+	return _layout;
+}
+
 void Widget::setLayout(Layout *newLayout)
 {
 	if (newLayout == _layout)
@@ -155,6 +159,13 @@ Widget *Widget::_GetWidgetAt(const Point &point)
 			return result;
 	}
 	return this;
+}
+
+void Widget::_CallAdvance() {
+	advance();
+	for (WidgetVector::iterator it = _children.begin(); it != _children.end(); ++it) {
+		(*it)->_CallAdvance();
+	}
 }
 
 void Widget::_DoPaintEvents(const Point &offset, const Rect &clipRect)

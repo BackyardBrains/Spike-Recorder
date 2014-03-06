@@ -32,6 +32,7 @@ public:
 	Widget *parentWidget() const;
 	void setParentWidget(Widget *w);
 
+	Layout *layout();
 	void setLayout(Layout *newLayout);
 
 	void setGeometry(const Rect &newRect);
@@ -79,6 +80,7 @@ public:
 	virtual void mouseMotionEvent(MouseEvent *event);
 
 	void _DoPaintEvents(const Point &offset, const Rect &clipRect);
+	void _CallAdvance();
 private:
 	Widget *_parentWidget;
 	Layout * _layout;

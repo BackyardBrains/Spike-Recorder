@@ -30,6 +30,8 @@ public:
 	void addPopup(Widget *w);
 	void addWindow(Widget *w);
 
+	void updateLayout();
+
 	static const BitmapFontGL *font();
 	static Application *getInstance();
 protected:

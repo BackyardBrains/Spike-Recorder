@@ -7,6 +7,7 @@
 namespace BackyardBrains {
 
 class AudioView;
+class RecordingBar;
 namespace Widgets {
 	class PushButton;
 	class ScrollBar;
@@ -22,6 +23,7 @@ private:
 	Widgets::ScrollBar *_seekBar;
 	Widgets::Widget *_threshavgGroup;
 	AudioView *_audioView;
+	RecordingBar *_recBar;
 
 	Widgets::Widget *makeThreshavgGroup();
 
@@ -38,6 +40,7 @@ private:
 	void threshPressed();
 	void filePressed();
 	void configPressed();
+	void recordPressed();
 	void test(int state, std::string str);
 };
 

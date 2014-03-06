@@ -1,11 +1,12 @@
 #include "Application.h"
 #include "TextureGL.h"
+#include "LayoutItem.h"
 #include "BitmapFontGL.h"
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <iostream>
 #include <cstdlib>
-#include "../support/bass.h"
+#include <bass.h>
 
 namespace BackyardBrains {
 
@@ -118,9 +119,9 @@ void Application::run()
 
 		// Call step functions of widgets that actually need them. Are there any?
 		for (WidgetList::const_iterator it = _windowStack.begin(); it != _windowStack.end(); ++it)
-			(*it)->advance();
+			(*it)->_CallAdvance();
 		for (WidgetList::const_iterator it = _popupStack.begin(); it != _popupStack.end(); ++it)
-			(*it)->advance();
+			(*it)->_CallAdvance();
 
 		advance();
 		// draw
@@ -164,6 +165,13 @@ void Application::addPopup(Widget *w) {
 
 void Application::addWindow(Widget *w) {
 	_windowStack.push_back(w);
+}
+
+void Application::updateLayout() {
+	for(WidgetList::iterator it = _windowStack.begin(); it != _windowStack.end(); it++) {
+		(*it)->layout()->update();
+		(*it)->setSize((*it)->size());
+	}
 }
 
 void Application::_HandleEvent(const void *eventRaw)

@@ -8,6 +8,7 @@
 #include "widgets/Label.h"
 #include "AudioView.h"
 #include "ConfigView.h"
+#include "RecordingBar.h"
 #include <SDL_opengl.h>
 #include <SDL.h>
 #include <iostream>
@@ -72,6 +73,7 @@ Game::Game()
 	Widgets::PushButton *recordButton = new Widgets::PushButton(mainWidget());
 	recordButton->setNormalTex(Widgets::TextureGL::get("data/rec.png"));
 	recordButton->setHoverTex(Widgets::TextureGL::get("data/rechigh.png"));
+	recordButton->clicked.connect(this, &Game::recordPressed);
 	Widgets::PushButton *fileButton = new Widgets::PushButton(mainWidget());
 	fileButton->setNormalTex(Widgets::TextureGL::get("data/file.png"));
 	fileButton->setHoverTex(Widgets::TextureGL::get("data/filehigh.png"));
@@ -105,6 +107,8 @@ Game::Game()
 
 	_threshavgGroup = makeThreshavgGroup();
 
+	_recBar = new RecordingBar(mainWidget());
+
 	Widgets::BoxLayout *topBar = new Widgets::BoxLayout(Widgets::Horizontal);
 	topBar->addSpacing(10);
 	topBar->addWidget(configButton);
@@ -130,6 +134,7 @@ Game::Game()
 
 	Widgets::BoxLayout * const vbox = new Widgets::BoxLayout(Widgets::Vertical, mainWidget());
 
+	vbox->addWidget(_recBar);
 	vbox->addSpacing(10);
 	vbox->addLayout(topBar);
 	vbox->addSpacing(10);
@@ -138,7 +143,8 @@ Game::Game()
 	vbox->addSpacing(10);
 	vbox->addLayout(seekBarBox);
 	vbox->addSpacing(10);
-	vbox->update();
+
+	updateLayout();
 
 	setWindowTitle("BYB Spike Recorder");
 
@@ -185,6 +191,10 @@ void Game::threshPressed() {
 		_threshavgGroup->setVisible(true);
 	else
 		_threshavgGroup->setVisible(false);
+}
+
+void Game::recordPressed() {
+	_recBar->setActive(!_recBar->active());
 }
 
 void Game::filePressed() {
