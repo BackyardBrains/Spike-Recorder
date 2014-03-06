@@ -298,11 +298,6 @@ void Application::_HandleEvent(const void *eventRaw)
 	else if (event.type == SDL_SYSWMEVENT) {}
 	else if (event.type == SDL_VIDEORESIZE)
 	{
-		if(event.resize.w >= MIN_WINDOW_W && event.resize.h > MIN_WINDOW_H) {
-			for(WidgetList::iterator it = _windowStack.begin(); it != _windowStack.end(); it++)
-				(*it)->setSize(Size(event.resize.w - _windowStack.front()->geometry().x, event.resize.h - _windowStack.front()->geometry().y));
-		}
-
 		createWindow(event.resize.w, event.resize.h);
 	}
 	else if (event.type == SDL_VIDEOEXPOSE) {}
@@ -330,6 +325,10 @@ void Application::createWindow(int w, int h)
 	TextureGL::reloadAll();
 
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	for(WidgetList::iterator it = _windowStack.begin(); it != _windowStack.end(); it++)
+		(*it)->setSize(Size(std::max(MIN_WINDOW_W,w), std::max(MIN_WINDOW_H,h)));
+	
 }
 
 void Application::_SetHoverWidget(Widget *widget)
