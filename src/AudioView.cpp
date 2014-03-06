@@ -182,7 +182,7 @@ int AudioView::determineSliderHover(int x, int y, int *yoffset) {
 	xx *= xx;
 
 	for(unsigned int i = 0; i < views.size(); i++) {
-		int dy = rect().height()*views[i].pos - y;
+		int dy = y - rect().height()*views[i].pos ;
 
 		int yy = dy*dy;
 		if(xx + yy < MOVEPIN_SIZE*MOVEPIN_SIZE*0.25f) {
@@ -198,7 +198,7 @@ int AudioView::determineSliderHover(int x, int y, int *yoffset) {
 int AudioView::determineThreshHover(int x, int y, int *yoffset) {
 
 	int xx = rect().width()-MOVEPIN_SIZE-x;
-	int dy = std::max(MOVEPIN_SIZE/2.f, thresholdPos()) - y;
+	int dy = y - std::max(MOVEPIN_SIZE/2.f, thresholdPos());
 
 	int yy = dy*dy;
 	xx *= xx;
