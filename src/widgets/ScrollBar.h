@@ -23,8 +23,6 @@ public:
 	void setRange(int minVal, int maxVal);
 	int value() const;
 	void setValue(int val);
-	int singleStep() const;
-	void setSingleStep(int val);
 	int pageStep() const;
 	void setPageStep(int val);
 
@@ -41,8 +39,6 @@ private:
 	enum ClickArea
 	{
 		CLICKED_NONE,
-		CLICKED_LESS_BUTTON,
-		CLICKED_MORE_BUTTER,
 		CLICKED_BEFORE_SLIDER,
 		CLICKED_AFTER_SLIDER,
 		CLICKED_SLIDER
@@ -52,8 +48,6 @@ private:
 	int _SliderLength() const;
 	Rect _GutterRect() const;
 	Rect _SliderRect() const;
-	Rect _LessButtonRect() const;
-	Rect _MoreButtonRect() const;
 	ClickArea _DetermineArea(const Point &p) const;
 	int _ValueToSliderOffset(int val) const;
 
@@ -61,7 +55,6 @@ private:
 	int _minimum;
 	int _maximum;
 	int _value;
-	int _singleStep;
 	int _pageStep;
 	ClickArea _clickState;
 	int _sliderClickedPixelOffset;

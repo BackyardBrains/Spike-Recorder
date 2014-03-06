@@ -19,6 +19,10 @@ void Label::setText(const char *text) {
 	_text = text;
 }
 
+void Label::updateSize() {
+	setSizeHint(Size(Application::font()->characterWidth()*_text.size()+2*PADDING, Application::font()->characterHeight()+2*PADDING));
+}
+
 void Label::setText(int num) {
 	std::stringstream o;
 	o << num;

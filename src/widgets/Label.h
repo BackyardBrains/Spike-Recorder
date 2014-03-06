@@ -18,6 +18,8 @@ public:
 	void setText(const char *text);
 	void setText(int num);
 	void setText(float num);
+
+	void updateSize();
 private:
 	void paintEvent();
 
