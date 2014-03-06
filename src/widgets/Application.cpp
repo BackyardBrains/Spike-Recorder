@@ -14,6 +14,8 @@ namespace Widgets {
 
 BitmapFontGL *Application::_font = NULL;
 Application *Application::app = NULL;
+const int Application::MIN_WINDOW_W = 120;
+const int Application::MIN_WINDOW_H = 100;
 
 Application::Application() : _running(false), _mouseGrabber(0), _keyboardGrabber(0), _hoverWidget(0), _windowStack(0), _popupStack(0)
 {

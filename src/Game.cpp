@@ -33,16 +33,12 @@ Widgets::Widget *Game::makeThreshavgGroup() {
 	bar->valueChanged.connect(label, &Widgets::Label::setText);
 	bar->setValue(1);
 
-	Widgets::Label *label2 = new Widgets::Label(group);
-	label2->setText("samples averaged");
-	label2->updateSize();
 	Widgets::BoxLayout *layout = new Widgets::BoxLayout(Widgets::Horizontal, group);
 	layout->addWidget(bar);
 	layout->addSpacing(10);
 	layout->addWidget(label, Widgets::AlignVCenter);
-	layout->addWidget(label2, Widgets::AlignVCenter);
 
-	int width = bar->sizeHint().w+label->sizeHint().w+label2->sizeHint().w;
+	int width = bar->sizeHint().w+label->sizeHint().w;
 
 	group->setSizeHint(Widgets::Size(width, 20));
 	bar->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Fixed, Widgets::SizePolicy::Expanding));

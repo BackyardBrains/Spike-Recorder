@@ -27,7 +27,8 @@ OBJECTS = \
 	src/main.o \
 	src/AudioView.o \
 	src/ConfigView.o \
-	src/RecordingBar.o
+	src/RecordingBar.o \
+	src/ColorDropDownList.o
 
 ifeq ($(ARCH),)
 	UNAME_S = $(shell uname -s)

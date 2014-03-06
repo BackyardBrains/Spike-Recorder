@@ -13,8 +13,8 @@ namespace Widgets {
 class Application : public sigslot::has_slots<>
 {
 public:
-	static const int MIN_WINDOW_W = 120;
-	static const int MIN_WINDOW_H = 100;
+	static const int MIN_WINDOW_W;
+	static const int MIN_WINDOW_H;
 
 	Application();
 	virtual ~Application();
