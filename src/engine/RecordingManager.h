@@ -32,30 +32,24 @@ public:
 	~RecordingManager();
 	int64_t pos() const {return _pos;}
 	VirtualDevices recordingDevices() const {return _recordingDevices;}
-	int channelCount() const {return _channels.size();}
-	std::vector< std::pair<int16_t, int16_t> > channelSamplesEnvelope(unsigned int channelIndex, int64_t offset, int64_t len, int sampleSkip) const;
+	std::vector< std::pair<int16_t, int16_t> > getSamplesEnvelope(unsigned int virtualDeviceIndex, int64_t offset, int64_t len, int sampleSkip);
 	bool paused() const {return _paused;}
-	int channelVirtualDevice(unsigned int channelIndex) const;
+
+	void incRef(int virtualDeviceIndex);
+	void decRef(int virtualDeviceIndex);
+
 // public slots:
-	void setChannelCount(int numChannels);
-	void setChannelVirtualDevice(unsigned int channelIndex, int virtualDeviceIndex);
 	void setPaused(bool pausing);
 	void togglePaused();
 // signals:
 	sigslot::signal2<int64_t /*offset*/, int64_t /*len*/> samplesAdded;
-	sigslot::signal1<int /*numChannels*/> channelCountChanged;
-	sigslot::signal2<int /*channelIndex*/, int /*virtualDeviceIndex*/> channelVirtualDeviceChanged;
 
 	void advance();
 private:
 	static const unsigned int BUFFER_SIZE = 5*SAMPLE_RATE;
 	VirtualDevices _EnumerateRecordingDevices();
 
-	struct Channel
-	{
-		Channel() : virtualDeviceIndex(INVALID_VIRTUAL_DEVICE_INDEX) {}
-		int virtualDeviceIndex;
-	};
+
 	struct Device
 	{
 		Device() : handle(0), refCount(0), dcBiasNum(1)
@@ -75,21 +69,13 @@ private:
 		long dcBiasSum[2];
 		long dcBiasNum;
 	};
-	class Devices : public std::map<int, Device>
-	{
-	public:
-		void incRef(int virtualDeviceIndex, int64_t pos, bool paused);
-		void decRef(int virtualDeviceIndex);
-		bool contains(int virtualDeviceIndex) const {return virtualDeviceIndex >= 0 && std::map<int, Device>::find(virtualDeviceIndex/2) != end();}
-		bool empty() const {return std::map<int, Device>::empty();}
-		void print() const;
-		SampleBuffer * sampleBuffer(int virtualDeviceIndex);
-		const SampleBuffer * sampleBuffer(int virtualDeviceIndex) const;
-	};
+
+
+
+	SampleBuffer *sampleBuffer(int virtualDeviceIndex);
 
 	VirtualDevices _recordingDevices;
-	std::vector<Channel> _channels;
-	Devices _devices;
+	std::map<int, Device> _devices;
 	int64_t _pos;
 	bool _paused;
 };

@@ -1,5 +1,6 @@
 #include "Widget.h"
 #include "widgets/LayoutItem.h"
+#include "Application.h"
 
 #include <SDL.h>
 #include <SDL_opengl.h>
@@ -30,6 +31,14 @@ Widget::~Widget()
 		if (it != parentWidget()->_children.rend())
 			parentWidget()->_children.erase(parentWidget()->_children.begin() + (&(*it) - parentWidget()->_children.data())); // TODO simplify this conversion from reverse_iterator to iterator
 	}
+
+	Application *app = Application::getInstance();
+	if(app->hoverWidget() == this)
+		app->hoverWidget() = NULL;
+	if(app->keyboardGrabber() == this)
+		app->keyboardGrabber() = NULL;
+	if(app->mouseGrabber() == this)
+		app->mouseGrabber() = NULL;
 }
 
 Widget * Widget::parentWidget() const

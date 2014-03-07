@@ -20,7 +20,12 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false)
 }
 
 RecordingManager::~RecordingManager() {
-	setChannelCount(0); // free all channels
+	for(int i = 0; i < (int)_recordingDevices.size(); i++) {
+		decRef(i);
+	}
+
+	for(std::map<int, Device>::iterator it = _devices.begin(); it != _devices.end(); it++)
+		std::cout << it->first << ": " << it->second.refCount << "\n";
 	BASS_Free();
 }
 
@@ -44,40 +49,6 @@ RecordingManager::VirtualDevices RecordingManager::_EnumerateRecordingDevices()
 	return result;
 }
 
-int RecordingManager::channelVirtualDevice(unsigned int channelIndex) const
-{
-	if (channelIndex >= _channels.size())
-		return INVALID_VIRTUAL_DEVICE_INDEX;
-	return _channels[channelIndex].virtualDeviceIndex;
-}
-
-void RecordingManager::setChannelCount(int numChannels)
-{
-	if (numChannels < 0)
-		numChannels = 0;
-	if (numChannels == (int)_channels.size())
-		return;
-	const int originalSize = _channels.size();
-	if(numChannels < originalSize) {
-		for(int i = numChannels; i < originalSize; i++)
-			_devices.decRef(_channels[i].virtualDeviceIndex);
-	}
-
-	_channels.resize(numChannels);
-	channelCountChanged.emit(numChannels);
-}
-
-void RecordingManager::setChannelVirtualDevice(unsigned int channelIndex, int virtualDeviceIndex)
-{
-	if (channelIndex < 0 || channelIndex >= _channels.size())
-		return;
-	if (_channels[channelIndex].virtualDeviceIndex == virtualDeviceIndex)
-		return;
-	_devices.decRef(_channels[channelIndex].virtualDeviceIndex);
-	_channels[channelIndex].virtualDeviceIndex = virtualDeviceIndex;
-	_devices.incRef(_channels[channelIndex].virtualDeviceIndex, _pos, _paused);
-}
-
 // TODO: consolidate this function somewhere
 static int64_t snapTo(int64_t val, int64_t increments)
 {
@@ -94,7 +65,7 @@ void RecordingManager::setPaused(bool pausing)
 	if (_paused == pausing)
 		return;
 	_paused = pausing;
-	for (Devices::const_iterator it = _devices.begin(); it != _devices.end(); ++it)
+	for (std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it)
 	{
 		if (pausing) {
 			if(!BASS_ChannelPause(it->second.handle))
@@ -110,7 +81,7 @@ void RecordingManager::togglePaused()
 {
 
 	_paused = !_paused;
-	for (Devices::const_iterator it = _devices.begin(); it != _devices.end(); ++it)
+	for (std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it)
 	{
 		if (_paused) {
 			if(!BASS_ChannelPause(it->second.handle))
@@ -122,14 +93,14 @@ void RecordingManager::togglePaused()
 	}
 }
 
-std::vector< std::pair<int16_t, int16_t> > RecordingManager::channelSamplesEnvelope(unsigned int channelIndex, int64_t offset, int64_t len, int sampleSkip) const
+std::vector< std::pair<int16_t, int16_t> > RecordingManager::getSamplesEnvelope(unsigned int virtualDeviceIndex, int64_t offset, int64_t len, int sampleSkip)
 {
 	const int64_t pos2 = snapTo(offset+len, sampleSkip);
 	const int64_t pos1 = snapTo(offset, sampleSkip);
-	int virtualDeviceIndex = (channelIndex >= 0 && channelIndex < _channels.size()) ? _channels[channelIndex].virtualDeviceIndex : INVALID_VIRTUAL_DEVICE_INDEX;
+
 	std::vector< std::pair<int16_t, int16_t> > result;
-	if (_devices.contains(virtualDeviceIndex))
-		result = _devices.sampleBuffer(virtualDeviceIndex)->getDataEnvelope(pos1, pos2 - pos1, sampleSkip);
+	if (_devices.count(virtualDeviceIndex/2) > 0)
+		result = sampleBuffer(virtualDeviceIndex)->getDataEnvelope(pos1, pos2 - pos1, sampleSkip);
 	else
 		result.resize((pos2 - pos1)/sampleSkip);
 	return result;
@@ -213,36 +184,31 @@ void RecordingManager::Device::create(int64_t pos)
 {
 	destroy();
 	for (int i = 0; i < 2; i++)
-	{
 		sampleBuffers[i] = new SampleBuffer(pos);
-	}
 }
 void RecordingManager::Device::destroy()
 {
-	for (int i = 0; i < 2; i++)
-	{
-		if (sampleBuffers[i])
-		{
+	for (int i = 0; i < 2; i++) {
+		if (sampleBuffers[i]) {
 			delete sampleBuffers[i];
 			sampleBuffers[i] = NULL;
 		}
 	}
 }
 
-void RecordingManager::Devices::incRef(int virtualDeviceIndex, int64_t pos, bool paused)
+
+void RecordingManager::incRef(int virtualDeviceIndex)
 {
 	if (virtualDeviceIndex < 0)
 		return;
 	const int device = virtualDeviceIndex/2;
 
-	if (!contains(virtualDeviceIndex))
-	{
-		(*this)[device].create(pos);
-	}
-	(*this)[device].refCount++;
+	if (_devices.count(device) == 0)
+		_devices[device].create(_pos);
 
-	if ((*this)[device].handle == 0)
-	{
+	_devices[device].refCount++;
+
+	if (_devices[device].handle == 0) {
 		// make sure the device exists
 		BASS_DEVICEINFO info;
 		if(!BASS_RecordGetDeviceInfo(device, &info)) {
@@ -264,25 +230,25 @@ void RecordingManager::Devices::incRef(int virtualDeviceIndex, int64_t pos, bool
 			return;
 		}
 
-		const HRECORD handle = BASS_RecordStart(SAMPLE_RATE, 2, (paused ? BASS_RECORD_PAUSE : 0), NULL, NULL);
+		const HRECORD handle = BASS_RecordStart(SAMPLE_RATE, 2, (_paused ? BASS_RECORD_PAUSE : 0), NULL, NULL);
 		if (handle == FALSE)
 		{
 			std::cerr << "Bass Error: starting the recording failed: " << BASS_ErrorGetCode() << "\n";
 			return;
 		}
-		(*this)[device].handle = handle;
+		_devices[device].handle = handle;
 	}
 }
 
-void RecordingManager::Devices::decRef(int virtualDeviceIndex)
+void RecordingManager::decRef(int virtualDeviceIndex)
 {
 	if (virtualDeviceIndex < 0)
 		return;
 	const int device = virtualDeviceIndex/2;
-	if (!contains(virtualDeviceIndex))
+	if (_devices.count(device) == 0)
 		return;
-	(*this)[device].refCount--;
-	if ((*this)[device].refCount == 0)
+	_devices[device].refCount--;
+	if (_devices[device].refCount == 0)
 	{
 		// make sure the device exists
 		BASS_DEVICEINFO info;
@@ -303,39 +269,20 @@ void RecordingManager::Devices::decRef(int virtualDeviceIndex)
 				std::cerr << "Bass Error: freeing record device failed: " << BASS_ErrorGetCode() << "\n";
 			}
 		}
-		(*this)[device].destroy();
-		erase(device);
+		_devices[device].destroy();
+		_devices.erase(device);
 	}
 }
 
-SampleBuffer * RecordingManager::Devices::sampleBuffer(int virtualDeviceIndex)
+SampleBuffer * RecordingManager::sampleBuffer(int virtualDeviceIndex)
 {
-	// qDebug() << "Getting sample buffer for virtual device" << virtualDeviceIndex;
 	const int device = virtualDeviceIndex/2;
 	const int leftOrRight = virtualDeviceIndex%2;
 	SampleBuffer * result = NULL;
-	if (contains(virtualDeviceIndex))
-		result = (*this)[device].sampleBuffers[leftOrRight];
+	if (_devices.count(device) > 0)
+		result = _devices[device].sampleBuffers[leftOrRight];
 	return result;
 }
 
-const SampleBuffer * RecordingManager::Devices::sampleBuffer(int virtualDeviceIndex) const
-{
-	// qDebug() << "Getting sample buffer for virtual device" << virtualDeviceIndex;
-	const int device = virtualDeviceIndex/2;
-	const int leftOrRight = virtualDeviceIndex%2;
-	const SampleBuffer * result = NULL;
-	if (contains(virtualDeviceIndex))
-		result = at(device).sampleBuffers[leftOrRight];
-	return result;
-}
-
-void RecordingManager::Devices::print() const
-{
-	for (std::map<int, Device>::const_iterator it = begin(); it != end(); ++it)
-	{
-		std::cerr << it->first << "--" << it->second.sampleBuffers[0] << it->second.sampleBuffers[1] << "refCount =" << it->second.refCount;
-	}
-}
 
 } // namespace BackyardBrains

@@ -53,8 +53,7 @@ Game::Game()
 	std::cout << "Creating Window...\n";
 	createWindow(800,600);
 
-	_audioView = new AudioView(mainWidget(), &_manager);
-	_manager.channelCountChanged.connect(_audioView, &AudioView::updateView);
+	_audioView = new AudioView(mainWidget(), _manager);
 
 	_audioView->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Expanding, Widgets::SizePolicy::Expanding));
 
@@ -142,14 +141,12 @@ Game::Game()
 
 	updateLayout();
 
+	_audioView->addChannel(0);
+
 	setWindowTitle("BYB Spike Recorder");
 
 	std::cout << "Starting GUI...\n";
 
- 	_manager.setChannelCount(3);
-	_manager.setChannelVirtualDevice(0, 0);
-	_manager.setChannelVirtualDevice(1, 2);
-	_manager.setChannelVirtualDevice(2, 3);
 }
 
 Game::~Game() {
@@ -206,7 +203,7 @@ void Game::filePressed() {
 }
 
 void Game::configPressed() {
-	ConfigView *c = new ConfigView(&_manager);
+	ConfigView *c = new ConfigView(_manager, *_audioView);
 	c->setDeleteOnClose(true);
 	c->setGeometry(mainWidget()->rect());
 	addWindow(c);

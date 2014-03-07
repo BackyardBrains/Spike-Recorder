@@ -7,22 +7,47 @@
 #include "widgets/TextureGL.h"
 #include "widgets/Application.h"
 #include "widgets/BitmapFontGL.h"
+#include "widgets/Label.h"
+#include "AudioView.h"
 #include "ColorDropDownList.h"
 
 namespace BackyardBrains {
 
-ConfigView::ConfigView(RecordingManager *mngr, Widget *parent) : Widget(parent), _manager(mngr) {
+ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *parent) : Widget(parent), _manager(mngr), _audioView(audioView) {
 	Widgets::PushButton *closeButton = new Widgets::PushButton(this);
 	closeButton->clicked.connect(this, &ConfigView::closePressed);
 	closeButton->setNormalTex(Widgets::TextureGL::get("data/config.png"));
 	closeButton->setHoverTex(Widgets::TextureGL::get("data/confighigh.png"));
 
-	ColorDropDownList *clrs = new ColorDropDownList(this);
-	std::vector<Widgets::Color> c(3);
-	c[0] = Widgets::Color(225,252,90);
-	c[1] = Widgets::Color(255,138,91);
-	c[2] = Widgets::Color(106,106,233);
-	clrs->setContent(c);
+	std::vector<Widgets::Color> c(AudioView::COLORS, AudioView::COLORS+AudioView::COLOR_NUM);
+	std::vector<ColorDropDownList *> clrs(_manager.recordingDevices().size());
+	_catchers.reserve(clrs.size());
+
+	Widgets::Widget *group = new Widgets::Widget(this);
+	group->setSizeHint(Widgets::Size(500,400));
+	Widgets::BoxLayout *gvbox = new Widgets::BoxLayout(Widgets::Vertical, group);
+	for(unsigned int i = 0; i < _manager.recordingDevices().size(); i++) {
+		clrs[i] = new ColorDropDownList(group);
+		clrs[i]->setContent(c);
+
+		_catchers.push_back(SignalCatcher(i, this));
+		clrs[i]->selectionChanged.connect(&_catchers[i], &SignalCatcher::catchColor);
+		Widgets::Label *name = new Widgets::Label(group);
+		name->setText(_manager.recordingDevices()[i].name.c_str());
+		name->updateSize();
+
+		Widgets::BoxLayout *ghbox = new Widgets::BoxLayout(Widgets::Horizontal);
+		ghbox->addWidget(clrs[i]);
+		ghbox->addSpacing(20);
+		ghbox->addWidget(name,Widgets::AlignVCenter);
+		gvbox->addLayout(ghbox);
+		gvbox->addSpacing(15);
+	}
+
+	for(int i = 0; i < audioView.channelCount(); i++)
+		clrs[audioView.channelVirtualDevice(i)]->setSelection(audioView.channelColor(i));
+
+	gvbox->update();
 
 	Widgets::BoxLayout *vbox = new Widgets::BoxLayout(Widgets::Vertical, this);
 	Widgets::BoxLayout *hbox = new Widgets::BoxLayout(Widgets::Horizontal);
@@ -31,7 +56,7 @@ ConfigView::ConfigView(RecordingManager *mngr, Widget *parent) : Widget(parent),
 	vbox->addSpacing(10);
 	vbox->addLayout(hbox);
 	vbox->addSpacing(20);
-	vbox->addWidget(clrs, Widgets::AlignCenter);
+	vbox->addWidget(group, Widgets::AlignCenter);
 
 	vbox->update();
 
@@ -48,6 +73,18 @@ void ConfigView::paintEvent() {
 
 void ConfigView::closePressed() {
 	close();
+}
+
+void ConfigView::colorChanged(int virtualDevice, int coloridx) {
+	int channel = _audioView.virtualDeviceChannel(virtualDevice);
+	if(channel < 0 && coloridx != 0) {
+		int nchan = _audioView.addChannel(virtualDevice);
+		_audioView.setChannelColor(nchan, coloridx);
+	} else if(coloridx == 0) {
+		_audioView.removeChannel(virtualDevice);
+	} else {
+		_audioView.setChannelColor(channel, coloridx);
+	}
 }
 
 }

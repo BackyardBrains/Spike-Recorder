@@ -6,15 +6,33 @@
 namespace BackyardBrains {
 
 class RecordingManager;
+class AudioView;
 
 class ConfigView : public Widgets::Widget {
 public:
-	ConfigView(RecordingManager *mngr, Widget *parent = NULL);
+	ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *parent = NULL);
 private:
-	RecordingManager *_manager;
+	class SignalCatcher : public sigslot::has_slots<> {
+	public:
+		SignalCatcher(int virtualDevice, ConfigView *parent) : _virtualDevice(virtualDevice), _parent(parent) {}
+		void catchColor(int coloridx) {
+			_parent->colorChanged(_virtualDevice, coloridx);
+		}
+	private:
+		int _virtualDevice;
+		ConfigView *_parent;
+	};
+
+	std::vector<SignalCatcher> _catchers;
+
+	void colorChanged(int virtualDevice, int coloridx);
+
+	RecordingManager &_manager;
+	AudioView &_audioView;
 	void paintEvent();
 
 	void closePressed();
+
 };
 
 }

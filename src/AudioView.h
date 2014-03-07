@@ -11,25 +11,41 @@ namespace BackyardBrains {
 class AudioView : public Widgets::Widget
 {
 public:
-	AudioView(Widgets::Widget *parent, RecordingManager *mngr);
+	struct Channel
+	{
+		Channel() : virtualDevice(RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX), coloridx(1), gain(1.f), thresh(0.1f), pos(0.5f) {}
 
-	// public slots:
-	void updateView(int nchan);
-	void setOffset(int offset);
-	void setRelOffset(int reloffset); // in per mille
-	int offset();
+		int virtualDevice;
+		int coloridx;
 
-
-	bool thresholdMode();
-	void toggleThreshMode();
-	// signals:
-	sigslot::signal1<int> relOffsetChanged;
-private:
-	struct ViewData {
 		float gain;
 		float thresh;
 		float pos;
 	};
+
+
+	static const Widgets::Color COLORS[];
+	static const int COLOR_NUM;
+
+	AudioView(Widgets::Widget *parent, RecordingManager &mngr);
+
+	int addChannel(int virtualDeviceIndex);
+	void removeChannel(int virtualDeviceIndex);
+	void setChannelColor(int channel, int coloridx);
+	int channelColor(int channel) const;
+	int channelCount() const;
+	int channelVirtualDevice(int channel) const;
+	int virtualDeviceChannel(int virtualDevice) const;
+
+	void setOffset(int offset);
+	void setRelOffset(int reloffset); // in per mille
+	int offset();
+
+	bool thresholdMode();
+	void toggleThreshMode();
+
+	sigslot::signal1<int> relOffsetChanged;
+private:
 
 	static const int MOVEPIN_SIZE = 30;
 	static const int RESOLUTION = 800;
@@ -47,8 +63,8 @@ private:
 	int selectedChannel; // in thresh mode
 	bool threshMode;
 
-	RecordingManager *manager;
-	std::vector<ViewData> views;
+	RecordingManager &manager;
+	std::vector<Channel> channels;
 
 	float timeScale;
 	static const float ampScale;

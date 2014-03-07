@@ -97,13 +97,13 @@ static bool close_cond(Widget *w) {
 	return w->closed();
 }
 
-void Application::removeClosed(Application::WidgetList &w) {
-	Application::WidgetList tmp;
-	for(Application::WidgetList::const_iterator it = w.begin(); it != w.end(); ++it)
+void Application::removeClosed(WidgetList &w) {
+	WidgetList tmp;
+	for(WidgetList::const_iterator it = w.begin(); it != w.end(); ++it)
 		if((*it)->closed())
 			tmp.push_back(*it);
 	w.remove_if(close_cond);
-	for(Application::WidgetList::const_iterator it = tmp.begin(); it != tmp.end(); ++it)
+	for(WidgetList::const_iterator it = tmp.begin(); it != tmp.end(); ++it)
 		delete *it;
 }
 
@@ -375,14 +375,18 @@ std::string Application::windowTitle() const
 	return _windowTitle;
 }
 
-Widget *Application::keyboardGrabber()
+Widget *&Application::keyboardGrabber()
 {
 	return _keyboardGrabber;
 }
 
-Widget *Application::mouseGrabber()
+Widget *&Application::mouseGrabber()
 {
 	return _mouseGrabber;
+}
+
+Widget *&Application::hoverWidget() {
+	return _hoverWidget;
 }
 
 const BitmapFontGL *Application::font() {

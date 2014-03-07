@@ -24,8 +24,9 @@ public:
 	void setWindowTitle(const std::string &str);
 	std::string windowTitle() const;
 
-	Widget *keyboardGrabber();
-	Widget *mouseGrabber();
+	Widget *&keyboardGrabber();
+	Widget *&mouseGrabber();
+	Widget *&hoverWidget();
 
 	void addPopup(Widget *w);
 	void addWindow(Widget *w);
