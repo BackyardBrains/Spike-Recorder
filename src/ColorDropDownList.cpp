@@ -4,13 +4,16 @@
 #include "widgets/Event.h"
 #include <iostream>
 #include "widgets/BoxLayout.h"
-#include "widgets/PushButton.h"
 #include "widgets/ScrollBar.h"
+#include "widgets/TextureGL.h"
 
 namespace BackyardBrains {
 
+static const int SLICE_W = 45;
+static const int SLICE_H = 30;
+
 ColorDropDownList::ColorDropDownList(Widget *parent) : _selection(0) {
-	setSizeHint(Widgets::Size(60,30));
+	setSizeHint(Widgets::Size(SLICE_W+15,SLICE_H));
 }
 
 const std::vector<Widgets::Color> &ColorDropDownList::content() const {
@@ -23,8 +26,8 @@ void ColorDropDownList::setContent(const std::vector<Widgets::Color> &content) {
 
 void ColorDropDownList::setSelection(int selection) {
 	if(_selection != selection) {
-		_selection = selection;
-		selectionChanged.emit(selection);
+		_selection = std::max(0, std::min((int)_content.size()-1,selection));
+		selectionChanged.emit(_selection);
 	}
 }
 
@@ -38,7 +41,12 @@ void ColorDropDownList::paintEvent() {
 	if(_content.size() > 0)
 		Widgets::Painter::setColor(_content[_selection]);
 
-	Widgets::Painter::drawRect(rect().adjusted(2,2,-12,-2));
+	Widgets::Painter::drawRect(Widgets::Rect(2,2,SLICE_W-4, height()-4));
+
+	Widgets::TextureGL::get("data/dropdown.png")->bind();
+	Widgets::Painter::setColor(Widgets::Colors::gray);
+	Widgets::Painter::drawTexRect(Widgets::Rect(SLICE_W+2,height()/2-3,width()-SLICE_W-6, 6));
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 }
 
@@ -46,25 +54,75 @@ void ColorDropDownList::mousePressEvent(Widgets::MouseEvent *event) {
 	if(event->button() == Widgets::LeftButton) {
 		event->accept();
 
-		// Widget * const dummy = new DropDownList;
-		Widgets::Widget *dummy = new Widget;
-		dummy->setDeleteOnClose(true);
+		ColorDropDownPopup *popup = new ColorDropDownPopup(_content);
+		popup->selectionChanged.connect(this, &ColorDropDownList::setSelection);
+		popup->setGeometry(Widgets::Rect(mapToGlobal(rect().bottomLeft()), Widgets::Size(width(), 80)));
+		Widgets::Application::getInstance()->addPopup(popup);
+	} else if(event->button() == Widgets::WheelUpButton) {
+		_selection = std::max(0, _selection-1);
+		event->accept();
+	} else if(event->button() == Widgets::WheelDownButton) {
+		_selection = std::min((int)_content.size()-1, _selection+1);
+		event->accept();
+	}
+}
 
-		Widgets::BoxLayout * const hbox = new Widgets::BoxLayout(Widgets::Horizontal, dummy);
-		hbox->addWidget(new Widgets::PushButton(dummy));
-		hbox->addWidget(new Widgets::PushButton(dummy));
-		hbox->addStretch();
-		Widgets::ScrollBar * const scrollBar = new Widgets::ScrollBar(Widgets::Vertical, dummy);
-		scrollBar->setRange(0, 3);
-		scrollBar->setPageStep(2);
-		// scrollBar->setVisible(false);
-		hbox->addWidget(scrollBar);
-		hbox->update();
+ColorDropDownPopup::ColorDropDownPopup(const std::vector<Widgets::Color> &content, Widget *parent)
+	: Widget(parent), _content(content), _scroll(0) {
+	setSizeHint(Widgets::Size(SLICE_W+15,SLICE_H*4));
 
-		dummy->setGeometry(Widgets::Rect(mapToGlobal(rect().bottomLeft()), Widgets::Size(width(), 200)));
-		Widgets::Application::getInstance()->addPopup(dummy);
+	_scrollBar = new Widgets::ScrollBar(Widgets::Vertical, this);
+	_scrollBar->valueChanged.connect(this, &ColorDropDownPopup::setScroll);
+	scrollChanged.connect(_scrollBar, &Widgets::ScrollBar::updateValue);
+	_scrollBar->setGeometry(Widgets::Rect(SLICE_W,0,width()-SLICE_W,height()));
+	_scrollBar->updateValue(_scroll);
+	_scrollBar->setPageStep(5);
+}
+
+void ColorDropDownPopup::setScroll(int scroll) {
+	_scroll = std::min(std::max(0,(int)(_content.size())*SLICE_H-height()), scroll);
+	scrollChanged.emit(_scroll);
+}
+
+void ColorDropDownPopup::paintEvent() {
+	Widgets::Painter::setColor(Widgets::Color(50,50,50));
+	Widgets::Painter::drawRect(rect());
+
+	unsigned int i;
+	int start = _scroll/SLICE_H;
+	int startoff = _scroll%SLICE_H;
+	for(i = 0; i <= (unsigned int)height()/SLICE_H && i+start < _content.size(); i++) {
+		Widgets::Painter::setColor(_content[i+start]);
+		int y = i*SLICE_H-startoff;
+		int h = std::min(height()-y, SLICE_H);
+		if(y < 0)
+			h += y;
+
+		y = std::max(0, y);
+
+		Widgets::Painter::drawRect(Widgets::Rect(2,y+2, SLICE_W-4, h-4));
 	}
 
+}
+
+void ColorDropDownPopup::mousePressEvent(Widgets::MouseEvent *event) {
+	if(event->button() == Widgets::LeftButton && event->pos().x < SLICE_W) {
+		event->accept();
+		int selected = event->pos().y/SLICE_H;
+		selectionChanged.emit(selected);
+		close();
+	} else if(event->button() == Widgets::WheelUpButton) {
+		setScroll(_scroll-5);
+		event->accept();
+	} else if(event->button() == Widgets::WheelDownButton) {
+		setScroll(_scroll+5);
+		event->accept();
+	}
+}
+
+void ColorDropDownPopup::resizeEvent(Widgets::ResizeEvent *event) {
+	_scrollBar->setGeometry(Widgets::Rect(SLICE_W,0,width()-SLICE_W,height()));
+	_scrollBar->setRange(0, std::max(0,(int)(_content.size())*SLICE_H-height()));
 }
 
 }

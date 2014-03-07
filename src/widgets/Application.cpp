@@ -116,6 +116,13 @@ void Application::run()
 	{
 
 		// Delete closed windows/popups
+		if(_hoverWidget && _hoverWidget->closed())
+			_hoverWidget = NULL;
+		if(_keyboardGrabber && _keyboardGrabber->closed())
+			_keyboardGrabber = NULL;
+		if(_mouseGrabber && _mouseGrabber->closed())
+			_mouseGrabber = NULL;
+
 		removeClosed(_windowStack);
 		removeClosed(_popupStack);
 

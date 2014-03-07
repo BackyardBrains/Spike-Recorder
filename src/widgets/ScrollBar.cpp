@@ -60,7 +60,7 @@ void ScrollBar::setValue(int val)
 	const int oldValue = _value;
 	_value = std::max(_minimum, std::min(val, _maximum));
 	if (_value != oldValue)
-		valueChanged.emit(val);
+		valueChanged.emit(_value);
 }
 
 void ScrollBar::updateValue(int val) {
@@ -117,9 +117,13 @@ void ScrollBar::mousePressEvent(MouseEvent *event)
 			default:
 			break;
 		}
+	} else if(event->button() == Widgets::WheelUpButton) {
+		setValue(_value-pageStep());
+		event->accept();
+	} else if(event->button() == Widgets::WheelDownButton) {
+		setValue(_value+pageStep());
+		event->accept();
 	}
-	else
-		Widget::mousePressEvent(event);
 }
 
 void ScrollBar::mouseMotionEvent(MouseEvent *event)

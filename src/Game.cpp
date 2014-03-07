@@ -238,6 +238,7 @@ void Game::loadResources() {
 
 	Widgets::TextureGL::load("data/pin.png");
 	Widgets::TextureGL::load("data/threshpin.png");
+	Widgets::TextureGL::load("data/dropdown.png");
 }
 
 void Game::advance() {

@@ -10,6 +10,7 @@ namespace BackyardBrains {
 
 namespace Widgets {
 	class MouseEvent;
+	class ScrollBar;
 }
 
 class ColorDropDownList : public Widgets::Widget {
@@ -28,6 +29,23 @@ private:
 
 	void mousePressEvent(Widgets::MouseEvent *event);
 	void paintEvent();
+};
+
+class ColorDropDownPopup : public Widgets::Widget {
+public:
+	ColorDropDownPopup(const std::vector<Widgets::Color> &content, Widget *parent = NULL);
+
+	void setScroll(int scroll);
+	sigslot::signal1<int> selectionChanged;
+	sigslot::signal1<int> scrollChanged;
+private:
+	const std::vector<Widgets::Color> &_content;
+	int _scroll;
+	Widgets::ScrollBar *_scrollBar;
+
+	void paintEvent();
+	void mousePressEvent(Widgets::MouseEvent *event);
+	void resizeEvent(Widgets::ResizeEvent *event);
 };
 
 }
