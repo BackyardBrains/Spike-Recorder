@@ -24,8 +24,6 @@ RecordingManager::~RecordingManager() {
 		decRef(i);
 	}
 
-	for(std::map<int, Device>::iterator it = _devices.begin(); it != _devices.end(); it++)
-		std::cout << it->first << ": " << it->second.refCount << "\n";
 	BASS_Free();
 }
 

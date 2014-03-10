@@ -60,6 +60,7 @@ Application *Application::getInstance() {
 
 Application::~Application()
 {
+	delete _mainwidget;
 	// clean up and exit
 	SDL_Quit();
 }

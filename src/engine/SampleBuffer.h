@@ -19,7 +19,6 @@ public:
 
 	SampleBuffer(int64_t pos = 0) : _pos(pos), _head(0), _buffer(new int16_t[SIZE]), _notEmpty(false)
 	{
-		// qDebug() << "SampleBuffer: CONSTRUCTOR CALLED" << this;
 		memset(_buffer, 0, sizeof(int16_t[SIZE]));
 		int size = SIZE/2;
 		for (int i = 0; i < SIZE_LOG2; i++, size/=2)
@@ -29,7 +28,6 @@ public:
 	}
 	SampleBuffer(const SampleBuffer &other) : _pos(other._pos), _head(other._head), _buffer(new int16_t[SIZE]), _notEmpty(false)
 	{
-		// qDebug() << "SampleBuffer: COPY CONSTRUCTOR CALLED" << this;
 		memcpy(_buffer, other._buffer, sizeof(int16_t[SIZE]));
 		for (int i = 0; i < static_cast<int>(SIZE_LOG2); i++)
 		{
@@ -38,12 +36,10 @@ public:
 	}
 	~SampleBuffer()
 	{
-		// qDebug() << "SampleBuffer: DESTRUCTOR CALLED" << this;
 		delete [] _buffer;
 	}
 	SampleBuffer & operator=(const SampleBuffer &other)
 	{
-		// qDebug() << "SampleBuffer: ASSIGNMENT OPERATOR CALLED";
 		_pos = other._pos;
 		_head = other._head;
 		memcpy(_buffer, other._buffer, sizeof(int16_t[SIZE]));

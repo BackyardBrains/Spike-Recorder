@@ -35,7 +35,9 @@ int AudioView::addChannel(int virtualDevice) {
 	manager.incRef(virtualDevice);
 	channels.push_back(AudioView::Channel());
 	channels.back().virtualDevice = virtualDevice;
-	channels.back().pos = rand()/(float)RAND_MAX;
+
+	if(channels.size() != 1)
+		channels.back().pos = rand()/(float)RAND_MAX;
 	return channels.size()-1;
 }
 
