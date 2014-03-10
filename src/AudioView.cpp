@@ -331,7 +331,7 @@ void AudioView::mouseMotionEvent(Widgets::MouseEvent *event) {
 
 		float t = (event->pos().y-clickedPixelOffset)/(float)height();
 		t = std::max(MOVEPIN_SIZE/(float)height(), t);
-		t = std::min(channels[selected].pos, t);
+		t = std::min(1.f-MOVEPIN_SIZE/(float)height(), t);
 		manager.setVDeviceThreshold(manager.threshVDevice(), (channels[selected].pos - t)/channels[selected].gain/ampScale);
 	}
 

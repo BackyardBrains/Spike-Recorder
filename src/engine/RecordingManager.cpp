@@ -191,13 +191,16 @@ void RecordingManager::advance() {
 
 			for(DWORD i = 0; i < samplesRead/2; i++) {
 				channels[chan][i] -= dcBias;
-				if(_threshMode && it->first*2+chan == _threshVDevice && channels[chan][i] > _recordingDevices[_threshVDevice].threshold) {
-					int64_t ntrigger = oldPos + i;
+				if(_threshMode && it->first*2+chan == _threshVDevice) {
+					const int64_t ntrigger = oldPos + i;
+					const int thresh = _recordingDevices[_threshVDevice].threshold;
 
 					if(_triggers.empty() || ntrigger - _triggers.front() > SAMPLE_RATE/10) {
-						_triggers.push_front(oldPos + i);
-						if(_triggers.size() > (unsigned int)_threshAvgCount)
-							_triggers.pop_back();
+						if((thresh > 0 && channels[chan][i] > thresh) || (thresh <= 0 && channels[chan][i] < thresh)) {
+							_triggers.push_front(oldPos + i);
+							if(_triggers.size() > (unsigned int)_threshAvgCount)
+								_triggers.pop_back();
+						}
 					}
 				}
 			}
