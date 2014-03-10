@@ -24,6 +24,7 @@ public:
 		int index;
 		std::string name;
 		bool enabled;
+		int16_t threshold;
 	};
 	static const int INVALID_VIRTUAL_DEVICE_INDEX;
 	typedef std::vector<VirtualDevice> VirtualDevices;
@@ -31,17 +32,22 @@ public:
 	RecordingManager();
 	~RecordingManager();
 	int64_t pos() const {return _pos;}
-	VirtualDevices recordingDevices() const {return _recordingDevices;}
+	VirtualDevices &recordingDevices() {return _recordingDevices;}
 	std::vector< std::pair<int16_t, int16_t> > getSamplesEnvelope(unsigned int virtualDeviceIndex, int64_t offset, int64_t len, int sampleSkip);
 	bool paused() const {return _paused;}
-
+	bool threshMode() const {return _threshMode;}
+	int threshAvgCount() const {return _threshAvgCount;}
+	int threshVDevice() const {return _threshVDevice;}
 	void incRef(int virtualDeviceIndex);
 	void decRef(int virtualDeviceIndex);
 
-// public slots:
 	void setPaused(bool pausing);
 	void togglePaused();
-// signals:
+	void setThreshMode(bool threshMode);
+	void setThreshAvgCount(int threshAvgCount);
+	void setThreshVDevice(int virtualDevice);
+
+
 	sigslot::signal2<int64_t /*offset*/, int64_t /*len*/> samplesAdded;
 
 	void advance();
@@ -78,6 +84,11 @@ private:
 	std::map<int, Device> _devices;
 	int64_t _pos;
 	bool _paused;
+	bool _threshMode;
+
+	int _threshVDevice;
+	int _threshAvgCount;
+	std::list<int64_t> triggers;
 };
 
 } // namespace BackyardBrains

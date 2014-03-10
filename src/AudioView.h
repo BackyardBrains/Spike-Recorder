@@ -60,15 +60,13 @@ private:
 
 	int channelOffset;
 
-	int selectedChannel; // in thresh mode
-	bool threshMode;
-
 	RecordingManager &manager;
 	std::vector<Channel> channels;
 
 	float timeScale;
 	static const float ampScale;
 
+	int selectedChannel() const;
 	float scaleLenFactor();
 
 	void mousePressEvent(Widgets::MouseEvent *event);

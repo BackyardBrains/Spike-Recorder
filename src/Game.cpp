@@ -179,11 +179,13 @@ void Game::forwardPressed() {
 }
 
 void Game::threshPressed() {
-	_audioView->toggleThreshMode();
-	if(_audioView->thresholdMode())
+	if(!_manager.threshMode()) {
+		_manager.setThreshMode(true);
 		_threshavgGroup->setVisible(true);
-	else
+	} else {
+		_manager.setThreshMode(false);
 		_threshavgGroup->setVisible(false);
+	}
 }
 
 void Game::recordPressed() {

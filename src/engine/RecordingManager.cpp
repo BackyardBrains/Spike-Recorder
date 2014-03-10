@@ -8,7 +8,7 @@ namespace BackyardBrains {
 
 const int RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX = -2;
 
-RecordingManager::RecordingManager() : _pos(0), _paused(false)
+RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(false), _threshVDevice(0), _threshAvgCount(1)
 {
 	std::cout << "Initializing libbass...\n";
 	if(!BASS_Init(-1, RecordingManager::SAMPLE_RATE, 0, 0, NULL)) {
@@ -40,6 +40,7 @@ RecordingManager::VirtualDevices RecordingManager::_EnumerateRecordingDevices()
 		{
 			virtualDevice.index = i*2 + j;
 			virtualDevice.name = std::string(info.name)/*.simplified()*/ + ((j == 0) ? " [Left]" : " [Right]");
+			virtualDevice.threshold = 100;
 			result.push_back(virtualDevice);
 		}
 	}
@@ -73,6 +74,18 @@ void RecordingManager::setPaused(bool pausing)
 				std::cerr << "Bass Error: resuming channel playback failed: " << BASS_ErrorGetCode() << "\n";
 		}
 	}
+}
+
+void RecordingManager::setThreshMode(bool threshMode) {
+	_threshMode = threshMode;
+}
+
+void RecordingManager::setThreshAvgCount(int threshAvgCount) {
+	_threshAvgCount = std::max(0,threshAvgCount);
+}
+
+void RecordingManager::setThreshVDevice(int virtualDevice) {
+	_threshVDevice = virtualDevice;
 }
 
 void RecordingManager::togglePaused()
