@@ -36,7 +36,7 @@ else
 	UNAME_S =
 endif
 
-CFLAGS = -g -O2 -Isrc -Isupport -I. -Wall
+CFLAGS = -g -O2 -Isrc -Isupport -I. -Wall -DSIGSLOT_PURE_ISO
 
 ifeq ($(UNAME_S),Darwin)
 	OBJECTS += src/widgets/native/FileDialogMac.o

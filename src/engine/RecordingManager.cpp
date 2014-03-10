@@ -8,8 +8,7 @@ namespace BackyardBrains {
 
 const int RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX = -2;
 
-RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(false), _threshVDevice(0), _threshAvgCount(1)
-{
+RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(false), _threshVDevice(0), _threshAvgCount(1) {
 	std::cout << "Initializing libbass...\n";
 	if(!BASS_Init(-1, RecordingManager::SAMPLE_RATE, 0, 0, NULL)) {
 		std::cerr << "Bass Error: Initialization failed: " << BASS_ErrorGetCode() << "\n";
@@ -27,8 +26,7 @@ RecordingManager::~RecordingManager() {
 	BASS_Free();
 }
 
-RecordingManager::VirtualDevices RecordingManager::_EnumerateRecordingDevices()
-{
+RecordingManager::VirtualDevices RecordingManager::_EnumerateRecordingDevices() {
 	VirtualDevices result;
 	BASS_DEVICEINFO info;
 	VirtualDevice virtualDevice;
@@ -49,23 +47,19 @@ RecordingManager::VirtualDevices RecordingManager::_EnumerateRecordingDevices()
 }
 
 // TODO: consolidate this function somewhere
-static int64_t snapTo(int64_t val, int64_t increments)
-{
-	if (increments > 1)
-	{
+static int64_t snapTo(int64_t val, int64_t increments) {
+	if (increments > 1) {
 		val /= increments;
 		val *= increments;
 	}
 	return val;
 }
 
-void RecordingManager::setPaused(bool pausing)
-{
+void RecordingManager::setPaused(bool pausing) {
 	if (_paused == pausing)
 		return;
 	_paused = pausing;
-	for (std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it)
-	{
+	for (std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it) {
 		if (pausing) {
 			if(!BASS_ChannelPause(it->second.handle))
 				std::cerr << "Bass Error: pausing channel failed: " << BASS_ErrorGetCode() << "\n";
@@ -78,22 +72,29 @@ void RecordingManager::setPaused(bool pausing)
 
 void RecordingManager::setThreshMode(bool threshMode) {
 	_threshMode = threshMode;
+	if(threshMode)
+		_triggers.clear();
 }
 
 void RecordingManager::setThreshAvgCount(int threshAvgCount) {
 	_threshAvgCount = std::max(0,threshAvgCount);
+	_triggers.clear();
 }
 
 void RecordingManager::setThreshVDevice(int virtualDevice) {
 	_threshVDevice = virtualDevice;
+	_triggers.clear();
 }
 
-void RecordingManager::togglePaused()
-{
+void RecordingManager::setVDeviceThreshold(int virtualDevice, int threshold) {
+	_recordingDevices[virtualDevice].threshold = threshold;
+	_triggers.clear();
+}
+
+void RecordingManager::togglePaused() {
 
 	_paused = !_paused;
-	for (std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it)
-	{
+	for (std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it) {
 		if (_paused) {
 			if(!BASS_ChannelPause(it->second.handle))
 				std::cerr << "Bass Error: pausing channel failed: " << BASS_ErrorGetCode() << "\n";
@@ -104,8 +105,7 @@ void RecordingManager::togglePaused()
 	}
 }
 
-std::vector< std::pair<int16_t, int16_t> > RecordingManager::getSamplesEnvelope(unsigned int virtualDeviceIndex, int64_t offset, int64_t len, int sampleSkip)
-{
+std::vector< std::pair<int16_t, int16_t> > RecordingManager::getSamplesEnvelope(int virtualDeviceIndex, int64_t offset, int64_t len, int sampleSkip) {
 	const int64_t pos2 = snapTo(offset+len, sampleSkip);
 	const int64_t pos1 = snapTo(offset, sampleSkip);
 
@@ -117,23 +117,50 @@ std::vector< std::pair<int16_t, int16_t> > RecordingManager::getSamplesEnvelope(
 	return result;
 }
 
-void RecordingManager::advance()
-{
+std::vector<std::pair<int16_t,int16_t> > RecordingManager::getTriggerSamplesEnvelope(int virtualDeviceIndex, int64_t len, int sampleSkip) {
+	std::vector<std::pair<int,int> > buf(len/sampleSkip);
+
+	for(std::list<int64_t>::iterator it = _triggers.begin(); it != _triggers.end(); it++) {
+		const int64_t pos2 = snapTo(*it+len/2, sampleSkip);
+		const int64_t pos1 = snapTo(*it-len/2, sampleSkip);
+
+		std::vector<std::pair<int16_t,int16_t> > tmp = sampleBuffer(virtualDeviceIndex)->getDataEnvelope(pos1, pos2-pos1, sampleSkip);
+
+		for(unsigned int i = 0; i < std::min(tmp.size(),buf.size()); i++) {
+			buf[i].first += tmp[i].first;
+			buf[i].second += tmp[i].second;
+		}
+	}
+
+	std::vector<std::pair<int16_t,int16_t> > result(buf.size());
+	if(!_triggers.empty()) {
+		for(unsigned int i = 0; i < result.size(); i++) {
+			result[i].first = buf[i].first/(int)_triggers.size();
+			result[i].second = buf[i].second/(int)_triggers.size();
+		}
+	}
+
+	return result;
+}
+
+
+
+void RecordingManager::advance() {
 	if (_devices.empty() || _paused)
 		return;
 
 	std::vector<int16_t> buffer(2*BUFFER_SIZE);
-	std::vector<int16_t> left(BUFFER_SIZE);
-	std::vector<int16_t> right(BUFFER_SIZE);
+	const int channum = 2;
+	std::vector<int16_t> channels[channum];
+
+
 	const int64_t oldPos = _pos;
 	int64_t newPos = _pos;
 	bool firstTime = true;
 
-	int dcBias[2] = {0, 0};
 	// qDebug() << "TIMER EVENT";
 	// std::cerr << "--------------------" << std::endl;
-	for (std::map<int, Device>::iterator it = _devices.begin(); it != _devices.end(); ++it)
-	{
+	for (std::map<int, Device>::iterator it = _devices.begin(); it != _devices.end(); ++it) {
 		const DWORD samplesRead = BASS_ChannelGetData(it->second.handle, buffer.data(), 2*BUFFER_SIZE*sizeof(int16_t))/sizeof(int16_t);
 		if(samplesRead == (DWORD)-1) {
 			std::cerr << "Bass Error: getting channel data failed: " << BASS_ErrorGetCode() << "\n";
@@ -143,62 +170,67 @@ void RecordingManager::advance()
 		if (samplesRead > 2*BUFFER_SIZE) // TODO handle this a little better
 			continue;
 
-		// de-interleave the left and right channels
-		for (DWORD i = 0; i < samplesRead/2; i++)
-		{
-			left[i] = buffer[i*2];
-			right[i] = buffer[i*2 + 1];
+		for(int chan = 0; chan < channum; chan++)
+			channels[chan].resize(BUFFER_SIZE);
 
-			if(it->second.dcBiasNum < SAMPLE_RATE*10) {
-				it->second.dcBiasSum[0] += buffer[i*2];
-				it->second.dcBiasSum[1] += buffer[i*2+1];
-				it->second.dcBiasNum++;
+		// de-interleave the left and right channels
+		for (DWORD i = 0; i < samplesRead/2; i++) {
+			for(int chan = 0; chan < channum; chan++) {
+				channels[chan][i] = buffer[i*channum + chan];
+
+				if(it->second.dcBiasNum < SAMPLE_RATE*10) {
+					it->second.dcBiasSum[chan] += channels[chan][i];
+					if(chan == 0)
+						it->second.dcBiasNum++;
+				}
 			}
 		}
 
-		dcBias[0] = it->second.dcBiasSum[0]/it->second.dcBiasNum;
-		dcBias[1] = it->second.dcBiasSum[1]/it->second.dcBiasNum;
+		for(int chan = 0; chan < channum; chan++) {
+			int dcBias = it->second.dcBiasSum[chan]/it->second.dcBiasNum;
 
-		for (DWORD i = 0; i < samplesRead/2; i++) {
-			left[i] -= dcBias[0];
-			right[i] -= dcBias[1];
-		}
+			for(DWORD i = 0; i < samplesRead/2; i++) {
+				channels[chan][i] -= dcBias;
+				if(_threshMode && it->first*2+chan == _threshVDevice && abs(channels[chan][i]) > _recordingDevices[_threshVDevice].threshold) {
+					int64_t ntrigger = oldPos + i;
 
-		if (it->second.sampleBuffers[0]->empty())
-		{
-			it->second.sampleBuffers[0]->setPos(oldPos);
-			it->second.sampleBuffers[1]->setPos(oldPos);
-			// std::cerr << "Set position to " << oldPos << " from " << oldPos << " and now it's " << it->second.sampleBuffers[0]->pos() << std::endl;
+					if(_triggers.empty() || ntrigger - _triggers.front() > 1*SAMPLE_RATE) {
+						_triggers.push_front(oldPos + i);
+						if(_triggers.size() > (unsigned int)_threshAvgCount)
+							_triggers.pop_back();
+					}
+				}
+			}
+
+			if(it->second.sampleBuffers[0]->empty()) {
+				it->second.sampleBuffers[chan]->setPos(oldPos);
+			}
+			it->second.sampleBuffers[chan]->addData(channels[chan].data(), samplesRead/2);
 		}
-		it->second.sampleBuffers[0]->addData(left.data(), samplesRead/2);
-		it->second.sampleBuffers[1]->addData(right.data(), samplesRead/2);
 		const int64_t posA = it->second.sampleBuffers[0]->pos();
-		// std::cerr << it->first << " -- Before: " << before << " After: " << posA << " Empty?: " << wasEmpty << std::endl;
-		// qDebug() << "POSA" << posA << "POSB" << posB;
-		// qDebug() << "POSA" << posA/44100.0 << "POSB" << posB/44100.0;
-		if (!it->second.sampleBuffers[0]->empty() && (firstTime || posA < newPos))
-		{
+		if (!it->second.sampleBuffers[0]->empty() && (firstTime || posA < newPos)) {
 			newPos = posA;
 			firstTime = false;
 		}
 	}
-	// std::cerr << "===================" << std::endl;
-	if (newPos > oldPos)
-	{
+
+	if (newPos > oldPos) {
 		_pos = newPos;
-		// qDebug() << _devices.size() << (newPos - oldPos);
 		samplesAdded.emit(oldPos, newPos - oldPos);
 	}
+
+// 	for(std::list<int64_t>::iterator it = _triggers.begin(); it != _triggers.end(); it++)
+// 		std::cout << *it << " ";
+// 	if(_triggers.size())
+// 		std::cout << '\n';
 }
 
-void RecordingManager::Device::create(int64_t pos)
-{
+void RecordingManager::Device::create(int64_t pos) {
 	destroy();
 	for (int i = 0; i < 2; i++)
 		sampleBuffers[i] = new SampleBuffer(pos);
 }
-void RecordingManager::Device::destroy()
-{
+void RecordingManager::Device::destroy() {
 	for (int i = 0; i < 2; i++) {
 		if (sampleBuffers[i]) {
 			delete sampleBuffers[i];
@@ -208,8 +240,7 @@ void RecordingManager::Device::destroy()
 }
 
 
-void RecordingManager::incRef(int virtualDeviceIndex)
-{
+void RecordingManager::incRef(int virtualDeviceIndex) {
 	if (virtualDeviceIndex < 0)
 		return;
 	const int device = virtualDeviceIndex/2;
@@ -251,8 +282,7 @@ void RecordingManager::incRef(int virtualDeviceIndex)
 	}
 }
 
-void RecordingManager::decRef(int virtualDeviceIndex)
-{
+void RecordingManager::decRef(int virtualDeviceIndex) {
 	if (virtualDeviceIndex < 0)
 		return;
 	const int device = virtualDeviceIndex/2;
@@ -285,8 +315,7 @@ void RecordingManager::decRef(int virtualDeviceIndex)
 	}
 }
 
-SampleBuffer * RecordingManager::sampleBuffer(int virtualDeviceIndex)
-{
+SampleBuffer * RecordingManager::sampleBuffer(int virtualDeviceIndex) {
 	const int device = virtualDeviceIndex/2;
 	const int leftOrRight = virtualDeviceIndex%2;
 	SampleBuffer * result = NULL;

@@ -147,8 +147,11 @@ void AudioView::drawScale() {
 }
 
 void AudioView::drawData(int channel, int samples, float x, float y, float width) {
-	std::vector<std::pair<int16_t, int16_t> > data =
-		manager.getSamplesEnvelope(channels[channel].virtualDevice,manager.pos()+channelOffset-samples, samples, samples > screenWidth() ? samples/screenWidth() : 1);
+	std::vector<std::pair<int16_t, int16_t> > data;
+	if(!manager.threshMode())
+		data = manager.getSamplesEnvelope(channels[channel].virtualDevice,manager.pos()+channelOffset-samples, samples, samples > screenWidth() ? samples/screenWidth() : 1);
+	else
+		data = manager.getTriggerSamplesEnvelope(channels[channel].virtualDevice, samples, samples > screenWidth() ? samples/screenWidth() : 1);
 
 
 	float dist = width/((float)data.size()-1);
@@ -329,7 +332,7 @@ void AudioView::mouseMotionEvent(Widgets::MouseEvent *event) {
 		float t = (event->pos().y-clickedPixelOffset)/(float)height();
 		t = std::max(MOVEPIN_SIZE/(float)height(), t);
 		t = std::min(channels[selected].pos, t);
-		manager.recordingDevices()[manager.threshVDevice()].threshold = (channels[selected].pos - t)/channels[selected].gain/ampScale;
+		manager.setVDeviceThreshold(manager.threshVDevice(), (channels[selected].pos - t)/channels[selected].gain/ampScale);
 	}
 
 	if(clickedGain != -1) {

@@ -23,7 +23,7 @@ Widgets::Widget *Game::makeThreshavgGroup() {
 	Widgets::ScrollBar *bar = new Widgets::ScrollBar(Widgets::Horizontal,group);
 	bar->setRange(1,50);
 	bar->setPageStep(5);
-
+	bar->valueChanged.connect(&_manager, &RecordingManager::setThreshAvgCount);
 	bar->setSizeHint(Widgets::Size(250,20));
 	bar->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Fixed, Widgets::SizePolicy::Maximum));
 
