@@ -322,7 +322,7 @@ void AudioView::mouseReleaseEvent(Widgets::MouseEvent *event) {
 
 void AudioView::mouseMotionEvent(Widgets::MouseEvent *event) {
 	if(clickedSlider != -1)
-		channels[clickedSlider].pos = std::max(0.05f,std::min(0.95f, (event->pos().y+clickedPixelOffset)/(float)height()));
+		channels[clickedSlider].pos = std::max(0.05f,std::min(0.95f, (event->pos().y-clickedPixelOffset)/(float)height()));
 	if(clickedThresh) {
 		int selected = selectedChannel();
 
