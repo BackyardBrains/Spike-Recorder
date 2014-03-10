@@ -39,6 +39,7 @@ RecordingManager::VirtualDevices RecordingManager::_EnumerateRecordingDevices() 
 			virtualDevice.index = i*2 + j;
 			virtualDevice.name = std::string(info.name)/*.simplified()*/ + ((j == 0) ? " [Left]" : " [Right]");
 			virtualDevice.threshold = 100;
+			virtualDevice.bound = 0;
 			result.push_back(virtualDevice);
 		}
 	}
@@ -103,6 +104,10 @@ void RecordingManager::togglePaused() {
 				std::cerr << "Bass Error: resuming channel playback failed: " << BASS_ErrorGetCode() << "\n";
 		}
 	}
+}
+
+void RecordingManager::getData(int virtualDevice, int64_t offset, int64_t len, int16_t *dst) {
+	sampleBuffer(virtualDevice)->getData(dst, offset, len);
 }
 
 std::vector< std::pair<int16_t, int16_t> > RecordingManager::getSamplesEnvelope(int virtualDeviceIndex, int64_t offset, int64_t len, int sampleSkip) {
@@ -249,6 +254,7 @@ void RecordingManager::incRef(int virtualDeviceIndex) {
 		_devices[device].create(_pos);
 
 	_devices[device].refCount++;
+	_recordingDevices[virtualDeviceIndex].bound++;
 
 	if (_devices[device].handle == 0) {
 		// make sure the device exists
@@ -289,6 +295,7 @@ void RecordingManager::decRef(int virtualDeviceIndex) {
 	if (_devices.count(device) == 0)
 		return;
 	_devices[device].refCount--;
+	_recordingDevices[virtualDeviceIndex].bound--;
 	if (_devices[device].refCount == 0)
 	{
 		// make sure the device exists

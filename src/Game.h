@@ -3,6 +3,7 @@
 
 #include "widgets/Application.h"
 #include "engine/RecordingManager.h"
+#include "engine/FileRecorder.h"
 
 namespace BackyardBrains {
 
@@ -20,6 +21,7 @@ public:
 	~Game();
 private:
 	Widgets::PushButton *_pauseButton;
+	Widgets::PushButton *_configButton;
 	Widgets::ScrollBar *_seekBar;
 	Widgets::Widget *_threshavgGroup;
 	AudioView *_audioView;
@@ -29,6 +31,7 @@ private:
 
 	void loadResources();
 	RecordingManager _manager;
+	FileRecorder _fileRec;
 
 	void advance();
 

@@ -46,8 +46,7 @@ Widgets::Widget *Game::makeThreshavgGroup() {
 	return group;
 }
 
-Game::Game()
-{
+Game::Game() : _fileRec(_manager) {
 	std::cout << "Loading Resources...\n";
 	loadResources();
 	std::cout << "Creating Window...\n";
@@ -57,10 +56,10 @@ Game::Game()
 
 	_audioView->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Expanding, Widgets::SizePolicy::Expanding));
 
-	Widgets::PushButton *configButton = new Widgets::PushButton(mainWidget());
-	configButton->setNormalTex(Widgets::TextureGL::get("data/config.png"));
-	configButton->setHoverTex(Widgets::TextureGL::get("data/confighigh.png"));
-	configButton->clicked.connect(this, &Game::configPressed);
+	_configButton = new Widgets::PushButton(mainWidget());
+	_configButton->setNormalTex(Widgets::TextureGL::get("data/config.png"));
+	_configButton->setHoverTex(Widgets::TextureGL::get("data/confighigh.png"));
+	_configButton->clicked.connect(this, &Game::configPressed);
 	Widgets::PushButton *threshButton = new Widgets::PushButton(mainWidget());
 	threshButton->setNormalTex(Widgets::TextureGL::get("data/thresh.png"));
 	threshButton->setHoverTex(Widgets::TextureGL::get("data/threshhigh.png"));
@@ -106,7 +105,7 @@ Game::Game()
 
 	Widgets::BoxLayout *topBar = new Widgets::BoxLayout(Widgets::Horizontal);
 	topBar->addSpacing(10);
-	topBar->addWidget(configButton);
+	topBar->addWidget(_configButton);
 	topBar->addSpacing(5);
 	topBar->addWidget(threshButton);
 	topBar->addSpacing(10);
@@ -189,7 +188,24 @@ void Game::threshPressed() {
 }
 
 void Game::recordPressed() {
-	_recBar->setActive(!_recBar->active());
+	if(!_fileRec.recording()) {
+		Widgets::FileDialog d(Widgets::FileDialog::SaveFile);
+
+		d.open();
+		while(d.isOpen())
+			SDL_Delay(16);
+		std::string str;
+		int s = d.getResultState();
+
+		if(s != Widgets::FileDialog::SUCCESS|| !_fileRec.start(d.getResultFilename().c_str()))
+			return;
+		_configButton->clicked.disconnect(this);
+		_recBar->setActive(true);
+	} else {
+		_fileRec.stop();
+		_configButton->clicked.connect(this, &Game::configPressed);
+		_recBar->setActive(false);
+	}
 }
 
 void Game::filePressed() {
@@ -242,6 +258,7 @@ void Game::loadResources() {
 
 void Game::advance() {
 	_manager.advance();
+	_fileRec.advance();
 }
 
 } // namespace BackyardBrains

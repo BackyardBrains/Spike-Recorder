@@ -25,6 +25,7 @@ public:
 		std::string name;
 		bool enabled;
 		int threshold;
+		int bound;
 	};
 	static const int INVALID_VIRTUAL_DEVICE_INDEX;
 	typedef std::vector<VirtualDevice> VirtualDevices;
@@ -33,6 +34,7 @@ public:
 	~RecordingManager();
 	int64_t pos() const {return _pos;}
 	VirtualDevices &recordingDevices() {return _recordingDevices;}
+	void getData(int virtualDevice, int64_t offset, int64_t len, int16_t *device);
 	std::vector< std::pair<int16_t, int16_t> > getSamplesEnvelope(int virtualDeviceIndex, int64_t offset, int64_t len, int sampleSkip);
 	std::vector< std::pair<int16_t, int16_t> > getTriggerSamplesEnvelope(int virtualDeviceIndex, int64_t len, int sampleSkip);
 	bool paused() const {return _paused;}
@@ -77,8 +79,6 @@ private:
 		long dcBiasSum[2];
 		long dcBiasNum;
 	};
-
-
 
 	SampleBuffer *sampleBuffer(int virtualDeviceIndex);
 
