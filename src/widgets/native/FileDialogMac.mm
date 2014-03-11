@@ -20,7 +20,7 @@ FileDialog::DialogState openFileDialog(std::string *fn, FileDialog::DialogType t
 		return FileDialog::CANCELED;
 
 	NSURL *url = [panel URL];
-	NSString *str = [url absoluteString];
+	NSString *str = [url path];
 	fn->assign([str UTF8String]);
 	return FileDialog::SUCCESS;
 }
