@@ -40,7 +40,7 @@ static void put16(uint16_t num, FILE *f) {
 
 bool FileRecorder::start(const char *filename) {
 	_oldPos = _manager.pos();
-	_file = fopen(filename, "wb");
+	_file = fopen(filename, "w+b");
 	if(_file == 0) {
 		fprintf(stderr, "Record Error: Opening '%s' for saving the recording failed: %s\n", filename, strerror(errno));
 		return false;
