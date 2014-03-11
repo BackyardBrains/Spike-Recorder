@@ -79,6 +79,21 @@ int AudioView::selectedChannel() const {
 	return virtualDeviceChannel(manager.threshVDevice());
 }
 
+void AudioView::standardSettings() {
+	clickedGain = -1;
+	clickedSlider = -1;
+	clickedThresh = false;
+
+	channelOffset = 0;
+
+	channels.clear();
+	if(manager.fileMode()) {
+		addChannel(0);
+	} else {
+		addChannel(0);
+	}
+}
+
 int AudioView::channelCount() const {
 	return channels.size();
 }

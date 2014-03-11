@@ -21,7 +21,8 @@ public:
 
 	struct VirtualDevice
 	{
-		int index;
+		int device;
+		int channel;
 		std::string name;
 		bool enabled;
 		int threshold;
@@ -32,6 +33,10 @@ public:
 public:
 	RecordingManager();
 	~RecordingManager();
+
+	bool loadFile(const char *filename);
+	void initRecordingDevices();
+
 	int64_t pos() const {return _pos;}
 	VirtualDevices &recordingDevices() {return _recordingDevices;}
 	void getData(int virtualDevice, int64_t offset, int64_t len, int16_t *device);
@@ -39,13 +44,13 @@ public:
 	std::vector< std::pair<int16_t, int16_t> > getTriggerSamplesEnvelope(int virtualDeviceIndex, int64_t len, int sampleSkip);
 	bool paused() const {return _paused;}
 	bool threshMode() const {return _threshMode;}
+	bool fileMode() const {return _fileMode;}
 	int threshAvgCount() const {return _threshAvgCount;}
 	int threshVDevice() const {return _threshVDevice;}
 	void incRef(int virtualDeviceIndex);
 	void decRef(int virtualDeviceIndex);
 
 	void setPaused(bool pausing);
-	void togglePaused();
 	void setThreshMode(bool threshMode);
 	void setThreshAvgCount(int threshAvgCount);
 	void setThreshVDevice(int virtualDevice);
@@ -53,33 +58,31 @@ public:
 
 
 	sigslot::signal2<int64_t /*offset*/, int64_t /*len*/> samplesAdded;
+	sigslot::signal0<> deviceReload;
+	sigslot::signal0<> pauseChanged;
 
-	void advance();
+	void advance(uint32_t milliseconds);
 private:
 	static const unsigned int BUFFER_SIZE = 5*SAMPLE_RATE;
-	VirtualDevices _EnumerateRecordingDevices();
-
 
 	struct Device
 	{
-		Device() : handle(0), refCount(0), dcBiasNum(1)
+		Device() : handle(0), refCount(0), dcBiasNum(1), channels(0)
 		{
-			sampleBuffers[0] = NULL;
-			sampleBuffers[1] = NULL;
-
-			dcBiasSum[0] = 0;
-			dcBiasSum[1] = 0;
 		}
-		void create(int64_t pos);
+		~Device();
+		void create(int64_t pos, int nchan);
 		void destroy();
 		bool needed() const {return refCount;}
 		HRECORD handle;
-		SampleBuffer * sampleBuffers[2];
+		std::vector<SampleBuffer *> sampleBuffers;
 		int refCount;
-		long dcBiasSum[2];
-		long dcBiasNum;
+		std::vector<int64_t> dcBiasSum;
+		int64_t dcBiasNum;
+		int channels;
 	};
 
+	void clear();
 	SampleBuffer *sampleBuffer(int virtualDeviceIndex);
 
 	VirtualDevices _recordingDevices;
@@ -87,6 +90,8 @@ private:
 	int64_t _pos;
 	bool _paused;
 	bool _threshMode;
+
+	bool _fileMode;
 
 	int _threshVDevice;
 	int _threshAvgCount;

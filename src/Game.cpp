@@ -59,6 +59,7 @@ Game::Game() : _fileRec(_manager) {
 	_audioView = new AudioView(mainWidget(), _manager);
 
 	_audioView->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Expanding, Widgets::SizePolicy::Expanding));
+	_manager.deviceReload.connect(_audioView, &AudioView::standardSettings);
 
 	_configButton = new Widgets::PushButton(mainWidget());
 	_configButton->setNormalTex(Widgets::TextureGL::get("data/config.png"));
@@ -79,6 +80,7 @@ Game::Game() : _fileRec(_manager) {
 
 	_pauseButton = new Widgets::PushButton(mainWidget());
 	_pauseButton->clicked.connect(this, &Game::pausePressed);
+	_manager.pauseChanged.connect(this, &Game::pausePressed);
 	_pauseButton->setNormalTex(Widgets::TextureGL::get("data/pause.png"));
 	_pauseButton->setHoverTex(Widgets::TextureGL::get("data/pausehigh.png"));
 	_pauseButton->setSizeHint(Widgets::Size(64,64));
@@ -144,7 +146,7 @@ Game::Game() : _fileRec(_manager) {
 
 	updateLayout();
 
-	_audioView->addChannel(0);
+	_audioView->standardSettings();
 
 	setWindowTitle("BYB Spike Recorder");
 
@@ -226,15 +228,21 @@ void Game::recordPressed() {
 }
 
 void Game::filePressed() {
-	Widgets::FileDialog d(Widgets::FileDialog::OpenFile);
+	if(!_manager.fileMode()) {
+		Widgets::FileDialog d(Widgets::FileDialog::OpenFile);
 
-	d.open();
-	while(d.isOpen())
-		SDL_Delay(16);
-	std::string str;
-	int s = d.getResultState();
-	str = d.getResultFilename();
-	test(s, str);
+		d.open();
+		while(d.isOpen())
+			SDL_Delay(16);
+		std::string str;
+		int s = d.getResultState();
+		if(s != Widgets::FileDialog::SUCCESS)
+			return;
+
+		_manager.loadFile(d.getResultFilename().c_str());
+	} else {
+		_manager.initRecordingDevices();
+	}
 }
 
 void Game::configPressed() {
@@ -244,9 +252,6 @@ void Game::configPressed() {
 	addWindow(c);
 }
 
-void Game::test(int state, std::string str) {
-	std::cout << state << " '" << str << "'\n";
-}
 
 void Game::loadResources() {
 	Widgets::TextureGL::load("data/pause.png");
@@ -274,8 +279,12 @@ void Game::loadResources() {
 }
 
 void Game::advance() {
-	_manager.advance();
+	static uint32_t t = 0;
+	uint32_t newt = SDL_GetTicks();
+	_manager.advance(newt-t);
 	_fileRec.advance();
+
+	t = newt;
 }
 
 } // namespace BackyardBrains

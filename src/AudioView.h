@@ -37,6 +37,8 @@ public:
 	int channelVirtualDevice(int channel) const;
 	int virtualDeviceChannel(int virtualDevice) const;
 
+	void standardSettings();
+
 	void setOffset(int offset);
 	void setRelOffset(int reloffset); // in per mille
 	int offset();

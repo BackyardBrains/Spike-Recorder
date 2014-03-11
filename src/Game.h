@@ -44,7 +44,6 @@ private:
 	void filePressed();
 	void configPressed();
 	void recordPressed();
-	void test(int state, std::string str);
 };
 
 } // namespace BackyardBrains
