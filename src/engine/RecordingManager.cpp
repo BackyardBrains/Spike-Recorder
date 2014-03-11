@@ -107,7 +107,7 @@ void RecordingManager::setPaused(bool pausing) {
 	if (_paused == pausing)
 		return;
 	_paused = pausing;
-	bool stopped;
+	bool stopped = false;
 
 	if(!pausing) { // reset the stream when the end was reached
 		for(std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it) {
@@ -210,7 +210,7 @@ void RecordingManager::advance(uint32_t milliseconds) {
 
 	for (std::map<int, Device>::iterator it = _devices.begin(); it != _devices.end(); ++it) {
 		const int channum = it->second.channels;
-		std::vector<int16_t> channels[channum];
+		std::vector<int16_t> *channels = new std::vector<int16_t>[channum];
 		int16_t *buffer = new int16_t[channum*BUFFER_SIZE];
 		uint32_t len = BUFFER_SIZE;
 		if(_fileMode) // when the channel is a file stream, we have to synchronize ourselves
@@ -276,6 +276,7 @@ void RecordingManager::advance(uint32_t milliseconds) {
 			firstTime = false;
 		}
 
+		delete[] channels;
 		delete[] buffer;
 	}
 
