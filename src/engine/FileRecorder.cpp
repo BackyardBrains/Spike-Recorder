@@ -2,6 +2,8 @@
 #include "RecordingManager.h"
 #include <bass.h>
 #include <cstdio>
+#include <cerrno>
+#include <cstring>
 
 namespace BackyardBrains {
 
@@ -40,7 +42,7 @@ bool FileRecorder::start(const char *filename) {
 	_oldPos = _manager.pos();
 	_file = fopen(filename, "wb");
 	if(_file == 0) {
-		fprintf(stderr, "Record Error: Opening file for saving the recording failed.\n");
+		fprintf(stderr, "Record Error: Opening '%s' for saving the recording failed: %s\n", filename, strerror(errno));
 		return false;
 	}
 	fwrite("RIFF\0\0\0\0WAVEfmt ", 16, 1, _file);
