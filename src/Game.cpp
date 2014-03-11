@@ -6,12 +6,16 @@
 #include "widgets/ScrollBar.h"
 #include "widgets/FileDialog.h"
 #include "widgets/Label.h"
+#include "widgets/ErrorBox.h"
 #include "AudioView.h"
 #include "ConfigView.h"
 #include "RecordingBar.h"
 #include <SDL_opengl.h>
 #include <SDL.h>
 #include <iostream>
+#include <cerrno>
+#include <cstring>
+#include <sstream>
 
 namespace BackyardBrains {
 
@@ -197,15 +201,28 @@ void Game::recordPressed() {
 		std::string str;
 		int s = d.getResultState();
 
-		if(s != Widgets::FileDialog::SUCCESS|| !_fileRec.start(d.getResultFilename().c_str()))
+		if(s != Widgets::FileDialog::SUCCESS)
 			return;
-		_configButton->clicked.disconnect(this);
+		if(!_fileRec.start(d.getResultFilename().c_str())) {
+			const char *error = strerror(errno);
+			std::stringstream s;
+			s << "Error: Failed to open '" << d.getResultFilename().c_str() << "' for recording: " << error << ".";
+			Widgets::ErrorBox *box = new Widgets::ErrorBox(s.str().c_str());
+			box->setGeometry(Widgets::Rect(mainWidget()->width()/2-200, mainWidget()->height()/2-25, 400, 50));
+			addPopup(box);
+			return;
+		}
+		_configButton->setSizeHint(Widgets::Size(0, 48));
+		_configButton->setVisible(false);
 		_recBar->setActive(true);
 	} else {
 		_fileRec.stop();
-		_configButton->clicked.connect(this, &Game::configPressed);
+		_configButton->setVisible(true);
+		_configButton->setSizeHint(Widgets::Size(48, 48));
 		_recBar->setActive(false);
 	}
+
+	updateLayout();
 }
 
 void Game::filePressed() {
