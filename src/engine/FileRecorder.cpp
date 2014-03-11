@@ -22,7 +22,7 @@ FileRecorder::FileRecorder(RecordingManager &manager) : _manager(manager), _file
 
 FileRecorder::~FileRecorder() {
 	if(_file)
-		fclose(_file);
+		stop();
 	delete[] _buf;
 }
 
@@ -66,6 +66,14 @@ bool FileRecorder::start(const char *filename) {
 }
 
 void FileRecorder::stop() {
+	uint32_t size = ftell(_file);
+
+	fseek(_file, 4, SEEK_SET);
+	put32(size-8, _file);
+
+	fseek(_file, 40, SEEK_SET);
+	put32(size-44, _file);
+
 	fclose(_file);
 	_file = NULL;
 }
