@@ -27,6 +27,8 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 	group->setSizeHint(Widgets::Size(500,400));
 	Widgets::BoxLayout *gvbox = new Widgets::BoxLayout(Widgets::Vertical, group);
 	for(unsigned int i = 0; i < _manager.recordingDevices().size(); i++) {
+		if(!_manager.recordingDevices()[i].enabled)
+			continue;
 		clrs[i] = new ColorDropDownList(group);
 		clrs[i]->setContent(c);
 
