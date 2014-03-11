@@ -212,10 +212,10 @@ void RecordingManager::advance(uint32_t milliseconds) {
 		const int channum = it->second.channels;
 		std::vector<int16_t> channels[channum];
 		int16_t *buffer = new int16_t[channum*BUFFER_SIZE];
-		uint32_t len = channum*BUFFER_SIZE;
-		if(_fileMode)
+		uint32_t len = BUFFER_SIZE;
+		if(_fileMode) // when the channel is a file stream, we have to synchronize ourselves
 			len = std::min(milliseconds*SAMPLE_RATE/1000, len);
-		const DWORD samplesRead = BASS_ChannelGetData(it->second.handle, buffer, len*sizeof(int16_t))/sizeof(int16_t);
+		const DWORD samplesRead = BASS_ChannelGetData(it->second.handle, buffer, channum*len*sizeof(int16_t))/sizeof(int16_t);
 		if(samplesRead == (DWORD)-1) {
 			std::cerr << "Bass Error: getting channel data failed: " << BASS_ErrorGetCode() << "\n";
 			continue;
