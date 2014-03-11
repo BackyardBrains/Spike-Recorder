@@ -73,10 +73,10 @@ Game::Game() : _fileRec(_manager) {
 	recordButton->setNormalTex(Widgets::TextureGL::get("data/rec.png"));
 	recordButton->setHoverTex(Widgets::TextureGL::get("data/rechigh.png"));
 	recordButton->clicked.connect(this, &Game::recordPressed);
-	Widgets::PushButton *fileButton = new Widgets::PushButton(mainWidget());
-	fileButton->setNormalTex(Widgets::TextureGL::get("data/file.png"));
-	fileButton->setHoverTex(Widgets::TextureGL::get("data/filehigh.png"));
-	fileButton->clicked.connect(this, &Game::filePressed);
+	_fileButton = new Widgets::PushButton(mainWidget());
+	_fileButton->setNormalTex(Widgets::TextureGL::get("data/file.png"));
+	_fileButton->setHoverTex(Widgets::TextureGL::get("data/filehigh.png"));
+	_fileButton->clicked.connect(this, &Game::filePressed);
 
 	_pauseButton = new Widgets::PushButton(mainWidget());
 	_pauseButton->clicked.connect(this, &Game::pausePressed);
@@ -119,7 +119,7 @@ Game::Game() : _fileRec(_manager) {
 	topBar->addStretch();
 	topBar->addWidget(recordButton);
 	topBar->addSpacing(5);
-	topBar->addWidget(fileButton);
+	topBar->addWidget(_fileButton);
 	topBar->addSpacing(10);
 
 
@@ -240,8 +240,12 @@ void Game::filePressed() {
 			return;
 
 		_manager.loadFile(d.getResultFilename().c_str());
+		_fileButton->setNormalTex(Widgets::TextureGL::get("data/filestop.png"));
+		_fileButton->setHoverTex(Widgets::TextureGL::get("data/filestophigh.png"));
 	} else {
 		_manager.initRecordingDevices();
+		_fileButton->setNormalTex(Widgets::TextureGL::get("data/file.png"));
+		_fileButton->setHoverTex(Widgets::TextureGL::get("data/filehigh.png"));
 	}
 }
 
@@ -272,6 +276,8 @@ void Game::loadResources() {
 	Widgets::TextureGL::load("data/rechigh.png");
 	Widgets::TextureGL::load("data/file.png");
 	Widgets::TextureGL::load("data/filehigh.png");
+	Widgets::TextureGL::load("data/filestop.png");
+	Widgets::TextureGL::load("data/filestophigh.png");
 
 	Widgets::TextureGL::load("data/pin.png");
 	Widgets::TextureGL::load("data/threshpin.png");

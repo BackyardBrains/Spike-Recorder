@@ -12,8 +12,6 @@ namespace BackyardBrains {
 class SampleBuffer
 {
 public:
-	// static const int64_t SIZE = sizeof(int16_t)*(1 << 8);
-	// static const unsigned int SIZE_LOG2 = 9;
 	static const int64_t SIZE = 44100*60*1;
 	static const int SIZE_LOG2 = 21;
 
