@@ -5,6 +5,7 @@
 #include "Painter.h"
 
 #include <sstream>
+#include <iostream>
 
 namespace BackyardBrains {
 
@@ -32,11 +33,14 @@ void ErrorBox::paintEvent() {
 			lbreak = it;
 		}
 
-
+// 		std::cout << i;
 		if(i >= linelen || *it == '\n') {
+			if(lbreak < lstart) {
+				lbreak = it;
+			}
 			font.draw(std::string(lstart, lbreak).c_str(), 10, 10+line*(font.characterHeight()+2));
 			lstart = lbreak+1;
-			i = 0;
+			i = it-lstart;
 			line++;
 		} else {
 			i++;

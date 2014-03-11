@@ -208,7 +208,7 @@ void Game::recordPressed() {
 			std::stringstream s;
 			s << "Error: Failed to open '" << d.getResultFilename().c_str() << "' for recording: " << error << ".";
 			Widgets::ErrorBox *box = new Widgets::ErrorBox(s.str().c_str());
-			box->setGeometry(Widgets::Rect(mainWidget()->width()/2-200, mainWidget()->height()/2-25, 400, 50));
+			box->setGeometry(Widgets::Rect(mainWidget()->width()/2-200, mainWidget()->height()/2-40, 400, 80));
 			addPopup(box);
 			return;
 		}
