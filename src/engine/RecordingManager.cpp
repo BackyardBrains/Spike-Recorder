@@ -8,14 +8,15 @@ namespace BackyardBrains {
 
 const int RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX = -2;
 
-RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(false), _fileMode(false), _threshVDevice(0), _threshAvgCount(1) {
+RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(false), _fileMode(true), _threshVDevice(0), _threshAvgCount(1) {
 	std::cout << "Initializing libbass...\n";
 	if(!BASS_Init(-1, RecordingManager::SAMPLE_RATE, 0, 0, NULL)) {
 		std::cerr << "Bass Error: Initialization failed: " << BASS_ErrorGetCode() << "\n";
 		exit(1);
 	}
 
-	initRecordingDevices();
+// 	initRecordingDevices();
+	loadFile("/tmp/long.wav");
 }
 
 RecordingManager::~RecordingManager() {
@@ -41,7 +42,7 @@ void RecordingManager::clear() {
 
 
 bool RecordingManager::loadFile(const char *filename) {
-	HSTREAM stream = BASS_StreamCreateFile(false, filename, 0, 0, 0);
+	HSTREAM stream = BASS_StreamCreateFile(false, filename, 0, 0, BASS_STREAM_DECODE);
 	BASS_ChannelSetAttribute(stream, BASS_ATTRIB_VOL, 0.f);
 	if(stream == 0) {
 		std::cerr << "Bass Error: Failed to load file '" << filename << "': " << BASS_ErrorGetCode() << "\n";
@@ -109,26 +110,20 @@ void RecordingManager::setPaused(bool pausing) {
 		return;
 	_paused = pausing;
 
-	if(!pausing && _fileMode) { // reset the stream when end of file was reached
-		if(_pos >= fileLength()-1) {
-			_pos = 0;
-			for(std::map<int,Device>::iterator it = _devices.begin(); it != _devices.end(); it++) {
-				for(unsigned int i = 0; i < it->second.sampleBuffers.size(); i++)
-					it->second.sampleBuffers[i]->reset();
+	if(_fileMode) { // reset the stream when end of file was reached
+		if(!pausing && _pos >= fileLength()-1)
+			setPos(0);
+	} else {
+		for (std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it) {
+			if (pausing) {
+				if(BASS_ChannelIsActive(it->second.handle) == BASS_ACTIVE_PLAYING) {
+					if(!BASS_ChannelPause(it->second.handle))
+						std::cerr << "Bass Error: pausing channel failed: " << BASS_ErrorGetCode() << "\n";
+				}
+			} else {
+				if(!BASS_ChannelPlay(it->second.handle, FALSE))
+					std::cerr << "Bass Error: resuming channel playback failed: " << BASS_ErrorGetCode() << "\n";
 			}
-		}
-
-	}
-
-	for (std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it) {
-		if (pausing) {
-			if(BASS_ChannelIsActive(it->second.handle) == BASS_ACTIVE_PLAYING) {
-				if(!BASS_ChannelPause(it->second.handle))
-					std::cerr << "Bass Error: pausing channel failed: " << BASS_ErrorGetCode() << "\n";
-			}
-		} else {
-			if(!BASS_ChannelPlay(it->second.handle, FALSE))
-				std::cerr << "Bass Error: resuming channel playback failed: " << BASS_ErrorGetCode() << "\n";
 		}
 	}
 }
@@ -205,17 +200,87 @@ std::vector<std::pair<int16_t,int16_t> > RecordingManager::getTriggerSamplesEnve
 	return result;
 }
 
-
-
-void RecordingManager::advance(uint32_t samples, bool ignorePause) {
-	if (_devices.empty() || (!ignorePause && _paused))
-		return;
-
-	if(_fileMode && _pos >= fileLength()-1) {
+void RecordingManager::advanceFileMode(uint32_t samples) {
+	if(!_paused && _pos >= fileLength()-1) {
 		pauseChanged.emit();
 		setPaused(true);
+		std::cout << "stopped\n";
 		return;
 	}
+
+	const unsigned int bufsize = BUFFER_SIZE/6;
+	for(std::map<int, Device>::iterator it = _devices.begin(); it != _devices.end(); ++it) {
+		if(it->second.sampleBuffers[0]->head() >= SampleBuffer::SIZE-1 || it->second.sampleBuffers[0]->pos() >= fileLength()-1)
+			continue;
+
+		const int channum = it->second.channels;
+		std::vector<int16_t> *channels = new std::vector<int16_t>[channum];
+		int16_t *buffer = new int16_t[channum*bufsize];
+
+		const unsigned int len = SampleBuffer::SIZE - 1 - it->second.sampleBuffers[0]->head();
+		DWORD samplesRead = BASS_ChannelGetData(it->second.handle, buffer, channum*std::min(len,bufsize)*sizeof(int16_t));
+		if(samplesRead == (DWORD)-1) {
+			std::cerr << "Bass Error: getting channel data failed: " << BASS_ErrorGetCode() << "\n";
+			delete[] channels;
+			delete[] buffer;
+			continue;
+		}
+		samplesRead /= sizeof(int16_t);
+
+		for(int chan = 0; chan < channum; chan++)
+			channels[chan].resize(bufsize);
+
+		// de-interleave the channels
+		for(DWORD i = 0; i < samplesRead/channum; i++) {
+			for(int chan = 0; chan < channum; chan++) {
+				channels[chan][i] = buffer[i*channum + chan];
+
+				if(it->second.dcBiasNum < SAMPLE_RATE*10) {
+					it->second.dcBiasSum[chan] += channels[chan][i];
+					if(chan == 0)
+						it->second.dcBiasNum++;
+				}
+			}
+		}
+
+		for(int chan = 0; chan < channum; chan++) {
+			int dcBias = it->second.dcBiasSum[chan]/it->second.dcBiasNum;
+
+			for(DWORD i = 0; i < samplesRead/channum; i++) {
+				channels[chan][i] -= dcBias;
+				if(_threshMode && it->first*channum+chan == _threshVDevice) {
+					const int64_t ntrigger = it->second.sampleBuffers[chan]->pos() + i;
+					const int thresh = _recordingDevices[_threshVDevice].threshold;
+
+					if(_triggers.empty() || ntrigger - _triggers.front() > SAMPLE_RATE/10) {
+						if((thresh > 0 && channels[chan][i] > thresh) || (thresh <= 0 && channels[chan][i] < thresh)) {
+							_triggers.push_front(ntrigger);
+							if(_triggers.size() > (unsigned int)_threshAvgCount)
+								_triggers.pop_back();
+						}
+					}
+				}
+
+			}
+
+			it->second.sampleBuffers[chan]->addData(channels[chan].data(), samplesRead/channum);
+		}
+
+		delete[] channels;
+		delete[] buffer;
+	}
+	if(!_paused)
+		setPos(_pos + samples);
+}
+
+void RecordingManager::advance(uint32_t samples) {
+	if(_fileMode) {
+		advanceFileMode(samples);
+		return;
+	}
+
+	if (_devices.empty() || _paused)
+		return;
 
 	const int64_t oldPos = _pos;
 	int64_t newPos = _pos;
@@ -232,6 +297,8 @@ void RecordingManager::advance(uint32_t samples, bool ignorePause) {
 		DWORD samplesRead = BASS_ChannelGetData(it->second.handle, buffer, channum*len*sizeof(int16_t));
 		if(samplesRead == (DWORD)-1) {
 			std::cerr << "Bass Error: getting channel data failed: " << BASS_ErrorGetCode() << "\n";
+			delete[] channels;
+			delete[] buffer;
 			continue;
 		}
 		samplesRead /= sizeof(int16_t);
@@ -397,31 +464,25 @@ void RecordingManager::setPos(int64_t pos) {
 	assert(_fileMode);
 	pos = std::max(0L, std::min(fileLength()-1, pos));
 
-	const int offset = pos-_pos;
-	if(offset == 0)
+	if(pos == _pos)
 		return;
 
 
+	if(_pos/SampleBuffer::SIZE != pos/SampleBuffer::SIZE) {
+		for(std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it) {
+			const int nchan = it->second.channels;
+			const int npos = snapTo(pos, SampleBuffer::SIZE);
+			for(unsigned int i = 0; i < it->second.sampleBuffers.size(); i++) {
 
-	for(std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it) {
-		const int nchan = it->second.channels;
-
-		BASS_ChannelSetPosition(it->second.handle, sizeof(int16_t)*pos*nchan, BASS_POS_BYTE);
-
-		for(unsigned int i = 0; i < it->second.sampleBuffers.size(); i++) {
-			bool wrapped = it->second.sampleBuffers[i]->moveHead(offset);
-			if(wrapped) {
+				BASS_ChannelSetPosition(it->second.handle, sizeof(int16_t)*npos*nchan, BASS_POS_BYTE);
 				it->second.sampleBuffers[i]->head();
 				it->second.sampleBuffers[i]->reset();
-				it->second.sampleBuffers[i]->moveHead(SampleBuffer::SIZE/2);
+				it->second.sampleBuffers[i]->setPos(npos);
 			}
-			it->second.sampleBuffers[i]->setPos(pos);
 		}
 	}
 
-
 	_pos = pos;
-
 }
 
 SampleBuffer * RecordingManager::sampleBuffer(int virtualDeviceIndex) {

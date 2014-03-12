@@ -63,7 +63,7 @@ public:
 	sigslot::signal0<> deviceReload;
 	sigslot::signal0<> pauseChanged;
 
-	void advance(uint32_t milliseconds, bool ignorePause = false);
+	void advance(uint32_t milliseconds);
 private:
 	static const unsigned int BUFFER_SIZE = 5*SAMPLE_RATE;
 
@@ -85,7 +85,7 @@ private:
 	};
 
 	void clear();
-
+	void advanceFileMode(uint32_t samples);
 	SampleBuffer *sampleBuffer(int virtualDeviceIndex);
 
 	VirtualDevices _recordingDevices;
