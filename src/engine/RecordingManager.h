@@ -38,6 +38,7 @@ public:
 	void initRecordingDevices();
 
 	int64_t pos() const {return _pos;}
+	void setPos(int64_t pos); // file mode only
 	VirtualDevices &recordingDevices() {return _recordingDevices;}
 	void getData(int virtualDevice, int64_t offset, int64_t len, int16_t *device);
 	std::vector< std::pair<int16_t, int16_t> > getSamplesEnvelope(int virtualDeviceIndex, int64_t offset, int64_t len, int sampleSkip);
@@ -45,6 +46,7 @@ public:
 	bool paused() const {return _paused;}
 	bool threshMode() const {return _threshMode;}
 	bool fileMode() const {return _fileMode;}
+	int64_t fileLength(); // file mode only
 	int threshAvgCount() const {return _threshAvgCount;}
 	int threshVDevice() const {return _threshVDevice;}
 	void incRef(int virtualDeviceIndex);
@@ -61,7 +63,7 @@ public:
 	sigslot::signal0<> deviceReload;
 	sigslot::signal0<> pauseChanged;
 
-	void advance(uint32_t milliseconds);
+	void advance(uint32_t milliseconds, bool ignorePause = false);
 private:
 	static const unsigned int BUFFER_SIZE = 5*SAMPLE_RATE;
 
@@ -83,6 +85,7 @@ private:
 	};
 
 	void clear();
+
 	SampleBuffer *sampleBuffer(int virtualDeviceIndex);
 
 	VirtualDevices _recordingDevices;

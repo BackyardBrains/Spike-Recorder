@@ -2,10 +2,10 @@
 #define BACKYARDBRAINS_SAMPLEBUFFER_H
 
 #include <vector>
-// #include <std::pair>
 #include <cstring>
 #include <cassert>
 #include <stdint.h>
+#include <iostream>
 
 namespace BackyardBrains {
 
@@ -188,6 +188,32 @@ public:
 	{
 		// qDebug() << "SampleBuffer: SETPOS CALLED";
 		_pos = pos;
+	}
+
+	int head() const { return _head; }
+
+	bool moveHead(int diff) { // return true if a wrap occured.
+		_head += diff;
+
+		bool wrap = false;
+		if(_head < 0 || _head >= SIZE)
+			wrap = true;
+
+		_head %= SIZE;
+		return wrap;
+	}
+
+	void reset() {
+		_pos = 0;
+		_head = 0;
+		if(_notEmpty) {
+			_notEmpty = false;
+			memset(_buffer, 0, SIZE*sizeof(int16_t));
+
+			for (int i = 0, size = SIZE/2; i < SIZE_LOG2; i++, size/=2)
+				_envelopes[i].assign(size+1, std::pair<int16_t, int16_t>(0, 0));
+
+		}
 	}
 	bool empty() const {return !_notEmpty;}
 private:

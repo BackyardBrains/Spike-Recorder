@@ -89,8 +89,10 @@ void AudioView::standardSettings() {
 	channels.clear();
 	if(manager.fileMode()) {
 		addChannel(0);
+		relOffsetChanged.emit(0);
 	} else {
 		addChannel(0);
+		relOffsetChanged.emit(1000);
 	}
 }
 
@@ -121,19 +123,35 @@ float AudioView::thresholdPos() {
 	return height()*(channels[selectedChannel()].pos-manager.recordingDevices()[manager.threshVDevice()].threshold*ampScale*channels[selectedChannel()].gain);
 }
 
-void AudioView::setOffset(int offset) {
+void AudioView::setOffset(int64_t offset) {
 	int samples = sampleCount(screenWidth(), scaleWidth());
+	int reloffset;
 
-	channelOffset = std::min(0,offset);
-	if(channelOffset < -SampleBuffer::SIZE+samples) // because that's what's visible on the screen
-		channelOffset = -SampleBuffer::SIZE+samples;
+	if(!manager.fileMode()) {
+		channelOffset = std::min(0L,offset);
+		if(channelOffset < -SampleBuffer::SIZE+samples) // because that's what's visible on the screen
+			channelOffset = -SampleBuffer::SIZE+samples;
 
-	relOffsetChanged.emit(1000.f*channelOffset/(SampleBuffer::SIZE-samples)+1000);
+		reloffset = 1000.f*channelOffset/(SampleBuffer::SIZE-samples)+1000;
+	} else { // when we are reading a file, real seeking is allowed
+		offset = std::min(manager.fileLength()-1, offset);
+		offset = std::max(0L, offset);
+		manager.setPos(offset);
+		reloffset = round(1000.f*manager.pos()/(float)(manager.fileLength()-1));
+	}
+	relOffsetChanged.emit(reloffset);
 }
 void AudioView::setRelOffset(int reloffset) {
-	float f = reloffset*0.001f-1.f;
-	int count = SampleBuffer::SIZE-sampleCount(screenWidth(), scaleWidth());
-	channelOffset = f*count;
+	if(!manager.fileMode()) {
+		float f = reloffset*0.001f-1.f;
+		int count = SampleBuffer::SIZE-sampleCount(screenWidth(), scaleWidth());
+		channelOffset = f*count;
+	} else {
+		float f = reloffset*0.001f;
+		int64_t count = manager.fileLength()-1;
+		manager.setPos(f*count);
+	}
+
 }
 
 static const char *get_unit_str(int unit) {
@@ -233,6 +251,11 @@ void AudioView::drawThreshold(int screenw) {
 	}
 }
 
+void AudioView::advance() {
+	if(manager.fileMode() && !manager.paused())
+		setOffset(manager.pos());
+}
+
 int AudioView::determineSliderHover(int x, int y, int *yoffset) {
 	int xx = MOVEPIN_SIZE-x;
 	xx *= xx;
@@ -313,7 +336,8 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 				channels[s].gain = std::min(10.f, channels[s].gain*1.2f);
 		} else if(!manager.threshMode() || x < width()-MOVEPIN_SIZE*3/2) {
 			timeScale = std::max(1.f/RecordingManager::SAMPLE_RATE, timeScale*0.8f);
-			setOffset(channelOffset);
+			if(!manager.fileMode())
+				setOffset(channelOffset);
 		}
 		event->accept();
 	} else if(event->button() == Widgets::WheelDownButton) {
@@ -323,7 +347,8 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 			channels[s].gain = std::max(0.001f, channels[s].gain*0.8f);
 		} else if(!manager.threshMode() || x < width()-MOVEPIN_SIZE*3/2) {
 			timeScale = std::min(2.f, timeScale*1.2f);
-			setOffset(channelOffset); // or else the buffer end will become shown
+			if(!manager.fileMode())
+				setOffset(channelOffset); // or else the buffer end will become shown
 		}
 		event->accept();
 	}

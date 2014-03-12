@@ -29,7 +29,8 @@ void RecordingManager::clear() {
 		for(int i = 0; i < (int)_recordingDevices.size(); i++)
 			decRef(i);
 	} else {
-		BASS_StreamFree(_devices[0].handle);
+		for(std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it)
+			BASS_StreamFree(it->second.handle);
 	}
 
 	_devices.clear();
@@ -107,19 +108,16 @@ void RecordingManager::setPaused(bool pausing) {
 	if (_paused == pausing)
 		return;
 	_paused = pausing;
-	bool stopped = false;
 
-	if(!pausing) { // reset the stream when the end was reached
-		for(std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it) {
-			if(BASS_ChannelIsActive(it->second.handle) == BASS_ACTIVE_STOPPED) {
-				stopped = true;
-				break;
+	if(!pausing && _fileMode) { // reset the stream when end of file was reached
+		if(_pos >= fileLength()-1) {
+			_pos = 0;
+			for(std::map<int,Device>::iterator it = _devices.begin(); it != _devices.end(); it++) {
+				for(unsigned int i = 0; i < it->second.sampleBuffers.size(); i++)
+					it->second.sampleBuffers[i]->reset();
 			}
 		}
 
-		if(stopped) {
-			// TODO: set position to start or stuff when stopped
-		}
 	}
 
 	for (std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it) {
@@ -156,6 +154,14 @@ void RecordingManager::setVDeviceThreshold(int virtualDevice, int threshold) {
 	_triggers.clear();
 }
 
+int64_t RecordingManager::fileLength() {
+	assert(_fileMode);
+	int64_t len = BASS_ChannelGetLength(_devices[0].handle, BASS_POS_BYTE)/2/_devices[0].channels;
+	assert(len != -1);
+
+	return len;
+}
+
 void RecordingManager::getData(int virtualDevice, int64_t offset, int64_t len, int16_t *dst) {
 	sampleBuffer(virtualDevice)->getData(dst, offset, len);
 }
@@ -169,6 +175,7 @@ std::vector< std::pair<int16_t, int16_t> > RecordingManager::getSamplesEnvelope(
 		result = sampleBuffer(virtualDeviceIndex)->getDataEnvelope(pos1, pos2 - pos1, sampleSkip);
 	else
 		result.resize((pos2 - pos1)/sampleSkip);
+
 	return result;
 }
 
@@ -200,40 +207,39 @@ std::vector<std::pair<int16_t,int16_t> > RecordingManager::getTriggerSamplesEnve
 
 
 
-void RecordingManager::advance(uint32_t milliseconds) {
-	if (_devices.empty() || _paused)
+void RecordingManager::advance(uint32_t samples, bool ignorePause) {
+	if (_devices.empty() || (!ignorePause && _paused))
 		return;
+
+	if(_fileMode && _pos >= fileLength()-1) {
+		pauseChanged.emit();
+		setPaused(true);
+		return;
+	}
 
 	const int64_t oldPos = _pos;
 	int64_t newPos = _pos;
 	bool firstTime = true;
 
+	uint32_t len = BUFFER_SIZE;
+	len = std::min(samples, len);
+
 	for (std::map<int, Device>::iterator it = _devices.begin(); it != _devices.end(); ++it) {
 		const int channum = it->second.channels;
 		std::vector<int16_t> *channels = new std::vector<int16_t>[channum];
 		int16_t *buffer = new int16_t[channum*BUFFER_SIZE];
-		uint32_t len = BUFFER_SIZE;
-		if(_fileMode) // when the channel is a file stream, we have to synchronize ourselves
-			len = std::min(milliseconds*SAMPLE_RATE/1000, len);
-		const DWORD samplesRead = BASS_ChannelGetData(it->second.handle, buffer, channum*len*sizeof(int16_t))/sizeof(int16_t);
+
+		DWORD samplesRead = BASS_ChannelGetData(it->second.handle, buffer, channum*len*sizeof(int16_t));
 		if(samplesRead == (DWORD)-1) {
 			std::cerr << "Bass Error: getting channel data failed: " << BASS_ErrorGetCode() << "\n";
 			continue;
 		}
-
-		if(BASS_ErrorGetCode() == BASS_ERROR_ENDED) {
-			pauseChanged.emit();
-			setPaused(true);
-		}
-
-
-		if (samplesRead > channum*BUFFER_SIZE) // TODO handle this a little better
-			continue;
+		samplesRead /= sizeof(int16_t);
 
 		for(int chan = 0; chan < channum; chan++)
 			channels[chan].resize(BUFFER_SIZE);
 
-		// de-interleave the left and right channels
+		// de-interleave the channels
 		for (DWORD i = 0; i < samplesRead/channum; i++) {
 			for(int chan = 0; chan < channum; chan++) {
 				channels[chan][i] = buffer[i*channum + chan];
@@ -385,6 +391,37 @@ void RecordingManager::decRef(int virtualDeviceIndex) {
 		_devices[device].destroy();
 		_devices.erase(device);
 	}
+}
+
+void RecordingManager::setPos(int64_t pos) {
+	assert(_fileMode);
+	pos = std::max(0L, std::min(fileLength()-1, pos));
+
+	const int offset = pos-_pos;
+	if(offset == 0)
+		return;
+
+
+
+	for(std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it) {
+		const int nchan = it->second.channels;
+
+		BASS_ChannelSetPosition(it->second.handle, sizeof(int16_t)*pos*nchan, BASS_POS_BYTE);
+
+		for(unsigned int i = 0; i < it->second.sampleBuffers.size(); i++) {
+			bool wrapped = it->second.sampleBuffers[i]->moveHead(offset);
+			if(wrapped) {
+				it->second.sampleBuffers[i]->head();
+				it->second.sampleBuffers[i]->reset();
+				it->second.sampleBuffers[i]->moveHead(SampleBuffer::SIZE/2);
+			}
+			it->second.sampleBuffers[i]->setPos(pos);
+		}
+	}
+
+
+	_pos = pos;
+
 }
 
 SampleBuffer * RecordingManager::sampleBuffer(int virtualDeviceIndex) {

@@ -100,7 +100,7 @@ Game::Game() : _fileRec(_manager) {
 	_seekBar = new Widgets::ScrollBar(Widgets::Horizontal,mainWidget());
 	_seekBar->setVisible(false);
 	_seekBar->setRange(0,1000);
-	_seekBar->setPageStep(30);
+	_seekBar->setPageStep(25);
 	_seekBar->setValue(1000);
 	_seekBar->valueChanged.connect(_audioView, &AudioView::setRelOffset);
  	_audioView->relOffsetChanged.connect(_seekBar, &Widgets::ScrollBar::updateValue);
@@ -178,7 +178,12 @@ void Game::backwardPressed() {
 		pausePressed();
 }
 void Game::forwardPressed() {
-	_audioView->setOffset(0);
+	if(_manager.fileMode()) {
+		_audioView->setOffset(_manager.fileLength()-1);
+	} else {
+		_audioView->setOffset(0);
+	}
+
 	if(_manager.paused())
 		pausePressed();
 }
@@ -287,7 +292,7 @@ void Game::loadResources() {
 void Game::advance() {
 	static uint32_t t = 0;
 	uint32_t newt = SDL_GetTicks();
-	_manager.advance(newt-t);
+	_manager.advance((newt-t)*RecordingManager::SAMPLE_RATE/1000);
 	_fileRec.advance();
 
 	t = newt;

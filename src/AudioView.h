@@ -39,7 +39,7 @@ public:
 
 	void standardSettings();
 
-	void setOffset(int offset);
+	void setOffset(int64_t offset);
 	void setRelOffset(int reloffset); // in per mille
 	int offset();
 
@@ -60,7 +60,7 @@ private:
 
 	bool clickedThresh;
 
-	int channelOffset;
+	int64_t channelOffset;
 
 	RecordingManager &manager;
 	std::vector<Channel> channels;
@@ -85,6 +85,7 @@ private:
 	int sampleCount(int screenw, float scalew);
 
 	void paintEvent();
+	void advance();
 
 	void drawThreshold(int screenw);
 	void drawScale();
