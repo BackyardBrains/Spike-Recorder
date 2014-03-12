@@ -8,15 +8,14 @@ namespace BackyardBrains {
 
 const int RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX = -2;
 
-RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(false), _fileMode(true), _threshVDevice(0), _threshAvgCount(1) {
+RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(false), _fileMode(false), _threshVDevice(0), _threshAvgCount(1) {
 	std::cout << "Initializing libbass...\n";
 	if(!BASS_Init(-1, RecordingManager::SAMPLE_RATE, 0, 0, NULL)) {
 		std::cerr << "Bass Error: Initialization failed: " << BASS_ErrorGetCode() << "\n";
 		exit(1);
 	}
 
-// 	initRecordingDevices();
-	loadFile("/tmp/long.wav");
+	initRecordingDevices();
 }
 
 RecordingManager::~RecordingManager() {
@@ -68,9 +67,6 @@ bool RecordingManager::loadFile(const char *filename) {
 	_devices[0].handle = stream;
 	_fileMode = true;
 	deviceReload.emit();
-	if(!_paused)
-		if(!BASS_ChannelPlay(stream, false))
-			std::cerr << "Bass Error: starting channel playback failed: " << BASS_ErrorGetCode() << "\n";
 	return true;
 }
 
@@ -114,12 +110,10 @@ void RecordingManager::setPaused(bool pausing) {
 		if(!pausing && _pos >= fileLength()-1)
 			setPos(0);
 	} else {
-		for (std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it) {
-			if (pausing) {
-				if(BASS_ChannelIsActive(it->second.handle) == BASS_ACTIVE_PLAYING) {
-					if(!BASS_ChannelPause(it->second.handle))
-						std::cerr << "Bass Error: pausing channel failed: " << BASS_ErrorGetCode() << "\n";
-				}
+		for(std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it) {
+			if(pausing) {
+				if(!BASS_ChannelPause(it->second.handle))
+					std::cerr << "Bass Error: pausing channel failed: " << BASS_ErrorGetCode() << "\n";
 			} else {
 				if(!BASS_ChannelPlay(it->second.handle, FALSE))
 					std::cerr << "Bass Error: resuming channel playback failed: " << BASS_ErrorGetCode() << "\n";
@@ -204,11 +198,10 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 	if(!_paused && _pos >= fileLength()-1) {
 		pauseChanged.emit();
 		setPaused(true);
-		std::cout << "stopped\n";
 		return;
 	}
 
-	const unsigned int bufsize = BUFFER_SIZE/6;
+	const unsigned int bufsize = BUFFER_SIZE/4;
 	for(std::map<int, Device>::iterator it = _devices.begin(); it != _devices.end(); ++it) {
 		if(it->second.sampleBuffers[0]->head() >= SampleBuffer::SIZE-1 || it->second.sampleBuffers[0]->pos() >= fileLength()-1)
 			continue;
@@ -475,8 +468,12 @@ void RecordingManager::setPos(int64_t pos) {
 			for(unsigned int i = 0; i < it->second.sampleBuffers.size(); i++) {
 
 				BASS_ChannelSetPosition(it->second.handle, sizeof(int16_t)*npos*nchan, BASS_POS_BYTE);
-				it->second.sampleBuffers[i]->head();
-				it->second.sampleBuffers[i]->reset();
+
+				if(pos < _pos)
+					it->second.sampleBuffers[i]->reset();
+				else
+					it->second.sampleBuffers[i]->setHead(0);
+
 				it->second.sampleBuffers[i]->setPos(npos);
 			}
 		}

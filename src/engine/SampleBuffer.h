@@ -192,15 +192,8 @@ public:
 
 	int head() const { return _head; }
 
-	bool moveHead(int diff) { // return true if a wrap occured.
-		_head += diff;
-
-		bool wrap = false;
-		if(_head < 0 || _head >= SIZE)
-			wrap = true;
-
-		_head %= SIZE;
-		return wrap;
+	void setHead(int head) {
+		_head = head%SIZE;
 	}
 
 	void reset() {
