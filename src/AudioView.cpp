@@ -128,14 +128,14 @@ void AudioView::setOffset(int64_t offset) {
 	int reloffset;
 
 	if(!manager.fileMode()) {
-		channelOffset = std::min(0L,offset);
+		channelOffset = std::min((int64_t)0,offset);
 		if(channelOffset < -SampleBuffer::SIZE+samples) // because that's what's visible on the screen
 			channelOffset = -SampleBuffer::SIZE+samples;
 
 		reloffset = 1000.f*channelOffset/(SampleBuffer::SIZE-samples)+1000;
 	} else { // when we are reading a file, real seeking is allowed
 		offset = std::min(manager.fileLength()-1, offset);
-		offset = std::max(0L, offset);
+		offset = std::max((int64_t)0, offset);
 		manager.setPos(offset);
 		reloffset = round(1000.f*manager.pos()/(float)(manager.fileLength()-1));
 	}

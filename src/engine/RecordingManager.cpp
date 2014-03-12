@@ -455,7 +455,7 @@ void RecordingManager::decRef(int virtualDeviceIndex) {
 
 void RecordingManager::setPos(int64_t pos) {
 	assert(_fileMode);
-	pos = std::max(0L, std::min(fileLength()-1, pos));
+	pos = std::max((int64_t)0, std::min(fileLength()-1, pos));
 
 	if(pos == _pos)
 		return;
