@@ -244,19 +244,6 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 
 			for(DWORD i = 0; i < samplesRead/channum; i++) {
 				channels[chan][i] -= dcBias;
-				if(_threshMode && it->first*channum+chan == _threshVDevice) {
-					const int64_t ntrigger = it->second.sampleBuffers[chan]->pos() + i;
-					const int thresh = _recordingDevices[_threshVDevice].threshold;
-
-					if(_triggers.empty() || ntrigger - _triggers.front() > SAMPLE_RATE/10) {
-						if((thresh > 0 && channels[chan][i] > thresh) || (thresh <= 0 && channels[chan][i] < thresh)) {
-							_triggers.push_front(ntrigger);
-							if(_triggers.size() > (unsigned int)_threshAvgCount)
-								_triggers.pop_back();
-						}
-					}
-				}
-
 			}
 
 			it->second.sampleBuffers[chan]->addData(channels[chan].data(), samplesRead/channum);
@@ -265,8 +252,26 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 		delete[] channels;
 		delete[] buffer;
 	}
-	if(!_paused)
+	if(!_paused) {
+		if(_threshMode) {
+			SampleBuffer &s = *sampleBuffer(_threshVDevice);
+
+			for(int64_t i = _pos; i < _pos+samples; i++) {
+				const int thresh = _recordingDevices[_threshVDevice].threshold;
+
+				if(_triggers.empty() || i - _triggers.front() > SAMPLE_RATE/10) {
+					if((thresh > 0 && s.at(i) > thresh) || (thresh <= 0 && s.at(i) < thresh)) {
+						_triggers.push_front(i);
+						if(_triggers.size() > (unsigned int)_threshAvgCount)
+							_triggers.pop_back();
+					}
+				}
+			}
+		}
+
 		setPos(_pos + samples);
+
+	}
 }
 
 void RecordingManager::advance(uint32_t samples) {
