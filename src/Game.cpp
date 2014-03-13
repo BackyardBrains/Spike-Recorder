@@ -91,11 +91,11 @@ Game::Game() : _fileRec(_manager) {
 	backwardButton->setSizeHint(Widgets::Size(32,32));
 	backwardButton->clicked.connect(this, &Game::backwardPressed);
 
-	Widgets::PushButton * const forwardButton = new Widgets::PushButton(mainWidget());
-	forwardButton->setNormalTex(Widgets::TextureGL::get("data/forward.png"));
-	forwardButton->setHoverTex(Widgets::TextureGL::get("data/forwardhigh.png"));
-	forwardButton->setSizeHint(Widgets::Size(32,32));
-	forwardButton->clicked.connect(this, &Game::forwardPressed);
+	_forwardButton = new Widgets::PushButton(mainWidget());
+	_forwardButton->setNormalTex(Widgets::TextureGL::get("data/forward.png"));
+	_forwardButton->setHoverTex(Widgets::TextureGL::get("data/forwardhigh.png"));
+	_forwardButton->setSizeHint(Widgets::Size(32,32));
+	_forwardButton->clicked.connect(this, &Game::forwardPressed);
 
 	_seekBar = new Widgets::ScrollBar(Widgets::Horizontal,mainWidget());
 	_seekBar->setVisible(false);
@@ -130,7 +130,7 @@ Game::Game() : _fileRec(_manager) {
 	seekBarBox->addSpacing(10);
 	seekBarBox->addWidget(_pauseButton);
 	seekBarBox->addSpacing(10);
-	seekBarBox->addWidget(forwardButton,Widgets::AlignVCenter);
+	seekBarBox->addWidget(_forwardButton,Widgets::AlignVCenter);
 
 	Widgets::BoxLayout * const vbox = new Widgets::BoxLayout(Widgets::Vertical, mainWidget());
 
@@ -247,10 +247,13 @@ void Game::filePressed() {
 		_manager.loadFile(d.getResultFilename().c_str());
 		_fileButton->setNormalTex(Widgets::TextureGL::get("data/filestop.png"));
 		_fileButton->setHoverTex(Widgets::TextureGL::get("data/filestophigh.png"));
+
+		_forwardButton->setVisible(false);
 	} else {
 		_manager.initRecordingDevices();
 		_fileButton->setNormalTex(Widgets::TextureGL::get("data/file.png"));
 		_fileButton->setHoverTex(Widgets::TextureGL::get("data/filehigh.png"));
+		_forwardButton->setVisible(true);
 	}
 }
 
