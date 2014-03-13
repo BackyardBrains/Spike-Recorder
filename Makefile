@@ -12,6 +12,7 @@ TARGET = SpikeRecorder
 OBJECTS = \
 	src/engine/RecordingManager.o \
 	src/engine/FileRecorder.o \
+	src/engine/Player.o \
 	src/widgets/LayoutItem.o \
 	src/widgets/BoxLayout.o \
 	src/widgets/Widget.o \

@@ -9,6 +9,7 @@
 #include <string>
 #include <map>
 #include <stdint.h>
+#include "Player.h"
 
 namespace BackyardBrains {
 
@@ -38,7 +39,7 @@ public:
 	void initRecordingDevices();
 
 	int64_t pos() const {return _pos;}
-	void setPos(int64_t pos); // file mode only
+	void setPos(int64_t pos, bool artificial = true); // file mode only
 	VirtualDevices &recordingDevices() {return _recordingDevices;}
 	void getData(int virtualDevice, int64_t offset, int64_t len, int16_t *device);
 	std::vector< std::pair<int16_t, int16_t> > getSamplesEnvelope(int virtualDeviceIndex, int64_t offset, int64_t len, int sampleSkip);
@@ -99,6 +100,8 @@ private:
 	int _threshVDevice;
 	int _threshAvgCount;
 	std::list<int64_t> _triggers;
+
+	Player _player;
 };
 
 } // namespace BackyardBrains

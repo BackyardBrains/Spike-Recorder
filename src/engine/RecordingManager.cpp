@@ -28,6 +28,7 @@ void RecordingManager::clear() {
 	if(!_fileMode) {
 		for(int i = 0; i < (int)_recordingDevices.size(); i++)
 			decRef(i);
+		_player.stop();
 	} else {
 		for(std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it)
 			BASS_StreamFree(it->second.handle);
@@ -72,6 +73,8 @@ bool RecordingManager::loadFile(const char *filename) {
 		pauseChanged.emit();
 		setPaused(true);
 	}
+
+	_player.start(info.chans);
 	return true;
 }
 
@@ -114,6 +117,7 @@ void RecordingManager::setPaused(bool pausing) {
 	if(_fileMode) { // reset the stream when end of file was reached
 		if(!pausing && _pos >= fileLength()-1)
 			setPos(0);
+		_player.setPaused(pausing);
 	} else {
 		for(std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it) {
 			if(pausing) {
@@ -274,8 +278,24 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 			}
 		}
 
-		setPos(_pos + samples);
+		if(sampleBuffer(0)->pos() - bufsize > _player.pos()) {
+			const uint32_t bsamples = sampleBuffer(0)->pos()-bufsize-_player.pos();
 
+			int16_t *buf = new int16_t[_recordingDevices.size()*bsamples];
+			for(int64_t i = 0; i < bsamples; i++) {
+				for(unsigned int j = 0; j < _recordingDevices.size(); j++) {
+					buf[i*_recordingDevices.size()+j] = sampleBuffer(j)->at(_player.pos()+i);
+				}
+			}
+
+			_player.push(buf, _recordingDevices.size()*bsamples*sizeof(int16_t));
+
+			delete[] buf;
+		}
+
+		std::cout << sampleBuffer(0)->pos() - bufsize << " " << _player.pos() << "\n";
+
+		setPos(_pos + samples, false);
 	}
 }
 
@@ -466,7 +486,7 @@ void RecordingManager::decRef(int virtualDeviceIndex) {
 	}
 }
 
-void RecordingManager::setPos(int64_t pos) {
+void RecordingManager::setPos(int64_t pos, bool artificial) {
 	assert(_fileMode);
 	pos = std::max((int64_t)0, std::min(fileLength()-1, pos));
 
@@ -496,6 +516,8 @@ void RecordingManager::setPos(int64_t pos) {
 			}
 		}
 	}
+	if(artificial)
+		_player.setPos(pos);
 
 	_pos = pos;
 }
