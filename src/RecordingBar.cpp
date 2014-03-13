@@ -29,7 +29,7 @@ void RecordingBar::paintEvent() {
 	if(sizeHint().h == 0)
 		return;
 	unsigned int t = SDL_GetTicks();
-	float f = 0.5f+0.5f*std::sin(t*0.005f);
+	float f = 0.7f+0.3f*std::sin(t*0.005f);
 
 	Widgets::Painter::setColor(Widgets::Color(100,0,0,255.f*f));
 	Widgets::Painter::drawRect(rect());
