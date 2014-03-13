@@ -67,6 +67,11 @@ bool RecordingManager::loadFile(const char *filename) {
 	_devices[0].handle = stream;
 	_fileMode = true;
 	deviceReload.emit();
+
+	if(!_paused) {
+		pauseChanged.emit();
+		setPaused(true);
+	}
 	return true;
 }
 
