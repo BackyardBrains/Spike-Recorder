@@ -183,15 +183,19 @@ void AudioView::drawScale() {
 void AudioView::drawData(int channel, int samples, int x, int y, int width) {
 	std::vector<std::pair<int16_t, int16_t> > data;
 	if(!manager.threshMode())
-		data = manager.getSamplesEnvelope(channels[channel].virtualDevice,manager.pos()+channelOffset-samples, samples, samples > width ? samples/width : 1);
+		data = manager.getSamplesEnvelope(channels[channel].virtualDevice,manager.pos()+channelOffset-samples, samples, samples/width+1);
 	else
-		data = manager.getTriggerSamplesEnvelope(channels[channel].virtualDevice, samples, samples > width ? samples/width : 1);
+		data = manager.getTriggerSamplesEnvelope(channels[channel].virtualDevice, samples, samples/width+1);
+
+	float dist = 1.f;
+	if((int)data.size() < width)
+		dist = width/(float)(data.size()-1);
 
 	float scale = height()*ampScale;
 	glBegin(GL_LINE_STRIP);
 	for(int j = 0; j < std::min(width,(int)data.size()); j++) {
-		glVertex3i(j+x, -data[j].first*channels[channel].gain*scale+y, 0);
-		glVertex3i(j+x, -data[j].second*channels[channel].gain*scale+y, 0);
+		glVertex3i(j*dist+x, -data[j].first*channels[channel].gain*scale+y, 0);
+		glVertex3i(j*dist+x, -data[j].second*channels[channel].gain*scale+y, 0);
 	}
 	glEnd();
 }
