@@ -89,7 +89,7 @@ private:
 
 	void drawThreshold(int screenw);
 	void drawScale();
-	void drawData(int channel, int samples, float x, float y, float width);
+	void drawData(int channel, int samples, int x, int y, int width);
 };
 
 

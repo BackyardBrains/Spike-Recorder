@@ -141,6 +141,7 @@ void AudioView::setOffset(int64_t offset) {
 	}
 	relOffsetChanged.emit(reloffset);
 }
+
 void AudioView::setRelOffset(int reloffset) {
 	if(!manager.fileMode()) {
 		float f = reloffset*0.001f-1.f;
@@ -179,20 +180,18 @@ void AudioView::drawScale() {
 	Widgets::Application::font()->draw(o.str().c_str(), width()-shownscalew/2-20, height()*0.9f+15, Widgets::AlignHCenter);
 }
 
-void AudioView::drawData(int channel, int samples, float x, float y, float width) {
+void AudioView::drawData(int channel, int samples, int x, int y, int width) {
 	std::vector<std::pair<int16_t, int16_t> > data;
 	if(!manager.threshMode())
-		data = manager.getSamplesEnvelope(channels[channel].virtualDevice,manager.pos()+channelOffset-samples, samples, samples > screenWidth() ? samples/screenWidth() : 1);
+		data = manager.getSamplesEnvelope(channels[channel].virtualDevice,manager.pos()+channelOffset-samples, samples, samples > width ? samples/width : 1);
 	else
-		data = manager.getTriggerSamplesEnvelope(channels[channel].virtualDevice, samples, samples > screenWidth() ? samples/screenWidth() : 1);
+		data = manager.getTriggerSamplesEnvelope(channels[channel].virtualDevice, samples, samples > width ? samples/width : 1);
 
-
-	float dist = width/((float)data.size()-1);
 	float scale = height()*ampScale;
 	glBegin(GL_LINE_STRIP);
-	for(unsigned int j = 0; j < data.size(); j++) {
-		glVertex3f((int)(j*dist+x), -data[j].first*channels[channel].gain*scale+y, 0);
-		glVertex3f((int)(j*dist+x), -data[j].second*channels[channel].gain*scale+y, 0);
+	for(int j = 0; j < std::min(width,(int)data.size()); j++) {
+		glVertex3i(j+x, -data[j].first*channels[channel].gain*scale+y, 0);
+		glVertex3i(j+x, -data[j].second*channels[channel].gain*scale+y, 0);
 	}
 	glEnd();
 }
