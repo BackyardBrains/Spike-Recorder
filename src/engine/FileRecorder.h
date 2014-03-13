@@ -17,9 +17,9 @@ public:
 
 	bool recording() const;
 
+	float recordTime() const;
 	void advance();
 private:
-
 	RecordingManager &_manager;
 	FILE *_file;
 

@@ -3,6 +3,7 @@
 #include "widgets/Painter.h"
 #include "widgets/BitmapFontGL.h"
 #include "widgets/Application.h"
+#include "engine/FileRecorder.h"
 #include <iostream>
 #include <cmath>
 #include <sstream>
@@ -10,14 +11,13 @@
 
 namespace BackyardBrains {
 
-RecordingBar::RecordingBar(Widget *parent) : Widget(parent), _active(0), _startTime(-1000) {
+RecordingBar::RecordingBar(FileRecorder &rec, Widget *parent) : Widget(parent), _active(0), _startTime(-1000), _rec(rec) {
 	setSizeHint(Widgets::Size());
 	setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Expanding, Widgets::SizePolicy::Fixed));
 }
 
 void RecordingBar::setActive(bool active) {
 	_startTime = SDL_GetTicks();
-
 	_active = active;
 }
 
@@ -34,13 +34,15 @@ void RecordingBar::paintEvent() {
 	Widgets::Painter::setColor(Widgets::Color(100,0,0,255.f*f));
 	Widgets::Painter::drawRect(rect());
 
-	std::stringstream o;
-	o.precision(2);
-	o << "Recording  " << std::fixed << (t-_startTime)*0.001f << " s";
+	if(_active) {
+		std::stringstream o;
+		o.precision(2);
+		o << "Recording  " << std::fixed << _rec.recordTime() << " s";
 
-	Widgets::Painter::setColor(Widgets::Colors::white);
+		Widgets::Painter::setColor(Widgets::Colors::white);
 
-	Widgets::Application::font()->draw(o.str().c_str(), width()/2-8*7, sizeHint().h-6, Widgets::AlignBottom);
+		Widgets::Application::font()->draw(o.str().c_str(), width()/2-8*7, sizeHint().h-6, Widgets::AlignBottom);
+	}
 }
 
 void RecordingBar::advance() {

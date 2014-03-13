@@ -82,6 +82,12 @@ bool FileRecorder::recording() const {
 	return _file != NULL;
 }
 
+float FileRecorder::recordTime() const {
+	if(_file == NULL)
+		return 0.f;
+	return (ftell(_file)-44)/(float)_nchan/sizeof(int16_t)/RecordingManager::SAMPLE_RATE;
+}
+
 void FileRecorder::advance() {
 	if(!recording())
 		return;

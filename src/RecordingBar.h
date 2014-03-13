@@ -5,15 +5,17 @@
 
 namespace BackyardBrains {
 
+class FileRecorder;
 class RecordingBar : public Widgets::Widget {
 public:
-	RecordingBar(Widget *parent = NULL);
+	RecordingBar(FileRecorder &rec, Widget *parent = NULL);
 	void setActive(bool active);
 	bool active() const;
 private:
 	bool _active;
 	unsigned int _startTime;
-
+	FileRecorder &_rec;
+	
 	void paintEvent();
 	void advance();
 };

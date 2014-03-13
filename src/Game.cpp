@@ -107,7 +107,7 @@ Game::Game() : _fileRec(_manager) {
 
 	_threshavgGroup = makeThreshavgGroup();
 
-	_recBar = new RecordingBar(mainWidget());
+	_recBar = new RecordingBar(_fileRec, mainWidget());
 
 	Widgets::BoxLayout *topBar = new Widgets::BoxLayout(Widgets::Horizontal);
 	topBar->addSpacing(10);
