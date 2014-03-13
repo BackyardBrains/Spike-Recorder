@@ -187,15 +187,17 @@ void AudioView::drawData(int channel, int samples, int x, int y, int width) {
 	else
 		data = manager.getTriggerSamplesEnvelope(channels[channel].virtualDevice, samples, samples/width+1);
 
-	float dist = 1.f;
-	if((int)data.size() < width)
-		dist = width/(float)(data.size()-1);
+	float dist = width/(float)(data.size()-1);
+	if(dist < 1.02f)
+		dist = 1.f; // we don’t want round off artifacts
 
 	float scale = height()*ampScale;
 	glBegin(GL_LINE_STRIP);
 	for(int j = 0; j < std::min(width,(int)data.size()); j++) {
-		glVertex3i(j*dist+x, -data[j].first*channels[channel].gain*scale+y, 0);
-		glVertex3i(j*dist+x, -data[j].second*channels[channel].gain*scale+y, 0);
+		int xc = j*dist+x;
+
+		glVertex3i(xc, -data[j].first*channels[channel].gain*scale+y, 0);
+		glVertex3i(xc, -data[j].second*channels[channel].gain*scale+y, 0);
 	}
 	glEnd();
 }
