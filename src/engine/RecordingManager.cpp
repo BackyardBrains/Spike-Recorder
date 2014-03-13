@@ -475,10 +475,9 @@ void RecordingManager::setPos(int64_t pos) {
 			for(unsigned int i = 0; i < it->second.sampleBuffers.size(); i++) {
 				SampleBuffer &s = *it->second.sampleBuffers[i];
 
-				if(seg2-seg1 > 1 || seg2 < seg1 || s.head()%halfsize != halfsize-1) // if the buffering of the previous segment wasn’t completed
+				if(seg2-seg1 > 1 || seg2 < seg1 || s.head()%halfsize != halfsize-1)
 					s.reset();
-				if(seg2 < seg1)
-					s.reset();
+
 				BASS_ChannelSetPosition(it->second.handle, sizeof(int16_t)*npos*nchan, BASS_POS_BYTE);
 				s.setHead(s.head() > halfsize ? 0 : halfsize); // to make it enter the next half segment
 
