@@ -293,8 +293,6 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 			delete[] buf;
 		}
 
-		std::cout << sampleBuffer(0)->pos() - bufsize << " " << _player.pos() << "\n";
-
 		setPos(_pos + samples, false);
 	}
 }

@@ -69,10 +69,10 @@ Game::Game() : _fileRec(_manager) {
 	threshButton->setNormalTex(Widgets::TextureGL::get("data/thresh.png"));
 	threshButton->setHoverTex(Widgets::TextureGL::get("data/threshhigh.png"));
 	threshButton->clicked.connect(this, &Game::threshPressed);
-	Widgets::PushButton *recordButton = new Widgets::PushButton(mainWidget());
-	recordButton->setNormalTex(Widgets::TextureGL::get("data/rec.png"));
-	recordButton->setHoverTex(Widgets::TextureGL::get("data/rechigh.png"));
-	recordButton->clicked.connect(this, &Game::recordPressed);
+	_recordButton = new Widgets::PushButton(mainWidget());
+	_recordButton->setNormalTex(Widgets::TextureGL::get("data/rec.png"));
+	_recordButton->setHoverTex(Widgets::TextureGL::get("data/rechigh.png"));
+	_recordButton->clicked.connect(this, &Game::recordPressed);
 	_fileButton = new Widgets::PushButton(mainWidget());
 	_fileButton->setNormalTex(Widgets::TextureGL::get("data/file.png"));
 	_fileButton->setHoverTex(Widgets::TextureGL::get("data/filehigh.png"));
@@ -117,7 +117,7 @@ Game::Game() : _fileRec(_manager) {
 	topBar->addSpacing(10);
 	topBar->addWidget(_threshavgGroup, Widgets::AlignVCenter);
 	topBar->addStretch();
-	topBar->addWidget(recordButton);
+	topBar->addWidget(_recordButton);
 	topBar->addSpacing(5);
 	topBar->addWidget(_fileButton);
 	topBar->addSpacing(10);
@@ -248,11 +248,13 @@ void Game::filePressed() {
 		_fileButton->setNormalTex(Widgets::TextureGL::get("data/filestop.png"));
 		_fileButton->setHoverTex(Widgets::TextureGL::get("data/filestophigh.png"));
 
+		_recordButton->setVisible(false);
 		_forwardButton->setVisible(false);
 	} else {
 		_manager.initRecordingDevices();
 		_fileButton->setNormalTex(Widgets::TextureGL::get("data/file.png"));
 		_fileButton->setHoverTex(Widgets::TextureGL::get("data/filehigh.png"));
+		_recordButton->setVisible(true);
 		_forwardButton->setVisible(true);
 	}
 }

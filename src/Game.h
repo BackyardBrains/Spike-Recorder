@@ -24,6 +24,7 @@ private:
 	Widgets::PushButton *_configButton;
 	Widgets::PushButton *_fileButton;
 	Widgets::PushButton *_forwardButton;
+	Widgets::PushButton *_recordButton;
 	Widgets::ScrollBar *_seekBar;
 	Widgets::Widget *_threshavgGroup;
 	AudioView *_audioView;
