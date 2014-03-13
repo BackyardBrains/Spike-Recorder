@@ -231,7 +231,7 @@ void AudioView::paintEvent() {
 void AudioView::drawThreshold(int screenw) {
 	Widgets::Painter::setColor(COLORS[channels[selectedChannel()].coloridx]);
 
-	if(thresholdPos() > MOVEPIN_SIZE/2) {
+	if(thresholdPos() > MOVEPIN_SIZE/2 && thresholdPos() < height() - MOVEPIN_SIZE/2) {
 		Widgets::TextureGL::get("data/threshpin.png")->bind();
 		Widgets::Painter::drawTexRect(Widgets::Rect(width()-MOVEPIN_SIZE*1.5f, thresholdPos()-MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
 		glBindTexture(GL_TEXTURE_2D, 0);
@@ -251,8 +251,15 @@ void AudioView::drawThreshold(int screenw) {
 	} else {
 		Widgets::TextureGL::get("data/threshpin.png")->bind();
 		glPushMatrix();
-		glTranslatef(width()-MOVEPIN_SIZE, MOVEPIN_SIZE*0.5f, 0);
-		glRotatef(90,0,0,1);
+
+		bool bottom = thresholdPos() > MOVEPIN_SIZE/2;
+
+		int y = MOVEPIN_SIZE*0.5f;
+		if(bottom)
+			y = height()-MOVEPIN_SIZE*0.5f;
+
+		glTranslatef(width()-MOVEPIN_SIZE, y, 0);
+		glRotatef(90-180*bottom,0,0,1);
 		Widgets::Painter::drawTexRect(Widgets::Rect(-MOVEPIN_SIZE/2, -MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
 		glPopMatrix();
 		glBindTexture(GL_TEXTURE_2D, 0);
@@ -285,7 +292,7 @@ int AudioView::determineSliderHover(int x, int y, int *yoffset) {
 int AudioView::determineThreshHover(int x, int y, int *yoffset) {
 
 	int xx = width()-MOVEPIN_SIZE-x;
-	int dy = y - std::max(MOVEPIN_SIZE/2.f, thresholdPos());
+	int dy = y - std::min(height()-MOVEPIN_SIZE/2.f, std::max(MOVEPIN_SIZE/2.f, thresholdPos()));
 
 	int yy = dy*dy;
 	xx *= xx;
