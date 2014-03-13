@@ -101,6 +101,9 @@ int AudioView::channelCount() const {
 }
 
 int AudioView::offset() {
+	if(manager.fileMode())
+		return manager.pos();
+
 	return channelOffset;
 }
 
