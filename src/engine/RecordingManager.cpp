@@ -203,14 +203,17 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 
 	const unsigned int bufsize = BUFFER_SIZE/4;
 	for(std::map<int, Device>::iterator it = _devices.begin(); it != _devices.end(); ++it) {
-		if(it->second.sampleBuffers[0]->head() >= SampleBuffer::SIZE-1 || it->second.sampleBuffers[0]->pos() >= fileLength()-1)
+		if(it->second.sampleBuffers[0]->head()%(SampleBuffer::SIZE/2) >= SampleBuffer::SIZE/2-1 || it->second.sampleBuffers[0]->pos() >= fileLength()-1)
 			continue;
-
 		const int channum = it->second.channels;
 		std::vector<int16_t> *channels = new std::vector<int16_t>[channum];
 		int16_t *buffer = new int16_t[channum*bufsize];
 
-		const unsigned int len = SampleBuffer::SIZE - 1 - it->second.sampleBuffers[0]->head();
+		unsigned int len;
+		if(it->second.sampleBuffers[0]->head() < SampleBuffer::SIZE/2)
+			len = SampleBuffer::SIZE/2-1 - it->second.sampleBuffers[0]->head();
+		else
+			len = SampleBuffer::SIZE-1 - it->second.sampleBuffers[0]->head();
 		DWORD samplesRead = BASS_ChannelGetData(it->second.handle, buffer, channum*std::min(len,bufsize)*sizeof(int16_t));
 		if(samplesRead == (DWORD)-1) {
 			std::cerr << "Bass Error: getting channel data failed: " << BASS_ErrorGetCode() << "\n";
@@ -460,21 +463,27 @@ void RecordingManager::setPos(int64_t pos) {
 	if(pos == _pos)
 		return;
 
+	const int halfsize = SampleBuffer::SIZE/2;
+	const int seg1 = _pos/halfsize;
+	const int seg2 = pos/halfsize;
 
-	if(_pos/SampleBuffer::SIZE != pos/SampleBuffer::SIZE) {
+	if(seg1 != seg2) {
 		for(std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it) {
 			const int nchan = it->second.channels;
-			const int npos = snapTo(pos, SampleBuffer::SIZE);
+			const int npos = seg2*halfsize;
+
 			for(unsigned int i = 0; i < it->second.sampleBuffers.size(); i++) {
+				SampleBuffer &s = *it->second.sampleBuffers[i];
 
+				if(seg2-seg1 > 1 || seg2 < seg1 || s.head()%halfsize != halfsize-1) // if the buffering of the previous segment wasn’t completed
+					s.reset();
+				if(seg2 < seg1)
+					s.reset();
 				BASS_ChannelSetPosition(it->second.handle, sizeof(int16_t)*npos*nchan, BASS_POS_BYTE);
+				s.setHead(s.head() > halfsize ? 0 : halfsize); // to make it enter the next half segment
 
-				if(pos < _pos)
-					it->second.sampleBuffers[i]->reset();
-				else
-					it->second.sampleBuffers[i]->setHead(0);
+				s.setPos(npos);
 
-				it->second.sampleBuffers[i]->setPos(npos);
 			}
 		}
 	}
