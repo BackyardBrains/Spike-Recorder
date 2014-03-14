@@ -15,12 +15,13 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
 		exit(1);
 	}
 
+	_player.start();
 	initRecordingDevices();
 }
 
 RecordingManager::~RecordingManager() {
 	clear();
-
+	_player.stop();
 	BASS_Free();
 }
 
@@ -28,11 +29,12 @@ void RecordingManager::clear() {
 	if(!_fileMode) {
 		for(int i = 0; i < (int)_recordingDevices.size(); i++)
 			decRef(i);
-		_player.stop();
 	} else {
 		for(std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it)
 			BASS_StreamFree(it->second.handle);
 	}
+
+	_player.setPos(0);
 
 	_devices.clear();
 	_recordingDevices.clear();
@@ -74,7 +76,7 @@ bool RecordingManager::loadFile(const char *filename) {
 		setPaused(true);
 	}
 
-	_player.start(info.chans);
+	_player.start();
 	return true;
 }
 
@@ -98,6 +100,8 @@ void RecordingManager::initRecordingDevices() {
 			_recordingDevices.push_back(virtualDevice);
 		}
 	}
+
+
 }
 
 // TODO: consolidate this function somewhere
@@ -114,10 +118,11 @@ void RecordingManager::setPaused(bool pausing) {
 		return;
 	_paused = pausing;
 
+	_player.setPaused(pausing);
+
 	if(_fileMode) { // reset the stream when end of file was reached
 		if(!pausing && _pos >= fileLength()-1)
 			setPos(0);
-		_player.setPaused(pausing);
 	} else {
 		for(std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it) {
 			if(pausing) {
@@ -143,7 +148,11 @@ void RecordingManager::setThreshAvgCount(int threshAvgCount) {
 }
 
 void RecordingManager::setThreshVDevice(int virtualDevice) {
+	if(_threshVDevice == virtualDevice)
+		return;
+
 	_threshVDevice = virtualDevice;
+	_player.setPos(_pos); // empty player buffer
 	_triggers.clear();
 }
 
@@ -223,6 +232,7 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 			len = SampleBuffer::SIZE/2-1 - it->second.sampleBuffers[0]->head();
 		else
 			len = SampleBuffer::SIZE-1 - it->second.sampleBuffers[0]->head();
+
 		DWORD samplesRead = BASS_ChannelGetData(it->second.handle, buffer, channum*std::min(len,bufsize)*sizeof(int16_t));
 		if(samplesRead == (DWORD)-1) {
 			std::cerr << "Bass Error: getting channel data failed: " << BASS_ErrorGetCode() << "\n";
@@ -261,6 +271,7 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 		delete[] channels;
 		delete[] buffer;
 	}
+
 	if(!_paused) {
 		if(_threshMode) {
 			SampleBuffer &s = *sampleBuffer(_threshVDevice);
@@ -278,23 +289,32 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 			}
 		}
 
-		if(sampleBuffer(0)->pos() - bufsize > _player.pos()) {
-			const uint32_t bsamples = sampleBuffer(0)->pos()-bufsize-_player.pos();
+		SampleBuffer &s = *sampleBuffer(_threshVDevice);
+		if(s.pos() > _player.pos()) {
+			const uint32_t bsamples = s.pos()-_player.pos();
 
-			int16_t *buf = new int16_t[_recordingDevices.size()*bsamples];
-			for(int64_t i = 0; i < bsamples; i++) {
-				for(unsigned int j = 0; j < _recordingDevices.size(); j++) {
-					buf[i*_recordingDevices.size()+j] = sampleBuffer(j)->at(_player.pos()+i);
-				}
-			}
+			int16_t *buf = new int16_t[bsamples];
 
-			_player.push(buf, _recordingDevices.size()*bsamples*sizeof(int16_t));
+// 			for(uint32_t i = 0; i < bsamples; i++)
+// 				buf[i] = s.at(_player.pos()+i);
+			s.getData(buf, _player.pos(), bsamples);
+			_player.push(buf, bsamples*sizeof(int16_t));
+
 
 			delete[] buf;
 		}
 
 		setPos(_pos + samples, false);
 	}
+
+	if(sampleBuffer(0)) { // because I’m tempted to leave the defensive code from advance() away
+		int64_t p = sampleBuffer(0)->pos();
+		for(unsigned int i = 1; i < _recordingDevices.size(); i++) {
+			if(sampleBuffer(i))
+				assert(p == sampleBuffer(i)->pos());
+		}
+	}
+
 }
 
 void RecordingManager::advance(uint32_t samples) {
@@ -303,7 +323,7 @@ void RecordingManager::advance(uint32_t samples) {
 		return;
 	}
 
-	if (_devices.empty() || _paused)
+	if(_devices.empty() || _paused)
 		return;
 
 	const int64_t oldPos = _pos;
@@ -368,7 +388,7 @@ void RecordingManager::advance(uint32_t samples) {
 			it->second.sampleBuffers[chan]->addData(channels[chan].data(), samplesRead/channum);
 		}
 		const int64_t posA = it->second.sampleBuffers[0]->pos();
-		if (!it->second.sampleBuffers[0]->empty() && (firstTime || posA < newPos)) {
+		if(!it->second.sampleBuffers[0]->empty() && (firstTime || posA < newPos)) {
 			newPos = posA;
 			firstTime = false;
 		}
@@ -377,10 +397,29 @@ void RecordingManager::advance(uint32_t samples) {
 		delete[] buffer;
 	}
 
-	if (newPos > oldPos) {
-		_pos = newPos;
-		samplesAdded.emit(oldPos, newPos - oldPos);
+	if(_pos-SAMPLE_RATE/2 > _player.pos()) {
+		const uint32_t bsamples = _pos-_player.pos();
+
+
+		int16_t *buf = new int16_t[bsamples];
+		memset(buf, 0, bsamples*sizeof(int16_t));
+
+		SampleBuffer *s = sampleBuffer(_threshVDevice);
+		if(s != NULL) {
+			s->getData(buf, _player.pos(), bsamples);
+		}
+
+		_player.push(buf, bsamples*sizeof(int16_t));
+
+
+		delete[] buf;
 	}
+	_player.paused();
+
+
+	if(newPos > oldPos)
+		_pos = newPos;
+
 }
 
 void RecordingManager::Device::create(int64_t pos, int nchan) {
@@ -520,12 +559,13 @@ void RecordingManager::setPos(int64_t pos, bool artificial) {
 	_pos = pos;
 }
 
-SampleBuffer * RecordingManager::sampleBuffer(int virtualDeviceIndex) {
+SampleBuffer *RecordingManager::sampleBuffer(int virtualDeviceIndex) {
 	assert(virtualDeviceIndex >= 0 && virtualDeviceIndex < (int) _recordingDevices.size());
 	const int device = _recordingDevices[virtualDeviceIndex].device;
 	const int channel = _recordingDevices[virtualDeviceIndex].channel;
-
-	SampleBuffer * result = _devices[device].sampleBuffers[channel];
+	if(_devices.count(device) == 0 || (unsigned int)channel >= _devices[device].sampleBuffers.size())
+		return NULL;
+	SampleBuffer *result = _devices[device].sampleBuffers[channel];
 	return result;
 }
 

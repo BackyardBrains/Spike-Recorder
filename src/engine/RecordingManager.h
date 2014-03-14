@@ -59,8 +59,6 @@ public:
 	void setThreshVDevice(int virtualDevice);
 	void setVDeviceThreshold(int virtualDevice, int threshold);
 
-
-	sigslot::signal2<int64_t /*offset*/, int64_t /*len*/> samplesAdded;
 	sigslot::signal0<> deviceReload;
 	sigslot::signal0<> pauseChanged;
 

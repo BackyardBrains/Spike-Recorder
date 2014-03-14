@@ -12,7 +12,8 @@ public:
 
 	int64_t pos() const;
 	void setPos(int64_t pos);
-	void start(int chans);
+	void start();
+
 	bool paused() const;
 	void setPaused(bool paused);
 
