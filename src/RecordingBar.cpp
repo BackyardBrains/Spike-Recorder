@@ -37,7 +37,9 @@ void RecordingBar::paintEvent() {
 	if(_active) {
 		std::stringstream o;
 		o.precision(2);
-		o << "Recording  " << std::fixed << _rec.recordTime() << " s";
+
+		const float rtime = _rec.recordTime();
+		o << "Recording  " << (int)rtime/60 << ":"<< std::fixed << std::setfill('0') << std::setw(5) << fmod(_rec.recordTime(),60);
 
 		Widgets::Painter::setColor(Widgets::Colors::white);
 

@@ -45,7 +45,6 @@ void RecordingManager::clear() {
 
 bool RecordingManager::loadFile(const char *filename) {
 	HSTREAM stream = BASS_StreamCreateFile(false, filename, 0, 0, BASS_STREAM_DECODE);
-	BASS_ChannelSetAttribute(stream, BASS_ATTRIB_VOL, 0.f);
 	if(stream == 0) {
 		std::cerr << "Bass Error: Failed to load file '" << filename << "': " << BASS_ErrorGetCode() << "\n";
 		return false;
