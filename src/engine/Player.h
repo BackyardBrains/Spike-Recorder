@@ -2,10 +2,11 @@
 #define BACKYARDBRAINS_PLAYER_H
 
 #include <bass.h>
+#include <sigslot.h>
 
 namespace BackyardBrains {
 
-class Player {
+class Player : public sigslot::has_slots<> {
 public:
 	Player();
 	~Player();
@@ -16,6 +17,8 @@ public:
 
 	bool paused() const;
 	void setPaused(bool paused);
+	int volume() const;
+	void setVolume(int volume);
 
 	void push(void *data, uint32_t size);
 	void stop();

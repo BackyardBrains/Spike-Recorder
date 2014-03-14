@@ -21,8 +21,19 @@ void Player::setPos(int64_t pos) {
 
 void Player::start() {
 	_output = BASS_StreamCreate(44100, 1, 0, STREAMPROC_PUSH, 0);
+	BASS_ChannelSetAttribute(_output, BASS_ATTRIB_VOL, 0.f);
 	setPaused(false);
 	_pos = 0;
+}
+
+int Player::volume() const {
+	float val;
+	BASS_ChannelGetAttribute(_output, BASS_ATTRIB_VOL, &val);
+	return val*100.f+0.5f;
+}
+
+void Player::setVolume(int volume) {
+	BASS_ChannelSetAttribute(_output, BASS_ATTRIB_VOL, volume*0.01f);
 }
 
 bool Player::paused() const {

@@ -135,6 +135,10 @@ void RecordingManager::setPaused(bool pausing) {
 	}
 }
 
+Player &RecordingManager::player() {
+	return _player;
+}
+
 void RecordingManager::setThreshMode(bool threshMode) {
 	_threshMode = threshMode;
 	if(threshMode)
@@ -292,15 +296,16 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 		if(s.pos() > _player.pos()) {
 			const uint32_t bsamples = s.pos()-_player.pos();
 
-			int16_t *buf = new int16_t[bsamples];
+			if(_player.volume() > 0) {
+				int16_t *buf = new int16_t[bsamples];
 
-// 			for(uint32_t i = 0; i < bsamples; i++)
-// 				buf[i] = s.at(_player.pos()+i);
-			s.getData(buf, _player.pos(), bsamples);
-			_player.push(buf, bsamples*sizeof(int16_t));
+				s.getData(buf, _player.pos(), bsamples);
+				_player.push(buf, bsamples*sizeof(int16_t));
 
-
-			delete[] buf;
+				delete[] buf;
+			} else {
+				_player.setPos(_pos);
+			}
 		}
 
 		setPos(_pos + samples, false);
@@ -399,19 +404,22 @@ void RecordingManager::advance(uint32_t samples) {
 	if(_pos-SAMPLE_RATE/2 > _player.pos()) {
 		const uint32_t bsamples = _pos-_player.pos();
 
+		if(_player.volume() > 0) {
+			int16_t *buf = new int16_t[bsamples];
 
-		int16_t *buf = new int16_t[bsamples];
-		memset(buf, 0, bsamples*sizeof(int16_t));
+			SampleBuffer *s = sampleBuffer(_selectedVDevice);
+			if(s != NULL) {
+				s->getData(buf, _player.pos(), bsamples);
+			} else {
+				memset(buf, 0, bsamples*sizeof(int16_t));
+			}
 
-		SampleBuffer *s = sampleBuffer(_selectedVDevice);
-		if(s != NULL) {
-			s->getData(buf, _player.pos(), bsamples);
+			_player.push(buf, bsamples*sizeof(int16_t));
+
+			delete[] buf;
+		} else {
+			_player.setPos(_pos);
 		}
-
-		_player.push(buf, bsamples*sizeof(int16_t));
-
-
-		delete[] buf;
 	}
 	_player.paused();
 

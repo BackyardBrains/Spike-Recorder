@@ -38,6 +38,8 @@ public:
 	bool loadFile(const char *filename);
 	void initRecordingDevices();
 
+	Player &player();
+
 	int64_t pos() const {return _pos;}
 	void setPos(int64_t pos, bool artificial = true); // file mode only
 	VirtualDevices &recordingDevices() {return _recordingDevices;}

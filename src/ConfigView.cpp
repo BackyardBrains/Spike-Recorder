@@ -26,6 +26,24 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 	Widgets::Widget *group = new Widgets::Widget(this);
 	group->setSizeHint(Widgets::Size(500,400));
 	Widgets::BoxLayout *gvbox = new Widgets::BoxLayout(Widgets::Vertical, group);
+
+	Widgets::BoxLayout *volumehbox = new Widgets::BoxLayout(Widgets::Horizontal);
+	Widgets::Label *volumeLabel = new Widgets::Label(group);
+	volumeLabel->setText("Playback Volume:");
+	volumeLabel->updateSize();
+	Widgets::ScrollBar *volumeBar = new Widgets::ScrollBar(Widgets::Horizontal, group);
+	volumeBar->setRange(0,100);
+	volumeBar->setValue(mngr.player().volume());
+	volumeBar->setPageStep(5);
+	volumeBar->valueChanged.connect(&mngr.player(), &Player::setVolume);
+
+	volumehbox->addWidget(volumeLabel);
+	volumehbox->addSpacing(20);
+	volumehbox->addWidget(volumeBar, Widgets::AlignVCenter);
+	volumehbox->addSpacing(50);
+	gvbox->addLayout(volumehbox);
+	gvbox->addSpacing(40);
+
 	for(unsigned int i = 0; i < _manager.recordingDevices().size(); i++) {
 		if(!_manager.recordingDevices()[i].enabled)
 			continue;
