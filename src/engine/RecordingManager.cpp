@@ -330,12 +330,7 @@ void RecordingManager::advance(uint32_t samples) {
 	if(_devices.empty() || _paused)
 		return;
 
-	const int64_t oldPos = _pos;
-	int64_t newPos = _pos;
-	bool firstTime = true;
-
-	uint32_t len = BUFFER_SIZE;
-	len = std::min(samples, len);
+	uint32_t len = std::min(samples, BUFFER_SIZE);
 
 	for (std::map<int, Device>::iterator it = _devices.begin(); it != _devices.end(); ++it) {
 		const int channum = it->second.channels;
@@ -373,12 +368,12 @@ void RecordingManager::advance(uint32_t samples) {
 			for(DWORD i = 0; i < samplesRead/channum; i++) {
 				channels[chan][i] -= dcBias;
 				if(_threshMode && it->first*channum+chan == _selectedVDevice) {
-					const int64_t ntrigger = oldPos + i;
+					const int64_t ntrigger = _pos + i;
 					const int thresh = _recordingDevices[_selectedVDevice].threshold;
 
 					if(_triggers.empty() || ntrigger - _triggers.front() > SAMPLE_RATE/10) {
 						if((thresh > 0 && channels[chan][i] > thresh) || (thresh <= 0 && channels[chan][i] < thresh)) {
-							_triggers.push_front(oldPos + i);
+							_triggers.push_front(_pos + i);
 							if(_triggers.size() > (unsigned int)_threshAvgCount)
 								_triggers.pop_back();
 						}
@@ -386,15 +381,7 @@ void RecordingManager::advance(uint32_t samples) {
 				}
 			}
 
-			if(it->second.sampleBuffers[0]->empty()) {
-				it->second.sampleBuffers[chan]->setPos(oldPos);
-			}
 			it->second.sampleBuffers[chan]->addData(channels[chan].data(), samplesRead/channum);
-		}
-		const int64_t posA = it->second.sampleBuffers[0]->pos();
-		if(!it->second.sampleBuffers[0]->empty() && (firstTime || posA < newPos)) {
-			newPos = posA;
-			firstTime = false;
 		}
 
 		delete[] channels;
@@ -423,9 +410,8 @@ void RecordingManager::advance(uint32_t samples) {
 	}
 	_player.paused();
 
-
-	if(newPos > oldPos)
-		_pos = newPos;
+	if(sampleBuffer(0))
+		_pos = sampleBuffer(0)->pos();
 
 }
 
@@ -566,8 +552,8 @@ void RecordingManager::setPos(int64_t pos, bool artificial) {
 	_pos = pos;
 }
 
-SampleBuffer *RecordingManager::sampleBuffer(int virtualDeviceIndex) {
-	assert(virtualDeviceIndex >= 0 && virtualDeviceIndex < (int) _recordingDevices.size());
+SampleBuffer *RecordingManager::sampleBuffer(unsigned int virtualDeviceIndex) {
+	assert(virtualDeviceIndex < _recordingDevices.size());
 	const int device = _recordingDevices[virtualDeviceIndex].device;
 	const int channel = _recordingDevices[virtualDeviceIndex].channel;
 	if(_devices.count(device) == 0 || (unsigned int)channel >= _devices[device].sampleBuffers.size())
