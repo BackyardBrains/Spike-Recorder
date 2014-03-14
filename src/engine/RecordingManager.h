@@ -49,14 +49,14 @@ public:
 	bool fileMode() const {return _fileMode;}
 	int64_t fileLength(); // file mode only
 	int threshAvgCount() const {return _threshAvgCount;}
-	int threshVDevice() const {return _threshVDevice;}
+	int selectedVDevice() const {return _selectedVDevice;}
 	void incRef(int virtualDeviceIndex);
 	void decRef(int virtualDeviceIndex);
 
 	void setPaused(bool pausing);
 	void setThreshMode(bool threshMode);
 	void setThreshAvgCount(int threshAvgCount);
-	void setThreshVDevice(int virtualDevice);
+	void setSelectedVDevice(int virtualDevice);
 	void setVDeviceThreshold(int virtualDevice, int threshold);
 
 	sigslot::signal0<> deviceReload;
@@ -95,7 +95,7 @@ private:
 
 	bool _fileMode;
 
-	int _threshVDevice;
+	int _selectedVDevice;
 	int _threshAvgCount;
 	std::list<int64_t> _triggers;
 

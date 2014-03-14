@@ -8,7 +8,7 @@ namespace BackyardBrains {
 
 const int RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX = -2;
 
-RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(false), _fileMode(false), _threshVDevice(0), _threshAvgCount(1) {
+RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(false), _fileMode(false), _selectedVDevice(0), _threshAvgCount(1) {
 	std::cout << "Initializing libbass...\n";
 	if(!BASS_Init(-1, RecordingManager::SAMPLE_RATE, 0, 0, NULL)) {
 		std::cerr << "Bass Error: Initialization failed: " << BASS_ErrorGetCode() << "\n";
@@ -39,7 +39,7 @@ void RecordingManager::clear() {
 	_devices.clear();
 	_recordingDevices.clear();
 	_pos = 0;
-	_threshVDevice = 0;
+	_selectedVDevice = 0;
 }
 
 
@@ -147,11 +147,11 @@ void RecordingManager::setThreshAvgCount(int threshAvgCount) {
 	_triggers.clear();
 }
 
-void RecordingManager::setThreshVDevice(int virtualDevice) {
-	if(_threshVDevice == virtualDevice)
+void RecordingManager::setSelectedVDevice(int virtualDevice) {
+	if(_selectedVDevice == virtualDevice)
 		return;
 
-	_threshVDevice = virtualDevice;
+	_selectedVDevice = virtualDevice;
 	_player.setPos(_pos); // empty player buffer
 	_triggers.clear();
 }
@@ -274,10 +274,10 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 
 	if(!_paused) {
 		if(_threshMode) {
-			SampleBuffer &s = *sampleBuffer(_threshVDevice);
+			SampleBuffer &s = *sampleBuffer(_selectedVDevice);
 
 			for(int64_t i = _pos; i < _pos+samples; i++) {
-				const int thresh = _recordingDevices[_threshVDevice].threshold;
+				const int thresh = _recordingDevices[_selectedVDevice].threshold;
 
 				if(_triggers.empty() || i - _triggers.front() > SAMPLE_RATE/10) {
 					if((thresh > 0 && s.at(i) > thresh) || (thresh <= 0 && s.at(i) < thresh)) {
@@ -289,7 +289,7 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 			}
 		}
 
-		SampleBuffer &s = *sampleBuffer(_threshVDevice);
+		SampleBuffer &s = *sampleBuffer(_selectedVDevice);
 		if(s.pos() > _player.pos()) {
 			const uint32_t bsamples = s.pos()-_player.pos();
 
@@ -368,9 +368,9 @@ void RecordingManager::advance(uint32_t samples) {
 
 			for(DWORD i = 0; i < samplesRead/channum; i++) {
 				channels[chan][i] -= dcBias;
-				if(_threshMode && it->first*channum+chan == _threshVDevice) {
+				if(_threshMode && it->first*channum+chan == _selectedVDevice) {
 					const int64_t ntrigger = oldPos + i;
-					const int thresh = _recordingDevices[_threshVDevice].threshold;
+					const int thresh = _recordingDevices[_selectedVDevice].threshold;
 
 					if(_triggers.empty() || ntrigger - _triggers.front() > SAMPLE_RATE/10) {
 						if((thresh > 0 && channels[chan][i] > thresh) || (thresh <= 0 && channels[chan][i] < thresh)) {
@@ -404,7 +404,7 @@ void RecordingManager::advance(uint32_t samples) {
 		int16_t *buf = new int16_t[bsamples];
 		memset(buf, 0, bsamples*sizeof(int16_t));
 
-		SampleBuffer *s = sampleBuffer(_threshVDevice);
+		SampleBuffer *s = sampleBuffer(_selectedVDevice);
 		if(s != NULL) {
 			s->getData(buf, _player.pos(), bsamples);
 		}

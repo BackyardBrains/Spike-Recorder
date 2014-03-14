@@ -76,7 +76,7 @@ int AudioView::virtualDeviceChannel(int virtualDevice) const {
 }
 
 int AudioView::selectedChannel() const {
-	return virtualDeviceChannel(manager.threshVDevice());
+	return virtualDeviceChannel(manager.selectedVDevice());
 }
 
 void AudioView::standardSettings() {
@@ -123,7 +123,7 @@ int AudioView::sampleCount(int screenw, float scalew) {
 }
 
 float AudioView::thresholdPos() {
-	return height()*(channels[selectedChannel()].pos-manager.recordingDevices()[manager.threshVDevice()].threshold*ampScale*channels[selectedChannel()].gain);
+	return height()*(channels[selectedChannel()].pos-manager.recordingDevices()[manager.selectedVDevice()].threshold*ampScale*channels[selectedChannel()].gain);
 }
 
 void AudioView::setOffset(int64_t offset) {
@@ -315,7 +315,7 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 		if(clickedSlider == -1 && x <= MOVEPIN_SIZE*1.5f) {
 			clickedSlider = determineSliderHover(x,y,&clickedPixelOffset);
 			if(clickedSlider != -1) {
-				manager.setThreshVDevice(channels[clickedSlider].virtualDevice);
+				manager.setSelectedVDevice(channels[clickedSlider].virtualDevice);
 				event->accept();
 			}
 		} else if(clickedGain == -1 && (!manager.threshMode() || x <= width()-MOVEPIN_SIZE*1.5f)) { // if in thresh mode we don't want it to react on the tresh slider area
@@ -387,7 +387,7 @@ void AudioView::mouseMotionEvent(Widgets::MouseEvent *event) {
 		float t = (event->pos().y-clickedPixelOffset)/(float)height();
 		t = std::max(MOVEPIN_SIZE/(float)height(), t);
 		t = std::min(1.f-MOVEPIN_SIZE/(float)height(), t);
-		manager.setVDeviceThreshold(manager.threshVDevice(), (channels[selected].pos - t)/channels[selected].gain/ampScale);
+		manager.setVDeviceThreshold(manager.selectedVDevice(), (channels[selected].pos - t)/channels[selected].gain/ampScale);
 	}
 
 	if(clickedGain != -1) {
