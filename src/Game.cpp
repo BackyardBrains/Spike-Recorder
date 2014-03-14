@@ -244,7 +244,17 @@ void Game::filePressed() {
 		if(s != Widgets::FileDialog::SUCCESS)
 			return;
 
-		_manager.loadFile(d.getResultFilename().c_str());
+		bool rc = _manager.loadFile(d.getResultFilename().c_str());
+
+		if(rc == false) {
+			std::stringstream s;
+			s << "Error: Failed to open '" << d.getResultFilename().c_str() << "'. Wrong format perhaps?";
+			Widgets::ErrorBox *box = new Widgets::ErrorBox(s.str().c_str());
+			box->setGeometry(Widgets::Rect(mainWidget()->width()/2-200, mainWidget()->height()/2-40, 400, 80));
+			addPopup(box);
+			return;
+		}
+
 		_fileButton->setNormalTex(Widgets::TextureGL::get("data/filestop.png"));
 		_fileButton->setHoverTex(Widgets::TextureGL::get("data/filestophigh.png"));
 
