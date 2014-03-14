@@ -87,7 +87,7 @@ private:
 
 	void clear();
 	void advanceFileMode(uint32_t samples);
-	SampleBuffer *sampleBuffer(unsigned int virtualDeviceIndex);
+	SampleBuffer *sampleBuffer(int virtualDeviceIndex);
 
 	VirtualDevices _recordingDevices;
 	std::map<int, Device> _devices;
