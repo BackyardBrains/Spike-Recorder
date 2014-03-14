@@ -70,7 +70,7 @@ public:
 private:
 	struct Device
 	{
-		Device() : handle(0), refCount(0), dcBiasNum(1), channels(0)
+		Device() : handle(0), refCount(0), dcBiasNum(1), channels(0), bytespersample(2)
 		{
 		}
 		~Device();
@@ -81,8 +81,10 @@ private:
 		std::vector<SampleBuffer *> sampleBuffers;
 		int refCount;
 		std::vector<int64_t> dcBiasSum;
+
 		int64_t dcBiasNum;
 		int channels;
+		int bytespersample;
 	};
 
 	void clear();

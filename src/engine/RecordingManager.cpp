@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cstdlib>
 
+
 namespace BackyardBrains {
 
 const int RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX = -2;
@@ -53,8 +54,15 @@ bool RecordingManager::loadFile(const char *filename) {
 	BASS_CHANNELINFO info;
 	BASS_ChannelGetInfo(stream, &info);
 
+	int bytespersample = info.origres/8;
+	if(bytespersample == 0)
+		return false;
+	if(bytespersample >= 3)
+		bytespersample = 4; // bass converts everything it doesn’t support.
 	setSampleRate(info.freq);
 	_devices[0].create(_pos, info.chans);
+	_devices[0].bytespersample = bytespersample;
+
 	_recordingDevices.resize(info.chans);
 	for(unsigned int i = 0; i < info.chans; i++) {
 		VirtualDevice &virtualDevice = _recordingDevices[i];
@@ -176,7 +184,7 @@ void RecordingManager::setVDeviceThreshold(int virtualDevice, int threshold) {
 
 int64_t RecordingManager::fileLength() {
 	assert(_fileMode);
-	int64_t len = BASS_ChannelGetLength(_devices[0].handle, BASS_POS_BYTE)/2/_devices[0].channels;
+	int64_t len = BASS_ChannelGetLength(_devices[0].handle, BASS_POS_BYTE)/_devices[0].bytespersample/_devices[0].channels;
 	assert(len != -1);
 
 	return len;
@@ -237,8 +245,9 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 		if(it->second.sampleBuffers[0]->head()%(SampleBuffer::SIZE/2) >= SampleBuffer::SIZE/2-1 || it->second.sampleBuffers[0]->pos() >= fileLength()-1)
 			continue;
 		const int channum = it->second.channels;
+		const int bytespersample = it->second.bytespersample;
 		std::vector<int16_t> *channels = new std::vector<int16_t>[channum];
-		int16_t *buffer = new int16_t[channum*bufsize];
+		uint8_t *buffer = new uint8_t[bytespersample*channum*bufsize];
 
 		unsigned int len;
 		if(it->second.sampleBuffers[0]->head() < SampleBuffer::SIZE/2)
@@ -246,22 +255,26 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 		else
 			len = SampleBuffer::SIZE-1 - it->second.sampleBuffers[0]->head();
 
-		DWORD samplesRead = BASS_ChannelGetData(it->second.handle, buffer, channum*std::min(len,bufsize)*sizeof(int16_t));
+		DWORD samplesRead = BASS_ChannelGetData(it->second.handle, buffer, channum*std::min(len,bufsize)*bytespersample);
 		if(samplesRead == (DWORD)-1) {
 			std::cerr << "Bass Error: getting channel data failed: " << BASS_ErrorGetCode() << "\n";
 			delete[] channels;
 			delete[] buffer;
 			continue;
 		}
-		samplesRead /= sizeof(int16_t);
+		samplesRead /= bytespersample;
 
 		for(int chan = 0; chan < channum; chan++)
-			channels[chan].resize(bufsize);
+			channels[chan].resize(samplesRead/channum);
 
 		// de-interleave the channels
 		for(DWORD i = 0; i < samplesRead/channum; i++) {
 			for(int chan = 0; chan < channum; chan++) {
-				channels[chan][i] = buffer[i*channum + chan];
+				if(bytespersample == 1) { // unsigned 8 bit format
+					channels[chan][i] = (buffer[i*channum + chan]-128)<<7;
+				} else { // else assume signedness and take the 2 most significant bytes
+					memcpy(&channels[chan][i], buffer+(i*channum + chan)*bytespersample, 2);
+				}
 
 				if(it->second.dcBiasNum < _sampleRate*10) {
 					it->second.dcBiasSum[chan] += channels[chan][i];
@@ -320,15 +333,6 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 
 		setPos(_pos + samples, false);
 	}
-
-	if(sampleBuffer(0)) { // because I’m tempted to leave the defensive code from advance() away
-		int64_t p = sampleBuffer(0)->pos();
-		for(unsigned int i = 1; i < _recordingDevices.size(); i++) {
-			if(sampleBuffer(i))
-				assert(p == sampleBuffer(i)->pos());
-		}
-	}
-
 }
 
 void RecordingManager::advance(uint32_t samples) {
@@ -562,7 +566,7 @@ void RecordingManager::setPos(int64_t pos, bool artificial) {
 				if(seg2-seg1 > 1 || seg2 < seg1 || s.head()%halfsize != halfsize-1)
 					s.reset();
 
-				BASS_ChannelSetPosition(it->second.handle, sizeof(int16_t)*npos*nchan, BASS_POS_BYTE);
+				BASS_ChannelSetPosition(it->second.handle, it->second.bytespersample*npos*nchan, BASS_POS_BYTE);
 				s.setHead(s.head() > halfsize ? 0 : halfsize); // to make it enter the next half segment
 
 				s.setPos(npos);
