@@ -119,7 +119,7 @@ int AudioView::screenWidth() {
 }
 
 int AudioView::sampleCount(int screenw, float scalew) {
-	return screenw == 0 ? 0 : RecordingManager::SAMPLE_RATE/scalew*screenw;
+	return screenw == 0 ? 0 : manager.sampleRate()/scalew*screenw;
 }
 
 float AudioView::thresholdPos() {
@@ -350,7 +350,7 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 			if((s = determineSliderHover(x,y,NULL)) != -1)
 				channels[s].gain = std::min(10.f, channels[s].gain*1.2f);
 		} else if(!manager.threshMode() || x < width()-MOVEPIN_SIZE*3/2) {
-			timeScale = std::max(1.f/RecordingManager::SAMPLE_RATE, timeScale*0.8f);
+			timeScale = std::max(1.f/manager.sampleRate(), timeScale*0.8f);
 			if(!manager.fileMode())
 				setOffset(channelOffset);
 		}

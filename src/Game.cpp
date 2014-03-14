@@ -173,7 +173,7 @@ void Game::pausePressed() {
 }
 
 void Game::backwardPressed() {
-	_audioView->setOffset(_audioView->offset()-5*RecordingManager::SAMPLE_RATE);
+	_audioView->setOffset(_audioView->offset()-5*_manager.sampleRate());
 	if(_manager.paused())
 		pausePressed();
 }
@@ -307,7 +307,7 @@ void Game::loadResources() {
 void Game::advance() {
 	static uint32_t t = 0;
 	uint32_t newt = SDL_GetTicks();
-	_manager.advance((newt-t)*RecordingManager::SAMPLE_RATE/1000);
+	_manager.advance((newt-t)*_manager.sampleRate()/1000);
 	_fileRec.advance();
 
 	t = newt;

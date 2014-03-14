@@ -54,10 +54,10 @@ bool FileRecorder::start(const char *filename) {
 	}
 
 	put16(_nchan, _file);
-	put32(RecordingManager::SAMPLE_RATE, _file);
+	put32(_manager.sampleRate(), _file);
 
 	int blockalign = _nchan*((16+7)/8);
-	put32(RecordingManager::SAMPLE_RATE*blockalign, _file);
+	put32(_manager.sampleRate()*blockalign, _file);
 	put16(blockalign, _file);
 	put16(16, _file);
 	fwrite("data\0\0\0\0", 8, 1, _file);
@@ -85,7 +85,7 @@ bool FileRecorder::recording() const {
 float FileRecorder::recordTime() const {
 	if(_file == NULL)
 		return 0.f;
-	return (ftell(_file)-44)/(float)_nchan/sizeof(int16_t)/RecordingManager::SAMPLE_RATE;
+	return (ftell(_file)-44)/(float)_nchan/sizeof(int16_t)/_manager.sampleRate();
 }
 
 void FileRecorder::advance() {

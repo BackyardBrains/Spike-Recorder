@@ -19,8 +19,8 @@ void Player::setPos(int64_t pos) {
 	_pos = pos;
 }
 
-void Player::start() {
-	_output = BASS_StreamCreate(44100, 1, 0, STREAMPROC_PUSH, 0);
+void Player::start(int sampleRate) {
+	_output = BASS_StreamCreate(sampleRate, 1, 0, STREAMPROC_PUSH, 0);
 	BASS_ChannelSetAttribute(_output, BASS_ATTRIB_VOL, 0.f);
 	setPaused(false);
 	_pos = 0;
@@ -52,6 +52,16 @@ void Player::setPaused(bool npaused) {
 		if(!BASS_ChannelPlay(_output, FALSE))
 			std::cerr << "Bass Error: resuming channel playback failed: " << BASS_ErrorGetCode() << "\n";
 	}
+}
+
+int Player::sampleRate() const {
+	float freq;
+	BASS_ChannelGetAttribute(_output, BASS_ATTRIB_FREQ, &freq);
+	return freq;
+}
+
+void Player::setSampleRate(int sampleRate) {
+	BASS_ChannelSetAttribute(_output, BASS_ATTRIB_FREQ, sampleRate);
 }
 
 void Player::push(void *data, uint32_t size) {

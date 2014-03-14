@@ -18,7 +18,6 @@ class SampleBuffer;
 class RecordingManager : public sigslot::has_slots<>
 {
 public:
-	static const int SAMPLE_RATE = 44100;
 
 	struct VirtualDevice
 	{
@@ -42,6 +41,9 @@ public:
 
 	int64_t pos() const {return _pos;}
 	void setPos(int64_t pos, bool artificial = true); // file mode only
+
+	int sampleRate() const;
+	void setSampleRate(int sampleRate);
 	VirtualDevices &recordingDevices() {return _recordingDevices;}
 	void getData(int virtualDevice, int64_t offset, int64_t len, int16_t *device);
 	std::vector< std::pair<int16_t, int16_t> > getSamplesEnvelope(int virtualDeviceIndex, int64_t offset, int64_t len, int sampleSkip);
@@ -66,8 +68,6 @@ public:
 
 	void advance(uint32_t milliseconds);
 private:
-	static const unsigned int BUFFER_SIZE = 5*SAMPLE_RATE;
-
 	struct Device
 	{
 		Device() : handle(0), refCount(0), dcBiasNum(1), channels(0)
@@ -97,7 +97,9 @@ private:
 
 	bool _fileMode;
 
-	int _selectedVDevice;
+	int _sampleRate;
+
+	int _selectedVDevice; // triggers threshold/is played on the speakers
 	int _threshAvgCount;
 	std::list<int64_t> _triggers;
 

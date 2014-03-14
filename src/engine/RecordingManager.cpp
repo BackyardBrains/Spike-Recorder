@@ -8,14 +8,14 @@ namespace BackyardBrains {
 
 const int RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX = -2;
 
-RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(false), _fileMode(false), _selectedVDevice(0), _threshAvgCount(1) {
+RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(false), _fileMode(false), _sampleRate(44100), _selectedVDevice(0), _threshAvgCount(1) {
 	std::cout << "Initializing libbass...\n";
-	if(!BASS_Init(-1, RecordingManager::SAMPLE_RATE, 0, 0, NULL)) {
+	if(!BASS_Init(-1, _sampleRate, 0, 0, NULL)) {
 		std::cerr << "Bass Error: Initialization failed: " << BASS_ErrorGetCode() << "\n";
 		exit(1);
 	}
 
-	_player.start();
+	_player.start(_sampleRate);
 	initRecordingDevices();
 }
 
@@ -42,7 +42,6 @@ void RecordingManager::clear() {
 	_selectedVDevice = 0;
 }
 
-
 bool RecordingManager::loadFile(const char *filename) {
 	HSTREAM stream = BASS_StreamCreateFile(false, filename, 0, 0, BASS_STREAM_DECODE);
 	if(stream == 0) {
@@ -54,6 +53,7 @@ bool RecordingManager::loadFile(const char *filename) {
 	BASS_CHANNELINFO info;
 	BASS_ChannelGetInfo(stream, &info);
 
+	setSampleRate(info.freq);
 	_devices[0].create(_pos, info.chans);
 	_recordingDevices.resize(info.chans);
 	for(unsigned int i = 0; i < info.chans; i++) {
@@ -75,7 +75,6 @@ bool RecordingManager::loadFile(const char *filename) {
 		setPaused(true);
 	}
 
-	_player.start();
 	return true;
 }
 
@@ -100,7 +99,7 @@ void RecordingManager::initRecordingDevices() {
 		}
 	}
 
-
+	setSampleRate(44100);
 }
 
 // TODO: consolidate this function somewhere
@@ -120,8 +119,10 @@ void RecordingManager::setPaused(bool pausing) {
 	_player.setPaused(pausing);
 
 	if(_fileMode) { // reset the stream when end of file was reached
-		if(!pausing && _pos >= fileLength()-1)
+		if(!pausing && _pos >= fileLength()-1) {
+			_triggers.clear();
 			setPos(0);
+		}
 	} else {
 		for(std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it) {
 			if(pausing) {
@@ -137,6 +138,15 @@ void RecordingManager::setPaused(bool pausing) {
 
 Player &RecordingManager::player() {
 	return _player;
+}
+
+int RecordingManager::sampleRate() const {
+	return _sampleRate;
+}
+
+void RecordingManager::setSampleRate(int sampleRate) {
+	_player.setSampleRate(sampleRate);
+	_sampleRate = sampleRate;
 }
 
 void RecordingManager::setThreshMode(bool threshMode) {
@@ -222,7 +232,7 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 		return;
 	}
 
-	const unsigned int bufsize = BUFFER_SIZE/4;
+	const unsigned int bufsize = 1*sampleRate();
 	for(std::map<int, Device>::iterator it = _devices.begin(); it != _devices.end(); ++it) {
 		if(it->second.sampleBuffers[0]->head()%(SampleBuffer::SIZE/2) >= SampleBuffer::SIZE/2-1 || it->second.sampleBuffers[0]->pos() >= fileLength()-1)
 			continue;
@@ -253,7 +263,7 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 			for(int chan = 0; chan < channum; chan++) {
 				channels[chan][i] = buffer[i*channum + chan];
 
-				if(it->second.dcBiasNum < SAMPLE_RATE*10) {
+				if(it->second.dcBiasNum < _sampleRate*10) {
 					it->second.dcBiasSum[chan] += channels[chan][i];
 					if(chan == 0)
 						it->second.dcBiasNum++;
@@ -282,7 +292,7 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 			for(int64_t i = _pos; i < _pos+samples; i++) {
 				const int thresh = _recordingDevices[_selectedVDevice].threshold;
 
-				if(_triggers.empty() || i - _triggers.front() > SAMPLE_RATE/10) {
+				if(_triggers.empty() || i - _triggers.front() > _sampleRate/10) {
 					if((thresh > 0 && s.at(i) > thresh) || (thresh <= 0 && s.at(i) < thresh)) {
 						_triggers.push_front(i);
 						if(_triggers.size() > (unsigned int)_threshAvgCount)
@@ -334,13 +344,13 @@ void RecordingManager::advance(uint32_t samples) {
 	int64_t newPos = _pos;
 	bool firstTime = true;
 
-	uint32_t len = BUFFER_SIZE;
+	uint32_t len = 5*sampleRate();
 	len = std::min(samples, len);
 
 	for (std::map<int, Device>::iterator it = _devices.begin(); it != _devices.end(); ++it) {
 		const int channum = it->second.channels;
 		std::vector<int16_t> *channels = new std::vector<int16_t>[channum];
-		int16_t *buffer = new int16_t[channum*BUFFER_SIZE];
+		int16_t *buffer = new int16_t[channum*len];
 
 		DWORD samplesRead = BASS_ChannelGetData(it->second.handle, buffer, channum*len*sizeof(int16_t));
 		if(samplesRead == (DWORD)-1) {
@@ -352,14 +362,14 @@ void RecordingManager::advance(uint32_t samples) {
 		samplesRead /= sizeof(int16_t);
 
 		for(int chan = 0; chan < channum; chan++)
-			channels[chan].resize(BUFFER_SIZE);
+			channels[chan].resize(len);
 
 		// de-interleave the channels
 		for (DWORD i = 0; i < samplesRead/channum; i++) {
 			for(int chan = 0; chan < channum; chan++) {
 				channels[chan][i] = buffer[i*channum + chan];
 
-				if(it->second.dcBiasNum < SAMPLE_RATE*10) {
+				if(it->second.dcBiasNum < _sampleRate*10) {
 					it->second.dcBiasSum[chan] += channels[chan][i];
 					if(chan == 0)
 						it->second.dcBiasNum++;
@@ -376,7 +386,7 @@ void RecordingManager::advance(uint32_t samples) {
 					const int64_t ntrigger = oldPos + i;
 					const int thresh = _recordingDevices[_selectedVDevice].threshold;
 
-					if(_triggers.empty() || ntrigger - _triggers.front() > SAMPLE_RATE/10) {
+					if(_triggers.empty() || ntrigger - _triggers.front() > _sampleRate/10) {
 						if((thresh > 0 && channels[chan][i] > thresh) || (thresh <= 0 && channels[chan][i] < thresh)) {
 							_triggers.push_front(oldPos + i);
 							if(_triggers.size() > (unsigned int)_threshAvgCount)
@@ -401,7 +411,7 @@ void RecordingManager::advance(uint32_t samples) {
 		delete[] buffer;
 	}
 
-	if(_pos-SAMPLE_RATE/2 > _player.pos()) {
+	if(_pos-_sampleRate/2 > _player.pos()) {
 		const uint32_t bsamples = _pos-_player.pos();
 
 		if(_player.volume() > 0) {
@@ -485,7 +495,7 @@ void RecordingManager::incRef(int virtualDeviceIndex) {
 			return;
 		}
 
-		const HRECORD handle = BASS_RecordStart(SAMPLE_RATE, 2, (_paused ? BASS_RECORD_PAUSE : 0), NULL, NULL);
+		const HRECORD handle = BASS_RecordStart(_sampleRate, 2, (_paused ? BASS_RECORD_PAUSE : 0), NULL, NULL);
 		if (handle == FALSE)
 		{
 			std::cerr << "Bass Error: starting the recording failed: " << BASS_ErrorGetCode() << "\n";

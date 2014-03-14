@@ -8,17 +8,20 @@ namespace BackyardBrains {
 
 class Player : public sigslot::has_slots<> {
 public:
+
 	Player();
 	~Player();
 
 	int64_t pos() const;
 	void setPos(int64_t pos);
-	void start();
+	void start(int sampleRate);
 
 	bool paused() const;
 	void setPaused(bool paused);
 	int volume() const;
 	void setVolume(int volume);
+	int sampleRate() const;
+	void setSampleRate(int sampleRate);
 
 	void push(void *data, uint32_t size);
 	void stop();
