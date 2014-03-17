@@ -1,9 +1,9 @@
 #include "RecordingManager.h"
 #include "SampleBuffer.h"
+#include "FileRecorder.h"
 
 #include <iostream>
 #include <cstdlib>
-
 
 namespace BackyardBrains {
 
@@ -25,6 +25,34 @@ RecordingManager::~RecordingManager() {
 	clear();
 	_player.stop();
 	BASS_Free();
+}
+
+void RecordingManager::constructMetaData(MetadataChunk *m) const {
+	unsigned int nchan = 0;
+
+	for(unsigned int i = 0; i < _recordingDevices.size(); i++)
+		if(_recordingDevices[i].bound)
+			nchan++;
+
+	assert(m->channels.size() <= nchan); // don't want to delete stuff here
+	m->channels.resize(nchan);
+
+	int chani = 0;
+	for(unsigned int i = 0; i < _recordingDevices.size(); i++) {
+		if(_recordingDevices[i].bound) {
+			m->channels[chani].threshold = _recordingDevices[i].threshold;
+			m->channels[chani].name = _recordingDevices[i].name;
+
+			chani++;
+		}
+	}
+}
+
+void RecordingManager::applyMetaData(const MetadataChunk &m) {
+	for(unsigned int i = 0; i < m.channels.size(); i++) {
+		_recordingDevices[i].threshold = m.channels[i].threshold;
+		_recordingDevices[i].name = m.channels[i].name;
+	}
 }
 
 void RecordingManager::clear() {

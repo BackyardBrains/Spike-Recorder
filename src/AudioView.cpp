@@ -62,7 +62,7 @@ static bool compare_second(const std::pair<int, int> &a, const std::pair<int, in
 	return a.second <= b.second;
 }
 
-void AudioView::constructMetaData(MetadataChunk *m) {
+void AudioView::constructMetaData(MetadataChunk *m) const {
 	// as the channels in the file will be ordered by their virtualDevice
 	// index, not by the channel index here, we have to predict those new
 	// indices by sorting.
@@ -80,7 +80,6 @@ void AudioView::constructMetaData(MetadataChunk *m) {
 	m->channels.resize(_channels.size());
 	for(unsigned int ic = 0; ic < _channels.size(); ic++) {
 		int i = idx[ic];
-		m->channels[i].threshold = _manager.recordingDevices()[_channels[ic].virtualDevice].threshold;
 		m->channels[i].gain = _channels[ic].gain;
 		m->channels[i].colorIdx = _channels[ic].colorIdx;
 		m->channels[i].pos = _channels[ic].pos;
@@ -88,19 +87,18 @@ void AudioView::constructMetaData(MetadataChunk *m) {
 }
 
 
-void AudioView::applyMetaData(MetadataChunk *m) {
-	_timeScale = m->timeScale;
+void AudioView::applyMetaData(const MetadataChunk &m) {
+	_timeScale = m.timeScale;
 	_channels.clear();
 
-	for(unsigned int i = 0; i < m->channels.size(); i++) {
+	for(unsigned int i = 0; i < m.channels.size(); i++) {
 		addChannel(i);
-		_manager.recordingDevices()[_channels[i].virtualDevice].threshold = m->channels[i].threshold;
-		_channels[i].gain = m->channels[i].gain;
-		_channels[i].colorIdx = m->channels[i].colorIdx;
-		_channels[i].pos = m->channels[i].pos;
+		_channels[i].gain = m.channels[i].gain;
+		_channels[i].colorIdx = m.channels[i].colorIdx;
+		_channels[i].pos = m.channels[i].pos;
 	}
 
-	if(m->channels.size() == 0 && _manager.recordingDevices().size() != 0)
+	if(m.channels.size() == 0 && _manager.recordingDevices().size() != 0)
 		addChannel(0);
 }
 

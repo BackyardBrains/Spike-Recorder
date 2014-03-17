@@ -28,6 +28,7 @@ void MetadataChunk::print() {
 		std::cout << "Channel " << i << "\n";
 		std::cout << "pos: " << channels[i].pos << "\n";
 		std::cout << "thresh: " << channels[i].threshold << "\n";
+		std::cout << "name: " << channels[i].name << "\n";
 		std::cout << "gain: " << channels[i].gain << "\n";
 		std::cout << "colorIdx: " << channels[i].colorIdx << "\n\n";
 	}
@@ -111,7 +112,7 @@ void FileRecorder::stop() {
 }
 
 void FileRecorder::writeMetadata() {
-	std::stringstream poss, threshs, gains, colors;
+	std::stringstream poss, threshs, gains, colors, names;
 
 	for(unsigned int i = 0; i < _metadata->channels.size(); i++) {
 		MetadataChannel &c = _metadata->channels[i];
@@ -119,6 +120,7 @@ void FileRecorder::writeMetadata() {
 		threshs << c.threshold << ';';
 		gains << c.gain << ';';
 		colors << c.colorIdx << ';';
+		names << c.name << ';';
 	}
 
 	std::stringstream timeScale;
@@ -131,7 +133,7 @@ void FileRecorder::writeMetadata() {
 	fwrite("cpos", 4, 1, _file);
 	put32(poss.str().size()+1, _file);
 	fwrite(poss.str().c_str(), poss.str().size()+1, 1, _file);
-	if(ftell(_file)&1)
+	if(ftell(_file)&1) // pad to full words
 		fputc(0, _file);
 	fwrite("ctrs", 4, 1, _file);
 	put32(threshs.str().size()+1, _file);
@@ -151,6 +153,11 @@ void FileRecorder::writeMetadata() {
 	fwrite("ctms", 4, 1, _file);
 	put32(timeScale.str().size()+1, _file);
 	fwrite(timeScale.str().c_str(), timeScale.str().size()+1, 1, _file);
+	if(ftell(_file)&1)
+		fputc(0, _file);
+	fwrite("cnam", 4, 1, _file);
+	put32(names.str().size()+1, _file);
+	fwrite(names.str().c_str(), names.str().size()+1, 1, _file);
 	if(ftell(_file)&1)
 		fputc(0, _file);
 
@@ -174,7 +181,8 @@ int FileRecorder::parseMetaDataStr(MetadataChunk *meta, const char *str) {
 			CTRS,
 			CGIN,
 			CCLR,
-			CTMS
+			CTMS,
+			CNAM
 		} keytype = CINVAL;
 
 		const char *beg = p;
@@ -196,6 +204,8 @@ int FileRecorder::parseMetaDataStr(MetadataChunk *meta, const char *str) {
 					keytype = CCLR;
 				else if(strncmp(beg, "ctms", p-beg) == 0)
 					keytype = CTMS;
+				else if(strncmp(beg, "cnam", p-beg) == 0)
+					keytype = CNAM;
 				else {
 					std::cerr << "Metadata Parser Error: skipped key '" << std::string(beg,p) << "'.\n";
 					mode = MVAL;
@@ -223,6 +233,9 @@ int FileRecorder::parseMetaDataStr(MetadataChunk *meta, const char *str) {
 					break;
 				case CCLR:
 					meta->channels[entry].colorIdx = atoi(val.c_str());
+					break;
+				case CNAM:
+					meta->channels[entry].name = val;
 					break;
 				case CTMS:
 					meta->timeScale = atof(val.c_str());

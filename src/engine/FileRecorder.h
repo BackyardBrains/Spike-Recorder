@@ -19,6 +19,7 @@
  * ctrs		channel threshold (int)
  * cgin		channel gain (float)
  * cclr		channel color index (int)
+ * cnam		channel name (string)
  * ctms		global time scale (see AudioView.cpp) (float)
  *
  * The values associated with those keys have the following format
@@ -26,7 +27,7 @@
  * 		val0;val1;val2;...;valn;
  *
  * Where val0 to valn are ascii strings containing the value for the n-th
- * channel.
+ * channel. floats/ints are represented in a format understood by atof()/atoi()
  *
  * Example:
  *
@@ -49,6 +50,7 @@ class RecordingManager;
 struct MetadataChannel {
 	MetadataChannel()
 		: threshold(100), colorIdx(1), pos(0.5f), gain(1.f) { }
+	std::string name;
 	int threshold;
 	int colorIdx;
 	float pos;

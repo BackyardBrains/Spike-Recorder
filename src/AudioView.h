@@ -28,8 +28,8 @@ public:
 	static const Widgets::Color COLORS[];
 	static const int COLOR_NUM;
 
-	void constructMetaData(MetadataChunk *mdata);
-	void applyMetaData(MetadataChunk *mdata);
+	void constructMetaData(MetadataChunk *mdata) const;
+	void applyMetaData(const MetadataChunk &mdata);
 
 	AudioView(Widgets::Widget *parent, RecordingManager &mngr);
 

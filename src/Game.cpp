@@ -234,6 +234,7 @@ void Game::recordPressed() {
 	} else {
 		MetadataChunk *m = new MetadataChunk;
 		_audioView->constructMetaData(m);
+		_manager.constructMetaData(m);
 		_fileRec.setMetaData(m);
 
 		_fileRec.stop();
@@ -274,7 +275,8 @@ void Game::filePressed() {
 		const char *mdatastr = _manager.fileMetaDataString();
 		if(mdatastr) {
 			FileRecorder::parseMetaDataStr(&m, mdatastr);
-			_audioView->applyMetaData(&m);
+			_manager.applyMetaData(m);
+			_audioView->applyMetaData(m);
 		}
 		_fileButton->setNormalTex(Widgets::TextureGL::get("data/filestop.png"));
 		_fileButton->setHoverTex(Widgets::TextureGL::get("data/filestophigh.png"));

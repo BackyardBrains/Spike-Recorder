@@ -14,6 +14,7 @@
 namespace BackyardBrains {
 
 class SampleBuffer;
+class MetadataChunk;
 
 class RecordingManager : public sigslot::has_slots<>
 {
@@ -42,6 +43,9 @@ public:
 
 	int64_t pos() const {return _pos;}
 	void setPos(int64_t pos, bool artificial = true); // file mode only
+
+	void constructMetaData(MetadataChunk *m) const;
+	void applyMetaData(const MetadataChunk &m);
 
 	int sampleRate() const;
 	void setSampleRate(int sampleRate);
