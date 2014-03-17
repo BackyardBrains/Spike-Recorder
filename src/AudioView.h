@@ -52,20 +52,20 @@ private:
 	static const int MOVEPIN_SIZE = 30;
 	static const int RESOLUTION = 800;
 
-	int clickedGain;
-	float prevGain;
+	int _clickedGain;
+	float _prevGain;
 	
-	int clickedSlider;
-	int clickedPixelOffset;
+	int _clickedSlider;
+	int _clickedPixelOffset;
 
-	bool clickedThresh;
+	bool _clickedThresh;
 
-	int64_t channelOffset;
+	int64_t _channelOffset;
 
-	RecordingManager &manager;
-	std::vector<Channel> channels;
+	RecordingManager &_manager;
+	std::vector<Channel> _channels;
 
-	float timeScale;
+	float _timeScale;
 	static const float ampScale;
 
 	int selectedChannel() const;
