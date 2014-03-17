@@ -4,6 +4,44 @@
 #include "RecordingManager.h"
 #include <fstream>
 
+/* Metadata Format
+ *
+ * Spike Recorder saves metadata to the files it exports. This is done to keep
+ * record of color, position, threshold and other properties of the channels
+ * recorded so those can be restored when the file is loaded again.
+ *
+ * This information is written in the LIST INFO chunk of the RIFF format, which
+ * allows to store it in a key/value way.
+ *
+ * The keys used for this are
+ *
+ * CPOS		channel position (float)
+ * CTRS		channel threshold (int)
+ * CGIN		channel gain (float)
+ * CCLR		channel color index (int)
+ * CTMS		global time scale (see AudioView.cpp) (float)
+ *
+ * The values associated with those keys have the following format
+ *
+ * 		val0;val1;val2;...;valn;
+ *
+ * Where val0 to valn are ascii strings containing the value for the n-th
+ * channel.
+ *
+ * Example:
+ *
+ * CPOS   0.243;0.123;0.4565;
+ *
+ * channel 1 is at position 0.243, channel 2 at position 0.123 and channel 3
+ * at position 0.4565.
+ *
+ *
+ * Global values like CTMS are specified the same way, just with only one value:
+ *
+ * CTMS 0.0768;
+ *
+ */
+
 namespace BackyardBrains {
 
 class RecordingManager;
