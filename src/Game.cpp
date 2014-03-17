@@ -221,6 +221,8 @@ void Game::recordPressed() {
 		}
 		_configButton->setSizeHint(Widgets::Size(0, 48));
 		_configButton->setVisible(false);
+		_fileButton->setSizeHint(Widgets::Size(0, 48));
+		_fileButton->setVisible(false);
 		_recBar->setActive(true);
 	} else {
 		MetadataChunk *m = new MetadataChunk;
@@ -230,6 +232,8 @@ void Game::recordPressed() {
 		_fileRec.stop();
 		_configButton->setVisible(true);
 		_configButton->setSizeHint(Widgets::Size(48, 48));
+		_fileButton->setVisible(true);
+		_fileButton->setSizeHint(Widgets::Size(48, 48));
 		_recBar->setActive(false);
 	}
 

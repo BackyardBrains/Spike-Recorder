@@ -76,9 +76,6 @@ void AudioView::constructMetaData(MetadataChunk *m) {
 	for(unsigned int i = 0; i < tmp.size(); i++)
 		idx[tmp[i].first] = i;
 
-	for(unsigned int i = 0; i < tmp.size(); i++)
-		std::cout << idx[i] << "\n";
-
 	m->timeScale = _timeScale;
 	m->channels.resize(_channels.size());
 	for(unsigned int ic = 0; ic < _channels.size(); ic++) {
