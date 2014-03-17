@@ -29,8 +29,9 @@ public:
 		int bound;
 	};
 	static const int INVALID_VIRTUAL_DEVICE_INDEX;
+	static const int DEFAULT_SAMPLE_RATE;
 	typedef std::vector<VirtualDevice> VirtualDevices;
-public:
+
 	RecordingManager();
 	~RecordingManager();
 
@@ -52,6 +53,7 @@ public:
 	bool threshMode() const {return _threshMode;}
 	bool fileMode() const {return _fileMode;}
 	int64_t fileLength(); // file mode only
+	const char *fileMetaDataString(); // file mode only
 	int threshAvgCount() const {return _threshAvgCount;}
 	int selectedVDevice() const {return _selectedVDevice;}
 	void incRef(int virtualDeviceIndex);

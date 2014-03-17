@@ -8,8 +8,9 @@
 namespace BackyardBrains {
 
 const int RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX = -2;
+const int RecordingManager::DEFAULT_SAMPLE_RATE = 22050;
 
-RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(false), _fileMode(false), _sampleRate(44100), _selectedVDevice(0), _threshAvgCount(1) {
+RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(false), _fileMode(false), _sampleRate(DEFAULT_SAMPLE_RATE), _selectedVDevice(0), _threshAvgCount(1) {
 	std::cout << "Initializing libbass...\n";
 	if(!BASS_Init(-1, _sampleRate, 0, 0, NULL)) {
 		std::cerr << "Bass Error: Initialization failed: " << BASS_ErrorGetCode() << "\n";
@@ -77,7 +78,6 @@ bool RecordingManager::loadFile(const char *filename) {
 	_devices[0].handle = stream;
 	_fileMode = true;
 	deviceReload.emit();
-
 	if(!_paused) {
 		pauseChanged.emit();
 		setPaused(true);
@@ -107,7 +107,7 @@ void RecordingManager::initRecordingDevices() {
 		}
 	}
 
-	setSampleRate(44100);
+	setSampleRate(DEFAULT_SAMPLE_RATE);
 }
 
 // TODO: consolidate this function somewhere
@@ -188,6 +188,11 @@ int64_t RecordingManager::fileLength() {
 	assert(len != -1);
 
 	return len;
+}
+
+const char *RecordingManager::fileMetaDataString() {
+	assert(_fileMode);
+	return BASS_ChannelGetTags(_devices[0].handle, BASS_TAG_RIFF_INFO);
 }
 
 void RecordingManager::getData(int virtualDevice, int64_t offset, int64_t len, int16_t *dst) {
