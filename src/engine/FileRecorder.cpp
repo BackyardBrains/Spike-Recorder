@@ -128,27 +128,27 @@ void FileRecorder::writeMetadata() {
 	uint32_t sizepos = ftell(_file)-4;
 
 	fwrite("INFO", 4, 1, _file);
-	fwrite("CPOS", 4, 1, _file);
+	fwrite("cpos", 4, 1, _file);
 	put32(poss.str().size()+1, _file);
 	fwrite(poss.str().c_str(), poss.str().size()+1, 1, _file);
 	if(ftell(_file)&1)
 		fputc(0, _file);
-	fwrite("CTRS", 4, 1, _file);
+	fwrite("ctrs", 4, 1, _file);
 	put32(threshs.str().size()+1, _file);
 	fwrite(threshs.str().c_str(), threshs.str().size()+1, 1, _file);
 	if(ftell(_file)&1)
 		fputc(0, _file);
-	fwrite("CGIN", 4, 1, _file);
+	fwrite("cgin", 4, 1, _file);
 	put32(gains.str().size()+1, _file);
 	fwrite(gains.str().c_str(), gains.str().size()+1, 1, _file);
 	if(ftell(_file)&1)
 		fputc(0, _file);
-	fwrite("CCLR", 4, 1, _file);
+	fwrite("cclr", 4, 1, _file);
 	put32(colors.str().size()+1, _file);
 	fwrite(colors.str().c_str(), colors.str().size()+1, 1, _file);
 	if(ftell(_file)&1)
 		fputc(0, _file);
-	fwrite("CTMS", 4, 1, _file);
+	fwrite("ctms", 4, 1, _file);
 	put32(timeScale.str().size()+1, _file);
 	fwrite(timeScale.str().c_str(), timeScale.str().size()+1, 1, _file);
 	if(ftell(_file)&1)
@@ -186,15 +186,15 @@ int FileRecorder::parseMetaDataStr(MetadataChunk *meta, const char *str) {
 					return 1;
 				}
 
-				if(strncmp(beg, "CPOS", p-beg) == 0)
+				if(strncmp(beg, "cpos", p-beg) == 0)
 					keytype = CPOS;
-				else if(strncmp(beg, "CTRS", p-beg) == 0)
+				else if(strncmp(beg, "ctrs", p-beg) == 0)
 					keytype = CTRS;
-				else if(strncmp(beg, "CGIN", p-beg) == 0)
+				else if(strncmp(beg, "cgin", p-beg) == 0)
 					keytype = CGIN;
-				else if(strncmp(beg, "CCLR", p-beg) == 0)
+				else if(strncmp(beg, "cclr", p-beg) == 0)
 					keytype = CCLR;
-				else if(strncmp(beg, "CTMS", p-beg) == 0)
+				else if(strncmp(beg, "ctms", p-beg) == 0)
 					keytype = CTMS;
 				else {
 					std::cerr << "Metadata Parser Error: skipped key '" << std::string(beg,p) << "'.\n";

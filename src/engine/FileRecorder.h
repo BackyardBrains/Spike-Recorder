@@ -15,11 +15,11 @@
  *
  * The keys used for this are
  *
- * CPOS		channel position (float)
- * CTRS		channel threshold (int)
- * CGIN		channel gain (float)
- * CCLR		channel color index (int)
- * CTMS		global time scale (see AudioView.cpp) (float)
+ * cpos		channel position (float)
+ * ctrs		channel threshold (int)
+ * cgin		channel gain (float)
+ * cclr		channel color index (int)
+ * ctms		global time scale (see AudioView.cpp) (float)
  *
  * The values associated with those keys have the following format
  *
@@ -30,15 +30,15 @@
  *
  * Example:
  *
- * CPOS   0.243;0.123;0.4565;
+ * cpos   0.243;0.123;0.4565;
  *
  * channel 1 is at position 0.243, channel 2 at position 0.123 and channel 3
  * at position 0.4565.
  *
  *
- * Global values like CTMS are specified the same way, just with only one value:
+ * Global values like ctms are specified the same way, just with only one value:
  *
- * CTMS 0.0768;
+ * ctms 0.0768;
  *
  */
 
@@ -65,9 +65,6 @@ struct MetadataChunk {
 
 class FileRecorder {
 public:
-
-
-
 	FileRecorder(RecordingManager &manager);
 	~FileRecorder();
 	bool start(const char *filename);
