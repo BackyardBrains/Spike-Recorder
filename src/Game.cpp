@@ -337,9 +337,9 @@ void Game::advance() {
 }
 
 void Game::keyPressEvent(Widgets::KeyboardEvent *e) {
-	if(_fileRec.recording() && e->key() >= Widgets::Key0 && e->key() <= Widgets::Key9) {
+	if(e->key() >= Widgets::Key0 && e->key() <= Widgets::Key9) {
 		int mnum = e->key()-Widgets::Key0;
-
+		_manager.setMarker(mnum);
 	}
 }
 

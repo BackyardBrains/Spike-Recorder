@@ -54,7 +54,8 @@ public:
 private:
 
 	static const int MOVEPIN_SIZE = 30;
-	static const int RESOLUTION = 800;
+	static const Widgets::Color MARKER_COLORS[];
+	static const int MARKER_COLOR_NUM;
 
 	int _clickedGain;
 	float _prevGain;
@@ -91,6 +92,7 @@ private:
 	void paintEvent();
 	void advance();
 
+	void drawMarkers();
 	void drawThreshold(int screenw);
 	void drawScale();
 	void drawData(int channel, int samples, int x, int y, int width);

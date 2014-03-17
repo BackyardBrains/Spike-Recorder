@@ -68,6 +68,8 @@ void RecordingManager::clear() {
 
 	_player.setPos(0);
 
+	_markers.clear();
+	_triggers.clear();
 	_devices.clear();
 	_recordingDevices.clear();
 	_pos = 0;
@@ -220,6 +222,14 @@ int64_t RecordingManager::fileLength() {
 	assert(len != -1);
 
 	return len;
+}
+
+void RecordingManager::setMarker(uint8_t num) {
+	_markers[num] = _pos;
+}
+
+void RecordingManager::removeMarker(uint8_t num) {
+	_markers.erase(num);
 }
 
 const char *RecordingManager::fileMetaDataString() {

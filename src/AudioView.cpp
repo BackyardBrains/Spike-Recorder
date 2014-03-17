@@ -27,6 +27,21 @@ const Widgets::Color AudioView::COLORS[] = {
 
 const int AudioView::COLOR_NUM = sizeof(AudioView::COLORS)/sizeof(AudioView::COLORS[0]);
 
+const Widgets::Color AudioView::MARKER_COLORS[] = {
+	Widgets::Color(255, 236, 148),
+	Widgets::Color(255, 174, 174),
+	Widgets::Color(176, 229, 124),
+	Widgets::Color(180, 216, 231),
+	Widgets::Color(147, 226, 213),
+	Widgets::Color(193, 218, 214),
+	Widgets::Color(172, 209, 233),
+	Widgets::Color(216, 180, 231),
+	Widgets::Color(174, 255, 174),
+	Widgets::Color(255, 236, 255),
+};
+
+const int AudioView::MARKER_COLOR_NUM = sizeof(AudioView::MARKER_COLORS)/sizeof(AudioView::MARKER_COLORS[0]);
+
 const float AudioView::ampScale = .0005f;
 
 AudioView::AudioView(Widgets::Widget *parent, RecordingManager &mngr)
@@ -86,7 +101,6 @@ void AudioView::constructMetaData(MetadataChunk *m) const {
 	}
 }
 
-
 void AudioView::applyMetaData(const MetadataChunk &m) {
 	_timeScale = m.timeScale;
 	_channels.clear();
@@ -136,9 +150,10 @@ void AudioView::standardSettings() {
 	if(_manager.fileMode()) {
 		relOffsetChanged.emit(0);
 	} else {
-		addChannel(0);
 		relOffsetChanged.emit(1000);
 	}
+
+	addChannel(0);
 }
 
 int AudioView::channelCount() const {
@@ -250,11 +265,37 @@ void AudioView::drawData(int channel, int samples, int x, int y, int width) {
 	glEnd();
 }
 
+void AudioView::drawMarkers() {
+	int samples = sampleCount(screenWidth(), scaleWidth());
+	for(std::map<uint8_t, int64_t>::const_iterator it = _manager.markers().begin(); it != _manager.markers().end(); it++) {
+		if(_manager.pos() - it->second > samples)
+			continue;
+
+		float x = width()+screenWidth()*(it->second - _manager.pos())/(float)samples;
+		Widgets::Painter::setColor(MARKER_COLORS[it->first % MARKER_COLOR_NUM]);
+
+		glBegin(GL_LINES);
+		glVertex3f(x, -100, 0);
+		glVertex3f(x, height()+100, 0);
+		glEnd();
+
+		char buf[2];
+		buf[0] = it->first+'0';
+		buf[1] = 0;
+
+		Widgets::Painter::drawRect(Widgets::Rect(x-7,20,15,18));
+		Widgets::Painter::setColor(Widgets::Color(30,30,30));
+		Widgets::Application::font()->draw(buf, x+1, 30, Widgets::AlignCenter);
+
+	}
+}
+
 void AudioView::paintEvent() {
 	float scalew = scaleWidth();
 	float xoff = MOVEPIN_SIZE*1.48f;
 	int screenw = screenWidth();
 	int samples = sampleCount(screenw, scalew);
+
 
 	for(int i = _channels.size() - 1; i >= 0; i--) {
 		float yoff = _channels[i].pos*height();
@@ -270,6 +311,8 @@ void AudioView::paintEvent() {
 
 	if(_manager.threshMode())
 		drawThreshold(screenw);
+	else
+		drawMarkers();
 	drawScale();
 }
 

@@ -60,6 +60,11 @@ public:
 	const char *fileMetaDataString(); // file mode only
 	int threshAvgCount() const {return _threshAvgCount;}
 	int selectedVDevice() const {return _selectedVDevice;}
+
+	const std::map<uint8_t, int64_t> &markers() const {return _markers;}
+	void setMarker(uint8_t num);
+	void removeMarker(uint8_t num);
+
 	void incRef(int virtualDeviceIndex);
 	void decRef(int virtualDeviceIndex);
 
@@ -110,6 +115,7 @@ private:
 	int _selectedVDevice; // triggers threshold/is played on the speakers
 	int _threshAvgCount;
 	std::list<int64_t> _triggers;
+	std::map<uint8_t,int64_t> _markers;
 
 	Player _player;
 };
