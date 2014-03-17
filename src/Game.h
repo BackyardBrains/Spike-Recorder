@@ -38,6 +38,7 @@ private:
 	FileRecorder _fileRec;
 
 	void advance();
+	void keyPressEvent(Widgets::KeyboardEvent *e);
 
 	/* slots: */
 	void pausePressed();

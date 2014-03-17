@@ -54,6 +54,9 @@ private:
 	static BitmapFontGL *_font;
 
 	virtual void advance();
+	virtual void keyPressEvent(KeyboardEvent *event);
+	virtual void keyReleaseEvent(KeyboardEvent *event);
+	
 	void _HandleEvent(const void *eventRaw);
 	Widget * _GetWidgetAt(const Point &point) const;
 

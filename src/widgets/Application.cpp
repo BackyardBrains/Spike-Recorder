@@ -184,6 +184,14 @@ void Application::updateLayout() {
 	}
 }
 
+KeyCode sdl_keysym_to_key(SDLKey key) {
+	return (KeyCode)key;
+}
+
+KeyModifiers sdl_keymod_to_keymod(SDLMod mod) {
+	return mod;
+}
+
 void Application::_HandleEvent(const void *eventRaw)
 {
 	const SDL_Event &event = *reinterpret_cast<const SDL_Event*>(eventRaw);
@@ -312,6 +320,15 @@ void Application::_HandleEvent(const void *eventRaw)
 		const SDL_KeyboardEvent &kevent = *reinterpret_cast<const SDL_KeyboardEvent*>(&event);
 		if(kevent.keysym.sym == SDLK_q && kevent.keysym.mod | KMOD_CTRL)
 			_running = false;
+		else {
+			KeyboardEvent e(sdl_keysym_to_key(kevent.keysym.sym), sdl_keymod_to_keymod(kevent.keysym.mod));
+			keyPressEvent(&e);
+		}
+	}
+	else if (event.type == SDL_KEYUP) {
+		const SDL_KeyboardEvent &kevent = *reinterpret_cast<const SDL_KeyboardEvent*>(&event);
+		KeyboardEvent e(sdl_keysym_to_key(kevent.keysym.sym), sdl_keymod_to_keymod(kevent.keysym.mod));
+		keyReleaseEvent(&e);
 	}
 	else if (event.type == SDL_QUIT)
 	{
@@ -395,6 +412,12 @@ const BitmapFontGL *Application::font() {
 }
 
 void Application::advance() {
+}
+
+void Application::keyPressEvent(KeyboardEvent *e) {
+}
+
+void Application::keyReleaseEvent(KeyboardEvent *e) {
 }
 
 } // namespace Widgets

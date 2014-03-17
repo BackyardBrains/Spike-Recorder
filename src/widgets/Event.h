@@ -3,6 +3,7 @@
 
 #include "Point.h"
 #include "Flags.h"
+#include <SDL_keysym.h>
 
 namespace BackyardBrains {
 
@@ -20,6 +21,43 @@ enum MouseButton
 
 DECLARE_FLAGS(MouseButtons, MouseButton);
 DECLARE_OPERATORS_FOR_FLAGS(MouseButtons);
+
+enum KeyCode {
+	// Number keys
+
+	Key0 = SDLK_0,
+	Key1 = SDLK_1,
+	Key2 = SDLK_2,
+	Key3 = SDLK_3,
+	Key4 = SDLK_4,
+	Key5 = SDLK_5,
+	Key6 = SDLK_6,
+	Key7 = SDLK_7,
+	Key8 = SDLK_8,
+	Key9 = SDLK_9
+};
+
+enum KeyModifier {
+	KModNone = KMOD_NONE,
+	KModLShift = KMOD_LSHIFT,
+	KModRShift = KMOD_RSHIFT,
+	KModLCtrl = KMOD_LCTRL,
+	KModRCtrl = KMOD_RCTRL,
+	KModLAlt = KMOD_LALT,
+	KModRAlt = KMOD_RALT,
+	KModLMeta = KMOD_LMETA,
+	KModRMeta = KMOD_RMETA,
+	KModNum = KMOD_NUM,
+	KModCaps = KMOD_CAPS,
+	KModMode = KMOD_MODE,
+
+	KModCtrl = KMOD_LCTRL|KMOD_RCTRL,
+	KModShift = KMOD_LSHIFT|KMOD_RSHIFT,
+	KModAlt = KMOD_LALT|KMOD_RALT,
+	KModMeta = KMOD_LMETA|KMOD_RMETA
+};
+
+typedef int KeyModifiers;
 
 class Event
 {
@@ -67,6 +105,20 @@ private:
 	Size _size;
 	Size _oldSize;
 };
+
+class KeyboardEvent : public Event {
+public:
+	KeyboardEvent(KeyCode key, int mod) : _key(key), _mod(mod) {
+	}
+
+	KeyCode key() const { return _key; }
+	KeyModifiers mod() const { return _mod; }
+
+private:
+	KeyCode _key;
+	KeyModifiers _mod;
+};
+
 
 } // namespace Widgets
 

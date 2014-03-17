@@ -336,4 +336,11 @@ void Game::advance() {
 	t = newt;
 }
 
+void Game::keyPressEvent(Widgets::KeyboardEvent *e) {
+	if(_fileRec.recording() && e->key() >= Widgets::Key0 && e->key() <= Widgets::Key9) {
+		int mnum = e->key()-Widgets::Key0;
+
+	}
+}
+
 } // namespace BackyardBrains
