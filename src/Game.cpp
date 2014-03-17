@@ -339,7 +339,10 @@ void Game::advance() {
 void Game::keyPressEvent(Widgets::KeyboardEvent *e) {
 	if(e->key() >= Widgets::Key0 && e->key() <= Widgets::Key9) {
 		int mnum = e->key()-Widgets::Key0;
-		_manager.setMarker(mnum);
+		int64_t offset = 0;
+		if(!_manager.fileMode())
+			offset = _audioView->offset();
+		_manager.setMarker(mnum, offset);
 	}
 }
 

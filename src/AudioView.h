@@ -45,7 +45,7 @@ public:
 
 	void setOffset(int64_t offset);
 	void setRelOffset(int reloffset); // in per mille
-	int offset();
+	int offset() const;
 
 	bool thresholdMode();
 	void toggleThreshMode();

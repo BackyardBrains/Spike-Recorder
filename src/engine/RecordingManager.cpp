@@ -224,8 +224,8 @@ int64_t RecordingManager::fileLength() {
 	return len;
 }
 
-void RecordingManager::setMarker(uint8_t num) {
-	_markers[num] = _pos;
+void RecordingManager::setMarker(uint8_t num, int64_t offset) {
+	_markers[num] = _pos + offset;
 }
 
 void RecordingManager::removeMarker(uint8_t num) {

@@ -160,7 +160,7 @@ int AudioView::channelCount() const {
 	return _channels.size();
 }
 
-int AudioView::offset() {
+int AudioView::offset() const{
 	if(_manager.fileMode())
 		return _manager.pos();
 
@@ -268,7 +268,7 @@ void AudioView::drawData(int channel, int samples, int x, int y, int width) {
 void AudioView::drawMarkers() {
 	int samples = sampleCount(screenWidth(), scaleWidth());
 	for(std::map<uint8_t, int64_t>::const_iterator it = _manager.markers().begin(); it != _manager.markers().end(); it++) {
-		if(_manager.pos() - it->second > samples)
+		if(_manager.pos()+_channelOffset-it->second > samples || _manager.pos()+_channelOffset-it->second < 0)
 			continue;
 
 		float x = width()+screenWidth()*(it->second-_manager.pos()-_channelOffset)/(float)samples;

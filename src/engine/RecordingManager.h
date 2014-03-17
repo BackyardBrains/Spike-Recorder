@@ -62,7 +62,7 @@ public:
 	int selectedVDevice() const {return _selectedVDevice;}
 
 	const std::map<uint8_t, int64_t> &markers() const {return _markers;}
-	void setMarker(uint8_t num);
+	void setMarker(uint8_t num, int64_t offset);
 	void removeMarker(uint8_t num);
 
 	void incRef(int virtualDeviceIndex);
