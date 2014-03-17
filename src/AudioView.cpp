@@ -271,7 +271,7 @@ void AudioView::drawMarkers() {
 		if(_manager.pos() - it->second > samples)
 			continue;
 
-		float x = width()+screenWidth()*(it->second - _manager.pos())/(float)samples;
+		float x = width()+screenWidth()*(it->second-_manager.pos()-_channelOffset)/(float)samples;
 		Widgets::Painter::setColor(MARKER_COLORS[it->first % MARKER_COLOR_NUM]);
 
 		glBegin(GL_LINES);
