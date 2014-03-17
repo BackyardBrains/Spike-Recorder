@@ -200,6 +200,13 @@ void Game::threshPressed() {
 
 void Game::recordPressed() {
 	if(!_fileRec.recording()) {
+		if(_audioView->channelCount() == 0) {
+			Widgets::ErrorBox *box = new Widgets::ErrorBox("Error: At least one channel has to be open to record anything.");
+			box->setGeometry(Widgets::Rect(mainWidget()->width()/2-200, mainWidget()->height()/2-40, 400, 80));
+			addPopup(box);
+			return;
+		}
+
 		Widgets::FileDialog d(Widgets::FileDialog::SaveFile);
 
 		d.open();

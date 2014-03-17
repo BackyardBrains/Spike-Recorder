@@ -32,8 +32,10 @@ void RecordingManager::clear() {
 		for(int i = 0; i < (int)_recordingDevices.size(); i++)
 			decRef(i);
 	} else {
-		for(std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it)
+		for(std::map<int, Device>::iterator it = _devices.begin(); it != _devices.end(); ++it) {
 			BASS_StreamFree(it->second.handle);
+			it->second.destroy();
+		}
 	}
 
 	_player.setPos(0);
@@ -184,7 +186,8 @@ void RecordingManager::setVDeviceThreshold(int virtualDevice, int threshold) {
 }
 
 int64_t RecordingManager::fileLength() {
-	assert(_fileMode);
+	assert(_fileMode && !_devices.empty());
+
 	int64_t len = BASS_ChannelGetLength(_devices[0].handle, BASS_POS_BYTE)/_devices[0].bytespersample/_devices[0].channels;
 	assert(len != -1);
 
@@ -543,9 +546,10 @@ void RecordingManager::decRef(int virtualDeviceIndex) {
 					std::cerr << "Bass Error: freeing record device failed: " << BASS_ErrorGetCode() << "\n";
 				}
 			}
+
+			_devices[device].destroy();
+			_devices.erase(device);
 		}
-		_devices[device].destroy();
-		_devices.erase(device);
 	}
 }
 
