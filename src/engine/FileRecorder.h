@@ -8,24 +8,26 @@ namespace BackyardBrains {
 
 class RecordingManager;
 
+struct MetadataChannel {
+	MetadataChannel()
+		: threshold(100), colorIdx(1), pos(0.5f), gain(1.f) { }
+	int threshold;
+	int colorIdx;
+	float pos;
+	float gain;
+};
+
+struct MetadataChunk {
+	MetadataChunk()
+		: timeScale(1.f) { }
+	void print();
+	float timeScale;
+	std::vector<MetadataChannel> channels;
+};
+
 class FileRecorder {
 public:
-	struct MetadataChannel {
-		MetadataChannel()
-			: threshold(100), colorIdx(1), pos(0.5f), gain(1.f) { }
-		int16_t threshold;
-		int colorIdx;
-		float pos;
-		float gain;
-	};
 
-	struct MetadataChunk {
-		MetadataChunk()
-			: timeScale(1.f) { }
-		void print();
-		float timeScale;
-		std::vector<MetadataChannel> channels;
-	};
 
 
 	FileRecorder(RecordingManager &manager);

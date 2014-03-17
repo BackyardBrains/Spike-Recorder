@@ -92,7 +92,7 @@ void RecordingManager::initRecordingDevices() {
 
 	clear();
 	_fileMode = false;
-	deviceReload.emit();
+
 
 	for (int i = 0; BASS_RecordGetDeviceInfo(i, &info); i++)
 	{
@@ -108,6 +108,7 @@ void RecordingManager::initRecordingDevices() {
 	}
 
 	setSampleRate(DEFAULT_SAMPLE_RATE);
+	deviceReload.emit();
 }
 
 // TODO: consolidate this function somewhere
@@ -472,8 +473,7 @@ void RecordingManager::Device::destroy() {
 
 
 void RecordingManager::incRef(int virtualDeviceIndex) {
-	if (virtualDeviceIndex < 0)
-		return;
+	assert(virtualDeviceIndex >= 0);
 	const int device = _recordingDevices[virtualDeviceIndex].device;
 
 	if (_devices.count(device) == 0)
@@ -481,6 +481,7 @@ void RecordingManager::incRef(int virtualDeviceIndex) {
 
 	_devices[device].refCount++;
 	_recordingDevices[virtualDeviceIndex].bound++;
+	assert(_recordingDevices[virtualDeviceIndex].bound < 2); // this shouldn’t be happening at the moment
 
 	if (!_fileMode && _devices[device].handle == 0) {
 		// make sure the device exists
@@ -515,8 +516,7 @@ void RecordingManager::incRef(int virtualDeviceIndex) {
 }
 
 void RecordingManager::decRef(int virtualDeviceIndex) {
-	if (virtualDeviceIndex < 0)
-		return;
+	assert(virtualDeviceIndex >= 0);
 	const int device = _recordingDevices[virtualDeviceIndex].device;
 	if (_devices.count(device) == 0)
 		return;

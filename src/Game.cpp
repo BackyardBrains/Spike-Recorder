@@ -223,16 +223,8 @@ void Game::recordPressed() {
 		_configButton->setVisible(false);
 		_recBar->setActive(true);
 	} else {
-		FileRecorder::MetadataChunk *m = new FileRecorder::MetadataChunk;
-		m->channels.resize(5);
-		for(int i = 0; i < 5; i++) {
-			m->channels[i].pos = -1.23f;
-			m->channels[i].gain = -1.243f;
-			m->channels[i].threshold = -1099;
-			m->channels[i].colorIdx = 0;
-		}
-		m->timeScale = 34.f;
-		m->print();
+		MetadataChunk *m = new MetadataChunk;
+		_audioView->constructMetaData(m);
 		_fileRec.setMetaData(m);
 
 		_fileRec.stop();
@@ -267,11 +259,11 @@ void Game::filePressed() {
 			return;
 		}
 
-		FileRecorder::MetadataChunk m;
+		MetadataChunk m;
 		const char *mdatastr = _manager.fileMetaDataString();
 		if(mdatastr) {
 			FileRecorder::parseMetaDataStr(&m, mdatastr);
-			m.print();
+			_audioView->applyMetaData(&m);
 		}
 		_fileButton->setNormalTex(Widgets::TextureGL::get("data/filestop.png"));
 		_fileButton->setHoverTex(Widgets::TextureGL::get("data/filestophigh.png"));

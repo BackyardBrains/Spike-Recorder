@@ -6,8 +6,11 @@
 #include "widgets/BitmapFontGL.h"
 #include "widgets/Application.h"
 #include "engine/SampleBuffer.h"
+#include "engine/FileRecorder.h"
 #include <iostream>
 #include <sstream>
+#include <utility>
+#include <algorithm>
 #include <cmath>
 #include <cassert>
 #include <cstdlib>
@@ -28,7 +31,7 @@ const float AudioView::ampScale = .0005f;
 
 AudioView::AudioView(Widgets::Widget *parent, RecordingManager &mngr)
 	: Widgets::Widget(parent), _clickedGain(-1), _clickedSlider(-1), _clickedPixelOffset(0),
-	_clickedThresh(false), channelOffset(0), _manager(mngr), _timeScale(0.1f)  {
+	_clickedThresh(false), _channelOffset(0), _manager(mngr), _timeScale(0.1f)  {
 }
 
 int AudioView::addChannel(int virtualDevice) {
@@ -55,13 +58,61 @@ void AudioView::removeChannel(int virtualDevice) {
 	assert(removed > 0);
 }
 
+static bool compare_second(const std::pair<int, int> &a, const std::pair<int, int> &b) {
+	return a.second <= b.second;
+}
 
-void AudioView::setChannelColor(int channel, int coloridx) {
-	_channels[channel].coloridx = std::max(0,std::min(COLOR_NUM-1, coloridx));
+void AudioView::constructMetaData(MetadataChunk *m) {
+	// as the channels in the file will be ordered by their virtualDevice
+	// index, not by the channel index here, we have to predict those new
+	// indices by sorting.
+
+	std::vector<std::pair<int, int> > tmp(_channels.size());
+	for(unsigned int i = 0; i < tmp.size(); i++)
+		tmp[i] = std::make_pair(i, _channels[i].virtualDevice);
+	std::sort(tmp.begin(),tmp.end(), compare_second);
+
+	std::vector<int> idx(_channels.size());
+	for(unsigned int i = 0; i < tmp.size(); i++)
+		idx[tmp[i].first] = i;
+
+	for(unsigned int i = 0; i < tmp.size(); i++)
+		std::cout << idx[i] << "\n";
+
+	m->timeScale = _timeScale;
+	m->channels.resize(_channels.size());
+	for(unsigned int ic = 0; ic < _channels.size(); ic++) {
+		int i = idx[ic];
+		m->channels[i].threshold = _manager.recordingDevices()[_channels[ic].virtualDevice].threshold;
+		m->channels[i].gain = _channels[ic].gain;
+		m->channels[i].colorIdx = _channels[ic].colorIdx;
+		m->channels[i].pos = _channels[ic].pos;
+	}
+}
+
+
+void AudioView::applyMetaData(MetadataChunk *m) {
+	_timeScale = m->timeScale;
+	_channels.clear();
+
+	for(unsigned int i = 0; i < m->channels.size(); i++) {
+		addChannel(i);
+		_manager.recordingDevices()[_channels[i].virtualDevice].threshold = m->channels[i].threshold;
+		_channels[i].gain = m->channels[i].gain;
+		_channels[i].colorIdx = m->channels[i].colorIdx;
+		_channels[i].pos = m->channels[i].pos;
+	}
+
+	if(m->channels.size() == 0 && _manager.recordingDevices().size() != 0)
+		addChannel(0);
+}
+
+void AudioView::setChannelColor(int channel, int colorIdx) {
+	_channels[channel].colorIdx = std::max(0,std::min(COLOR_NUM-1, colorIdx));
 }
 
 int AudioView::channelColor(int channel) const {
-	return _channels[channel].coloridx;
+	return _channels[channel].colorIdx;
 }
 
 int AudioView::channelVirtualDevice(int channel) const {
@@ -84,11 +135,10 @@ void AudioView::standardSettings() {
 	_clickedSlider = -1;
 	_clickedThresh = false;
 
-	channelOffset = 0;
+	_channelOffset = 0;
 
 	_channels.clear();
 	if(_manager.fileMode()) {
-		addChannel(0);
 		relOffsetChanged.emit(0);
 	} else {
 		addChannel(0);
@@ -104,7 +154,7 @@ int AudioView::offset() {
 	if(_manager.fileMode())
 		return _manager.pos();
 
-	return channelOffset;
+	return _channelOffset;
 }
 
 float AudioView::scaleWidth() {
@@ -131,11 +181,11 @@ void AudioView::setOffset(int64_t offset) {
 	int reloffset;
 
 	if(!_manager.fileMode()) {
-		channelOffset = std::min((int64_t)0,offset);
-		if(channelOffset < -SampleBuffer::SIZE+samples) // because that's what's visible on the screen
-			channelOffset = -SampleBuffer::SIZE+samples;
+		_channelOffset = std::min((int64_t)0,offset);
+		if(_channelOffset < -SampleBuffer::SIZE+samples) // because that's what's visible on the screen
+			_channelOffset = -SampleBuffer::SIZE+samples;
 
-		reloffset = 1000.f*channelOffset/(SampleBuffer::SIZE-samples)+1000;
+		reloffset = 1000.f*_channelOffset/(SampleBuffer::SIZE-samples)+1000;
 	} else { // when we are reading a file, real seeking is allowed
 		offset = std::min(_manager.fileLength()-1, offset);
 		offset = std::max((int64_t)0, offset);
@@ -149,7 +199,7 @@ void AudioView::setRelOffset(int reloffset) {
 	if(!_manager.fileMode()) {
 		float f = reloffset*0.001f-1.f;
 		int count = SampleBuffer::SIZE-sampleCount(screenWidth(), scaleWidth());
-		channelOffset = f*count;
+		_channelOffset = f*count;
 	} else {
 		float f = reloffset*0.001f;
 		int64_t count = _manager.fileLength()-1;
@@ -186,7 +236,7 @@ void AudioView::drawScale() {
 void AudioView::drawData(int channel, int samples, int x, int y, int width) {
 	std::vector<std::pair<int16_t, int16_t> > data;
 	if(!_manager.threshMode())
-		data = _manager.getSamplesEnvelope(_channels[channel].virtualDevice,_manager.pos()+channelOffset-samples, samples, samples/width+1);
+		data = _manager.getSamplesEnvelope(_channels[channel].virtualDevice,_manager.pos()+_channelOffset-samples, samples, samples/width+1);
 	else
 		data = _manager.getTriggerSamplesEnvelope(_channels[channel].virtualDevice, samples, samples/width+1);
 
@@ -213,7 +263,7 @@ void AudioView::paintEvent() {
 
 	for(int i = _channels.size() - 1; i >= 0; i--) {
 		float yoff = _channels[i].pos*height();
-		Widgets::Painter::setColor(COLORS[_channels[i].coloridx]);
+		Widgets::Painter::setColor(COLORS[_channels[i].colorIdx]);
 		if(_channels[i].virtualDevice != RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX) {
 			drawData(i, samples, xoff, yoff, screenw);
 
@@ -229,7 +279,7 @@ void AudioView::paintEvent() {
 }
 
 void AudioView::drawThreshold(int screenw) {
-	Widgets::Painter::setColor(COLORS[_channels[selectedChannel()].coloridx]);
+	Widgets::Painter::setColor(COLORS[_channels[selectedChannel()].colorIdx]);
 
 	if(thresholdPos() > MOVEPIN_SIZE/2 && thresholdPos() < height() - MOVEPIN_SIZE/2) {
 		Widgets::TextureGL::get("data/threshpin.png")->bind();
@@ -352,7 +402,7 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 		} else if(!_manager.threshMode() || x < width()-MOVEPIN_SIZE*3/2) {
 			_timeScale = std::max(1.f/_manager.sampleRate(), _timeScale*0.8f);
 			if(!_manager.fileMode())
-				setOffset(channelOffset);
+				setOffset(_channelOffset);
 		}
 		event->accept();
 	} else if(event->button() == Widgets::WheelDownButton) {
@@ -363,7 +413,7 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 		} else if(!_manager.threshMode() || x < width()-MOVEPIN_SIZE*3/2) {
 			_timeScale = std::min(2.f, _timeScale*1.2f);
 			if(!_manager.fileMode())
-				setOffset(channelOffset); // or else the buffer end will become shown
+				setOffset(_channelOffset); // or else the buffer end will become shown
 		}
 		event->accept();
 	}

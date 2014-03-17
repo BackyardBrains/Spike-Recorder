@@ -49,7 +49,7 @@ void RecordingBar::paintEvent() {
 
 void RecordingBar::advance() {
 	int t = SDL_GetTicks()-_startTime;
-	if(t > 0 && t < 1300) {
+	if(t > 0 && t < 1300 || sizeHint().h > 0) {
 		if(_active) {
 			setSizeHint(Widgets::Size(sizeHint().w, 30.f*std::tanh(t/500.f)));
 			Widgets::Application::getInstance()->updateLayout();

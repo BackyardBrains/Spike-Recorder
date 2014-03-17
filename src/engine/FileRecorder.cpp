@@ -23,7 +23,7 @@ static uint16_t le_16(uint16_t v) {
 #define le_16(v) (v)
 #endif
 
-void FileRecorder::MetadataChunk::print() {
+void MetadataChunk::print() {
 	for(unsigned int i = 0; i < channels.size(); i++)	{
 		std::cout << "Channel " << i << "\n";
 		std::cout << "pos: " << channels[i].pos << "\n";
@@ -92,6 +92,9 @@ bool FileRecorder::start(const char *filename) {
 void FileRecorder::stop() {
 	uint32_t size = ftell(_file);
 
+	if(ftell(_file)&1)
+		fputc(0, _file);
+
 	if(_metadata != NULL)
 		writeMetadata();
 
@@ -123,22 +126,33 @@ void FileRecorder::writeMetadata() {
 
 	fwrite("LIST\0\0\0\0", 8, 1, _file);
 	uint32_t sizepos = ftell(_file)-4;
+
 	fwrite("INFO", 4, 1, _file);
 	fwrite("CPOS", 4, 1, _file);
 	put32(poss.str().size()+1, _file);
 	fwrite(poss.str().c_str(), poss.str().size()+1, 1, _file);
+	if(ftell(_file)&1)
+		fputc(0, _file);
 	fwrite("CTRS", 4, 1, _file);
 	put32(threshs.str().size()+1, _file);
 	fwrite(threshs.str().c_str(), threshs.str().size()+1, 1, _file);
+	if(ftell(_file)&1)
+		fputc(0, _file);
 	fwrite("CGIN", 4, 1, _file);
 	put32(gains.str().size()+1, _file);
 	fwrite(gains.str().c_str(), gains.str().size()+1, 1, _file);
+	if(ftell(_file)&1)
+		fputc(0, _file);
 	fwrite("CCLR", 4, 1, _file);
 	put32(colors.str().size()+1, _file);
 	fwrite(colors.str().c_str(), colors.str().size()+1, 1, _file);
+	if(ftell(_file)&1)
+		fputc(0, _file);
 	fwrite("CTMS", 4, 1, _file);
 	put32(timeScale.str().size()+1, _file);
 	fwrite(timeScale.str().c_str(), timeScale.str().size()+1, 1, _file);
+	if(ftell(_file)&1)
+		fputc(0, _file);
 
 	uint32_t size = ftell(_file)-sizepos-4;
 	fseek(_file, sizepos, SEEK_SET);
@@ -162,8 +176,6 @@ int FileRecorder::parseMetaDataStr(MetadataChunk *meta, const char *str) {
 			CCLR,
 			CTMS
 		} keytype = CINVAL;
-
-		std::cout << p << "\n";
 
 		const char *beg = p;
 		int entry = 0;
@@ -218,7 +230,7 @@ int FileRecorder::parseMetaDataStr(MetadataChunk *meta, const char *str) {
 				case CINVAL:
 					assert(false);
 				}
-
+				beg=p+1;
 				entry++;
 			}
 
@@ -241,8 +253,9 @@ bool FileRecorder::recording() const {
 }
 
 float FileRecorder::recordTime() const {
-	if(_file == NULL)
+	if(_file == NULL || _nchan == 0)
 		return 0.f;
+	
 	return (ftell(_file)-44)/(float)_nchan/sizeof(int16_t)/_manager.sampleRate();
 }
 

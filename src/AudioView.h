@@ -8,24 +8,28 @@
 
 namespace BackyardBrains {
 
+class MetadataChunk;
+
 class AudioView : public Widgets::Widget
 {
 public:
 	struct Channel
 	{
-		Channel() : virtualDevice(RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX), coloridx(1), gain(1.f), thresh(0.1f), pos(0.5f) {}
+		Channel() : virtualDevice(RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX), colorIdx(1), gain(1.f), pos(0.5f) {}
 
 		int virtualDevice;
-		int coloridx;
+		int colorIdx;
 
 		float gain;
-		float thresh;
 		float pos;
 	};
 
 
 	static const Widgets::Color COLORS[];
 	static const int COLOR_NUM;
+
+	void constructMetaData(MetadataChunk *mdata);
+	void applyMetaData(MetadataChunk *mdata);
 
 	AudioView(Widgets::Widget *parent, RecordingManager &mngr);
 
