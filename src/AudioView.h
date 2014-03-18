@@ -48,6 +48,7 @@ public:
 	int offset() const;
 
 	void toggleRulerMode();
+	bool rulerMode() const;
 
 	sigslot::signal1<int> relOffsetChanged;
 private:

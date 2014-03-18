@@ -19,7 +19,7 @@ GLuint LoadTexture(const char *filename)
 		// Check that the image's width is a power of 2
 		if (((surface->w & (surface->w - 1)) != 0) ||
 			((surface->h & (surface->h - 1)) != 0))
-			fprintf(stderr, "warning: \"%s\"'s width is not a power of 2\n", filename);
+			fprintf(stderr, "Warning: width of '%s' is not a power of 2\n", filename);
 
 		// get the number of channels in the SDL surface
 		GLint nOfColors = surface->format->BytesPerPixel;
@@ -40,8 +40,8 @@ GLuint LoadTexture(const char *filename)
 		}
 		else
 		{
-			fprintf(stderr, "warning: \"%s\" is not truecolor...  this will probably break\n", filename);
-			return -1;
+			fprintf(stderr, "Fatal: '%s' is not truecolor.\n", filename);
+			exit(1);
 		}
 
 		// Have OpenGL generate a texture object handle for us

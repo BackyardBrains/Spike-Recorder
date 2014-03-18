@@ -172,6 +172,10 @@ void AudioView::toggleRulerMode() {
 	_rulerMode = !_rulerMode;
 }
 
+bool AudioView::rulerMode() const {
+	return _rulerMode;
+}
+
 int AudioView::offset() const{
 	if(_manager.fileMode())
 		return _manager.pos();
