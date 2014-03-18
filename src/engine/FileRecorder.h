@@ -15,12 +15,13 @@
  *
  * The keys used for this are
  *
- * cpos		channel position (float)
- * ctrs		channel threshold (int)
- * cgin		channel gain (float)
- * cclr		channel color index (int)
- * cnam		channel name (string)
+ * cpos		channel positions (float)
+ * ctrs		channel thresholds (int)
+ * cgin		channel gains (float)
+ * cclr		channel colors index (int)
+ * cnam		channel names (string)
  * ctms		global time scale (see AudioView.cpp) (float)
+ * cmrk		time markers
  *
  * The values associated with those keys have the following format
  *
@@ -63,6 +64,7 @@ struct MetadataChunk {
 	void print();
 	float timeScale;
 	std::vector<MetadataChannel> channels;
+	std::map<uint8_t, int64_t> markers;
 };
 
 class FileRecorder {
@@ -83,6 +85,7 @@ private:
 	RecordingManager &_manager;
 	FILE *_file;
 
+	int64_t _startPos;
 	int64_t _oldPos;
 	int _nchan;
 

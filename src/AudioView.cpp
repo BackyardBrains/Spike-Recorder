@@ -73,6 +73,13 @@ void AudioView::removeChannel(int virtualDevice) {
 	assert(removed > 0);
 }
 
+void AudioView::clearChannels() {
+	for(unsigned int i = 0; i < _channels.size(); i++)
+		_manager.decRef(_channels[i].virtualDevice);
+
+	_channels.clear();
+}
+
 static bool compare_second(const std::pair<int, int> &a, const std::pair<int, int> &b) {
 	return a.second <= b.second;
 }
@@ -103,8 +110,9 @@ void AudioView::constructMetaData(MetadataChunk *m) const {
 
 void AudioView::applyMetaData(const MetadataChunk &m) {
 	_timeScale = m.timeScale;
-	_channels.clear();
 
+	clearChannels();
+	
 	for(unsigned int i = 0; i < m.channels.size(); i++) {
 		addChannel(i);
 		_channels[i].gain = m.channels[i].gain;
@@ -146,7 +154,7 @@ void AudioView::standardSettings() {
 
 	_channelOffset = 0;
 
-	_channels.clear();
+	clearChannels();
 	if(_manager.fileMode()) {
 		relOffsetChanged.emit(0);
 	} else {

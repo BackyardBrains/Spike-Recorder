@@ -32,7 +32,12 @@ void MetadataChunk::print() {
 		std::cout << "gain: " << channels[i].gain << "\n";
 		std::cout << "colorIdx: " << channels[i].colorIdx << "\n\n";
 	}
-	std::cout << "timeScale: " << timeScale << "\n";
+	std::cout << "timeScale: " << timeScale << "\n\n";
+
+	for(std::map<uint8_t, int64_t>::iterator it = markers.begin(); it != markers.end(); it++) {
+		std::cout << "Marker " << (int)it->first << ": " << it->second << "\n";
+	}
+
 }
 
 FileRecorder::FileRecorder(RecordingManager &manager) : _manager(manager), _file(0), _buf(0), _bufsize(0), _metadata(NULL) {
@@ -55,6 +60,11 @@ static void put16(uint16_t num, FILE *f) {
 	fwrite(&num, 2, 1, f);
 }
 
+static void padbyte(FILE *f) {
+	if(ftell(f)&1)
+		fputc(0, f);
+}
+
 void FileRecorder::setMetaData(MetadataChunk *meta) {
 	delete _metadata;
 	_metadata = meta;
@@ -62,6 +72,7 @@ void FileRecorder::setMetaData(MetadataChunk *meta) {
 
 bool FileRecorder::start(const char *filename) {
 	_oldPos = _manager.pos();
+	_startPos = _oldPos;
 	_file = fopen(filename, "wb");
 	if(_file == 0) {
 		return false;
@@ -93,8 +104,7 @@ bool FileRecorder::start(const char *filename) {
 void FileRecorder::stop() {
 	uint32_t size = ftell(_file);
 
-	if(ftell(_file)&1)
-		fputc(0, _file);
+	padbyte(_file);
 
 	if(_metadata != NULL)
 		writeMetadata();
@@ -111,8 +121,15 @@ void FileRecorder::stop() {
 	_file = NULL;
 }
 
+static void write_subchunk(const char *id, const std::string &content, FILE *f) {
+	fwrite(id, 4, 1, f);
+	put32(content.size()+1, f);
+	fwrite(content.c_str(), content.size()+1, 1, f);
+	padbyte(f);
+}
+
 void FileRecorder::writeMetadata() {
-	std::stringstream poss, threshs, gains, colors, names;
+	std::stringstream poss, threshs, gains, colors, names, markers;
 
 	for(unsigned int i = 0; i < _metadata->channels.size(); i++) {
 		MetadataChannel &c = _metadata->channels[i];
@@ -123,6 +140,20 @@ void FileRecorder::writeMetadata() {
 		names << c.name << ';';
 	}
 
+	if(!_metadata->markers.empty()) {
+		uint8_t max = _metadata->markers.begin()->first;
+		for(std::map<uint8_t,int64_t>::iterator it = _metadata->markers.begin(); it != _metadata->markers.end(); it++) {
+			if(it->first > max)
+				max = it->first;
+		}
+
+		for(unsigned int i = 0; i <= max; i++) {
+			if(_metadata->markers.count(i) != 0)
+				markers << _metadata->markers[i]-_startPos;
+			markers << ';';
+		}
+	}
+
 	std::stringstream timeScale;
 	timeScale << _metadata->timeScale << ';';
 
@@ -130,36 +161,14 @@ void FileRecorder::writeMetadata() {
 	uint32_t sizepos = ftell(_file)-4;
 
 	fwrite("INFO", 4, 1, _file);
-	fwrite("cpos", 4, 1, _file);
-	put32(poss.str().size()+1, _file);
-	fwrite(poss.str().c_str(), poss.str().size()+1, 1, _file);
-	if(ftell(_file)&1) // pad to full words
-		fputc(0, _file);
-	fwrite("ctrs", 4, 1, _file);
-	put32(threshs.str().size()+1, _file);
-	fwrite(threshs.str().c_str(), threshs.str().size()+1, 1, _file);
-	if(ftell(_file)&1)
-		fputc(0, _file);
-	fwrite("cgin", 4, 1, _file);
-	put32(gains.str().size()+1, _file);
-	fwrite(gains.str().c_str(), gains.str().size()+1, 1, _file);
-	if(ftell(_file)&1)
-		fputc(0, _file);
-	fwrite("cclr", 4, 1, _file);
-	put32(colors.str().size()+1, _file);
-	fwrite(colors.str().c_str(), colors.str().size()+1, 1, _file);
-	if(ftell(_file)&1)
-		fputc(0, _file);
-	fwrite("ctms", 4, 1, _file);
-	put32(timeScale.str().size()+1, _file);
-	fwrite(timeScale.str().c_str(), timeScale.str().size()+1, 1, _file);
-	if(ftell(_file)&1)
-		fputc(0, _file);
-	fwrite("cnam", 4, 1, _file);
-	put32(names.str().size()+1, _file);
-	fwrite(names.str().c_str(), names.str().size()+1, 1, _file);
-	if(ftell(_file)&1)
-		fputc(0, _file);
+
+	write_subchunk("cpos", poss.str(), _file);
+	write_subchunk("ctrs", threshs.str(), _file);
+	write_subchunk("cgin", gains.str(), _file);
+	write_subchunk("cclr", colors.str(), _file);
+	write_subchunk("ctms", timeScale.str(), _file);
+	write_subchunk("cnam", names.str(), _file);
+	write_subchunk("cmrk", markers.str(), _file);
 
 	uint32_t size = ftell(_file)-sizepos-4;
 	fseek(_file, sizepos, SEEK_SET);
@@ -182,7 +191,8 @@ int FileRecorder::parseMetaDataStr(MetadataChunk *meta, const char *str) {
 			CGIN,
 			CCLR,
 			CTMS,
-			CNAM
+			CNAM,
+			CMRK
 		} keytype = CINVAL;
 
 		const char *beg = p;
@@ -206,6 +216,8 @@ int FileRecorder::parseMetaDataStr(MetadataChunk *meta, const char *str) {
 					keytype = CTMS;
 				else if(strncmp(beg, "cnam", p-beg) == 0)
 					keytype = CNAM;
+				else if(strncmp(beg, "cmrk", p-beg) == 0)
+					keytype = CMRK;
 				else {
 					std::cerr << "Metadata Parser Error: skipped key '" << std::string(beg,p) << "'.\n";
 					mode = MVAL;
@@ -216,8 +228,10 @@ int FileRecorder::parseMetaDataStr(MetadataChunk *meta, const char *str) {
 			}
 
 			if(*p == ';' && mode == MVAL) {
-				if((int)meta->channels.size() <= entry)
-					meta->channels.resize(entry+1);
+				if(keytype == CPOS || keytype == CTRS || keytype == CGIN || keytype == CCLR || keytype == CNAM) {
+					if((int)meta->channels.size() <= entry)
+						meta->channels.resize(entry+1);
+				}
 
 				std::string val(beg, p);
 
@@ -239,6 +253,10 @@ int FileRecorder::parseMetaDataStr(MetadataChunk *meta, const char *str) {
 					break;
 				case CTMS:
 					meta->timeScale = atof(val.c_str());
+					break;
+				case CMRK:
+					if(val.size() != 0)
+						meta->markers[entry] = atoi(val.c_str());
 					break;
 				case CINVAL:
 					assert(false);

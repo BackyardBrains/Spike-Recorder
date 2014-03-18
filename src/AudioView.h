@@ -52,7 +52,6 @@ public:
 
 	sigslot::signal1<int> relOffsetChanged;
 private:
-
 	static const int MOVEPIN_SIZE = 30;
 	static const Widgets::Color MARKER_COLORS[];
 	static const int MARKER_COLOR_NUM;
@@ -72,6 +71,8 @@ private:
 
 	float _timeScale;
 	static const float ampScale;
+
+	void clearChannels();
 
 	int selectedChannel() const;
 	float scaleLenFactor();

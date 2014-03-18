@@ -46,6 +46,8 @@ void RecordingManager::constructMetaData(MetadataChunk *m) const {
 			chani++;
 		}
 	}
+
+	m->markers = _markers;
 }
 
 void RecordingManager::applyMetaData(const MetadataChunk &m) {
@@ -53,6 +55,8 @@ void RecordingManager::applyMetaData(const MetadataChunk &m) {
 		_recordingDevices[i].threshold = m.channels[i].threshold;
 		_recordingDevices[i].name = m.channels[i].name;
 	}
+
+	_markers = m.markers;
 }
 
 void RecordingManager::clear() {
@@ -522,7 +526,7 @@ void RecordingManager::incRef(int virtualDeviceIndex) {
 
 	_devices[device].refCount++;
 	_recordingDevices[virtualDeviceIndex].bound++;
-	assert(_recordingDevices[virtualDeviceIndex].bound < 2); // this shouldn’t be happening at the moment
+	assert(_recordingDevices[virtualDeviceIndex].bound < 2); // this shouldn’t happen at the moment
 
 	if (!_fileMode && _devices[device].handle == 0) {
 		// make sure the device exists
