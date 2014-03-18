@@ -112,7 +112,7 @@ void AudioView::applyMetadata(const MetadataChunk &m) {
 	_timeScale = m.timeScale;
 
 	clearChannels();
-	
+
 	for(unsigned int i = 0; i < m.channels.size(); i++) {
 		addChannel(i);
 		_channels[i].gain = m.channels[i].gain;

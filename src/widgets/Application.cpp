@@ -84,7 +84,7 @@ static MouseButton ToMouseButtonFromSDL(Uint8 button)
 
 static MouseButtons ToMouseButtonsFromSDL(Uint8 state)
 {
-	MouseButtons result;
+	MouseButtons result = 0;
 	if (state & SDL_BUTTON_LMASK)
 		result |= LeftButton;
 	if (state & SDL_BUTTON_RMASK)
@@ -201,9 +201,9 @@ void Application::_HandleEvent(const void *eventRaw)
 		if (event.type == SDL_MOUSEMOTION)
 			_buttonState = ToMouseButtonsFromSDL(event.motion.state);
 		else if (event.type == SDL_MOUSEBUTTONDOWN)
-			_buttonState.setFlag(ToMouseButtonFromSDL(event.button.button));
+			_buttonState |= ToMouseButtonFromSDL(event.button.button);
 		else // if (event.type == SDL_MOUSEBUTTONUP)
-			_buttonState.unsetFlag(ToMouseButtonFromSDL(event.button.button));
+			_buttonState &= ~ToMouseButtonFromSDL(event.button.button);
 
 		// TODO generate events if the event.motion.state magically changed things
 		// TODO keep track of the keyboard modifiers state

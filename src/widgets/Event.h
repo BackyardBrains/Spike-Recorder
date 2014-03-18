@@ -2,7 +2,6 @@
 #define BACKYARDBRAINS_WIDGETS_EVENT_H
 
 #include "Point.h"
-#include "Flags.h"
 #include <SDL_keysym.h>
 
 namespace BackyardBrains {
@@ -18,9 +17,7 @@ enum MouseButton
 	WheelUpButton = 8,
 	WheelDownButton = 16
 };
-
-DECLARE_FLAGS(MouseButtons, MouseButton);
-DECLARE_OPERATORS_FOR_FLAGS(MouseButtons);
+typedef int MouseButtons;
 
 enum KeyCode {
 	// Number keys

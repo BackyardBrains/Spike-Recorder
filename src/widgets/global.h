@@ -1,8 +1,6 @@
 #ifndef BACKYARDBRAINS_WIDGETS_GLOBAL_H
 #define BACKYARDBRAINS_WIDGETS_GLOBAL_H
 
-#include "Flags.h"
-
 namespace BackyardBrains {
 
 namespace Widgets {
@@ -22,8 +20,7 @@ enum AlignmentFlag
 	AlignVertical_Mask   = AlignTop | AlignBottom | AlignVCenter
 };
 
-DECLARE_FLAGS(Alignment, AlignmentFlag);
-DECLARE_OPERATORS_FOR_FLAGS(Alignment);
+typedef int Alignment;
 
 enum Orientation
 {
@@ -31,8 +28,7 @@ enum Orientation
 	Vertical   = 0x2
 };
 
-DECLARE_FLAGS(Orientations, Orientation);
-DECLARE_OPERATORS_FOR_FLAGS(Orientations);
+typedef int Orientations;
 
 } // namespace Widgets
 

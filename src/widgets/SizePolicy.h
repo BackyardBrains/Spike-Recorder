@@ -35,7 +35,7 @@ public:
 
 	Orientations expandingDirections() const
 	{
-		Orientations result;
+		Orientations result = 0;
 		if (verticalPolicy() & ExpandFlag)
 			result |= Vertical;
 		if (horizontalPolicy() & ExpandFlag)
