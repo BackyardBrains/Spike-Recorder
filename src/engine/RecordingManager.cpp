@@ -27,7 +27,7 @@ RecordingManager::~RecordingManager() {
 	BASS_Free();
 }
 
-void RecordingManager::constructMetaData(MetadataChunk *m) const {
+void RecordingManager::constructMetadata(MetadataChunk *m) const {
 	unsigned int nchan = 0;
 
 	for(unsigned int i = 0; i < _recordingDevices.size(); i++)
@@ -50,7 +50,7 @@ void RecordingManager::constructMetaData(MetadataChunk *m) const {
 	m->markers = _markers;
 }
 
-void RecordingManager::applyMetaData(const MetadataChunk &m) {
+void RecordingManager::applyMetadata(const MetadataChunk &m) {
 	for(unsigned int i = 0; i < m.channels.size(); i++) {
 		_recordingDevices[i].threshold = m.channels[i].threshold;
 		_recordingDevices[i].name = m.channels[i].name;
@@ -236,7 +236,7 @@ void RecordingManager::removeMarker(uint8_t num) {
 	_markers.erase(num);
 }
 
-const char *RecordingManager::fileMetaDataString() {
+const char *RecordingManager::fileMetadataString() {
 	assert(_fileMode);
 	return BASS_ChannelGetTags(_devices[0].handle, BASS_TAG_RIFF_INFO);
 }

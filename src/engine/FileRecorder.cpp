@@ -40,14 +40,13 @@ void MetadataChunk::print() {
 
 }
 
-FileRecorder::FileRecorder(RecordingManager &manager) : _manager(manager), _file(0), _buf(0), _bufsize(0), _metadata(NULL) {
+FileRecorder::FileRecorder(RecordingManager &manager) : _manager(manager), _file(0), _buf(0), _bufsize(0) {
 }
 
 FileRecorder::~FileRecorder() {
 	if(_file)
-		stop();
+		stop(NULL);
 	delete[] _buf;
-	delete _metadata;
 }
 
 static void put32(uint32_t num, FILE *f) {
@@ -63,11 +62,6 @@ static void put16(uint16_t num, FILE *f) {
 static void padbyte(FILE *f) {
 	if(ftell(f)&1)
 		fputc(0, f);
-}
-
-void FileRecorder::setMetaData(MetadataChunk *meta) {
-	delete _metadata;
-	_metadata = meta;
 }
 
 bool FileRecorder::start(const char *filename) {
@@ -101,13 +95,13 @@ bool FileRecorder::start(const char *filename) {
 	return true;
 }
 
-void FileRecorder::stop() {
+void FileRecorder::stop(const MetadataChunk *meta) {
 	uint32_t size = ftell(_file);
 
 	padbyte(_file);
 
-	if(_metadata != NULL)
-		writeMetadata();
+	if(meta != NULL)
+		writeMetadata(meta);
 
 	fseek(_file, 40, SEEK_SET);
 	put32(size-44, _file); // data chunk size
@@ -128,11 +122,11 @@ static void write_subchunk(const char *id, const std::string &content, FILE *f) 
 	padbyte(f);
 }
 
-void FileRecorder::writeMetadata() {
+void FileRecorder::writeMetadata(const MetadataChunk *meta) {
 	std::stringstream poss, threshs, gains, colors, names, markers;
 
-	for(unsigned int i = 0; i < _metadata->channels.size(); i++) {
-		MetadataChannel &c = _metadata->channels[i];
+	for(unsigned int i = 0; i < meta->channels.size(); i++) {
+		const MetadataChannel &c = meta->channels[i];
 		poss << c.pos << ';';
 		threshs << c.threshold << ';';
 		gains << c.gain << ';';
@@ -140,22 +134,23 @@ void FileRecorder::writeMetadata() {
 		names << c.name << ';';
 	}
 
-	if(!_metadata->markers.empty()) {
-		uint8_t max = _metadata->markers.begin()->first;
-		for(std::map<uint8_t,int64_t>::iterator it = _metadata->markers.begin(); it != _metadata->markers.end(); it++) {
+	if(!meta->markers.empty()) {
+		uint8_t max = meta->markers.begin()->first;
+		for(std::map<uint8_t,int64_t>::const_iterator it = meta->markers.begin(); it != meta->markers.end(); it++) {
 			if(it->first > max)
 				max = it->first;
 		}
 
 		for(unsigned int i = 0; i <= max; i++) {
-			if(_metadata->markers.count(i) != 0)
-				markers << _metadata->markers[i]-_startPos;
+			std::map<uint8_t,int64_t>::const_iterator it = meta->markers.find(i);
+			if(it != meta->markers.end() && it->second-_startPos > 0)
+				markers << it->second-_startPos;
 			markers << ';';
 		}
 	}
 
 	std::stringstream timeScale;
-	timeScale << _metadata->timeScale << ';';
+	timeScale << meta->timeScale << ';';
 
 	fwrite("LIST\0\0\0\0", 8, 1, _file);
 	uint32_t sizepos = ftell(_file)-4;
@@ -176,7 +171,7 @@ void FileRecorder::writeMetadata() {
 	fseek(_file, 0, SEEK_END);
 }
 
-int FileRecorder::parseMetaDataStr(MetadataChunk *meta, const char *str) {
+int FileRecorder::parseMetadataStr(MetadataChunk *meta, const char *str) {
 	const char *p = str;
 	while(*p != 0) {
 		enum {

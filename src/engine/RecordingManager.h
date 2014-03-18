@@ -44,8 +44,8 @@ public:
 	int64_t pos() const {return _pos;}
 	void setPos(int64_t pos, bool artificial = true); // file mode only
 
-	void constructMetaData(MetadataChunk *m) const;
-	void applyMetaData(const MetadataChunk &m);
+	void constructMetadata(MetadataChunk *m) const;
+	void applyMetadata(const MetadataChunk &m);
 
 	int sampleRate() const;
 	void setSampleRate(int sampleRate);
@@ -57,7 +57,7 @@ public:
 	bool threshMode() const {return _threshMode;}
 	bool fileMode() const {return _fileMode;}
 	int64_t fileLength(); // file mode only
-	const char *fileMetaDataString(); // file mode only
+	const char *fileMetadataString(); // file mode only
 	int threshAvgCount() const {return _threshAvgCount;}
 	int selectedVDevice() const {return _selectedVDevice;}
 

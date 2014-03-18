@@ -84,7 +84,7 @@ static bool compare_second(const std::pair<int, int> &a, const std::pair<int, in
 	return a.second <= b.second;
 }
 
-void AudioView::constructMetaData(MetadataChunk *m) const {
+void AudioView::constructMetadata(MetadataChunk *m) const {
 	// as the channels in the file will be ordered by their virtualDevice
 	// index, not by the channel index here, we have to predict those new
 	// indices by sorting.
@@ -108,7 +108,7 @@ void AudioView::constructMetaData(MetadataChunk *m) const {
 	}
 }
 
-void AudioView::applyMetaData(const MetadataChunk &m) {
+void AudioView::applyMetadata(const MetadataChunk &m) {
 	_timeScale = m.timeScale;
 
 	clearChannels();

@@ -72,10 +72,9 @@ public:
 	FileRecorder(RecordingManager &manager);
 	~FileRecorder();
 	bool start(const char *filename);
-	void stop();
+	void stop(const MetadataChunk *meta);
 
-	void setMetaData(MetadataChunk *meta);
-	static int parseMetaDataStr(MetadataChunk *meta, const char *str);
+	static int parseMetadataStr(MetadataChunk *meta, const char *str);
 
 	bool recording() const;
 
@@ -92,9 +91,7 @@ private:
 	int16_t *_buf;
 	int _bufsize;
 
-	MetadataChunk *_metadata;
-
-	void writeMetadata();
+	void writeMetadata(const MetadataChunk *meta);
 };
 
 }

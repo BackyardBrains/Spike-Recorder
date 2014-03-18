@@ -232,12 +232,11 @@ void Game::recordPressed() {
 		_fileButton->setVisible(false);
 		_recBar->setActive(true);
 	} else {
-		MetadataChunk *m = new MetadataChunk;
-		_audioView->constructMetaData(m);
-		_manager.constructMetaData(m);
-		_fileRec.setMetaData(m);
+		MetadataChunk m;
+		_audioView->constructMetadata(&m);
+		_manager.constructMetadata(&m);
 
-		_fileRec.stop();
+		_fileRec.stop(&m);
 		_configButton->setVisible(true);
 		_configButton->setSizeHint(Widgets::Size(48, 48));
 		_fileButton->setVisible(true);
@@ -272,11 +271,11 @@ void Game::filePressed() {
 		}
 
 		MetadataChunk m;
-		const char *mdatastr = _manager.fileMetaDataString();
+		const char *mdatastr = _manager.fileMetadataString();
 		if(mdatastr) {
-			FileRecorder::parseMetaDataStr(&m, mdatastr);
-			_manager.applyMetaData(m);
-			_audioView->applyMetaData(m);
+			FileRecorder::parseMetadataStr(&m, mdatastr);
+			_manager.applyMetadata(m);
+			_audioView->applyMetadata(m);
 		}
 		_fileButton->setNormalTex(Widgets::TextureGL::get("data/filestop.png"));
 		_fileButton->setHoverTex(Widgets::TextureGL::get("data/filestophigh.png"));
