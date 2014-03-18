@@ -3,6 +3,7 @@
 
 #include <bass.h>
 #include <sigslot.h>
+#include <stdint.h>
 
 namespace BackyardBrains {
 
