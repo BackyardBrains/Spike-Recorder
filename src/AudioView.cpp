@@ -46,7 +46,7 @@ const float AudioView::ampScale = .0005f;
 
 AudioView::AudioView(Widgets::Widget *parent, RecordingManager &mngr)
 	: Widgets::Widget(parent), _clickedGain(-1), _clickedSlider(-1), _clickedPixelOffset(0),
-	_clickedThresh(false), _channelOffset(0), _manager(mngr), _timeScale(0.1f)  {
+	_clickedThresh(false), _rulerMode(false), _rulerStart(-1), _rulerEnd(-1), _channelOffset(0), _manager(mngr), _timeScale(0.1f)  {
 }
 
 int AudioView::addChannel(int virtualDevice) {
@@ -166,6 +166,10 @@ void AudioView::standardSettings() {
 
 int AudioView::channelCount() const {
 	return _channels.size();
+}
+
+void AudioView::toggleRulerMode() {
+	_rulerMode = !_rulerMode;
 }
 
 int AudioView::offset() const{
@@ -309,6 +313,14 @@ void AudioView::paintEvent() {
 	int screenw = screenWidth();
 	int samples = sampleCount(screenw, scalew);
 
+	if(_rulerMode && _rulerStart != -1) {
+		int x = std::min(_rulerEnd, _rulerStart);
+		int w = std::max(_rulerEnd, _rulerStart) - x;
+
+		Widgets::Painter::setColor(Widgets::Color(50,50,50));
+		Widgets::Painter::drawRect(Widgets::Rect(x, -100, w, height()+200));
+	}
+
 
 	for(int i = _channels.size() - 1; i >= 0; i--) {
 		float yoff = _channels[i].pos*height();
@@ -326,6 +338,22 @@ void AudioView::paintEvent() {
 		drawThreshold(screenw);
 	else
 		drawMarkers();
+
+	if(_rulerMode && _rulerStart != -1) {
+		Widgets::Painter::setColor(Widgets::Colors::white);
+		int w = abs(_rulerStart-_rulerEnd);
+		float dtime = w/(float)screenw*samples/_manager.sampleRate();
+		int unit = -std::log(dtime/900)/std::log(1000);
+		dtime *= std::pow(1000, unit);
+
+		std::stringstream s;
+		s.precision(3);
+		s << std::fixed << dtime << " " << get_unit_str(unit);
+
+		Widgets::Application::font()->draw(s.str().c_str(), (_rulerStart+_rulerEnd)/2, height()-50, Widgets::AlignCenter);
+	}
+
+
 	drawScale();
 }
 
@@ -419,6 +447,10 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 				_manager.setSelectedVDevice(_channels[_clickedSlider].virtualDevice);
 				event->accept();
 			}
+		} else if(_rulerMode && _rulerStart == -1 && x > MOVEPIN_SIZE*1.5f && (!_manager.threshMode() || x <= width()-MOVEPIN_SIZE*1.5f)) {
+			_rulerStart = x;
+			_rulerEnd = x;
+			event->accept();
 		} else if(_clickedGain == -1 && (!_manager.threshMode() || x <= width()-MOVEPIN_SIZE*1.5f)) { // if in thresh mode we don't want it to react on the tresh slider area
 			int yy;
 			unsigned int i;
@@ -436,10 +468,7 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 				_prevGain = _channels[i].gain;
 				event->accept();
 			}
-		}
-
-
-		if(_manager.threshMode()) {
+		} else if(_manager.threshMode()) {
 			_clickedThresh = determineThreshHover(x, y, &_clickedPixelOffset);
 			if(_clickedThresh)
 				event->accept();
@@ -468,7 +497,7 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 		}
 		event->accept();
 	}
-	assert((_clickedGain != -1) + (_clickedSlider != -1) + _clickedThresh <= 1);
+	assert((_clickedGain != -1) + (_clickedSlider != -1) + _clickedThresh + (_rulerStart != -1) <= 1);
 }
 
 void AudioView::mouseReleaseEvent(Widgets::MouseEvent *event) {
@@ -476,12 +505,16 @@ void AudioView::mouseReleaseEvent(Widgets::MouseEvent *event) {
 		_clickedSlider = -1;
 		_clickedThresh = false;
 		_clickedGain = -1;
+		_rulerStart = -1;
 	}
 }
 
 void AudioView::mouseMotionEvent(Widgets::MouseEvent *event) {
-	if(_clickedSlider != -1)
+	if(_clickedSlider != -1) {
 		_channels[_clickedSlider].pos = std::max(0.05f,std::min(0.95f, (event->pos().y-_clickedPixelOffset)/(float)height()));
+		event->accept();
+	}
+
 	if(_clickedThresh) {
 		int selected = selectedChannel();
 
@@ -489,11 +522,18 @@ void AudioView::mouseMotionEvent(Widgets::MouseEvent *event) {
 		t = std::max(MOVEPIN_SIZE/(float)height(), t);
 		t = std::min(1.f-MOVEPIN_SIZE/(float)height(), t);
 		_manager.setVDeviceThreshold(_manager.selectedVDevice(), (_channels[selected].pos - t)/_channels[selected].gain/ampScale);
+		event->accept();
 	}
 
 	if(_clickedGain != -1) {
 		float newGain = _prevGain*std::fabs((height()*_channels[_clickedGain].pos-event->pos().y)/(float)_clickedPixelOffset);
 		_channels[_clickedGain].gain = std::max(0.001f, std::min(10.f, newGain));
+		event->accept();
+	}
+
+	if(_rulerStart != -1) {
+		_rulerEnd = event->pos().x;
+		event->accept();
 	}
 
 }

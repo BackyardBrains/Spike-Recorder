@@ -47,8 +47,7 @@ public:
 	void setRelOffset(int reloffset); // in per mille
 	int offset() const;
 
-	bool thresholdMode();
-	void toggleThreshMode();
+	void toggleRulerMode();
 
 	sigslot::signal1<int> relOffsetChanged;
 private:
@@ -63,6 +62,10 @@ private:
 	int _clickedPixelOffset;
 
 	bool _clickedThresh;
+
+	bool _rulerMode;
+	int _rulerStart;
+	int _rulerEnd;
 
 	int64_t _channelOffset;
 

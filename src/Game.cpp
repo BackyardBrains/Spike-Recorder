@@ -65,6 +65,10 @@ Game::Game() : _fileRec(_manager) {
 	_configButton->setNormalTex(Widgets::TextureGL::get("data/config.png"));
 	_configButton->setHoverTex(Widgets::TextureGL::get("data/confighigh.png"));
 	_configButton->clicked.connect(this, &Game::configPressed);
+	Widgets::PushButton *rulerButton = new Widgets::PushButton(mainWidget());
+	rulerButton->setNormalTex(Widgets::TextureGL::get("data/ruler.png"));
+	rulerButton->setHoverTex(Widgets::TextureGL::get("data/rulerhigh.png"));
+	rulerButton->clicked.connect(_audioView, &AudioView::toggleRulerMode);
 	Widgets::PushButton *threshButton = new Widgets::PushButton(mainWidget());
 	threshButton->setNormalTex(Widgets::TextureGL::get("data/thresh.png"));
 	threshButton->setHoverTex(Widgets::TextureGL::get("data/threshhigh.png"));
@@ -112,6 +116,8 @@ Game::Game() : _fileRec(_manager) {
 	Widgets::BoxLayout *topBar = new Widgets::BoxLayout(Widgets::Horizontal);
 	topBar->addSpacing(10);
 	topBar->addWidget(_configButton);
+	topBar->addSpacing(5);
+	topBar->addWidget(rulerButton);
 	topBar->addSpacing(5);
 	topBar->addWidget(threshButton);
 	topBar->addSpacing(10);
@@ -314,6 +320,8 @@ void Game::loadResources() {
 	Widgets::TextureGL::load("data/confighigh.png");
 	Widgets::TextureGL::load("data/thresh.png");
 	Widgets::TextureGL::load("data/threshhigh.png");
+	Widgets::TextureGL::load("data/ruler.png");
+	Widgets::TextureGL::load("data/rulerhigh.png");
 	Widgets::TextureGL::load("data/rec.png");
 	Widgets::TextureGL::load("data/rechigh.png");
 	Widgets::TextureGL::load("data/file.png");
