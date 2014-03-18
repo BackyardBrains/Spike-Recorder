@@ -14,7 +14,7 @@
 namespace BackyardBrains {
 
 class SampleBuffer;
-class MetadataChunk;
+struct MetadataChunk;
 
 class RecordingManager : public sigslot::has_slots<>
 {

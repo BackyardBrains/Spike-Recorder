@@ -53,13 +53,13 @@ void DropDownList::addItem(const std::string &str)
 
 void DropDownList::insertItem(unsigned int index, const std::string &str)
 {
-	if (index >= 0 && index <= _entries.size())
+	if(index < _entries.size())
 		_entries.insert(_entries.begin() + index, str);
 }
 
 std::string DropDownList::item(unsigned int index) const
 {
-	if (index >= 0 && index <= _entries.size())
+	if(index < _entries.size())
 		return _entries[index];
 	return std::string();
 }

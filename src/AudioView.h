@@ -8,7 +8,7 @@
 
 namespace BackyardBrains {
 
-class MetadataChunk;
+struct MetadataChunk;
 
 class AudioView : public Widgets::Widget
 {
