@@ -1,7 +1,7 @@
 #ifndef BACKYARDBRAINS_WIDGETS_COLOR_H
 #define BACKYARDBRAINS_WIDGETS_COLOR_H
 
-#include <stdint.h> // TODO use a C++ version?
+#include <stdint.h>
 #include <climits>
 #include "util.h"
 
@@ -62,6 +62,12 @@ static const Color yellow(255, 255, 0);
 static const Color cyan(0, 255, 255);
 static const Color violet(255, 0, 255);
 static const Color gray(128, 128, 128);
+
+static const Color background(25,25,25);
+static const Color button(128,128,128);
+static const Color buttonhigh(150,150,150);
+static const Color widgetbg(80,80,80);
+static const Color widgetbgdark(50,50,50);
 
 } // namespace Colors
 

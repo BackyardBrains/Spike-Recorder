@@ -343,7 +343,7 @@ void AudioView::paintEvent() {
 		Widgets::Painter::setColor(Widgets::Colors::white);
 		int w = abs(_rulerStart-_rulerEnd);
 		float dtime = w/(float)screenw*samples/_manager.sampleRate();
-		int unit = -std::log(dtime/900)/std::log(1000);
+		int unit = -std::log(dtime/100)/std::log(1000);
 		dtime *= std::pow(1000, unit);
 
 		std::stringstream s;

@@ -80,16 +80,11 @@ void ScrollBar::setPageStep(int val)
 
 void ScrollBar::paintEvent()
 {
-	Painter::setColor(Colors::gray);
-	// draw the buttons
-// 	Painter::drawRect(_LessButtonRect());
-// 	Painter::drawRect(_MoreButtonRect());
-	// draw the gutter
-	Painter::setColor(Color(80,80,80));
+	Painter::setColor(Colors::widgetbg);
 	Painter::drawRect(rect());
-	// draw the slider
+	
 	const Rect sliderRect = _SliderRect();
-	Painter::setColor(Colors::gray);
+	Painter::setColor(Colors::button);
 	Painter::drawRect(sliderRect);
 }
 

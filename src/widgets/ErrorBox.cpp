@@ -16,7 +16,9 @@ ErrorBox::ErrorBox(const char *text) : text(text) {
 }
 
 void ErrorBox::paintEvent() {
-	Painter::setColor(Color(20,20,20,200));
+	Widgets::Color bg = Widgets::Colors::background;
+	bg.a = 200;
+	Painter::setColor(bg);
 	Painter::drawRect(rect());
 
 	const BitmapFontGL &font = *Application::font();
@@ -33,7 +35,6 @@ void ErrorBox::paintEvent() {
 			lbreak = it;
 		}
 
-// 		std::cout << i;
 		if(i >= linelen || *it == '\n') {
 			if(lbreak < lstart) {
 				lbreak = it;

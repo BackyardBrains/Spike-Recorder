@@ -83,7 +83,9 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 }
 
 void ConfigView::paintEvent() {
-	Widgets::Painter::setColor(Widgets::Color(20,20,20,250));
+	Widgets::Color bg = Widgets::Colors::background;
+	bg.a = 250;
+	Widgets::Painter::setColor(bg);
 	Widgets::Painter::drawRect(rect());
 	Widgets::Painter::setColor(Widgets::Colors::white);
 

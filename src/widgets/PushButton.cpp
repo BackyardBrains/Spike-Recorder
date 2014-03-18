@@ -32,7 +32,7 @@ void PushButton::paintEvent()
 		Painter::drawTexRect(rect());
 		glBindTexture(GL_TEXTURE_2D, 0);
 	} else {
-		Painter::setColor(_hover ? Color(150,150,150) : Colors::gray);
+		Painter::setColor(_hover ? Colors::buttonhigh : Colors::button);
 		Painter::drawCircle(rect().center(), rect().width()/2, 15);
 	}
 }

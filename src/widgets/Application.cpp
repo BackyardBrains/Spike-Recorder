@@ -2,6 +2,7 @@
 #include "TextureGL.h"
 #include "LayoutItem.h"
 #include "BitmapFontGL.h"
+#include "Color.h"
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <iostream>
@@ -358,7 +359,8 @@ void Application::createWindow(int w, int h)
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glClearColor(0.10, 0.10, 0.10, 0);
+	const Color &bg = Colors::background;
+	glClearColor(bg.redF(), bg.greenF(), bg.blueF(), 0);
 	glEnable(GL_CULL_FACE);
 
 	TextureGL::reloadAll();

@@ -36,7 +36,7 @@ int ColorDropDownList::selection() const {
 }
 
 void ColorDropDownList::paintEvent() {
-	Widgets::Painter::setColor(Widgets::Color(80,80,80));
+	Widgets::Painter::setColor(Widgets::Colors::widgetbg);
 	Widgets::Painter::drawRect(rect());
 	if(_content.size() > 0)
 		Widgets::Painter::setColor(_content[_selection]);
@@ -44,7 +44,7 @@ void ColorDropDownList::paintEvent() {
 	Widgets::Painter::drawRect(Widgets::Rect(2,2,SLICE_W-4, height()-4));
 
 	Widgets::TextureGL::get("data/dropdown.png")->bind();
-	Widgets::Painter::setColor(Widgets::Colors::gray);
+	Widgets::Painter::setColor(Widgets::Colors::button);
 	Widgets::Painter::drawTexRect(Widgets::Rect(SLICE_W+2,height()/2-3,width()-SLICE_W-6, 6));
 	glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -85,7 +85,7 @@ void ColorDropDownPopup::setScroll(int scroll) {
 }
 
 void ColorDropDownPopup::paintEvent() {
-	Widgets::Painter::setColor(Widgets::Color(50,50,50));
+	Widgets::Painter::setColor(Widgets::Colors::widgetbgdark);
 	Widgets::Painter::drawRect(rect());
 
 	unsigned int i;
