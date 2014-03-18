@@ -187,7 +187,11 @@ int AudioView::screenWidth() {
 }
 
 int AudioView::sampleCount(int screenw, float scalew) {
-	return screenw == 0 ? 0 : _manager.sampleRate()/scalew*screenw;
+	int samples = screenw == 0 ? 0 : _manager.sampleRate()/scalew*screenw;
+	const int snap = std::max(samples/screenw,1);
+	samples /= snap;
+	samples *= snap;
+	return samples;
 }
 
 float AudioView::thresholdPos() {
@@ -254,17 +258,18 @@ void AudioView::drawScale() {
 void AudioView::drawData(int channel, int samples, int x, int y, int width) {
 	std::vector<std::pair<int16_t, int16_t> > data;
 	if(!_manager.threshMode())
-		data = _manager.getSamplesEnvelope(_channels[channel].virtualDevice,_manager.pos()+_channelOffset-samples, samples, samples/width+1);
+		data = _manager.getSamplesEnvelope(_channels[channel].virtualDevice,_manager.pos()+_channelOffset-samples, samples, std::max(samples/width,1));
 	else
-		data = _manager.getTriggerSamplesEnvelope(_channels[channel].virtualDevice, samples, samples/width+1);
+		data = _manager.getTriggerSamplesEnvelope(_channels[channel].virtualDevice, samples, std::max(samples/width,1));
 
 	float dist = width/(float)(data.size()-1);
-	if(dist < 1.02f)
+
+	if(fabs(dist-1.f) < 0.003f)
 		dist = 1.f; // we don’t want round off artifacts
 
 	float scale = height()*ampScale;
 	glBegin(GL_LINE_STRIP);
-	for(int j = 0; j < std::min(width,(int)data.size()); j++) {
+	for(int j = 0; j < (int)data.size(); j++) {
 		int xc = j*dist+x;
 
 		glVertex3i(xc, -data[j].first*_channels[channel].gain*scale+y, 0);
