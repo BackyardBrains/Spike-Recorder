@@ -14,10 +14,10 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   inkscape:export-filename="/home/laochailan/src/odesk/byb/BYB_SDL_rewrite/data/ruler.png"
+   inkscape:export-filename="/home/laochailan/src/odesk/byb/BYB_SDL_rewrite/data/rulerstophigh.png"
    inkscape:export-xdpi="46.88372"
    inkscape:export-ydpi="46.88372"
-   sodipodi:docname="ruler.svg">
+   sodipodi:docname="rulerstop.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -74,7 +74,7 @@
        d="m 241.42857,276.64789 c 0,33.92606 -27.50251,61.42857 -61.42857,61.42857 -33.92606,0 -61.42857,-27.50251 -61.42857,-61.42857 0,-33.92606 27.50251,-61.42857 61.42857,-61.42857 33.92606,0 61.42857,27.50251 61.42857,61.42857 z"
        transform="translate(11.111678,-5.5558394)" />
     <rect
-       style="fill:#4d4d4d;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       style="fill:#808080;fill-opacity:1;fill-rule:nonzero;stroke:none"
        id="rect2995"
        width="97.590919"
        height="29.281752"
@@ -127,7 +127,7 @@
        d="m 212.80488,244.23088 -8.04287,-2.796"
        style="fill:#808080;stroke:#ffffff;stroke-width:2.06399989;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     <path
-       style="fill:none;stroke:#4d4d4d;stroke-width:14.59615421;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:none;stroke:#808080;stroke-width:14.59615420999999991;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        d="m 151.18475,231.16513 79.85385,79.85384"
        id="path3873"
        inkscape:connector-curvature="0" />
@@ -135,6 +135,6 @@
        inkscape:connector-curvature="0"
        id="path3875"
        d="m 231.0386,231.16513 -79.85384,79.85384"
-       style="fill:none;stroke:#4d4d4d;stroke-width:14.59615421;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+       style="fill:none;stroke:#808080;stroke-width:14.59615420999999991;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
   </g>
 </svg>

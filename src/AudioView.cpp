@@ -288,7 +288,7 @@ void AudioView::drawData(int channel, int samples, int x, int y, int width) {
 
 void AudioView::drawMarkers() {
 	int samples = sampleCount(screenWidth(), scaleWidth());
-	for(std::map<uint8_t, int64_t>::const_iterator it = _manager.markers().begin(); it != _manager.markers().end(); it++) {
+	for(std::list<std::pair<uint8_t, int64_t> >::const_iterator it = _manager.markers().begin(); it != _manager.markers().end(); it++) {
 		if(_manager.pos()+_channelOffset-it->second > samples || _manager.pos()+_channelOffset-it->second < 0)
 			continue;
 

@@ -34,7 +34,7 @@ void MetadataChunk::print() {
 	}
 	std::cout << "timeScale: " << timeScale << "\n\n";
 
-	for(std::map<uint8_t, int64_t>::iterator it = markers.begin(); it != markers.end(); it++) {
+	for(std::list<std::pair<uint8_t, int64_t> >::iterator it = markers.begin(); it != markers.end(); it++) {
 		std::cout << "Marker " << (int)it->first << ": " << it->second << "\n";
 	}
 
@@ -123,7 +123,7 @@ static void write_subchunk(const char *id, const std::string &content, FILE *f) 
 }
 
 void FileRecorder::writeMetadata(const MetadataChunk *meta) {
-	std::stringstream poss, threshs, gains, colors, names, markers;
+	std::stringstream poss, threshs, gains, colors, names, markernums, markertimes;
 
 	for(unsigned int i = 0; i < meta->channels.size(); i++) {
 		const MetadataChannel &c = meta->channels[i];
@@ -135,17 +135,11 @@ void FileRecorder::writeMetadata(const MetadataChunk *meta) {
 	}
 
 	if(!meta->markers.empty()) {
-		uint8_t max = meta->markers.begin()->first;
-		for(std::map<uint8_t,int64_t>::const_iterator it = meta->markers.begin(); it != meta->markers.end(); it++) {
-			if(it->first > max)
-				max = it->first;
-		}
-
-		for(unsigned int i = 0; i <= max; i++) {
-			std::map<uint8_t,int64_t>::const_iterator it = meta->markers.find(i);
-			if(it != meta->markers.end() && it->second-_startPos > 0)
-				markers << it->second-_startPos;
-			markers << ';';
+		for(std::list<std::pair<uint8_t,int64_t> >::const_iterator it = meta->markers.begin(); it != meta->markers.end(); it++) {
+			if(it->second - _startPos >= 0) {
+				markernums << (int)it->first << ';';
+				markertimes << it->second-_startPos << ';';
+			}
 		}
 	}
 
@@ -163,7 +157,8 @@ void FileRecorder::writeMetadata(const MetadataChunk *meta) {
 	write_subchunk("cclr", colors.str(), _file);
 	write_subchunk("ctms", timeScale.str(), _file);
 	write_subchunk("cnam", names.str(), _file);
-	write_subchunk("cmrk", markers.str(), _file);
+	write_subchunk("cmrn", markernums.str(), _file);
+	write_subchunk("cmrt", markertimes.str(), _file);
 
 	uint32_t size = ftell(_file)-sizepos-4;
 	fseek(_file, sizepos, SEEK_SET);
@@ -173,6 +168,10 @@ void FileRecorder::writeMetadata(const MetadataChunk *meta) {
 
 int FileRecorder::parseMetadataStr(MetadataChunk *meta, const char *str) {
 	const char *p = str;
+
+	std::list<uint8_t> markernums;
+	std::list<int64_t> markertimes;
+
 	while(*p != 0) {
 		enum {
 			MKEY,
@@ -187,7 +186,8 @@ int FileRecorder::parseMetadataStr(MetadataChunk *meta, const char *str) {
 			CCLR,
 			CTMS,
 			CNAM,
-			CMRK
+			CMRN,
+			CMRT
 		} keytype = CINVAL;
 
 		const char *beg = p;
@@ -211,8 +211,10 @@ int FileRecorder::parseMetadataStr(MetadataChunk *meta, const char *str) {
 					keytype = CTMS;
 				else if(strncmp(beg, "cnam", p-beg) == 0)
 					keytype = CNAM;
-				else if(strncmp(beg, "cmrk", p-beg) == 0)
-					keytype = CMRK;
+				else if(strncmp(beg, "cmrn", p-beg) == 0)
+					keytype = CMRN;
+				else if(strncmp(beg, "cmrt", p-beg) == 0)
+					keytype = CMRT;
 				else {
 					std::cerr << "Metadata Parser Error: skipped key '" << std::string(beg,p) << "'.\n";
 					mode = MVAL;
@@ -249,9 +251,11 @@ int FileRecorder::parseMetadataStr(MetadataChunk *meta, const char *str) {
 				case CTMS:
 					meta->timeScale = atof(val.c_str());
 					break;
-				case CMRK:
-					if(val.size() != 0)
-						meta->markers[entry] = atoi(val.c_str());
+				case CMRN:
+					markernums.push_back(atoi(val.c_str()));
+					break;
+				case CMRT:
+					markertimes.push_back(atoi(val.c_str()));
 					break;
 				case CINVAL:
 					assert(false);
@@ -269,6 +273,17 @@ int FileRecorder::parseMetadataStr(MetadataChunk *meta, const char *str) {
 		}
 
 		p += strlen(p)+1;
+	}
+
+	if(markernums.size() != markertimes.size()) {
+		std::cerr << "Metadata Parser Error: amounts of marker times and numbers not equal! Skipping marker loading.\n";
+	} else {
+		std::list<uint8_t>::iterator it1 = markernums.begin();
+		std::list<int64_t>::iterator it2 = markertimes.begin();
+
+		for(unsigned int i = 0; i < markernums.size(); i++, it1++, it2++) {
+			meta->markers.push_back(std::make_pair(*it1, *it2));
+		}
 	}
 
 	return 0;
