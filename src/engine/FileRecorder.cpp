@@ -68,6 +68,7 @@ bool FileRecorder::start(const char *filename) {
 	_oldPos = _manager.pos();
 	_startPos = _oldPos;
 	_file = fopen(filename, "wb");
+	_filename = filename;
 	if(_file == 0) {
 		return false;
 	}
@@ -134,14 +135,17 @@ void FileRecorder::writeMetadata(const MetadataChunk *meta) {
 		names << c.name << ';';
 	}
 
-	if(!meta->markers.empty()) {
-		for(std::list<std::pair<uint8_t,int64_t> >::const_iterator it = meta->markers.begin(); it != meta->markers.end(); it++) {
-			if(it->second - _startPos >= 0) {
-				markernums << (int)it->first << ';';
-				markertimes << it->second-_startPos << ';';
-			}
+
+
+	for(std::list<std::pair<uint8_t,int64_t> >::const_iterator it = meta->markers.begin(); it != meta->markers.end(); it++) {
+		if(it->second - _startPos >= 0) {
+			markernums << (int)it->first << ';';
+			markertimes << it->second-_startPos << ';';
 		}
 	}
+
+	if(markernums.str().size() != 0)
+		writeMarkerTextFile(meta->markers);
 
 	std::stringstream timeScale;
 	timeScale << meta->timeScale << ';';
@@ -164,6 +168,20 @@ void FileRecorder::writeMetadata(const MetadataChunk *meta) {
 	fseek(_file, sizepos, SEEK_SET);
 	put32(size, _file);
 	fseek(_file, 0, SEEK_END);
+}
+
+void FileRecorder::writeMarkerTextFile(const std::list<std::pair<uint8_t, int64_t> > &markers) const {
+	size_t dotpos = _filename.find_last_of('.');
+	std::string filename = _filename.substr(0,dotpos) + "-events.txt";
+
+	FILE *f = fopen(filename.c_str(),"w");
+	fprintf(f,"Marker\tTime (in s)\n");
+
+	std::list<std::pair<uint8_t, int64_t> >::const_iterator it;
+	for(it = markers.begin(); it != markers.end(); it++)
+		fprintf(f, "%d\t%.4f\n", it->first, it->second/(float)_manager.sampleRate());
+
+	fclose(f);
 }
 
 int FileRecorder::parseMetadataStr(MetadataChunk *meta, const char *str) {

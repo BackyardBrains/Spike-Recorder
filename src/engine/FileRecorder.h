@@ -86,6 +86,7 @@ public:
 private:
 	RecordingManager &_manager;
 	FILE *_file;
+	std::string _filename;
 
 	int64_t _startPos;
 	int64_t _oldPos;
@@ -95,6 +96,7 @@ private:
 	int _bufsize;
 
 	void writeMetadata(const MetadataChunk *meta);
+	void writeMarkerTextFile(const std::list<std::pair<uint8_t, int64_t> > &markers) const;
 };
 
 }
