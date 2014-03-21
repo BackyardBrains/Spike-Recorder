@@ -67,7 +67,7 @@ struct MetadataChunk {
 	void print();
 	float timeScale;
 	std::vector<MetadataChannel> channels;
-	std::list<std::pair<uint8_t, int64_t> > markers;
+	std::list<std::pair<std::string, int64_t> > markers;
 };
 
 class FileRecorder {
@@ -96,7 +96,9 @@ private:
 	int _bufsize;
 
 	void writeMetadata(const MetadataChunk *meta);
-	void writeMarkerTextFile(const std::list<std::pair<uint8_t, int64_t> > &markers) const;
+	void writeMarkerTextFile(const std::list<std::pair<std::string, int64_t> > &markers) const;
+
+	static void parseMarkerTextFile(std::list<std::pair<std::string, int64_t> > &markers, const char *filename);
 };
 
 }

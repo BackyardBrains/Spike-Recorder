@@ -288,26 +288,37 @@ void AudioView::drawData(int channel, int samples, int x, int y, int width) {
 
 void AudioView::drawMarkers() {
 	int samples = sampleCount(screenWidth(), scaleWidth());
-	for(std::list<std::pair<uint8_t, int64_t> >::const_iterator it = _manager.markers().begin(); it != _manager.markers().end(); it++) {
+	int lastx = 0;
+	int lastw = 0;
+	bool lastyoff = 0;
+
+	for(std::list<std::pair<std::string, int64_t> >::const_iterator it = _manager.markers().begin(); it != _manager.markers().end(); it++) {
 		if(_manager.pos()+_channelOffset-it->second > samples || _manager.pos()+_channelOffset-it->second < 0)
 			continue;
 
 		float x = width()+screenWidth()*(it->second-_manager.pos()-_channelOffset)/(float)samples;
-		Widgets::Painter::setColor(MARKER_COLORS[it->first % MARKER_COLOR_NUM]);
+		assert(it->first.size() > 0);
+		Widgets::Painter::setColor(MARKER_COLORS[(it->first[0]-'0') % MARKER_COLOR_NUM]);
 
 		glBegin(GL_LINES);
 		glVertex3f(x, -100, 0);
 		glVertex3f(x, height()+100, 0);
 		glEnd();
 
-		char buf[2];
-		buf[0] = it->first+'0';
-		buf[1] = 0;
+		int w = Widgets::Application::font()->characterWidth()*it->first.size()+5;
+		int h = Widgets::Application::font()->characterHeight();
 
-		Widgets::Painter::drawRect(Widgets::Rect(x-7,20,15,18));
+		bool yoff = 0;
+		if(it != _manager.markers().begin() && x-lastx < (w+lastw)/2)
+			yoff = !lastyoff;
+
+		Widgets::Painter::drawRect(Widgets::Rect(x-w/2,20+yoff*(h+4),w,h));
 		Widgets::Painter::setColor(Widgets::Color(30,30,30));
-		Widgets::Application::font()->draw(buf, x+1, 30, Widgets::AlignCenter);
+		Widgets::Application::font()->draw(it->first.c_str(), x+1, 21+yoff*(h+4), Widgets::AlignHCenter);
 
+		lastx = x;
+		lastw = w;
+		lastyoff = yoff;
 	}
 }
 

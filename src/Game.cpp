@@ -364,7 +364,7 @@ void Game::keyPressEvent(Widgets::KeyboardEvent *e) {
 		int64_t offset = 0;
 		if(!_manager.fileMode())
 			offset = _audioView->offset();
-		_manager.addMarker(mnum, offset);
+		_manager.addMarker(std::string(1, mnum+'0'), offset);
 	}
 }
 

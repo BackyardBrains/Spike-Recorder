@@ -228,8 +228,8 @@ int64_t RecordingManager::fileLength() {
 	return len;
 }
 
-void RecordingManager::addMarker(uint8_t num, int64_t offset) {
-	_markers.push_back(std::make_pair(num, _pos + offset));
+void RecordingManager::addMarker(const std::string &id, int64_t offset) {
+	_markers.push_back(std::make_pair(id, _pos + offset));
 }
 
 const char *RecordingManager::fileMetadataString() {
