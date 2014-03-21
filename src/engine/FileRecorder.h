@@ -45,6 +45,32 @@
  *
  */
 
+/* Marker File Format
+ *
+ * The time markers of a recording are saved in a separate plain text file
+ * with the same filename as the audio file suffixed with "-events.txt".
+ *
+ * e.g.:
+ *
+ * Audio File: test.wav
+ * Marker File: test-events.txt
+ *
+ * If a file like that is present in the same directory as the loaded audio
+ * file, the markers are read from it and displayed in the audio view.
+ *
+ * The structure of the Marker File is CSV-like. There are two columns,
+ * separated by ','. The first column represents the markers name, the second
+ * column represents it’s position in seconds from the beginning.
+ *
+ * There are some rules for the name: it must not contain a comma and it must
+ * not be empty. But it can be an arbitrary string otherwise.
+ *
+ * The marker position is a floating point number as understood by atof and
+ * must not be empty either. Any amount of white space in the second column is
+ * ignored.
+ *
+ */
+
 namespace BackyardBrains {
 
 class RecordingManager;
