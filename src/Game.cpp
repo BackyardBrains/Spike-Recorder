@@ -291,11 +291,12 @@ void Game::filePressed() {
 
 		MetadataChunk m;
 		const char *mdatastr = _manager.fileMetadataString();
-		if(mdatastr) {
+		if(mdatastr)
 			FileRecorder::parseMetadataStr(&m, mdatastr);
-			_manager.applyMetadata(m);
-			_audioView->applyMetadata(m);
-		}
+		FileRecorder::parseMarkerTextFile(m.markers, FileRecorder::eventTxtFilename(d.getResultFilename().c_str()), _manager.sampleRate());
+		_manager.applyMetadata(m);
+		_audioView->applyMetadata(m);
+
 		_fileButton->setNormalTex(Widgets::TextureGL::get("data/filestop.png"));
 		_fileButton->setHoverTex(Widgets::TextureGL::get("data/filestophigh.png"));
 

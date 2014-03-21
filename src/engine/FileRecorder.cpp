@@ -135,16 +135,15 @@ void FileRecorder::writeMetadata(const MetadataChunk *meta) {
 		names << c.name << ';';
 	}
 
-
-
+	int markers = 0;
 	for(std::list<std::pair<std::string,int64_t> >::const_iterator it = meta->markers.begin(); it != meta->markers.end(); it++) {
 		if(it->second - _startPos >= 0) {
-			markernums << it->first << ';';
-			markertimes << it->second-_startPos << ';';
+			markers++;
+			break;
 		}
 	}
 
-	if(markernums.str().size() != 0)
+	if(markers > 0)
 		writeMarkerTextFile(meta->markers);
 
 	std::stringstream timeScale;
@@ -161,8 +160,6 @@ void FileRecorder::writeMetadata(const MetadataChunk *meta) {
 	write_subchunk("cclr", colors.str(), _file);
 	write_subchunk("ctms", timeScale.str(), _file);
 	write_subchunk("cnam", names.str(), _file);
-	write_subchunk("cmrn", markernums.str(), _file);
-	write_subchunk("cmrt", markertimes.str(), _file);
 
 	uint32_t size = ftell(_file)-sizepos-4;
 	fseek(_file, sizepos, SEEK_SET);
@@ -170,9 +167,13 @@ void FileRecorder::writeMetadata(const MetadataChunk *meta) {
 	fseek(_file, 0, SEEK_END);
 }
 
+std::string FileRecorder::eventTxtFilename(const std::string &filename) {
+	size_t dotpos = filename.find_last_of('.');
+	return filename.substr(0,dotpos) + "-events.txt";
+}
+
 void FileRecorder::writeMarkerTextFile(const std::list<std::pair<std::string, int64_t> > &markers) const {
-	size_t dotpos = _filename.find_last_of('.');
-	std::string filename = _filename.substr(0,dotpos) + "-events.txt";
+	std::string filename = eventTxtFilename(_filename);
 
 	FILE *f = fopen(filename.c_str(),"w");
 	fprintf(f,"# Marker IDs can be arbitrary strings.\n");
@@ -180,20 +181,93 @@ void FileRecorder::writeMarkerTextFile(const std::list<std::pair<std::string, in
 
 	std::list<std::pair<std::string, int64_t> >::const_iterator it;
 	for(it = markers.begin(); it != markers.end(); it++)
-		fprintf(f, "%s,\t%.4f\n", it->first.c_str(), it->second/(float)_manager.sampleRate());
+		if(it->second - _startPos >= 0)
+			fprintf(f, "%s,\t%.4f\n", it->first.c_str(), (it->second-_startPos)/(float)_manager.sampleRate());
 
 	fclose(f);
 }
 
-void FileRecorder::parseMarkerTextFile(std::list<std::pair<std::string, int64_t> > &markers, const char *filename) {
-	FILE *f = fopen(filename, "r");
+void FileRecorder::parseMarkerTextFile(std::list<std::pair<std::string, int64_t> > &markers, const std::string &filename, int sampleRate) {
+	FILE *f = fopen(filename.c_str(), "r");
+	if(f == NULL) // Loading markers is optional and only takes place if an event file is present.
+		return;
+
+	markers.clear();
+	std::vector<char> buf(521);
+	unsigned int i = 0;
+	enum {
+		MSTART,
+		MCOMMENT,
+		MKEY,
+		MVAL
+	} mode = MSTART;
+
+	int c;
+	int line = 1;
+	while((c = fgetc(f)) != EOF) {
+		if(c == '#') {
+			if(mode == MKEY || (mode == MVAL && i == 0)) {
+				std::cerr << "Marker Parser Error: line " << line << ": Key missing value.\n";
+				return;
+			}
+			if(mode == MVAL) {
+				markers.back().second = atof(std::string(buf.begin(),buf.begin()+i).c_str())*sampleRate;
+			}
+
+			mode = MCOMMENT;
+		}
+
+		if(c == '\n') {
+			if(mode == MKEY) {
+				std::cerr << "Marker Parser Error: line " << line << ": Key missing value.\n";
+				return;
+			}
+
+			if(mode == MVAL) {
+				markers.back().second = atof(std::string(buf.begin(),buf.begin()+i).c_str())*sampleRate;
+			}
+
+			mode = MSTART;
+			line++;
+			i = 0;
+			continue;
+		}
+
+		if(mode == MCOMMENT)
+			continue;
+
+		if(c == ',') {
+			if(mode == MVAL) {
+				std::cerr << "Marker Parser Error: line " << line << ": Keys must not contain ','.\n";
+				return;
+			}
+
+			if(i == 0) {
+				std::cerr << "Marker Parser Error: line " << line << ": Keys must not be empty.\n";
+				return;
+			}
+
+			markers.push_back(std::make_pair("", 0));
+			markers.back().first = std::string(buf.begin(), buf.begin()+i);
+			i = 0;
+			mode = MVAL;
+			continue;
+		}
+
+		if(mode == MSTART)
+			mode = MKEY;
+
+		buf[i] = c;
+		i++;
+		if(i >= buf.size())
+			buf.resize(2*buf.size());
+	}
+
+	fclose(f);
 }
 
 int FileRecorder::parseMetadataStr(MetadataChunk *meta, const char *str) {
 	const char *p = str;
-
-	std::list<std::string> markerids;
-	std::list<int64_t> markertimes;
 
 	while(*p != 0) {
 		enum {
@@ -208,9 +282,7 @@ int FileRecorder::parseMetadataStr(MetadataChunk *meta, const char *str) {
 			CGIN,
 			CCLR,
 			CTMS,
-			CNAM,
-			CMRN,
-			CMRT
+			CNAM
 		} keytype = CINVAL;
 
 		const char *beg = p;
@@ -234,10 +306,6 @@ int FileRecorder::parseMetadataStr(MetadataChunk *meta, const char *str) {
 					keytype = CTMS;
 				else if(strncmp(beg, "cnam", p-beg) == 0)
 					keytype = CNAM;
-				else if(strncmp(beg, "cmrn", p-beg) == 0)
-					keytype = CMRN;
-				else if(strncmp(beg, "cmrt", p-beg) == 0)
-					keytype = CMRT;
 				else {
 					std::cerr << "Metadata Parser Error: skipped key '" << std::string(beg,p) << "'.\n";
 					mode = MVAL;
@@ -274,12 +342,6 @@ int FileRecorder::parseMetadataStr(MetadataChunk *meta, const char *str) {
 				case CTMS:
 					meta->timeScale = atof(val.c_str());
 					break;
-				case CMRN:
-					markerids.push_back(val);
-					break;
-				case CMRT:
-					markertimes.push_back(atoi(val.c_str()));
-					break;
 				case CINVAL:
 					assert(false);
 				}
@@ -296,17 +358,6 @@ int FileRecorder::parseMetadataStr(MetadataChunk *meta, const char *str) {
 		}
 
 		p += strlen(p)+1;
-	}
-
-	if(markerids.size() != markertimes.size()) {
-		std::cerr << "Metadata Parser Error: amounts of marker times and numbers not equal! Skipping marker loading.\n";
-	} else {
-		std::list<std::string>::iterator it1 = markerids.begin();
-		std::list<int64_t>::iterator it2 = markertimes.begin();
-
-		for(unsigned int i = 0; i < markerids.size(); i++, it1++, it2++) {
-			meta->markers.push_back(std::make_pair(*it1, *it2));
-		}
 	}
 
 	return 0;

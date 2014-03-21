@@ -23,8 +23,6 @@
  *
  * ctms		global time scale (see AudioView.cpp) (float)
  *
- * cmrn		marker numbers (int)
- * cmrt		marker times (int)
  *
  * The values associated with those keys have the following format
  *
@@ -81,8 +79,11 @@ public:
 
 	bool recording() const;
 
+	static std::string eventTxtFilename(const std::string &filename);
 	float recordTime() const;
 	void advance();
+
+	static void parseMarkerTextFile(std::list<std::pair<std::string, int64_t> > &markers, const std::string &filename, int sampleRate);
 private:
 	RecordingManager &_manager;
 	FILE *_file;
@@ -97,8 +98,6 @@ private:
 
 	void writeMetadata(const MetadataChunk *meta);
 	void writeMarkerTextFile(const std::list<std::pair<std::string, int64_t> > &markers) const;
-
-	static void parseMarkerTextFile(std::list<std::pair<std::string, int64_t> > &markers, const char *filename);
 };
 
 }
