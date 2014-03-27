@@ -11,7 +11,7 @@
 #endif
 
 int main(int argc, char *argv[]) {
-	char *lastslash = strrchr(argv[0], '\n');
+	char *lastslash = strrchr(argv[0], '/');
 	if(lastslash == NULL)
 		lastslash = argv[0]+strlen(argv[0]);
 
