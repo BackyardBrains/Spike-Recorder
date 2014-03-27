@@ -73,6 +73,15 @@ endif
 $(TARGET): $(OBJECTS)
 	$(ARCH)$(CCX) -o $(TARGET)$(EXT) $(OBJECTS) $(CFLAGS) $(LIBS)
 
+ifeq ($(UNAME_S),Darwin)
+	mkdir -p $(TARGET).app/Contents/MacOS
+	mv $(TARGET)$(EXT) $(TARGET).app/Contents/MacOS
+	cp libbass.dylib $(TARGET).app/Contents/MacOS
+	mkdir -p $(TARGET).app/Contents/Resources
+	cp -r data $(TARGET).app/Contents/Resources
+	cp macosx-Info.plist $(TARGET).app/Contents/
+endif
+
 all:
 	$(TARGET)
 
