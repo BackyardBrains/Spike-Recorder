@@ -18,6 +18,10 @@ int main(int argc, char *argv[]) {
 	std::string path(argv[0], lastslash);
 	chdir(path.c_str());
 
+#ifdef __APPLE__
+	chdir("../Resources");
+#endif
+
 	BackyardBrains::Game game;
 	
 	game.run();
