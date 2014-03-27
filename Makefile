@@ -79,7 +79,7 @@ ifeq ($(UNAME_S),Darwin)
 	cp libbass.dylib $(TARGET).app/Contents/MacOS
 	mkdir -p $(TARGET).app/Contents/Resources
 	cp -r data $(TARGET).app/Contents/Resources
-	cp macosx-Info.plist $(TARGET).app/Contents/
+	cp macosx-Info.plist $(TARGET).app/Contents/Info.plist
 endif
 
 all:
