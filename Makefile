@@ -3,12 +3,15 @@ CC  = gcc
 
 #for cross compiling
 
-## Windows i686
-# ARCH = i686-w64-mingw32-
-# BINPREFIX = /usr/i686-w64-mingw32/bin/
-# EXT = .exe
+# Windows i686
+ARCH = i686-w64-mingw32-
+BINPREFIX = /usr/i686-w64-mingw32/bin/
+EXT = .exe
+OS = Windows
 
 TARGET = SpikeRecorder
+TARGETDIR = SpikeRecorder
+
 OBJECTS = \
 	src/engine/RecordingManager.o \
 	src/engine/FileRecorder.o \
@@ -33,15 +36,20 @@ OBJECTS = \
 	src/RecordingBar.o \
 	src/ColorDropDownList.o
 
-ifeq ($(ARCH),)
+ifeq ($(OS),)
 	UNAME_S = $(shell uname -s)
-else
-	UNAME_S =
+	OS = Windows
+	ifeq ($(UNAME_S),Darwin)
+		OS = MacOSX
+	endif
+	ifeq ($(UNAME_S),Linux)
+		OS = Linux
+	endif
 endif
 
 CFLAGS = -g -O2 -Isrc -Isupport -I. -Wall -DSIGSLOT_PURE_ISO
 
-ifeq ($(UNAME_S),Darwin)
+ifeq ($(OS),MacOSX)
 	OBJECTS += src/widgets/native/FileDialogMac.o
 	OBJCFILES = support/SDLMain.m src/widgets/native/FileDialogMac.mm
 
@@ -54,14 +62,15 @@ ifeq ($(UNAME_S),Darwin)
 else
 	CFLAGS += `$(BINPREFIX)sdl-config --cflags` # for Windows/Linux
 	EXTRA_CMD = 
-ifeq ($(UNAME_S),Linux)
-	OBJECTS += src/widgets/native/FileDialogLinux.o
-	LIBS = `sdl-config --libs` -lSDL_image -lGL -lGLU -lbass # for Linux
-else
-	OBJECTS += src/widgets/native/FileDialogWin.o
- 	LIBS = -static -lSDL_image `$(BINPREFIX)sdl-config --static-libs`
-	LIBS += -lglut -lwebp -lpng -ltiff -lz -ljpeg -lopengl32 -lglu32 -dynamic support/bass.lib -Wl,--enable-auto-import # for Windows
-endif
+
+	ifeq ($(OS),Linux)
+		OBJECTS += src/widgets/native/FileDialogLinux.o
+		LIBS = `sdl-config --libs` -lSDL_image -lGL -lGLU -lbass # for Linux
+	else
+		OBJECTS += src/widgets/native/FileDialogWin.o
+		LIBS = -static -lSDL_image `$(BINPREFIX)sdl-config --static-libs`
+		LIBS += -lglut -lwebp -lpng -ltiff -lz -ljpeg -lopengl32 -lglu32 -dynamic support/bass.lib -Wl,--enable-auto-import # for Windows
+	endif
 endif
 
 %.o: %.c
@@ -73,7 +82,7 @@ endif
 $(TARGET): $(OBJECTS)
 	$(ARCH)$(CCX) -o $(TARGET)$(EXT) $(OBJECTS) $(CFLAGS) $(LIBS)
 
-ifeq ($(UNAME_S),Darwin)
+ifeq ($(OS),MacOSX)
 	mkdir -p $(TARGET).app/Contents/MacOS
 	mv $(TARGET)$(EXT) $(TARGET).app/Contents/MacOS
 	cp libbass.dylib $(TARGET).app/Contents/MacOS
@@ -82,9 +91,16 @@ ifeq ($(UNAME_S),Darwin)
 	cp macosx-Info.plist $(TARGET).app/Contents/Info.plist
 endif
 
+ifeq ($(OS),Windows)
+package: $(TARGET)
+	mkdir -p $(TARGETDIR)
+	cp $(TARGET)$(EXT) $(TARGETDIR)
+	cp -r data $(TARGETDIR)/
+	cp bass.dll $(TARGETDIR)
+endif
 all:
 	$(TARGET)
 
 clean:
-	rm -f $(TARGET) $(TARGET).exe $(OBJECTS)
+	rm -rf $(TARGET) $(TARGET).exe $(OBJECTS)
 	rm -rf $(TARGET).app
