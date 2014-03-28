@@ -97,7 +97,7 @@ Game::Game() : _fileRec(_manager) {
 	_forwardButton->setSizeHint(Widgets::Size(32,32));
 	_forwardButton->clicked.connect(this, &Game::forwardPressed);
 
-	_seekBar = new Widgets::ScrollBar(Widgets::Horizontal,mainWidget());
+	_seekBar = new Widgets::ScrollBar(Widgets::Horizontal, mainWidget());
 	_seekBar->setVisible(false);
 	_seekBar->setRange(0,1000);
 	_seekBar->setPageStep(25);
@@ -178,8 +178,9 @@ void Game::backwardPressed() {
 		pausePressed();
 }
 void Game::forwardPressed() {
-	if(_manager.fileMode()) {
-		_audioView->setOffset(_manager.fileLength()-1);
+	if(_manager.fileMode()) { // end file mode when in file mode
+		_manager.initRecordingDevices();
+		_recordButton->setVisible(true);
 	} else {
 		_audioView->setOffset(0);
 	}
@@ -248,48 +249,37 @@ void Game::recordPressed() {
 }
 
 void Game::filePressed() {
-	if(!_manager.fileMode()) {
-		Widgets::FileDialog d(Widgets::FileDialog::OpenFile);
+	Widgets::FileDialog d(Widgets::FileDialog::OpenFile);
 
-		d.open();
-		while(d.isOpen())
-			SDL_Delay(16);
-		std::string str;
-		int s = d.getResultState();
-		if(s != Widgets::FileDialog::SUCCESS)
-			return;
+	d.open();
+	while(d.isOpen())
+		SDL_Delay(16);
+	std::string str;
+	int s = d.getResultState();
+	if(s != Widgets::FileDialog::SUCCESS)
+		return;
 
-		bool rc = _manager.loadFile(d.getResultFilename().c_str());
+	bool rc = _manager.loadFile(d.getResultFilename().c_str());
 
-		if(rc == false) {
-			std::stringstream s;
-			s << "Error: Failed to open '" << d.getResultFilename().c_str() << "'. Wrong format perhaps?";
-			Widgets::ErrorBox *box = new Widgets::ErrorBox(s.str().c_str());
-			box->setGeometry(Widgets::Rect(mainWidget()->width()/2-200, mainWidget()->height()/2-40, 400, 80));
-			addPopup(box);
-			return;
-		}
-
-		MetadataChunk m;
-		const char *mdatastr = _manager.fileMetadataString();
-		if(mdatastr)
-			FileRecorder::parseMetadataStr(&m, mdatastr);
-		FileRecorder::parseMarkerTextFile(m.markers, FileRecorder::eventTxtFilename(d.getResultFilename().c_str()), _manager.sampleRate());
-		_manager.applyMetadata(m);
-		_audioView->applyMetadata(m);
-
-		_fileButton->setNormalTex(Widgets::TextureGL::get("data/filestop.png"));
-		_fileButton->setHoverTex(Widgets::TextureGL::get("data/filestophigh.png"));
-
-		_recordButton->setVisible(false);
-		_forwardButton->setVisible(false);
-	} else {
-		_manager.initRecordingDevices();
-		_fileButton->setNormalTex(Widgets::TextureGL::get("data/file.png"));
-		_fileButton->setHoverTex(Widgets::TextureGL::get("data/filehigh.png"));
-		_recordButton->setVisible(true);
-		_forwardButton->setVisible(true);
+	if(rc == false) {
+		std::stringstream s;
+		s << "Error: Failed to open '" << d.getResultFilename().c_str() << "'. Wrong format perhaps?";
+		Widgets::ErrorBox *box = new Widgets::ErrorBox(s.str().c_str());
+		box->setGeometry(Widgets::Rect(mainWidget()->width()/2-200, mainWidget()->height()/2-40, 400, 80));
+		addPopup(box);
+		return;
 	}
+
+	MetadataChunk m;
+	const char *mdatastr = _manager.fileMetadataString();
+	if(mdatastr)
+		FileRecorder::parseMetadataStr(&m, mdatastr);
+	FileRecorder::parseMarkerTextFile(m.markers, FileRecorder::eventTxtFilename(d.getResultFilename().c_str()), _manager.sampleRate());
+	_manager.applyMetadata(m);
+	_audioView->applyMetadata(m);
+
+	_recordButton->setVisible(false);
+
 }
 
 void Game::configPressed() {
@@ -319,8 +309,6 @@ void Game::loadResources() {
 	Widgets::TextureGL::load("data/rechigh.png");
 	Widgets::TextureGL::load("data/file.png");
 	Widgets::TextureGL::load("data/filehigh.png");
-	Widgets::TextureGL::load("data/filestop.png");
-	Widgets::TextureGL::load("data/filestophigh.png");
 
 	Widgets::TextureGL::load("data/pin.png");
 	Widgets::TextureGL::load("data/threshpin.png");

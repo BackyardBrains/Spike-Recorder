@@ -70,11 +70,13 @@
        height="16"
        x="0.0059594754"
        y="1036.3562" />
-    <path
-       style="fill:#4d4d4d;stroke:none"
-       d="m 1,1037.3622 7,5 7,-5 -5,7 5,7 -7,-5 -7,5 5,-7 -5,-7"
-       id="path3018"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccccccc" />
+    <rect
+       style="fill:#4d4d4d;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect3020"
+       width="10"
+       height="10"
+       x="3"
+       y="3"
+       transform="translate(0,1036.3622)" />
   </g>
 </svg>

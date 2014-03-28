@@ -257,10 +257,15 @@ void AudioView::drawScale() {
 
 void AudioView::drawData(int channel, int samples, int x, int y, int width) {
 	std::vector<std::pair<int16_t, int16_t> > data;
-	if(!_manager.threshMode())
-		data = _manager.getSamplesEnvelope(_channels[channel].virtualDevice,_manager.pos()+_channelOffset-samples, samples, std::max(samples/width,1));
-	else
+
+	if(!_manager.threshMode()) {
+		int pos = _manager.pos()+_channelOffset-samples;
+		if(_manager.fileMode())
+			pos += samples/2;
+		data = _manager.getSamplesEnvelope(_channels[channel].virtualDevice, pos, samples, std::max(samples/width,1));
+	} else {
 		data = _manager.getTriggerSamplesEnvelope(_channels[channel].virtualDevice, samples, std::max(samples/width,1));
+	}
 
 	float dist = width/(float)(data.size()-1);
 

@@ -601,8 +601,10 @@ void RecordingManager::setPos(int64_t pos, bool artificial) {
 		return;
 
 	const int halfsize = SampleBuffer::SIZE/2;
-	const int seg1 = _pos/halfsize;
-	const int seg2 = pos/halfsize;
+
+	const int seg1 = std::min(fileLength()-1,_pos+halfsize/2)/halfsize;
+	const int seg2 = std::min(fileLength()-1,pos+halfsize/2)/halfsize;
+
 
 	if(seg1 != seg2) {
 		for(std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it) {
@@ -612,7 +614,7 @@ void RecordingManager::setPos(int64_t pos, bool artificial) {
 			for(unsigned int i = 0; i < it->second.sampleBuffers.size(); i++) {
 				SampleBuffer &s = *it->second.sampleBuffers[i];
 
-				if(seg2-seg1 > 1 || seg2 < seg1 || s.head()%halfsize != halfsize-1)
+				if(abs(seg2-seg1) > 1 || seg2 == 0 || s.head()%halfsize != halfsize-1)
 					s.reset();
 
 				BASS_ChannelSetPosition(it->second.handle, it->second.bytespersample*npos*nchan, BASS_POS_BYTE);
