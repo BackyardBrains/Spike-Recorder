@@ -53,9 +53,9 @@ ifeq ($(OS),MacOSX)
 	OBJECTS += src/widgets/native/FileDialogMac.o
 	OBJCFILES = support/SDLMain.m src/widgets/native/FileDialogMac.mm
 
-	CFLAGS += -I$(FRAMEWORK_PATH)/SDL.framework/Headers -I$(FRAMEWORK_PATH)/SDL_image.framework/Headers # for Mac OS X
 	LIBS = libbass.dylib $(OBJCFILES) -F. -framework SDL -framework Cocoa -framework SDL_image -framework OpenGL -framework GLUT
 	ifneq ($(FRAMEWORK_PATH),)
+		CFLAGS += -I$(FRAMEWORK_PATH)/SDL.framework/Headers -I$(FRAMEWORK_PATH)/SDL_image.framework/Headers # for Mac OS X
 		LIBS += -F$(FRAMEWORK_PATH)
 	endif
 
@@ -86,9 +86,19 @@ ifeq ($(OS),MacOSX)
 	mkdir -p $(TARGET).app/Contents/MacOS
 	mv $(TARGET)$(EXT) $(TARGET).app/Contents/MacOS
 	cp libbass.dylib $(TARGET).app/Contents/MacOS
-	mkdir -p $(TARGET).app/Contents/Resources
-	cp -r data $(TARGET).app/Contents/Resources
+	mkdir -p $(TARGET).app/Contents/Resources/data
+	cp data/*.png $(TARGET).app/Contents/Resources/data
+	cp SpikeRecorder.icns $(TARGET).app/Contents/Resources
 	cp macosx-Info.plist $(TARGET).app/Contents/Info.plist
+
+	FWPATH = /Library/Frameworks
+	ifneq ($(FRAMEWORK_PATH),)
+		FWPATH = $(FRAMEWORK_PATH)
+	endif
+
+	mkdir -p $(TARGET).app/Frameworks
+	cp -r $(FWPATH)/SDL.framework $(TARGET).app/Frameworks
+	cp -r $(FWPATH)/SDL_image.framework $(TARGET).app/Frameworks
 endif
 
 ifeq ($(OS),Windows)
