@@ -1,1 +1,0 @@
-@cls && make && SpikeRecorder.exe
