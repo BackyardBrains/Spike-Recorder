@@ -53,7 +53,7 @@ ifeq ($(OS),MacOSX)
 	OBJECTS += src/widgets/native/FileDialogMac.o
 	OBJCFILES = support/SDLMain.m src/widgets/native/FileDialogMac.mm
 
-	LIBS = libbass.dylib $(OBJCFILES) -F. -framework SDL -framework Cocoa -framework SDL_image -framework OpenGL -framework GLUT
+	LIBS = -Wl,-rpath,@executable_path/../Frameworks libbass.dylib $(OBJCFILES) -F. -framework SDL -framework Cocoa -framework SDL_image -framework OpenGL -framework GLUT
 
 	FWPATH = /Library/Frameworks
 
