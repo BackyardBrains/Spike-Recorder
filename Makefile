@@ -4,10 +4,10 @@ CC  = gcc
 #for cross compiling
 
 # Windows i686
-ARCH = i686-w64-mingw32-
-BINPREFIX = /usr/i686-w64-mingw32/bin/
-EXT = .exe
-OS = Windows
+# ARCH = i686-w64-mingw32-
+# BINPREFIX = /usr/i686-w64-mingw32/bin/
+# EXT = .exe
+# OS = Windows
 
 TARGET = SpikeRecorder
 TARGETDIR = SpikeRecorder
@@ -97,10 +97,11 @@ package: $(TARGET)
 	cp $(TARGET)$(EXT) $(TARGETDIR)
 	cp -r data $(TARGETDIR)/
 	cp bass.dll $(TARGETDIR)
+	zip -r $(TARGETDIR).zip $(TARGETDIR)/
 endif
 all:
 	$(TARGET)
 
 clean:
-	rm -rf $(TARGET) $(TARGET).exe $(OBJECTS)
-	rm -rf $(TARGET).app
+	rm -rf $(TARGET) $(TARGET).exe $(OBJECTS) $(TARGETDIR).zip
+	rm -rf $(TARGET).app $(TARGETDIR)
