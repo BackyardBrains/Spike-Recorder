@@ -3,11 +3,11 @@ CC  = gcc
 
 #for cross compiling
 
-# Windows i686
-# ARCH = i686-w64-mingw32-
-# BINPREFIX = /usr/i686-w64-mingw32/bin/
-# EXT = .exe
-# OS = Windows
+## Windows i686
+ARCH = i686-w64-mingw32-
+BINPREFIX = /usr/i686-w64-mingw32/bin/
+EXT = .exe
+OS = Windows
 
 TARGET = SpikeRecorder
 TARGETDIR = SpikeRecorder
@@ -72,6 +72,8 @@ else
 		OBJECTS += src/widgets/native/FileDialogLinux.o
 		LIBS = `sdl-config --libs` -lSDL_image -lGL -lGLU -lbass # for Linux
 	else
+
+
 		OBJECTS += src/widgets/native/FileDialogWin.o
 		LIBS = -static -lSDL_image `$(BINPREFIX)sdl-config --static-libs`
 		LIBS += -lglut -lwebp -lpng -ltiff -lz -ljpeg -lopengl32 -lglu32 -dynamic support/bass.lib -Wl,--enable-auto-import # for Windows
@@ -85,8 +87,11 @@ endif
 	$(ARCH)$(CCX) -o $@ -c $< $(CFLAGS)
 
 $(TARGET): $(OBJECTS)
-	$(ARCH)$(CCX) -o $(TARGET)$(EXT) $(OBJECTS) $(CFLAGS) $(LIBS)
+ifeq ($(OS),Windows)
+	$(ARCH)windres -o _resources.o win32-info.rc
 
+	$(ARCH)$(CCX) -o $(TARGET)$(EXT) $(OBJECTS) _resources.o $(CFLAGS) $(LIBS)
+endif
 ifeq ($(OS),MacOSX)
 	mkdir -p $(TARGET).app/Contents/MacOS
 	mv $(TARGET)$(EXT) $(TARGET).app/Contents/MacOS
