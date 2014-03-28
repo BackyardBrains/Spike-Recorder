@@ -97,8 +97,8 @@ ifeq ($(OS),MacOSX)
 	cp macosx-Info.plist $(TARGET).app/Contents/Info.plist
 
 	mkdir -p $(TARGET).app/Frameworks
-	cp -r $(FWPATH)/SDL.framework $(TARGET).app/Frameworks
-	cp -r $(FWPATH)/SDL_image.framework $(TARGET).app/Frameworks
+	cp -r $(FWPATH)/SDL.framework $(TARGET).app/Contents/Frameworks
+	cp -r $(FWPATH)/SDL_image.framework $(TARGET).app/Contents/Frameworks
 endif
 
 ifeq ($(OS),Windows)

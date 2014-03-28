@@ -16,5 +16,7 @@
 	<string>sprc</string>
 	<key>CFBundleExecutable</key>
 	<string>SpikeRecorder</string>
+	<key>CFBundleIconFile</key>
+	<string>SpikeRecorder</string>
 </dict>
 </plist>
