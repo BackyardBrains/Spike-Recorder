@@ -46,7 +46,7 @@ const float AudioView::ampScale = .0005f;
 
 AudioView::AudioView(Widgets::Widget *parent, RecordingManager &mngr)
 	: Widgets::Widget(parent), _clickedGain(-1), _clickedSlider(-1), _clickedPixelOffset(0),
-	_clickedThresh(false), _rulerMode(false), _rulerStart(-1), _rulerEnd(-1), _channelOffset(0), _manager(mngr), _timeScale(0.1f)  {
+	_clickedThresh(false), _rulerStart(-1), _rulerEnd(-1), _channelOffset(0), _manager(mngr), _timeScale(0.1f)  {
 }
 
 int AudioView::addChannel(int virtualDevice) {
@@ -166,14 +166,6 @@ void AudioView::standardSettings() {
 
 int AudioView::channelCount() const {
 	return _channels.size();
-}
-
-void AudioView::toggleRulerMode() {
-	_rulerMode = !_rulerMode;
-}
-
-bool AudioView::rulerMode() const {
-	return _rulerMode;
 }
 
 int AudioView::offset() const{
