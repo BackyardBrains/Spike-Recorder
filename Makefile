@@ -121,6 +121,6 @@ all:
 
 clean:
 	rm -rf $(TARGET) $(TARGET).exe $(OBJECTS) $(TARGETDIR).zip
-	rm -rf $(TARGET).app $(TARGETDIR)
+	rm -rf $(TARGET).app $(TARGETDIR) _resources.o
 
 .PHONY: all clean
