@@ -351,8 +351,8 @@ void AudioView::paintEvent() {
 		int w = abs(_rulerStart-_rulerEnd);
 		float dtime = w/(float)screenw*samples/_manager.sampleRate();
 		int unit = -std::log(dtime/100)/std::log(1000);
+		unit = std::max(0, unit);
 		dtime *= std::pow(1000, unit);
-
 		std::stringstream s;
 		s.precision(3);
 		s << std::fixed << dtime << " " << get_unit_str(unit);
