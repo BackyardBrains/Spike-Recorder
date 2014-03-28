@@ -65,10 +65,6 @@ Game::Game() : _fileRec(_manager) {
 	_configButton->setNormalTex(Widgets::TextureGL::get("data/config.png"));
 	_configButton->setHoverTex(Widgets::TextureGL::get("data/confighigh.png"));
 	_configButton->clicked.connect(this, &Game::configPressed);
-	_rulerButton = new Widgets::PushButton(mainWidget());
-	_rulerButton->setNormalTex(Widgets::TextureGL::get("data/ruler.png"));
-	_rulerButton->setHoverTex(Widgets::TextureGL::get("data/rulerhigh.png"));
-	_rulerButton->clicked.connect(this, &Game::rulerPressed);
 	Widgets::PushButton *threshButton = new Widgets::PushButton(mainWidget());
 	threshButton->setNormalTex(Widgets::TextureGL::get("data/thresh.png"));
 	threshButton->setHoverTex(Widgets::TextureGL::get("data/threshhigh.png"));
@@ -116,8 +112,6 @@ Game::Game() : _fileRec(_manager) {
 	Widgets::BoxLayout *topBar = new Widgets::BoxLayout(Widgets::Horizontal);
 	topBar->addSpacing(10);
 	topBar->addWidget(_configButton);
-	topBar->addSpacing(5);
-	topBar->addWidget(_rulerButton);
 	topBar->addSpacing(5);
 	topBar->addWidget(threshButton);
 	topBar->addSpacing(10);
@@ -203,19 +197,6 @@ void Game::threshPressed() {
 		_threshavgGroup->setVisible(false);
 	}
 }
-
-void Game::rulerPressed() {
-	if(!_audioView->rulerMode()) {
-		_rulerButton->setNormalTex(Widgets::TextureGL::get("data/rulerstop.png"));
-		_rulerButton->setHoverTex(Widgets::TextureGL::get("data/rulerstophigh.png"));
-	} else {
-		_rulerButton->setNormalTex(Widgets::TextureGL::get("data/ruler.png"));
-		_rulerButton->setHoverTex(Widgets::TextureGL::get("data/rulerhigh.png"));
-	}
-
-	_audioView->toggleRulerMode();
-}
-
 
 void Game::recordPressed() {
 	if(!_fileRec.recording()) {
@@ -334,10 +315,6 @@ void Game::loadResources() {
 	Widgets::TextureGL::load("data/confighigh.png");
 	Widgets::TextureGL::load("data/thresh.png");
 	Widgets::TextureGL::load("data/threshhigh.png");
-	Widgets::TextureGL::load("data/ruler.png");
-	Widgets::TextureGL::load("data/rulerhigh.png");
-	Widgets::TextureGL::load("data/rulerstop.png");
-	Widgets::TextureGL::load("data/rulerstophigh.png");
 	Widgets::TextureGL::load("data/rec.png");
 	Widgets::TextureGL::load("data/rechigh.png");
 	Widgets::TextureGL::load("data/file.png");

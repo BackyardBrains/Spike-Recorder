@@ -22,7 +22,6 @@ public:
 private:
 	Widgets::PushButton *_pauseButton;
 	Widgets::PushButton *_configButton;
-	Widgets::PushButton *_rulerButton;
 	Widgets::PushButton *_fileButton;
 	Widgets::PushButton *_forwardButton;
 	Widgets::PushButton *_recordButton;
@@ -46,7 +45,6 @@ private:
 	void backwardPressed();
 	void forwardPressed();
 
-	void rulerPressed();
 	void threshPressed();
 	void filePressed();
 	void configPressed();

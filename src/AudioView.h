@@ -47,9 +47,6 @@ public:
 	void setRelOffset(int reloffset); // in per mille
 	int offset() const;
 
-	void toggleRulerMode();
-	bool rulerMode() const;
-
 	sigslot::signal1<int> relOffsetChanged;
 private:
 	static const int MOVEPIN_SIZE = 30;
@@ -64,7 +61,6 @@ private:
 
 	bool _clickedThresh;
 
-	bool _rulerMode;
 	int _rulerStart;
 	int _rulerEnd;
 

@@ -328,7 +328,7 @@ void AudioView::paintEvent() {
 	int screenw = screenWidth();
 	int samples = sampleCount(screenw, scalew);
 
-	if(_rulerMode && _rulerStart != -1) {
+	if(_rulerStart != -1) {
 		int x = std::min(_rulerEnd, _rulerStart);
 		int w = std::max(_rulerEnd, _rulerStart) - x;
 
@@ -354,7 +354,7 @@ void AudioView::paintEvent() {
 	else
 		drawMarkers();
 
-	if(_rulerMode && _rulerStart != -1) {
+	if(_rulerStart != -1) {
 		Widgets::Painter::setColor(Widgets::Colors::white);
 		int w = abs(_rulerStart-_rulerEnd);
 		float dtime = w/(float)screenw*samples/_manager.sampleRate();
@@ -462,10 +462,6 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 				_manager.setSelectedVDevice(_channels[_clickedSlider].virtualDevice);
 				event->accept();
 			}
-		} else if(_rulerMode && _rulerStart == -1 && x > MOVEPIN_SIZE*1.5f && (!_manager.threshMode() || x <= width()-MOVEPIN_SIZE*1.5f)) {
-			_rulerStart = x;
-			_rulerEnd = x;
-			event->accept();
 		} else if(_clickedGain == -1 && (!_manager.threshMode() || x <= width()-MOVEPIN_SIZE*1.5f)) { // if in thresh mode we don't want it to react on the tresh slider area
 			int yy;
 			unsigned int i;
@@ -511,8 +507,17 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 				setOffset(_channelOffset); // or else the buffer end will become shown
 		}
 		event->accept();
+	} else if(event->button() == Widgets::RightButton) {
+		 if(_rulerStart == -1 && x > MOVEPIN_SIZE*1.5f && (!_manager.threshMode() || x <= width()-MOVEPIN_SIZE*1.5f)) {
+			_rulerStart = x;
+			_rulerEnd = x;
+			event->accept();
+		 }
 	}
-	assert((_clickedGain != -1) + (_clickedSlider != -1) + _clickedThresh + (_rulerStart != -1) <= 1);
+
+	assert((_clickedGain != -1) + (_clickedSlider != -1) + _clickedThresh <= 1);
+
+
 }
 
 void AudioView::mouseReleaseEvent(Widgets::MouseEvent *event) {
@@ -520,6 +525,9 @@ void AudioView::mouseReleaseEvent(Widgets::MouseEvent *event) {
 		_clickedSlider = -1;
 		_clickedThresh = false;
 		_clickedGain = -1;
+	}
+
+	if(event->button() == Widgets::RightButton) {
 		_rulerStart = -1;
 	}
 }
