@@ -24,7 +24,7 @@ private:
 		ConfigView *_parent;
 	};
 
-	Widgets::PushButton *_volumeCKBox;
+	Widgets::PushButton *_muteCKBox;
 
 	std::vector<SignalCatcher> _catchers;
 

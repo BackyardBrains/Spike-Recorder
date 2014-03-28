@@ -114,6 +114,8 @@ bool RecordingManager::loadFile(const char *filename) {
 	_devices[0].handle = stream;
 	_fileMode = true;
 	deviceReload.emit();
+	_player.setVolume(100);
+
 	if(!_paused) {
 		pauseChanged.emit();
 		setPaused(true);

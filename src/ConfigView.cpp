@@ -27,24 +27,27 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 	group->setSizeHint(Widgets::Size(500,400));
 	Widgets::BoxLayout *gvbox = new Widgets::BoxLayout(Widgets::Vertical, group);
 
-	Widgets::BoxLayout *volumehbox = new Widgets::BoxLayout(Widgets::Horizontal);
-	Widgets::Label *volumeLabel = new Widgets::Label(group);
-	volumeLabel->setText("Playback:");
-	volumeLabel->updateSize();
-	_volumeCKBox = new Widgets::PushButton(group);
-	if(_manager.player().volume() == 0)
-		_volumeCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.png"));
-	else
-		_volumeCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxon.png"));
-	_volumeCKBox->setSizeHint(Widgets::Size(16,16));
-	_volumeCKBox->clicked.connect(this, &ConfigView::mutePressed);
+	if(!_manager.fileMode()) {
+		Widgets::BoxLayout *mutehbox = new Widgets::BoxLayout(Widgets::Horizontal);
+		Widgets::Label *muteLabel = new Widgets::Label(group);
+		muteLabel->setText("Mute Speakers:");
+		muteLabel->updateSize();
 
-	volumehbox->addWidget(volumeLabel);
-	volumehbox->addSpacing(10);
-	volumehbox->addWidget(_volumeCKBox, Widgets::AlignVCenter);
-	volumehbox->addSpacing(50);
-	gvbox->addLayout(volumehbox);
-	gvbox->addSpacing(40);
+		_muteCKBox = new Widgets::PushButton(group);
+		if(_manager.player().volume() == 0)
+			_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxon.png"));
+		else
+			_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.png"));
+		_muteCKBox->setSizeHint(Widgets::Size(16,16));
+		_muteCKBox->clicked.connect(this, &ConfigView::mutePressed);
+
+		mutehbox->addWidget(muteLabel);
+		mutehbox->addSpacing(10);
+		mutehbox->addWidget(_muteCKBox, Widgets::AlignVCenter);
+		mutehbox->addSpacing(50);
+		gvbox->addLayout(mutehbox);
+		gvbox->addSpacing(40);
+	}
 
 	for(unsigned int i = 0; i < _manager.recordingDevices().size(); i++) {
 		if(!_manager.recordingDevices()[i].enabled)
@@ -101,10 +104,10 @@ void ConfigView::closePressed() {
 
 void ConfigView::mutePressed() {
 	if(_manager.player().volume() == 0) {
-		_volumeCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxon.png"));
+		_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.png"));
 		_manager.player().setVolume(100);
 	} else {
-		_volumeCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.png"));
+		_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxon.png"));
 		_manager.player().setVolume(0);
 	}
 }
