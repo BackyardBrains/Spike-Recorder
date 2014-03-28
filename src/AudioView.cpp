@@ -255,18 +255,7 @@ void AudioView::drawScale() {
 	Widgets::Application::font()->draw(o.str().c_str(), width()-shownscalew/2-20, height()*0.9f+15, Widgets::AlignHCenter);
 }
 
-void AudioView::drawData(int channel, int samples, int x, int y, int width) {
-	std::vector<std::pair<int16_t, int16_t> > data;
-
-	if(!_manager.threshMode()) {
-		int pos = _manager.pos()+_channelOffset-samples;
-		if(_manager.fileMode())
-			pos += samples/2;
-		data = _manager.getSamplesEnvelope(_channels[channel].virtualDevice, pos, samples, std::max(samples/width,1));
-	} else {
-		data = _manager.getTriggerSamplesEnvelope(_channels[channel].virtualDevice, samples, std::max(samples/width,1));
-	}
-
+void AudioView::drawData(std::vector<std::pair<int16_t, int16_t> > &data, int channel, int samples, int x, int y, int width) {
 	float dist = width/(float)(data.size()-1);
 
 	if(fabs(dist-1.f) < 0.003f)
@@ -282,28 +271,6 @@ void AudioView::drawData(int channel, int samples, int x, int y, int width) {
 	}
 	glEnd();
 
-
-	if(_rulerStart != -1) {
-		// Calculate the RMS. This is a horrible place to do this, I know, but it’s the most efficient place. Will change this soon.
-		float sum = 0.f;
-		int startsample = (std::min(_rulerStart, _rulerEnd)-MOVEPIN_SIZE*1.5f)*data.size()/width;
-		int endsample = (std::max(_rulerStart, _rulerEnd)-MOVEPIN_SIZE*1.5f)*data.size()/width;
-
-		assert(startsample < (int)data.size() && endsample < (int)data.size());
-
-		for(int i = startsample; i < endsample; i++) {
-			sum += data[i].first*data[i].first;
-			sum += data[i].second*data[i].second;
-		}
-
-		if(endsample-startsample > 0) {
-			sum /= (endsample-startsample)*2;
-			_channels[channel].rms = std::sqrt(sum);
-		} else {
-			_channels[channel].rms = 0.f;
-		}
-
-	}
 }
 
 void AudioView::drawMarkers() {
@@ -362,11 +329,32 @@ static void drawtextbgbox(const std::string &s, int x, int y, Widgets::Alignment
 	Widgets::Painter::drawRect(Widgets::Rect(rx, ry, w+2*pad, h+2*pad-1));
 }
 
+static float calculateRMS(std::vector<std::pair<int16_t, int16_t> > &data, unsigned int startsample, unsigned int endsample) {
+	float sum = 0.f;
+
+	assert(startsample < data.size() && endsample < data.size());
+
+	for(unsigned int i = startsample; i < endsample; i++) {
+		sum += data[i].first*data[i].first;
+		sum += data[i].second*data[i].second;
+	}
+
+	if(endsample-startsample > 0) {
+		sum /= (endsample-startsample)*2;
+		return std::sqrt(sum);
+	}
+
+	return 0.f;
+}
+
 void AudioView::paintEvent() {
 	float scalew = scaleWidth();
 	float xoff = MOVEPIN_SIZE*1.48f;
 	int screenw = screenWidth();
 	int samples = sampleCount(screenw, scalew);
+
+	Widgets::Color bg = Widgets::Colors::background;
+	bg.a = 200;
 
 	if(_rulerStart != -1) {
 		int x = std::min(_rulerEnd, _rulerStart);
@@ -381,11 +369,37 @@ void AudioView::paintEvent() {
 		float yoff = _channels[i].pos*height();
 		Widgets::Painter::setColor(COLORS[_channels[i].colorIdx]);
 		if(_channels[i].virtualDevice != RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX) {
-			drawData(i, samples, xoff, yoff, screenw);
+			std::vector<std::pair<int16_t, int16_t> > data;
+
+			if(!_manager.threshMode()) {
+				int pos = _manager.pos()+_channelOffset-samples;
+				if(_manager.fileMode())
+					pos += samples/2;
+				data = _manager.getSamplesEnvelope(_channels[i].virtualDevice, pos, samples, std::max(samples/screenw,1));
+			} else {
+				data = _manager.getTriggerSamplesEnvelope(_channels[i].virtualDevice, samples, std::max(samples/screenw,1));
+			}
+
+			drawData(data, i, samples, xoff, yoff, screenw);
 
 			Widgets::TextureGL::get("data/pin.png")->bind();
 			Widgets::Painter::drawTexRect(Widgets::Rect(MOVEPIN_SIZE/2, _channels[i].pos*height()-MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
 			glBindTexture(GL_TEXTURE_2D, 0);
+
+			if(_rulerStart != -1) {
+				int startsample = (std::min(_rulerStart, _rulerEnd)-MOVEPIN_SIZE*1.5f)*data.size()/screenw;
+				int endsample = (std::max(_rulerStart, _rulerEnd)-MOVEPIN_SIZE*1.5f)*data.size()/screenw;
+
+				float rms = calculateRMS(data, startsample, endsample);
+
+				std::stringstream s;
+				s << "RMS:" << rms;
+
+				Widgets::Painter::setColor(bg);
+				drawtextbgbox(s.str(), width()-20, _channels[i].pos*height()+30, Widgets::AlignRight);
+				Widgets::Painter::setColor(Widgets::Colors::white);
+				Widgets::Application::font()->draw(s.str().c_str(), width()-20, _channels[i].pos*height()+30, Widgets::AlignRight);
+			}
 		}
 	}
 
@@ -395,9 +409,6 @@ void AudioView::paintEvent() {
 		drawMarkers();
 
 	if(_rulerStart != -1) {
-		Widgets::Color bg = Widgets::Colors::background;
-		bg.a = 200;
-
 		int w = abs(_rulerStart-_rulerEnd);
 		float dtime = w/(float)screenw*samples/_manager.sampleRate();
 		int unit = -std::log(dtime/100)/std::log(1000);
@@ -412,16 +423,6 @@ void AudioView::paintEvent() {
 		Widgets::Painter::setColor(Widgets::Colors::white);
 		Widgets::Application::font()->draw(s.str().c_str(), (_rulerStart+_rulerEnd)/2, height()-50, Widgets::AlignCenter);
 
-		for(unsigned int i = 0; i < _channels.size(); i++) {
-			s.clear();
-			s.str("");
-			s << "RMS:" << _channels[i].rms;
-
-			Widgets::Painter::setColor(bg);
-			drawtextbgbox(s.str(), width()-20, _channels[i].pos*height()+30, Widgets::AlignRight);
-			Widgets::Painter::setColor(Widgets::Colors::white);
-			Widgets::Application::font()->draw(s.str().c_str(), width()-20, _channels[i].pos*height()+30, Widgets::AlignRight);
-		}
 	}
 
 
@@ -518,7 +519,7 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 				_manager.setSelectedVDevice(_channels[_clickedSlider].virtualDevice);
 				event->accept();
 			}
-		} else if(_clickedGain == -1 && (!_manager.threshMode() || x <= width()-MOVEPIN_SIZE*1.5f)) { // if in thresh mode we don't want it to react on the tresh slider area
+		} else if(_clickedGain == -1 && (!_manager.threshMode() || x <= width()-MOVEPIN_SIZE*1.5f)) { // in thresh mode we don't want it to react on the tresh slider area
 			int yy;
 			unsigned int i;
 			for(i = 0; i < _channels.size(); i++) {

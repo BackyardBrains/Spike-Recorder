@@ -15,15 +15,13 @@ class AudioView : public Widgets::Widget
 public:
 	struct Channel
 	{
-		Channel() : virtualDevice(RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX), colorIdx(1), gain(1.f), pos(0.5f), rms(0.f) {}
+		Channel() : virtualDevice(RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX), colorIdx(1), gain(1.f), pos(0.5f) {}
 
 		int virtualDevice;
 		int colorIdx;
 
 		float gain;
 		float pos;
-
-		float rms;
 	};
 
 
@@ -98,7 +96,7 @@ private:
 	void drawMarkers();
 	void drawThreshold(int screenw);
 	void drawScale();
-	void drawData(int channel, int samples, int x, int y, int width);
+	void drawData(std::vector<std::pair<int16_t, int16_t> > &data, int channel, int samples, int x, int y, int width);
 };
 
 
