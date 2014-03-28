@@ -54,10 +54,15 @@ ifeq ($(OS),MacOSX)
 	OBJCFILES = support/SDLMain.m src/widgets/native/FileDialogMac.mm
 
 	LIBS = libbass.dylib $(OBJCFILES) -F. -framework SDL -framework Cocoa -framework SDL_image -framework OpenGL -framework GLUT
+
+	FWPATH = /Library/Frameworks
+
 	ifneq ($(FRAMEWORK_PATH),)
+		FWPATH = $(FRAMEWORK_PATH)
 		CFLAGS += -I$(FRAMEWORK_PATH)/SDL.framework/Headers -I$(FRAMEWORK_PATH)/SDL_image.framework/Headers # for Mac OS X
 		LIBS += -F$(FRAMEWORK_PATH)
 	endif
+
 
 else
 	CFLAGS += `$(BINPREFIX)sdl-config --cflags` # for Windows/Linux
@@ -91,11 +96,6 @@ ifeq ($(OS),MacOSX)
 	cp SpikeRecorder.icns $(TARGET).app/Contents/Resources
 	cp macosx-Info.plist $(TARGET).app/Contents/Info.plist
 
-	FWPATH = /Library/Frameworks
-	ifneq ($(FRAMEWORK_PATH),)
-		FWPATH = $(FRAMEWORK_PATH)
-	endif
-
 	mkdir -p $(TARGET).app/Frameworks
 	cp -r $(FWPATH)/SDL.framework $(TARGET).app/Frameworks
 	cp -r $(FWPATH)/SDL_image.framework $(TARGET).app/Frameworks
@@ -115,3 +115,5 @@ all:
 clean:
 	rm -rf $(TARGET) $(TARGET).exe $(OBJECTS) $(TARGETDIR).zip
 	rm -rf $(TARGET).app $(TARGETDIR)
+
+.PHONY: all clean
