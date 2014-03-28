@@ -29,17 +29,19 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 
 	Widgets::BoxLayout *volumehbox = new Widgets::BoxLayout(Widgets::Horizontal);
 	Widgets::Label *volumeLabel = new Widgets::Label(group);
-	volumeLabel->setText("Playback Volume:");
+	volumeLabel->setText("Playback:");
 	volumeLabel->updateSize();
-	Widgets::ScrollBar *volumeBar = new Widgets::ScrollBar(Widgets::Horizontal, group);
-	volumeBar->setRange(0,100);
-	volumeBar->setValue(mngr.player().volume());
-	volumeBar->setPageStep(5);
-	volumeBar->valueChanged.connect(&mngr.player(), &Player::setVolume);
+	_volumeCKBox = new Widgets::PushButton(group);
+	if(_manager.player().volume() == 0)
+		_volumeCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.png"));
+	else
+		_volumeCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxon.png"));
+	_volumeCKBox->setSizeHint(Widgets::Size(16,16));
+	_volumeCKBox->clicked.connect(this, &ConfigView::mutePressed);
 
 	volumehbox->addWidget(volumeLabel);
-	volumehbox->addSpacing(20);
-	volumehbox->addWidget(volumeBar, Widgets::AlignVCenter);
+	volumehbox->addSpacing(10);
+	volumehbox->addWidget(_volumeCKBox, Widgets::AlignVCenter);
 	volumehbox->addSpacing(50);
 	gvbox->addLayout(volumehbox);
 	gvbox->addSpacing(40);
@@ -95,6 +97,16 @@ void ConfigView::paintEvent() {
 
 void ConfigView::closePressed() {
 	close();
+}
+
+void ConfigView::mutePressed() {
+	if(_manager.player().volume() == 0) {
+		_volumeCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxon.png"));
+		_manager.player().setVolume(100);
+	} else {
+		_volumeCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.png"));
+		_manager.player().setVolume(0);
+	}
 }
 
 void ConfigView::colorChanged(int virtualDevice, int coloridx) {

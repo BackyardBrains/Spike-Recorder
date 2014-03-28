@@ -2,6 +2,7 @@
 #define BACKYARDBRAINS_CONFIGVIEW_H
 
 #include "widgets/Widget.h"
+#include "widgets/PushButton.h"
 
 namespace BackyardBrains {
 
@@ -23,6 +24,8 @@ private:
 		ConfigView *_parent;
 	};
 
+	Widgets::PushButton *_volumeCKBox;
+
 	std::vector<SignalCatcher> _catchers;
 
 	void colorChanged(int virtualDevice, int coloridx);
@@ -32,6 +35,7 @@ private:
 	void paintEvent();
 
 	void closePressed();
+	void mutePressed();
 
 };
 
