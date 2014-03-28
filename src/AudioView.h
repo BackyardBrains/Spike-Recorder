@@ -15,13 +15,15 @@ class AudioView : public Widgets::Widget
 public:
 	struct Channel
 	{
-		Channel() : virtualDevice(RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX), colorIdx(1), gain(1.f), pos(0.5f) {}
+		Channel() : virtualDevice(RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX), colorIdx(1), gain(1.f), pos(0.5f), rms(0.f) {}
 
 		int virtualDevice;
 		int colorIdx;
 
 		float gain;
 		float pos;
+
+		float rms;
 	};
 
 

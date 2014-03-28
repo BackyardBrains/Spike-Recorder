@@ -281,6 +281,29 @@ void AudioView::drawData(int channel, int samples, int x, int y, int width) {
 		glVertex3i(xc, -data[j].second*_channels[channel].gain*scale+y, 0);
 	}
 	glEnd();
+
+
+	if(_rulerStart != -1) {
+		// Calculate the RMS. This is a horrible place to do this, I know, but it’s the most efficient place. Will change this soon.
+		float sum = 0.f;
+		int startsample = (std::min(_rulerStart, _rulerEnd)-MOVEPIN_SIZE*1.5f)*data.size()/width;
+		int endsample = (std::max(_rulerStart, _rulerEnd)-MOVEPIN_SIZE*1.5f)*data.size()/width;
+
+		assert(startsample < (int)data.size() && endsample < (int)data.size());
+
+		for(int i = startsample; i < endsample; i++) {
+			sum += data[i].first*data[i].first;
+			sum += data[i].second*data[i].second;
+		}
+
+		if(endsample-startsample > 0) {
+			sum /= (endsample-startsample)*2;
+			_channels[channel].rms = std::sqrt(sum);
+		} else {
+			_channels[channel].rms = 0.f;
+		}
+
+	}
 }
 
 void AudioView::drawMarkers() {
@@ -319,6 +342,26 @@ void AudioView::drawMarkers() {
 	}
 }
 
+static void drawtextbgbox(const std::string &s, int x, int y, Widgets::Alignment a) {
+	const int pad = 3;
+	const int w = s.size()*Widgets::Application::font()->characterWidth();
+	const int h = Widgets::Application::font()->characterHeight();
+
+	int rx = x-pad;
+	int ry = y-pad;
+
+	if(a & Widgets::AlignRight)
+		rx -= w;
+	if(a & Widgets::AlignBottom)
+		ry -= h;
+	if(a & Widgets::AlignHCenter)
+		rx -= w/2;
+	if(a & Widgets::AlignVCenter)
+		ry -= h/2;
+
+	Widgets::Painter::drawRect(Widgets::Rect(rx, ry, w+2*pad, h+2*pad-1));
+}
+
 void AudioView::paintEvent() {
 	float scalew = scaleWidth();
 	float xoff = MOVEPIN_SIZE*1.48f;
@@ -352,7 +395,9 @@ void AudioView::paintEvent() {
 		drawMarkers();
 
 	if(_rulerStart != -1) {
-		Widgets::Painter::setColor(Widgets::Colors::white);
+		Widgets::Color bg = Widgets::Colors::background;
+		bg.a = 200;
+
 		int w = abs(_rulerStart-_rulerEnd);
 		float dtime = w/(float)screenw*samples/_manager.sampleRate();
 		int unit = -std::log(dtime/100)/std::log(1000);
@@ -362,7 +407,21 @@ void AudioView::paintEvent() {
 		s.precision(3);
 		s << std::fixed << dtime << " " << get_unit_str(unit);
 
+		Widgets::Painter::setColor(Widgets::Color(50,50,50,200));
+		drawtextbgbox(s.str(), (_rulerStart+_rulerEnd)/2, height()-50, Widgets::AlignCenter);
+		Widgets::Painter::setColor(Widgets::Colors::white);
 		Widgets::Application::font()->draw(s.str().c_str(), (_rulerStart+_rulerEnd)/2, height()-50, Widgets::AlignCenter);
+
+		for(unsigned int i = 0; i < _channels.size(); i++) {
+			s.clear();
+			s.str("");
+			s << "RMS:" << _channels[i].rms;
+
+			Widgets::Painter::setColor(bg);
+			drawtextbgbox(s.str(), width()-20, _channels[i].pos*height()+30, Widgets::AlignRight);
+			Widgets::Painter::setColor(Widgets::Colors::white);
+			Widgets::Application::font()->draw(s.str().c_str(), width()-20, _channels[i].pos*height()+30, Widgets::AlignRight);
+		}
 	}
 
 
