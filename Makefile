@@ -103,7 +103,7 @@ ifeq ($(OS),MacOSX)
 	cp SpikeRecorder.icns $(TARGET).app/Contents/Resources
 	cp macosx-Info.plist $(TARGET).app/Contents/Info.plist
 
-	mkdir -p $(TARGET).app/Frameworks
+	mkdir -p $(TARGET).app/Contents/Frameworks
 	cp -r $(FWPATH)/SDL.framework $(TARGET).app/Contents/Frameworks
 	cp -r $(FWPATH)/SDL_image.framework $(TARGET).app/Contents/Frameworks
 endif
