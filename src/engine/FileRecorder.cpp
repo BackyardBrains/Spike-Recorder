@@ -64,10 +64,10 @@ static void padbyte(FILE *f) {
 		fputc(0, f);
 }
 
-bool FileRecorder::start(const char *filename) {
+bool FileRecorder::start(const std::string &filename) {
 	_oldPos = _manager.pos();
 	_startPos = _oldPos;
-	_file = fopen(filename, "wb");
+	_file = fopen(filename.c_str(), "wb");
 	_filename = filename;
 	if(_file == 0) {
 		return false;
@@ -165,6 +165,10 @@ void FileRecorder::writeMetadata(const MetadataChunk *meta) {
 	fseek(_file, sizepos, SEEK_SET);
 	put32(size, _file);
 	fseek(_file, 0, SEEK_END);
+}
+
+const std::string &FileRecorder::filename() const {
+	return _filename;
 }
 
 std::string FileRecorder::eventTxtFilename(const std::string &filename) {

@@ -7,6 +7,7 @@
 #include "widgets/FileDialog.h"
 #include "widgets/Label.h"
 #include "widgets/ErrorBox.h"
+#include "Paths.h"
 #include "AudioView.h"
 #include "ConfigView.h"
 #include "RecordingBar.h"
@@ -15,6 +16,7 @@
 #include <iostream>
 #include <cerrno>
 #include <cstring>
+#include <ctime>
 #include <sstream>
 
 namespace BackyardBrains {
@@ -208,20 +210,15 @@ void Game::recordPressed() {
 			return;
 		}
 
-		Widgets::FileDialog d(Widgets::FileDialog::SaveFile);
+		char buf[64];
+		time_t t = time(NULL);
+		strftime(buf, sizeof(buf), "%Y-%m-%d_%H.%M.%S.wav", localtime(&t));
+		std::string filename = getRecordingPath()+"/BYB_Recording_"+buf;
 
-		d.open();
-		while(d.isOpen())
-			SDL_Delay(16);
-		std::string str;
-		int s = d.getResultState();
-
-		if(s != Widgets::FileDialog::SUCCESS)
-			return;
-		if(!_fileRec.start(d.getResultFilename().c_str())) {
+		if(!_fileRec.start(filename.c_str())) {
 			const char *error = strerror(errno);
 			std::stringstream s;
-			s << "Error: Failed to open '" << d.getResultFilename().c_str() << "' for recording: " << error << ".";
+			s << "Error: Failed to open '" << filename.c_str() << "' for recording: " << error << ".";
 			Widgets::ErrorBox *box = new Widgets::ErrorBox(s.str().c_str());
 			box->setGeometry(Widgets::Rect(mainWidget()->width()/2-200, mainWidget()->height()/2-40, 400, 80));
 			addPopup(box);
@@ -243,6 +240,12 @@ void Game::recordPressed() {
 		_fileButton->setVisible(true);
 		_fileButton->setSizeHint(Widgets::Size(48, 48));
 		_recBar->setActive(false);
+
+		std::stringstream s;
+		s << "Saved recording to '" << _fileRec.filename() << "'.";
+		Widgets::ErrorBox *box = new Widgets::ErrorBox(s.str().c_str());
+		box->setGeometry(Widgets::Rect(mainWidget()->width()/2-250, mainWidget()->height()/2-40, 500, 80));
+		addPopup(box);
 	}
 
 	updateLayout();

@@ -98,12 +98,13 @@ class FileRecorder {
 public:
 	FileRecorder(RecordingManager &manager);
 	~FileRecorder();
-	bool start(const char *filename);
+	bool start(const std::string &filename);
 	void stop(const MetadataChunk *meta);
 
 	static int parseMetadataStr(MetadataChunk *meta, const char *str);
 
 	bool recording() const;
+	const std::string &filename() const;
 
 	static std::string eventTxtFilename(const std::string &filename);
 	float recordTime() const;
