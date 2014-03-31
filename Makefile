@@ -4,10 +4,10 @@ CC  = gcc
 #for cross compiling
 
 ## Windows i686
-ARCH = i686-w64-mingw32-
-BINPREFIX = /usr/i686-w64-mingw32/bin/
-EXT = .exe
-OS = Windows
+# ARCH = i686-w64-mingw32-
+# BINPREFIX = /usr/i686-w64-mingw32/bin/
+# EXT = .exe
+# OS = Windows
 
 TARGET = SpikeRecorder
 TARGETDIR = SpikeRecorder
