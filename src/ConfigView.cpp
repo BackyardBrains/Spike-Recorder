@@ -30,7 +30,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 	if(!_manager.fileMode()) {
 		Widgets::BoxLayout *mutehbox = new Widgets::BoxLayout(Widgets::Horizontal);
 		Widgets::Label *muteLabel = new Widgets::Label(group);
-		muteLabel->setText("Mute Speakers:");
+		muteLabel->setText("Mute Speakers while recording:");
 		muteLabel->updateSize();
 
 		_muteCKBox = new Widgets::PushButton(group);
