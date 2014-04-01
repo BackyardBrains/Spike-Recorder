@@ -21,6 +21,7 @@ void Player::setPos(int64_t pos) {
 
 void Player::start(int sampleRate) {
 	_output = BASS_StreamCreate(sampleRate, 1, 0, STREAMPROC_PUSH, 0);
+	setVolume(0);
 	setPaused(false);
 	_pos = 0;
 }

@@ -144,7 +144,7 @@ void RecordingManager::initRecordingDevices() {
 			_recordingDevices.push_back(virtualDevice);
 		}
 	}
-
+	_player.setVolume(0);
 	setSampleRate(DEFAULT_SAMPLE_RATE);
 	deviceReload.emit();
 }
