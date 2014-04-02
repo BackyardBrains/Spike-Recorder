@@ -548,9 +548,12 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 			if((s = determineSliderHover(x,y,NULL)) != -1)
 				_channels[s].gain = std::min(10.f, _channels[s].gain*1.2f);
 		} else if(!_manager.threshMode() || x < width()-MOVEPIN_SIZE*3/2) {
+			int centeroff = (-sampleCount(screenWidth(), scaleWidth())+sampleCount(screenWidth(), scaleWidth()/0.8f))/2;
+
 			_timeScale = std::max(1.f/_manager.sampleRate(), _timeScale*0.8f);
-			if(!_manager.fileMode())
-				setOffset(_channelOffset);
+			if(!_manager.fileMode()) {
+				setOffset(_channelOffset + centeroff*_manager.paused());
+			}
 		}
 		event->accept();
 	} else if(event->button() == Widgets::WheelDownButton) {
@@ -559,9 +562,10 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 			if((s = determineSliderHover(x,y,NULL)) != -1)
 			_channels[s].gain = std::max(0.001f, _channels[s].gain*0.8f);
 		} else if(!_manager.threshMode() || x < width()-MOVEPIN_SIZE*3/2) {
+			int centeroff = (-sampleCount(screenWidth(), scaleWidth())+sampleCount(screenWidth(), scaleWidth()/1.2f))/2;
 			_timeScale = std::min(2.f, _timeScale*1.2f);
 			if(!_manager.fileMode())
-				setOffset(_channelOffset); // or else the buffer end will become shown
+				setOffset(_channelOffset + centeroff*_manager.paused()); // or else the buffer end will become shown
 		}
 		event->accept();
 	} else if(event->button() == Widgets::RightButton) {
