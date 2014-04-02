@@ -360,16 +360,8 @@ void AudioView::paintEvent() {
 		int x = std::min(_rulerEnd, _rulerStart);
 		int w = std::max(_rulerEnd, _rulerStart) - x;
 
-		Widgets::Painter::setColor(Widgets::Colors::widgetbgdark);
+		Widgets::Painter::setColor(Widgets::Color(50,50,50));
 		Widgets::Painter::drawRect(Widgets::Rect(x, -100, w, height()+200));
-	}
-
-	if(_manager.fileMode()) {
-		Widgets::Painter::setColor(Widgets::Colors::widgetbg);
-		glBegin(GL_LINES);
-		glVertex3f(MOVEPIN_SIZE*1.5f+screenw/2,-100,0);
-		glVertex3f(MOVEPIN_SIZE*1.5f+screenw/2,height(),0);
-		glEnd();
 	}
 
 
