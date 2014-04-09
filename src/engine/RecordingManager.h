@@ -56,6 +56,7 @@ public:
 	bool paused() const {return _paused;}
 	bool threshMode() const {return _threshMode;}
 	bool fileMode() const {return _fileMode;}
+	const std::string &fileName() const { return _filename; }
 	int64_t fileLength(); // file mode only
 	const char *fileMetadataString(); // file mode only
 	int threshAvgCount() const {return _threshAvgCount;}
@@ -108,6 +109,7 @@ private:
 	bool _threshMode;
 
 	bool _fileMode;
+	std::string _filename;
 
 	int _sampleRate;
 

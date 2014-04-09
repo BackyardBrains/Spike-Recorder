@@ -7,6 +7,7 @@
 #include "widgets/FileDialog.h"
 #include "widgets/Label.h"
 #include "widgets/ErrorBox.h"
+#include "engine/SpikeSorter.h"
 #include "Paths.h"
 #include "AudioView.h"
 #include "ConfigView.h"
@@ -337,6 +338,9 @@ void Game::keyPressEvent(Widgets::KeyboardEvent *e) {
 		if(!_manager.fileMode())
 			offset = _audioView->offset();
 		_manager.addMarker(std::string(1, mnum+'0'), offset);
+	} else if(e->key() == Widgets::Keye && _manager.fileMode()) {
+		SpikeSorter s;
+		s.findSpikes(_manager.fileName(), _manager.selectedVDevice(), _manager.recordingDevices()[_manager.selectedVDevice()].threshold, _manager.sampleRate()/100 /* 10 ms */);
 	}
 }
 

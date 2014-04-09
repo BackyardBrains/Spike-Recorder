@@ -31,7 +31,36 @@ enum KeyCode {
 	Key6 = SDLK_6,
 	Key7 = SDLK_7,
 	Key8 = SDLK_8,
-	Key9 = SDLK_9
+	Key9 = SDLK_9,
+
+	// Alphabet
+
+	Keya = SDLK_a,
+	Keyb = SDLK_b,
+	Keyc = SDLK_c,
+	Keyd = SDLK_d,
+	Keye = SDLK_e,
+	Keyf = SDLK_f,
+	Keyg = SDLK_g,
+	Keyh = SDLK_h,
+	Keyi = SDLK_i,
+	Keyj = SDLK_j,
+	Keyk = SDLK_k,
+	Keyl = SDLK_l,
+	Keym = SDLK_m,
+	Keyn = SDLK_n,
+	Keyo = SDLK_o,
+	Keyp = SDLK_p,
+	Keyq = SDLK_q,
+	Keyr = SDLK_r,
+	Keys = SDLK_s,
+	Keyt = SDLK_t,
+	Keyu = SDLK_u,
+	Keyv = SDLK_v,
+	Keyw = SDLK_w,
+	Keyx = SDLK_x,
+	Keyy = SDLK_y,
+	Keyz = SDLK_z,
 };
 
 enum KeyModifier {

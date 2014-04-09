@@ -113,6 +113,8 @@ bool RecordingManager::loadFile(const char *filename) {
 	}
 	_devices[0].handle = stream;
 	_fileMode = true;
+	_filename = filename;
+
 	deviceReload.emit();
 	_player.setVolume(100);
 
