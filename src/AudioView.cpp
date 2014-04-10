@@ -280,10 +280,10 @@ void AudioView::drawMarkers() {
 	bool lastyoff = 0;
 
 	for(std::list<std::pair<std::string, int64_t> >::const_iterator it = _manager.markers().begin(); it != _manager.markers().end(); it++) {
-		if(_manager.pos()+_channelOffset-it->second > samples || _manager.pos()+_channelOffset-it->second < 0)
+		if(_manager.pos()+_channelOffset-it->second > samples || _manager.pos()+_channelOffset-it->second < -samples/2)
 			continue;
 
-		float x = width()+screenWidth()*(it->second-_manager.pos()-_channelOffset)/(float)samples;
+		float x = width()+screenWidth()*(it->second-_manager.pos()-samples/2*_manager.fileMode()-_channelOffset)/(float)samples;
 		assert(it->first.size() > 0);
 		Widgets::Painter::setColor(MARKER_COLORS[(it->first[0]-'0') % MARKER_COLOR_NUM]);
 
@@ -548,7 +548,7 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 			if((s = determineSliderHover(x,y,NULL)) != -1)
 				_channels[s].gain = std::min(10.f, _channels[s].gain*1.2f);
 		} else if(!_manager.threshMode() || x < width()-MOVEPIN_SIZE*3/2) {
-			int centeroff = (-sampleCount(screenWidth(), scaleWidth())+sampleCount(screenWidth(), scaleWidth()/0.8f))/2;
+			const int centeroff = (-sampleCount(screenWidth(), scaleWidth())+sampleCount(screenWidth(), scaleWidth()/0.8f))/2;
 
 			_timeScale = std::max(1.f/_manager.sampleRate(), _timeScale*0.8f);
 			if(!_manager.fileMode()) {
@@ -562,7 +562,7 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 			if((s = determineSliderHover(x,y,NULL)) != -1)
 			_channels[s].gain = std::max(0.001f, _channels[s].gain*0.8f);
 		} else if(!_manager.threshMode() || x < width()-MOVEPIN_SIZE*3/2) {
-			int centeroff = (-sampleCount(screenWidth(), scaleWidth())+sampleCount(screenWidth(), scaleWidth()/1.2f))/2;
+			const int centeroff = (-sampleCount(screenWidth(), scaleWidth())+sampleCount(screenWidth(), scaleWidth()/1.2f))/2;
 			_timeScale = std::min(2.f, _timeScale*1.2f);
 			if(!_manager.fileMode())
 				setOffset(_channelOffset + centeroff*_manager.paused()); // or else the buffer end will become shown
