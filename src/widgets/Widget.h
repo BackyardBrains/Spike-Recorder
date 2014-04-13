@@ -68,13 +68,15 @@ public:
 	void setMouseTracking(bool enable);
 	bool hasMouseTracking() const;
 
-	void setDeleteOnClose(bool d);// TODO void setAttribute(WidgetAttribute attribute, bool on = true);?
+	void setDeleteOnClose(bool d);// ignored for now because not sure if there is anything *not* needing it
 
 	virtual void advance();
 	virtual void resizeEvent(ResizeEvent *event);
 	virtual void paintEvent();
 	virtual void enterEvent();
 	virtual void leaveEvent();
+	virtual void keyPressEvent(KeyboardEvent *event);
+	virtual void keyReleaseEvent(KeyboardEvent *event);
 	virtual void mousePressEvent(MouseEvent *event);
 	virtual void mouseReleaseEvent(MouseEvent *event);
 	virtual void mouseMotionEvent(MouseEvent *event);

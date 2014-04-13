@@ -18,8 +18,7 @@ Application *Application::app = NULL;
 const int Application::MIN_WINDOW_W = 120;
 const int Application::MIN_WINDOW_H = 100;
 
-Application::Application() : _running(false), _mouseGrabber(0), _keyboardGrabber(0), _hoverWidget(0), _windowStack(0), _popupStack(0)
-{
+Application::Application() : _running(false), _mouseGrabber(0), _keyboardGrabber(0), _hoverWidget(0), _windowStack(0), _popupStack(0), _mainwidget(0) {
 	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
 		std::cerr << "SDL Error: Failed to initialize: " << SDL_GetError() << "\n";
 		exit(1);
@@ -50,17 +49,13 @@ Application::Application() : _running(false), _mouseGrabber(0), _keyboardGrabber
 		exit(1);
 	}
 
-	_mainwidget = new Widget;
-	_windowStack.push_back(_mainwidget);
-
 }
 
 Application *Application::getInstance() {
 	return app;
 }
 
-Application::~Application()
-{
+Application::~Application() {
 	delete _mainwidget;
 	// clean up and exit
 	SDL_Quit();
@@ -70,10 +65,8 @@ Widget *Application::mainWidget() {
 	return _mainwidget;
 }
 
-static MouseButton ToMouseButtonFromSDL(Uint8 button)
-{
-	switch (button)
-	{
+static MouseButton ToMouseButtonFromSDL(Uint8 button) {
+	switch (button) {
 		case SDL_BUTTON_LEFT: return LeftButton;
 		case SDL_BUTTON_MIDDLE: return MiddleButton;
 		case SDL_BUTTON_RIGHT: return RightButton;
@@ -83,8 +76,7 @@ static MouseButton ToMouseButtonFromSDL(Uint8 button)
 	return NoButton;
 }
 
-static MouseButtons ToMouseButtonsFromSDL(Uint8 state)
-{
+static MouseButtons ToMouseButtonsFromSDL(Uint8 state) {
 	MouseButtons result = 0;
 	if (state & SDL_BUTTON_LMASK)
 		result |= LeftButton;
@@ -109,13 +101,11 @@ void Application::removeClosed(WidgetList &w) {
 		delete *it;
 }
 
-void Application::run()
-{
+void Application::run() {
 	_running = true;
 	Point oldPos;
 	_buttonState = ToMouseButtonsFromSDL(SDL_GetMouseState(&oldPos.x, &oldPos.y));
-	while (_running && !_windowStack.empty())
-	{
+	while (_running && !_windowStack.empty()) {
 
 		// Delete closed windows/popups
 		if(_hoverWidget && _hoverWidget->closed())
@@ -143,14 +133,12 @@ void Application::run()
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		for (WidgetList::const_iterator it = _windowStack.begin(); it != _windowStack.end(); ++it)
-		{
+		for (WidgetList::const_iterator it = _windowStack.begin(); it != _windowStack.end(); ++it) {
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 			(*it)->_DoPaintEvents(Point(), (*it)->geometry());
 		}
-		for (WidgetList::const_iterator it = _popupStack.begin(); it != _popupStack.end(); ++it)
-		{
+		for (WidgetList::const_iterator it = _popupStack.begin(); it != _popupStack.end(); ++it) {
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 			(*it)->_DoPaintEvents(Point(), (*it)->geometry());
@@ -162,8 +150,7 @@ void Application::run()
 
 		// process events
 		SDL_Event event;
-		while (_running && SDL_PollEvent(&event))
-		{
+		while (_running && SDL_PollEvent(&event)) {
 			_HandleEvent(&event);
 		}
 	}
@@ -193,11 +180,9 @@ KeyModifiers sdl_keymod_to_keymod(SDLMod mod) {
 	return mod;
 }
 
-void Application::_HandleEvent(const void *eventRaw)
-{
+void Application::_HandleEvent(const void *eventRaw) {
 	const SDL_Event &event = *reinterpret_cast<const SDL_Event*>(eventRaw);
-	if (event.type == SDL_MOUSEMOTION || event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP)
-	{
+	if (event.type == SDL_MOUSEMOTION || event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP) {
 		// update our internal button state tracking
 		if (event.type == SDL_MOUSEMOTION)
 			_buttonState = ToMouseButtonsFromSDL(event.motion.state);
@@ -214,24 +199,18 @@ void Application::_HandleEvent(const void *eventRaw)
 
 		// determine which window/popup should get the event
 		Widget *windowWidget = NULL;
-		if (event.type != SDL_MOUSEBUTTONDOWN)
-		{
-			for (WidgetList::const_reverse_iterator it = _popupStack.rbegin(); it != _popupStack.rend(); ++it)
-			{
-				if ((*it)->geometry().contains(newPos))
-				{
+		if (event.type != SDL_MOUSEBUTTONDOWN) {
+			for (WidgetList::const_reverse_iterator it = _popupStack.rbegin(); it != _popupStack.rend(); ++it) {
+				if ((*it)->geometry().contains(newPos)) {
 					windowWidget = *it;
 					break;
 				}
 			}
 		}
-		else // if (event.type == SDL_MOUSEBUTTONDOWN)
-		{
+		else { // if (event.type == SDL_MOUSEBUTTONDOWN)
 			// NOTE: for the case of a button press, if closes popups that it doesn't click on until it hits a popup, or closes all popups
-			while (!_popupStack.empty())
-			{
-				if (_popupStack.back()->geometry().contains(Point(event.button.x, event.button.y)))
-				{
+			while (!_popupStack.empty()) {
+				if (_popupStack.back()->geometry().contains(Point(event.button.x, event.button.y))) {
 					windowWidget = _popupStack.back();
 					break;
 				} else if(event.button.button == SDL_BUTTON_WHEELUP || event.button.button == SDL_BUTTON_WHEELDOWN ) {
@@ -247,20 +226,16 @@ void Application::_HandleEvent(const void *eventRaw)
 
 
 		}
-		if (!windowWidget)
-		{
-			for (WidgetList::const_reverse_iterator it = _windowStack.rbegin(); it != _windowStack.rend(); ++it)
-			{
-				if ((*it)->geometry().contains(newPos))
-				{
+		if (!windowWidget) {
+			for (WidgetList::const_reverse_iterator it = _windowStack.rbegin(); it != _windowStack.rend(); ++it) {
+				if ((*it)->geometry().contains(newPos)) {
 					windowWidget = *it;
 					break;
 				}
 			}
 		}
 
-		if (windowWidget)
-		{
+		if (windowWidget) {
 			// possibly switch which widget we are hovering over
 			Widget *widget = windowWidget->_GetWidgetAt(newPos); // TODO don't just assume the top window?
 			if (_mouseGrabber && _mouseGrabber != widget)
@@ -278,28 +253,23 @@ void Application::_HandleEvent(const void *eventRaw)
 
 			// create the mouse event and dispatch it
 			MouseEvent mouseEvent((event.type == SDL_MOUSEMOTION) ? NoButton : ToMouseButtonFromSDL(event.button.button), _buttonState, newPos - origin, oldPos - origin);
-			if (event.type == SDL_MOUSEBUTTONDOWN)
-			{
+			if (event.type == SDL_MOUSEBUTTONDOWN) {
 				if (_mouseGrabber) {
 					_mouseGrabber->mousePressEvent(&mouseEvent);
 				}
 
-				else if (_hoverWidget)
-				{
+				else if (_hoverWidget) {
 					_hoverWidget->mousePressEvent(&mouseEvent);
 					if (mouseEvent.isAccepted())
 						_mouseGrabber = _hoverWidget;
 				}
 			}
-			else if (event.type == SDL_MOUSEBUTTONUP)
-			{
-				if (_mouseGrabber)
-				{
+			else if (event.type == SDL_MOUSEBUTTONUP) {
+				if (_mouseGrabber) {
 					_mouseGrabber->mouseReleaseEvent(&mouseEvent);
 
 					// we stop grabbing the mouse when we release all buttons (after grabbing started from at least *one* of the buttons)
-					if (_buttonState == NoButton)
-					{
+					if (_buttonState == NoButton) {
 						_mouseGrabber = NULL;
 						_SetHoverWidget(_windowStack.front()->_GetWidgetAt(newPos)); // TODO don't just assume the top window?
 						// TODO possibly generate an artificial mouse motion event for the widget we are over?
@@ -308,49 +278,62 @@ void Application::_HandleEvent(const void *eventRaw)
 				else if (_hoverWidget)
 					_hoverWidget->mouseReleaseEvent(&mouseEvent);
 			}
-			else // if (event.type == SDL_MOUSEMOTION)
-			{
+			else { // if (event.type == SDL_MOUSEMOTION)
 				if (_mouseGrabber)
 					_mouseGrabber->mouseMotionEvent(&mouseEvent);
 				else if (_hoverWidget && _hoverWidget->hasMouseTracking())
 					_hoverWidget->mouseMotionEvent(&mouseEvent);
 			}
 		}
-	}
-	else if (event.type == SDL_KEYDOWN) {
+	} else if (event.type == SDL_KEYDOWN) {
 		const SDL_KeyboardEvent &kevent = *reinterpret_cast<const SDL_KeyboardEvent*>(&event);
 		if(kevent.keysym.sym == SDLK_q && kevent.keysym.mod | KMOD_CTRL)
 			_running = false;
 		else {
 			KeyboardEvent e(sdl_keysym_to_key(kevent.keysym.sym), sdl_keymod_to_keymod(kevent.keysym.mod));
-			keyPressEvent(&e);
+			if(_keyboardGrabber) {
+				_keyboardGrabber->keyPressEvent(&e);
+			} else if(_hoverWidget) {
+				_hoverWidget->keyPressEvent(&e);
+				if(e.isAccepted())
+					_keyboardGrabber = _hoverWidget;
+			} else {
+				keyPressEvent(&e); // global keyboard controls
+			}
 		}
 	}
 	else if (event.type == SDL_KEYUP) {
 		const SDL_KeyboardEvent &kevent = *reinterpret_cast<const SDL_KeyboardEvent*>(&event);
 		KeyboardEvent e(sdl_keysym_to_key(kevent.keysym.sym), sdl_keymod_to_keymod(kevent.keysym.mod));
+		if(_keyboardGrabber) {
+			_keyboardGrabber->keyReleaseEvent(&e);
+			_keyboardGrabber = NULL;
+		} else if(_hoverWidget) {
+			_hoverWidget->keyReleaseEvent(&e);
+		}
+
 		keyReleaseEvent(&e);
 	}
-	else if (event.type == SDL_QUIT)
-	{
+	else if (event.type == SDL_QUIT) {
 		_running = false; // TODO generate an event instead of directly shutting down the event loop
 	}
 	else if (event.type == SDL_SYSWMEVENT) {}
-	else if (event.type == SDL_VIDEORESIZE)
-	{
+	else if (event.type == SDL_VIDEORESIZE)	{
 		createWindow(event.resize.w, event.resize.h);
 	}
 	else if (event.type == SDL_VIDEOEXPOSE) {}
 }
 
-void Application::createWindow(int w, int h)
-{
+void Application::createWindow(int w, int h) {
 	// set up a window
 	SDL_Surface *screen = SDL_GetVideoSurface();
 
-	if (screen)
-		SDL_FreeSurface(screen); // TODO find out if this is necessary, or even correct
-	screen = SDL_SetVideoMode(w, h, 0, SDL_OPENGL|SDL_RESIZABLE); // TODO check the return value
+	screen = SDL_SetVideoMode(w, h, 0, SDL_OPENGL|SDL_RESIZABLE);
+	if(!screen) {
+		std::cerr << "SDL Error: Failed to set video mode: " << SDL_GetError() << "\n";
+		exit(1);
+	}
+
 	glViewport(0, 0, screen->w, screen->h);
 	SDL_WM_SetCaption(windowTitle().c_str(), NULL);
 
@@ -372,10 +355,8 @@ void Application::createWindow(int w, int h)
 	
 }
 
-void Application::_SetHoverWidget(Widget *widget)
-{
-	if (widget != _hoverWidget)
-	{
+void Application::_SetHoverWidget(Widget *widget) {
+	if (widget != _hoverWidget) {
 		if (_hoverWidget)
 			_hoverWidget->leaveEvent();
 		_hoverWidget = widget;
@@ -384,24 +365,20 @@ void Application::_SetHoverWidget(Widget *widget)
 	}
 }
 
-void Application::setWindowTitle(const std::string &str)
-{
+void Application::setWindowTitle(const std::string &str) {
 	_windowTitle = str;
 	SDL_WM_SetCaption(windowTitle().c_str(), NULL);
 }
 
-std::string Application::windowTitle() const
-{
+std::string Application::windowTitle() const {
 	return _windowTitle;
 }
 
-Widget *&Application::keyboardGrabber()
-{
+Widget *&Application::keyboardGrabber() {
 	return _keyboardGrabber;
 }
 
-Widget *&Application::mouseGrabber()
-{
+Widget *&Application::mouseGrabber() {
 	return _mouseGrabber;
 }
 

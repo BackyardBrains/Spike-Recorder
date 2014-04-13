@@ -378,9 +378,9 @@ void AudioView::paintEvent() {
 				int pos = _manager.pos()+_channelOffset-samples;
 				if(_manager.fileMode())
 					pos += samples/2;
-				data = _manager.getSamplesEnvelope(_channels[i].virtualDevice, pos, samples, std::max(samples/screenw,1));
+				data = _manager.getSamplesEnvelope(_channels[i].virtualDevice, pos, samples, screenw == 0 ? 1 : std::max(samples/screenw,1));
 			} else {
-				data = _manager.getTriggerSamplesEnvelope(_channels[i].virtualDevice, samples, std::max(samples/screenw,1));
+				data = _manager.getTriggerSamplesEnvelope(_channels[i].virtualDevice, samples, screenw == 0 ? 1 : std::max(samples/screenw,1));
 			}
 
 			drawData(data, i, samples, xoff, yoff, screenw);

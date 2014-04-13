@@ -32,6 +32,7 @@ OBJECTS = \
 	src/widgets/ErrorBox.o \
 	src/Game.o \
 	src/main.o \
+	src/MainView.o \
 	src/AudioView.o \
 	src/ConfigView.o \
 	src/AnalysisView.o \

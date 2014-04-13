@@ -13,6 +13,8 @@ namespace BackyardBrains {
 AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Widgets::Widget(parent), _manager(mngr) {
 	_audioView = new AudioView(this, _manager);
 	_audioView->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Expanding, Widgets::SizePolicy::Expanding));
+	_audioView->addChannel(0);
+
 
 	Widgets::PushButton *closeButton = new Widgets::PushButton(this);
 	closeButton->clicked.connect((Widgets::Widget *)this, &Widgets::Widget::close);
