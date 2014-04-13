@@ -11,6 +11,7 @@
 #include "Paths.h"
 #include "AudioView.h"
 #include "ConfigView.h"
+#include "AnalysisView.h"
 #include "RecordingBar.h"
 #include <SDL_opengl.h>
 #include <SDL.h>
@@ -338,9 +339,14 @@ void Game::keyPressEvent(Widgets::KeyboardEvent *e) {
 		if(!_manager.fileMode())
 			offset = _audioView->offset();
 		_manager.addMarker(std::string(1, mnum+'0'), offset);
-	} else if(e->key() == Widgets::Keye && _manager.fileMode()) {
+	} else if(e->key() == Widgets::Keya && _manager.fileMode()) {
 		SpikeSorter s;
 		s.findSpikes(_manager.fileName(), _manager.selectedVDevice(), _manager.recordingDevices()[_manager.selectedVDevice()].threshold, _manager.sampleRate()/100 /* 10 ms */);
+
+		AnalysisView *a = new AnalysisView(_manager);
+		a->setDeleteOnClose(true);
+		a->setGeometry(mainWidget()->rect());
+		addWindow(a);
 	}
 }
 

@@ -19,6 +19,10 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 	closeButton->setNormalTex(Widgets::TextureGL::get("data/config.png"));
 	closeButton->setHoverTex(Widgets::TextureGL::get("data/confighigh.png"));
 
+	Widgets::Label *topLabel = new Widgets::Label(this);
+	topLabel->setText("Config");
+	topLabel->updateSize();
+
 	std::vector<Widgets::Color> c(AudioView::COLORS, AudioView::COLORS+AudioView::COLOR_NUM);
 	std::vector<ColorDropDownList *> clrs(_manager.recordingDevices().size());
 	_catchers.reserve(clrs.size());
@@ -78,6 +82,8 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 	Widgets::BoxLayout *hbox = new Widgets::BoxLayout(Widgets::Horizontal);
 	hbox->addSpacing(10);
 	hbox->addWidget(closeButton);
+	hbox->addSpacing(17);
+	hbox->addWidget(topLabel, Widgets::AlignVCenter);
 	vbox->addSpacing(10);
 	vbox->addLayout(hbox);
 	vbox->addSpacing(20);
@@ -92,9 +98,6 @@ void ConfigView::paintEvent() {
 	bg.a = 250;
 	Widgets::Painter::setColor(bg);
 	Widgets::Painter::drawRect(rect());
-	Widgets::Painter::setColor(Widgets::Colors::white);
-
-	Widgets::Application::font()->draw("Config", 100, 35, Widgets::AlignCenter);
 	
 }
 

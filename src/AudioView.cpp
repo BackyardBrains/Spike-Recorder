@@ -187,6 +187,9 @@ int AudioView::screenWidth() {
 }
 
 int AudioView::sampleCount(int screenw, float scalew) {
+	if(screenw == 0)
+		return 0;
+
 	int samples = screenw == 0 ? 0 : _manager.sampleRate()/scalew*screenw;
 	const int snap = std::max(samples/screenw,1);
 	samples /= snap;

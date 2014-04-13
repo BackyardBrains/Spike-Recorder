@@ -34,6 +34,7 @@ OBJECTS = \
 	src/main.o \
 	src/AudioView.o \
 	src/ConfigView.o \
+	src/AnalysisView.o \
 	src/RecordingBar.o \
 	src/ColorDropDownList.o
 
