@@ -616,7 +616,7 @@ void AudioView::mouseMotionEvent(Widgets::MouseEvent *event) {
 	}
 
 	if(_rulerStart != -1) {
-		_rulerEnd = event->pos().x;
+		_rulerEnd = std::max(event->pos().x, MOVEPIN_SIZE*3/2);
 		event->accept();
 	}
 
