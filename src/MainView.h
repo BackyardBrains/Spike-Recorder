@@ -25,6 +25,7 @@ private:
 	Widgets::PushButton *_fileButton;
 	Widgets::PushButton *_forwardButton;
 	Widgets::PushButton *_recordButton;
+	Widgets::PushButton *_analysisButton;
 
 	Widgets::ScrollBar *_seekBar;
 	Widgets::Widget *_threshavgGroup;
@@ -44,6 +45,7 @@ private:
 	void filePressed();
 	void configPressed();
 	void recordPressed();
+	void analysisPressed();
 };
 
 }

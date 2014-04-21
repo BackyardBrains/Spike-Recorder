@@ -70,6 +70,13 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	threshButton->setNormalTex(Widgets::TextureGL::get("data/thresh.png"));
 	threshButton->setHoverTex(Widgets::TextureGL::get("data/threshhigh.png"));
 	threshButton->clicked.connect(this, &MainView::threshPressed);
+
+	_analysisButton = new Widgets::PushButton(this);
+	_analysisButton->setNormalTex(Widgets::TextureGL::get("data/analysis.png"));
+	_analysisButton->setHoverTex(Widgets::TextureGL::get("data/analysishigh.png"));
+	_analysisButton->clicked.connect(this, &MainView::analysisPressed);
+	_analysisButton->setVisible(false);
+
 	_recordButton = new Widgets::PushButton(this);
 	_recordButton->setNormalTex(Widgets::TextureGL::get("data/rec.png"));
 	_recordButton->setHoverTex(Widgets::TextureGL::get("data/rechigh.png"));
@@ -115,6 +122,8 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	topBar->addWidget(_configButton);
 	topBar->addSpacing(5);
 	topBar->addWidget(threshButton);
+	topBar->addSpacing(5);
+	topBar->addWidget(_analysisButton);
 	topBar->addSpacing(10);
 	topBar->addWidget(_threshavgGroup, Widgets::AlignVCenter);
 	topBar->addStretch();
@@ -176,6 +185,7 @@ void MainView::forwardPressed() {
 	if(_manager.fileMode()) { // end file mode when in file mode
 		_manager.initRecordingDevices();
 		_recordButton->setVisible(true);
+		_analysisButton->setVisible(false);
 	} else {
 		_audioView->setOffset(0);
 	}
@@ -275,7 +285,7 @@ void MainView::filePressed() {
 	_audioView->applyMetadata(m);
 
 	_recordButton->setVisible(false);
-
+	_analysisButton->setVisible(true);
 }
 
 void MainView::configPressed() {
@@ -285,6 +295,17 @@ void MainView::configPressed() {
 	Widgets::Application::getInstance()->addWindow(c);
 }
 
+void MainView::analysisPressed() {
+	AnalysisView *a = new AnalysisView(_manager);
+	a->setDeleteOnClose(true);
+	a->setGeometry(this->rect());
+	Widgets::Application::getInstance()->addWindow(a);
+
+	if(!_manager.paused())
+		pausePressed();
+}
+
+
 void MainView::keyPressEvent(Widgets::KeyboardEvent *e) {
 	if(e->key() >= Widgets::Key0 && e->key() <= Widgets::Key9) {
 		int mnum = e->key()-Widgets::Key0;
@@ -292,14 +313,6 @@ void MainView::keyPressEvent(Widgets::KeyboardEvent *e) {
 		if(!_manager.fileMode())
 			offset = _audioView->offset();
 		_manager.addMarker(std::string(1, mnum+'0'), offset);
-	} else if(e->key() == Widgets::Keya && _manager.fileMode()) {
-		SpikeSorter s;
-		s.findSpikes(_manager.fileName(), _manager.selectedVDevice(), _manager.recordingDevices()[_manager.selectedVDevice()].threshold, _manager.sampleRate()/100 /* 10 ms */);
-
-		AnalysisView *a = new AnalysisView(_manager);
-		a->setDeleteOnClose(true);
-		a->setGeometry(this->rect());
-		Widgets::Application::getInstance()->addWindow(a);
 	}
 }
 

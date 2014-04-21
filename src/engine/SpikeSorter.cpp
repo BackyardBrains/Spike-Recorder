@@ -52,8 +52,6 @@ void SpikeSorter::searchPart(int8_t *buffer, int size, int chan, int channels, i
 }
 
 void SpikeSorter::findSpikes(const std::string &filename, int channel, int threshold, int holdoff) {
-	std::cout << "Looking for spikes...\n";
-
 	HSTREAM handle = BASS_StreamCreateFile(false, filename.c_str(), 0, 0, BASS_STREAM_DECODE);
 	if(handle == 0) {
 		std::cerr << "Bass Error: Failed to load file '" << filename << "': " << BASS_ErrorGetCode() << "\n";
@@ -82,10 +80,6 @@ void SpikeSorter::findSpikes(const std::string &filename, int channel, int thres
 		searchPart(buffer, bytesread, channel, info.chans, bytespersample, threshold, holdoff, pos);
 		pos += bytesread/info.chans/bytespersample;
 		left -= bytesread;
-	}
-
-	for(unsigned int i = 0; i < _spikes.size(); i++) {
-		std::cout << _spikes[i].first << " " <<_spikes[i].second << "\n";
 	}
 
 	BASS_StreamFree(handle);

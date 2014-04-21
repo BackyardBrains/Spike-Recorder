@@ -44,6 +44,8 @@ void Game::loadResources() {
 	Widgets::TextureGL::load("data/rechigh.png");
 	Widgets::TextureGL::load("data/file.png");
 	Widgets::TextureGL::load("data/filehigh.png");
+	Widgets::TextureGL::load("data/analysis.png");
+	Widgets::TextureGL::load("data/analysishigh.png");
 
 	Widgets::TextureGL::load("data/pin.png");
 	Widgets::TextureGL::load("data/threshpin.png");

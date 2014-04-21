@@ -45,8 +45,14 @@ const int AudioView::MARKER_COLOR_NUM = sizeof(AudioView::MARKER_COLORS)/sizeof(
 const float AudioView::ampScale = .0005f;
 
 AudioView::AudioView(Widgets::Widget *parent, RecordingManager &mngr)
-	: Widgets::Widget(parent), _clickedGain(-1), _clickedSlider(-1), _clickedPixelOffset(0),
-	_clickedThresh(false), _rulerStart(-1), _rulerEnd(-1), _channelOffset(0), _manager(mngr), _timeScale(0.1f)  {
+	: Widgets::Widget(parent), _manager(mngr), _clickedGain(-1), _clickedSlider(-1), _clickedPixelOffset(0),
+	_clickedThresh(false), _rulerStart(-1), _rulerEnd(-1), _channelOffset(0), _timeScale(0.1f)  {
+}
+
+AudioView::~AudioView() {
+	for(unsigned int i = 0; i < _channels.size(); i++) {
+		_manager.decRef(_channels[i].virtualDevice);
+	}
 }
 
 int AudioView::addChannel(int virtualDevice) {
@@ -350,7 +356,7 @@ static float calculateRMS(std::vector<std::pair<int16_t, int16_t> > &data, unsig
 	return 0.f;
 }
 
-void AudioView::paintEvent() {
+void AudioView::drawAudio() {
 	float scalew = scaleWidth();
 	float xoff = MOVEPIN_SIZE*1.48f;
 	int screenw = screenWidth();
@@ -358,15 +364,6 @@ void AudioView::paintEvent() {
 
 	Widgets::Color bg = Widgets::Colors::background;
 	bg.a = 200;
-
-	if(_rulerStart != -1) {
-		int x = std::min(_rulerEnd, _rulerStart);
-		int w = std::max(_rulerEnd, _rulerStart) - x;
-
-		Widgets::Painter::setColor(Widgets::Color(50,50,50));
-		Widgets::Painter::drawRect(Widgets::Rect(x, -100, w, height()+200));
-	}
-
 
 	for(int i = _channels.size() - 1; i >= 0; i--) {
 		float yoff = _channels[i].pos*height();
@@ -405,11 +402,21 @@ void AudioView::paintEvent() {
 			}
 		}
 	}
+}
 
-	if(_manager.threshMode())
-		drawThreshold(screenw);
-	else
-		drawMarkers();
+void AudioView::drawRulerBox() {
+	if(_rulerStart != -1) {
+		int x = std::min(_rulerEnd, _rulerStart);
+		int w = std::max(_rulerEnd, _rulerStart) - x;
+
+		Widgets::Painter::setColor(Widgets::Color(50,50,50));
+		Widgets::Painter::drawRect(Widgets::Rect(x, -100, w, height()+200));
+	}
+}
+
+void AudioView::drawRulerTime() {
+	const int screenw = screenWidth();
+	const int samples = sampleCount(screenw, scaleWidth());
 
 	if(_rulerStart != -1) {
 		int w = abs(_rulerStart-_rulerEnd);
@@ -427,8 +434,19 @@ void AudioView::paintEvent() {
 		Widgets::Application::font()->draw(s.str().c_str(), (_rulerStart+_rulerEnd)/2, height()-50, Widgets::AlignCenter);
 
 	}
+}
 
 
+void AudioView::paintEvent() {
+	drawRulerBox();
+	drawAudio();
+
+	if(_manager.threshMode())
+		drawThreshold(screenWidth());
+	else
+		drawMarkers();
+
+	drawRulerTime();
 	drawScale();
 }
 
@@ -493,10 +511,10 @@ int AudioView::determineSliderHover(int x, int y, int *yoffset) {
 	return -1;
 }
 
-int AudioView::determineThreshHover(int x, int y, int *yoffset) {
+int AudioView::determineThreshHover(int x, int y, int threshPos, int *yoffset) {
 
 	int xx = width()-MOVEPIN_SIZE-x;
-	int dy = y - std::min(height()-MOVEPIN_SIZE/2.f, std::max(MOVEPIN_SIZE/2.f, thresholdPos()));
+	int dy = y - std::min(height()-MOVEPIN_SIZE/2, std::max(MOVEPIN_SIZE/2, threshPos));
 
 	int yy = dy*dy;
 	xx *= xx;
@@ -529,7 +547,7 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 				yy = height()*_channels[i].pos-event->pos().y;
 				if(yy < 0)
 					yy *= -1;
-				if(yy < 40+20*_channels[i].gain)
+				if(yy < 80+30*_channels[i].gain)
 					break;
 			}
 
@@ -540,7 +558,7 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 				event->accept();
 			}
 		} else if(_manager.threshMode()) {
-			_clickedThresh = determineThreshHover(x, y, &_clickedPixelOffset);
+			_clickedThresh = determineThreshHover(x, y, thresholdPos(), &_clickedPixelOffset);
 			if(_clickedThresh)
 				event->accept();
 		}

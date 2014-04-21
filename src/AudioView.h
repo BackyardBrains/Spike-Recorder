@@ -32,6 +32,7 @@ public:
 	void applyMetadata(const MetadataChunk &mdata);
 
 	AudioView(Widgets::Widget *parent, RecordingManager &mngr);
+	virtual ~AudioView();
 
 	int addChannel(int virtualDeviceIndex);
 	void removeChannel(int virtualDeviceIndex);
@@ -48,8 +49,32 @@ public:
 	int offset() const;
 
 	sigslot::signal1<int> relOffsetChanged;
-private:
+protected:
 	static const int MOVEPIN_SIZE = 30;
+
+	static const float ampScale; // pixels per amplitude unit
+	RecordingManager &_manager;
+	std::vector<Channel> _channels;
+
+	void drawAudio();
+	void drawScale();
+	void drawRulerBox();
+	void drawRulerTime();
+	void drawMarkers();
+	void drawThreshold(int screenw);
+	void paintEvent();
+
+	float scaleWidth(); //pixels per second of audio
+	int screenWidth();
+	int sampleCount(int screenw, float scalew);
+
+	void mousePressEvent(Widgets::MouseEvent *event);
+	void mouseMotionEvent(Widgets::MouseEvent *event);
+	void mouseReleaseEvent(Widgets::MouseEvent *event);
+
+	int determineThreshHover(int x, int y, int thresholdPos, int *yoffset);
+private:
+
 	static const Widgets::Color MARKER_COLORS[];
 	static const int MARKER_COLOR_NUM;
 
@@ -66,36 +91,21 @@ private:
 
 	int64_t _channelOffset;
 
-	RecordingManager &_manager;
-	std::vector<Channel> _channels;
-
 	float _timeScale;
-	static const float ampScale;
 
 	void clearChannels();
 
 	int selectedChannel() const;
 	float scaleLenFactor();
 
-	void mousePressEvent(Widgets::MouseEvent *event);
-	void mouseMotionEvent(Widgets::MouseEvent *event);
-	void mouseReleaseEvent(Widgets::MouseEvent *event);
 	void resizeEvent(Widgets::ResizeEvent *e);
 
 	int determineSliderHover(int x, int y, int *yoffset);
-	int determineThreshHover(int x, int y, int *yoffset);
-
 	float thresholdPos();
-	float scaleWidth(); //pixels per second of audio
-	int screenWidth();
-	int sampleCount(int screenw, float scalew);
 
-	void paintEvent();
 	void advance();
 
-	void drawMarkers();
-	void drawThreshold(int screenw);
-	void drawScale();
+
 	void drawData(std::vector<std::pair<int16_t, int16_t> > &data, int channel, int samples, int x, int y, int width);
 };
 

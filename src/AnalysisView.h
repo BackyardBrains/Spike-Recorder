@@ -2,20 +2,25 @@
 #define BACKYARDBRAINS_ANALYSISVIEW_H
 
 #include "widgets/Widget.h"
+#include "engine/SpikeSorter.h"
 
 namespace BackyardBrains {
 
 class RecordingManager;
-class AudioView;
+class AnalysisAudioView;
 
 class AnalysisView : public Widgets::Widget {
 public:
 	AnalysisView(RecordingManager &mngr, Widget *parent = NULL);
 private:
-	AudioView *_audioView;
+	AnalysisAudioView *_audioView;
 	RecordingManager &_manager;
 
+	SpikeSorter _spikes;
+	bool _wasThreshMode;
+	
 	void paintEvent();
+	void closePressed();
 };
 
 }
