@@ -23,15 +23,15 @@ void AnalysisAudioView::drawTargetMarkers() {
 
 
 int AnalysisAudioView::relPosToAmp(float rpos) const {
-	return (rpos-_channels[0].pos)*height()/ampScale/_channels[0].gain;
+	return (_channels[0].pos - rpos)/ampScale/_channels[0].gain;
 }
 
 int AnalysisAudioView::upperThresh() const {
-	return relPosToAmp(std::max(_threshPos[0], _threshPos[1]));
+	return relPosToAmp(std::min(_threshPos[0], _threshPos[1]));
 }
 
 int AnalysisAudioView::lowerThresh() const {
-	return relPosToAmp(std::min(_threshPos[0], _threshPos[1]));
+	return relPosToAmp(std::max(_threshPos[0], _threshPos[1]));
 }
 
 void AnalysisAudioView::paintEvent() {

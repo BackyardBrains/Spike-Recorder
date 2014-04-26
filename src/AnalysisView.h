@@ -21,6 +21,7 @@ private:
 	
 	void paintEvent();
 	void closePressed();
+	void savePressed();
 };
 
 }

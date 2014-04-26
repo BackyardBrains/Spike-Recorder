@@ -111,6 +111,7 @@ public:
 	void advance();
 
 	static void parseMarkerTextFile(std::list<std::pair<std::string, int64_t> > &markers, const std::string &filename, int sampleRate);
+	void writeMarkerTextFile(const std::string &filename, const std::list<std::pair<std::string, int64_t> > &markers) const;
 private:
 	RecordingManager &_manager;
 	FILE *_file;
@@ -124,7 +125,6 @@ private:
 	int _bufsize;
 
 	void writeMetadata(const MetadataChunk *meta);
-	void writeMarkerTextFile(const std::list<std::pair<std::string, int64_t> > &markers) const;
 };
 
 }

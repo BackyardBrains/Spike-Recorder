@@ -6,7 +6,13 @@
 #include "widgets/Application.h"
 #include "widgets/BitmapFontGL.h"
 #include "widgets/Label.h"
+#include "widgets/ErrorBox.h"
+#include "engine/FileRecorder.h"
 #include "AnalysisAudioView.h"
+
+#include <sstream>
+#include <iostream>
+
 
 namespace BackyardBrains {
 
@@ -33,9 +39,10 @@ AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Wi
 	seekBar->setValue(0);
 
 	Widgets::PushButton *saveButton = new Widgets::PushButton(this);
-	saveButton->setNormalTex(Widgets::TextureGL::get("data/thresh.png"));
-	saveButton->setHoverTex(Widgets::TextureGL::get("data/threshhigh.png"));
+	saveButton->setNormalTex(Widgets::TextureGL::get("data/save.png"));
+	saveButton->setHoverTex(Widgets::TextureGL::get("data/savehigh.png"));
 	saveButton->setSizeHint(Widgets::Size(64,64));
+	saveButton->clicked.connect(this, &AnalysisView::savePressed);
 	Widgets::BoxLayout *saveBox = new Widgets::BoxLayout(Widgets::Horizontal);
 
 	saveBox->addWidget(saveButton);
@@ -77,6 +84,27 @@ void AnalysisView::paintEvent() {
 void AnalysisView::closePressed() {
 	_manager.setThreshMode(_wasThreshMode);
 	close();
+}
+
+void AnalysisView::savePressed() {
+	std::list<std::pair<std::string, int64_t> > markers;
+
+	const int upperthresh = _audioView->upperThresh();
+	const int lowerthresh = _audioView->lowerThresh();
+
+	for(unsigned int i = 0; i < _spikes.spikes().size(); i++)
+		if(_spikes.spikes()[i].second > lowerthresh && _spikes.spikes()[i].second < upperthresh)
+			markers.push_back(std::make_pair(std::string("neuron1"), _spikes.spikes()[i].first));
+
+	FileRecorder f(_manager);
+	std::string filename = f.eventTxtFilename(_manager.fileName());
+
+	f.writeMarkerTextFile(filename, markers);
+	std::stringstream s;
+	s << markers.size() << " spikes were written to '" << filename << "'";
+	Widgets::ErrorBox *box = new Widgets::ErrorBox(s.str().c_str());
+	box->setGeometry(Widgets::Rect(this->width()/2-200, this->height()/2-40, 400, 80));
+	Widgets::Application::getInstance()->addPopup(box);
 }
 
 }

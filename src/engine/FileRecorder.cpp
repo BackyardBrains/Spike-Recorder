@@ -40,7 +40,7 @@ void MetadataChunk::print() {
 
 }
 
-FileRecorder::FileRecorder(RecordingManager &manager) : _manager(manager), _file(0), _buf(0), _bufsize(0) {
+FileRecorder::FileRecorder(RecordingManager &manager) : _manager(manager), _file(0), _startPos(0), _buf(0), _bufsize(0) {
 }
 
 FileRecorder::~FileRecorder() {
@@ -144,7 +144,7 @@ void FileRecorder::writeMetadata(const MetadataChunk *meta) {
 	}
 
 	if(markers > 0)
-		writeMarkerTextFile(meta->markers);
+		writeMarkerTextFile(eventTxtFilename(_filename), meta->markers);
 
 	std::stringstream timeScale;
 	timeScale << meta->timeScale << ';';
@@ -176,9 +176,7 @@ std::string FileRecorder::eventTxtFilename(const std::string &filename) {
 	return filename.substr(0,dotpos) + "-events.txt";
 }
 
-void FileRecorder::writeMarkerTextFile(const std::list<std::pair<std::string, int64_t> > &markers) const {
-	std::string filename = eventTxtFilename(_filename);
-
+void FileRecorder::writeMarkerTextFile(const std::string &filename, const std::list<std::pair<std::string, int64_t> > &markers) const {
 	FILE *f = fopen(filename.c_str(),"w");
 	fprintf(f,"# Marker IDs can be arbitrary strings.\n");
 	fprintf(f,"# Marker ID,\tTime (in s)\n");
