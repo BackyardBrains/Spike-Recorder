@@ -86,6 +86,7 @@ private:
 
 	bool _clickedThresh;
 
+	bool _rulerClicked;
 	int _rulerStart;
 	int _rulerEnd;
 
