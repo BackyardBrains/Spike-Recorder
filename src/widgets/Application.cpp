@@ -294,9 +294,13 @@ void Application::_HandleEvent(const void *eventRaw) {
 			if(_keyboardGrabber) {
 				_keyboardGrabber->keyPressEvent(&e);
 			} else if(_hoverWidget) {
-				_hoverWidget->keyPressEvent(&e);
-				if(e.isAccepted())
-					_keyboardGrabber = _hoverWidget;
+				for(Widget *w = _hoverWidget; w != NULL; w = w->parentWidget()) {
+					w->keyPressEvent(&e);
+					if(e.isAccepted()) {
+						_keyboardGrabber = w;
+						break;
+					}
+				}
 			} else {
 				keyPressEvent(&e); // global keyboard controls
 			}
