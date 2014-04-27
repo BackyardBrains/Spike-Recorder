@@ -94,7 +94,7 @@ void AnalysisView::savePressed() {
 
 	for(unsigned int i = 0; i < _spikes.spikes().size(); i++)
 		if(_spikes.spikes()[i].second > lowerthresh && _spikes.spikes()[i].second < upperthresh)
-			markers.push_back(std::make_pair(std::string("neuron1"), _spikes.spikes()[i].first));
+			markers.push_back(std::make_pair(std::string("_neuron1"), _spikes.spikes()[i].first));
 
 	FileRecorder f(_manager);
 	std::string filename = f.eventTxtFilename(_manager.fileName());

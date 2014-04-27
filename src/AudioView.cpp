@@ -405,7 +405,7 @@ void AudioView::drawAudio() {
 }
 
 void AudioView::drawRulerBox() {
-	if(_rulerStart != -1) {
+	if(_rulerClicked) {
 		int x = std::min(_rulerEnd, _rulerStart);
 		int w = std::max(_rulerEnd, _rulerStart) - x;
 
@@ -436,9 +436,26 @@ void AudioView::drawRulerTime() {
 	}
 }
 
+void AudioView::drawSpikeTrain() {
+	int samples = sampleCount(screenWidth(), scaleWidth());
+	for(unsigned int i = 0; i < _manager.spikeTrains().size(); i++) {
+		for(std::list<int64_t>::const_iterator it = _manager.spikeTrains()[i].begin(); it != _manager.spikeTrains()[i].end(); it++) {
+			if(_manager.pos()+_channelOffset-*it > samples || _manager.pos()+_channelOffset-*it < -samples/2)
+				continue;
+
+			float x = width()+screenWidth()*(*it-_manager.pos()-samples/2*_manager.fileMode()-_channelOffset)/(float)samples;
+			float y = height()*(0.1f+0.1f*i);
+			Widgets::Painter::setColor(MARKER_COLORS[i+1 % MARKER_COLOR_NUM]);
+			Widgets::Painter::drawRect(Widgets::Rect(x-1,y-1,3,3));
+		}
+	}
+}
 
 void AudioView::paintEvent() {
 	drawRulerBox();
+
+	if(!_manager.threshMode())
+		drawSpikeTrain();
 	drawAudio();
 
 	if(_manager.threshMode())

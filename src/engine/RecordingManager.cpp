@@ -56,7 +56,31 @@ void RecordingManager::applyMetadata(const MetadataChunk &m) {
 		_recordingDevices[i].name = m.channels[i].name;
 	}
 
-	_markers = m.markers;
+	std::list<std::string> neuronNames;
+	_spikeTrains.clear();
+	_markers.clear();
+	for(std::list<std::pair<std::string, int64_t> >::const_iterator it = m.markers.begin(); it != m.markers.end(); it++) {
+		if(it->first.compare(0,7,"_neuron") == 0) {
+			int neunum = -1;
+			int i = 0;
+			for(std::list<std::string>::iterator it2 = neuronNames.begin(); it2 != neuronNames.end(); it2++, i++) {
+				if(*it2 == it->first)
+					neunum = i;
+			}
+
+			if(neunum == -1) {
+				neuronNames.push_back(it->first);
+				neunum = neuronNames.size()-1;
+				if((int)_spikeTrains.capacity() == neunum)
+					_spikeTrains.reserve(_spikeTrains.capacity()*2);
+				_spikeTrains.push_back(std::list<int64_t>());
+			}
+
+			_spikeTrains[neunum].push_back(it->second);
+		} else {
+			_markers.push_back(*it);
+		}
+	}
 }
 
 void RecordingManager::clear() {

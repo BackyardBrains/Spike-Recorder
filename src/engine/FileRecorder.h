@@ -63,7 +63,12 @@
  * column represents it’s position in seconds from the beginning.
  *
  * There are some rules for the name: it must not contain a comma and it must
- * not be empty. But it can be an arbitrary string otherwise.
+ * not be empty.
+ * Names starting with '_neuron' are considered spike train data and displayed
+ * differently.
+ * Apart from that it can be an arbitrary string.
+ *
+ *
  *
  * The marker position is a floating point number as understood by atof and
  * must not be empty either. Any amount of white space in the second column is

@@ -62,6 +62,7 @@ public:
 	int threshAvgCount() const {return _threshAvgCount;}
 	int selectedVDevice() const {return _selectedVDevice;}
 
+	const std::vector<std::list<int64_t> > &spikeTrains() const { return _spikeTrains; }
 	const std::list<std::pair<std::string, int64_t> > &markers() const {return _markers;}
 	void addMarker(const std::string &id, int64_t offset);
 
@@ -117,6 +118,7 @@ private:
 	int _threshAvgCount;
 	std::list<int64_t> _triggers;
 	std::list<std::pair<std::string,int64_t> > _markers;
+	std::vector<std::list<int64_t> > _spikeTrains;
 
 	Player _player;
 };

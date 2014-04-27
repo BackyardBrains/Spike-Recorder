@@ -58,6 +58,7 @@ protected:
 
 	void drawAudio();
 	void drawScale();
+	void drawSpikeTrain();
 	void drawRulerBox();
 	void drawRulerTime();
 	void drawMarkers();
