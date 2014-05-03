@@ -8,6 +8,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <bass.h>
+#include <cassert>
 
 namespace BackyardBrains {
 
@@ -326,6 +327,8 @@ void Application::_HandleEvent(const void *eventRaw) {
 void Application::createWindow(int w, int h) {
 	// set up a window
 	SDL_Surface *screen = SDL_GetVideoSurface();
+
+	assert(_windowStack.size() > 0); // cannot create window without content present.
 
 	screen = SDL_SetVideoMode(w, h, 0, SDL_OPENGL|SDL_RESIZABLE);
 	if(!screen) {

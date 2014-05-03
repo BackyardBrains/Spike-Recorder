@@ -10,10 +10,9 @@ Game::Game() : _fileRec(_manager) {
 	std::cout << "Loading Resources...\n";
 	loadResources();
 	std::cout << "Creating Window...\n";
-	createWindow(800,600);
 
 	addWindow(new MainView(_manager, _fileRec));
-
+	createWindow(800,600);
 	setWindowTitle("BYB Spike Recorder");
 
 	std::cout << "Starting GUI...\n";
