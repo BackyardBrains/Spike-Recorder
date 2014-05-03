@@ -18,7 +18,7 @@ Application *Application::app = NULL;
 const int Application::MIN_WINDOW_W = 120;
 const int Application::MIN_WINDOW_H = 100;
 
-Application::Application() : _running(false), _mouseGrabber(0), _keyboardGrabber(0), _hoverWidget(0), _windowStack(0), _popupStack(0), _mainwidget(0) {
+Application::Application() : _running(false), _mouseGrabber(0), _keyboardGrabber(0), _hoverWidget(0), _windowStack(0), _popupStack(0) {
 	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
 		std::cerr << "SDL Error: Failed to initialize: " << SDL_GetError() << "\n";
 		exit(1);
@@ -56,13 +56,8 @@ Application *Application::getInstance() {
 }
 
 Application::~Application() {
-	delete _mainwidget;
 	// clean up and exit
 	SDL_Quit();
-}
-
-Widget *Application::mainWidget() {
-	return _mainwidget;
 }
 
 static MouseButton ToMouseButtonFromSDL(Uint8 button) {

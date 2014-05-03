@@ -37,7 +37,6 @@ public:
 	static Application *getInstance();
 protected:
 	void createWindow(int w, int h);
-	Widget *mainWidget();
 private:
 	static Application *app;
 	typedef std::vector<Widget*> WidgetVector;
@@ -63,7 +62,6 @@ private:
 	void _SetHoverWidget(Widget *widget);
 	void removeClosed(WidgetList &w);
 
-	Widget *_mainwidget;
 	std::string _windowTitle;
 
 };

@@ -154,7 +154,8 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	vbox->addLayout(seekBarBox);
 	vbox->addSpacing(10);
 
-	Widgets::Application::getInstance()->updateLayout();
+	vbox->update();
+// 	Widgets::Application::getInstance()->updateLayout();
 
 	_audioView->standardSettings();
 
