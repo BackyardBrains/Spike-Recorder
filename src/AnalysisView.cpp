@@ -64,7 +64,7 @@ AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Wi
 
 	vbox->update();
 
-	_spikes.findSpikes(_manager.fileName(), _manager.selectedVDevice(), _manager.recordingDevices()[_manager.selectedVDevice()].threshold, _manager.sampleRate()/100 /* 10 ms */);
+	_spikes.findSpikes(_manager.fileName(), _manager.selectedVDevice(), _manager.recordingDevices()[_manager.selectedVDevice()].threshold, _manager.sampleRate()/200 /* 5 ms */);
 
 	_wasThreshMode = _manager.threshMode();
 	_manager.setThreshMode(false);

@@ -2,6 +2,7 @@
 #include <cstring>
 #include <iostream>
 #include <bass.h>
+#include <cmath>
 
 namespace BackyardBrains {
 
@@ -24,7 +25,7 @@ void SpikeSorter::searchPart(int8_t *buffer, int size, int chan, int channels, i
 	for(int i = 0; i < size/channels/bytedepth; i++) {
 		const int16_t val = convert_bytedepth(&buffer[(i*channels+chan)*bytedepth], bytedepth);
 
-		if((val > threshold || val < -threshold) && (_spikes.empty() || toffset+i-_spikes.back().first > holdoff)) {
+		if((val > threshold || val < -threshold) && (_spikes.empty() || std::fabs(val) > std::fabs(_spikes.back().second) || toffset+i-_spikes.back().first > holdoff)) {
 			if(_spikes.size() >= _spikes.capacity())
 				_spikes.reserve(_spikes.capacity()*2);
 
@@ -44,7 +45,7 @@ void SpikeSorter::searchPart(int8_t *buffer, int size, int chan, int channels, i
 				}
 			}
 
-			i = peakpos+holdoff;
+			i = peakpos+1;
 
 			_spikes.push_back(std::make_pair(toffset+peakpos, peakval));
 		}
