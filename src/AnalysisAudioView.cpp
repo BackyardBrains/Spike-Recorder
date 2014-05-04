@@ -41,7 +41,7 @@ void AnalysisAudioView::paintEvent() {
 	Widgets::Color bg = Widgets::Colors::background;
 	bg.a = 200;
 	Widgets::Painter::setColor(bg);
-	Widgets::Painter::drawRect(rect().outset(100));
+	Widgets::Painter::drawRect(rect().outset(150));
 
 	drawMarkers();
 
