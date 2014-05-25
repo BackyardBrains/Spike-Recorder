@@ -22,34 +22,84 @@ static int16_t convert_bytedepth(int8_t *pos, int bytes) {
 }
 
 void SpikeSorter::searchPart(int8_t *buffer, int size, int chan, int channels, int bytedepth, int threshold, int holdoff, int64_t toffset) {
+	int trigger = 0;
+	int16_t peakval = 0;
+	int64_t peakpos = 0;
+
+	std::vector<std::pair<int64_t, int16_t> > posspikes, negspikes;
+
+	// looking for positive peaks
 	for(int i = 0; i < size/channels/bytedepth; i++) {
 		const int16_t val = convert_bytedepth(&buffer[(i*channels+chan)*bytedepth], bytedepth);
 
-		if((val > threshold || val < -threshold) && (_spikes.empty() || std::fabs(val) > std::fabs(_spikes.back().second) || toffset+i-_spikes.back().first > holdoff)) {
-			if(_spikes.size() >= _spikes.capacity())
-				_spikes.reserve(_spikes.capacity()*2);
+		if(trigger) {
+			if(val < 0) {
+				trigger = 0;
+				posspikes.push_back(std::make_pair(toffset+peakpos, peakval));
 
-			bool positive = val > threshold;
-
-			int16_t peakval = val;
-			int64_t peakpos = i;
-
-			for(int j = 0; j < holdoff; j++) {
-				if(i+j >= size/channels/bytedepth)
-					break;
-
-				const int16_t nval = convert_bytedepth(&buffer[((i+j)*channels+chan)*bytedepth], bytedepth);
-				if(positive ? nval > peakval : nval < peakval) {
-					peakval = nval;
-					peakpos = i+j;
-				}
+			} else if(val > peakval) {
+				peakval = val;
+				peakpos = i;
 			}
-
-			i = peakpos+1;
-
-			_spikes.push_back(std::make_pair(toffset+peakpos, peakval));
+		} else if(val > threshold) {
+			trigger = 1;
+			peakval = val;
+			peakpos = i;
 		}
 	}
+
+	// looking for negative peaks
+	for(int i = 0; i < size/channels/bytedepth; i++) {
+		const int16_t val = convert_bytedepth(&buffer[(i*channels+chan)*bytedepth], bytedepth);
+		if(trigger) {
+			if(val > 0) {
+				trigger = 0;
+				negspikes.push_back(std::make_pair(toffset+peakpos, peakval));
+
+			} else if(val < peakval) {
+				peakval = val;
+				peakpos = i;
+			}
+		} else if(val < -threshold) {
+			trigger = 1;
+			peakval = val;
+			peakpos = i;
+		}
+	}
+
+	std::vector<std::pair<int64_t, int16_t> >::iterator itp = posspikes.begin(), itn = negspikes.begin(), litp, litn;
+	litn = itn; // last added positive
+	litp = itp; // last added negative
+	while(itp != posspikes.end() || itn != negspikes.end()) {
+		int next = 1;
+		if(itp == posspikes.end())
+			next = 0;
+		else if(itn != negspikes.end())
+			next = itp->first < itn->first;
+
+
+		if(next) {
+			if(itp->second >= litp->second || itp->first-litp->first > holdoff) {
+
+				_spikes.push_back(*itp);
+				litp = itp;
+			}
+
+			itp++;
+		} else {
+			if(itn == negspikes.end())
+				continue;
+
+			if(itn->second <= litn->second || itn->first-litn->first > holdoff) {
+				_spikes.push_back(*itn);
+				litn = itn;
+			}
+			itn++;
+		}
+	}
+
+
+
 }
 
 void SpikeSorter::findSpikes(const std::string &filename, int channel, int threshold, int holdoff) {
