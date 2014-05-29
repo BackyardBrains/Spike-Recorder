@@ -50,6 +50,9 @@ public:
 
 	sigslot::signal1<int> relOffsetChanged;
 protected:
+	static const Widgets::Color MARKER_COLORS[];
+	static const int MARKER_COLOR_NUM;
+
 	static const int MOVEPIN_SIZE = 30;
 
 	static const float ampScale; // pixels per amplitude unit
@@ -63,6 +66,7 @@ protected:
 	void drawRulerTime();
 	void drawMarkers();
 	void drawThreshold(int screenw);
+	void drawData(std::vector<std::pair<int16_t, int16_t> > &data, int channel, int samples, int x, int y, int width);
 	void paintEvent();
 
 	float scaleWidth(); //pixels per second of audio
@@ -75,10 +79,6 @@ protected:
 
 	int determineThreshHover(int x, int y, int thresholdPos, int *yoffset);
 private:
-
-	static const Widgets::Color MARKER_COLORS[];
-	static const int MARKER_COLOR_NUM;
-
 	int _clickedGain;
 	float _prevGain;
 	
@@ -108,7 +108,7 @@ private:
 	void advance();
 
 
-	void drawData(std::vector<std::pair<int16_t, int16_t> > &data, int channel, int samples, int x, int y, int width);
+
 };
 
 

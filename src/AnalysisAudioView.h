@@ -19,6 +19,7 @@ public:
 
 	int upperThresh() const;
 	int lowerThresh() const;
+
 private:
 	SpikeSorter &_spikes;
 
@@ -26,6 +27,7 @@ private:
 	int _clickOffset;
 	float _threshPos[2]; // relative position
 
+	int screenWidth() const;
 
 	int relPosToAmp(float rpos) const;
 	void mousePressEvent(Widgets::MouseEvent *event);
