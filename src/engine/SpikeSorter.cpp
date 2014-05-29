@@ -79,27 +79,21 @@ void SpikeSorter::searchPart(int8_t *buffer, int size, int chan, int channels, i
 
 
 		if(next) {
-			if(itp->second >= litp->second || itp->first-litp->first > holdoff) {
-
+			if((itp->second >= litp->second && (itp == posspikes.end()-1 || itp->second >= (itp+1)->second)) || itp->first-litp->first > holdoff) {
 				_spikes.push_back(*itp);
 				litp = itp;
 			}
 
 			itp++;
 		} else {
-			if(itn == negspikes.end())
-				continue;
-
-			if(itn->second <= litn->second || itn->first-litn->first > holdoff) {
+			if((itn->second <= litn->second && (itn == negspikes.end()-1 || itn->second <= (itn+1)->second)) || itn->first-litn->first > holdoff) {
 				_spikes.push_back(*itn);
 				litn = itn;
 			}
+			
 			itn++;
 		}
 	}
-
-
-
 }
 
 void SpikeSorter::findSpikes(const std::string &filename, int channel, int threshold, int holdoff) {
