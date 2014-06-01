@@ -9,6 +9,7 @@ class RecordingManager;
 class FileRecorder;
 class AudioView;
 class RecordingBar;
+class AnalysisView;
 namespace Widgets {
 	class PushButton;
 	class ScrollBar;
@@ -17,6 +18,7 @@ namespace Widgets {
 class MainView : public Widgets::Widget {
 public:
 	MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent = NULL);
+	~MainView();
 private:
 	RecordingManager &_manager;
 	FileRecorder &_fileRec;
@@ -31,6 +33,7 @@ private:
 	Widgets::Widget *_threshavgGroup;
 	AudioView *_audioView;
 	RecordingBar *_recBar;
+	AnalysisView *_anaView;
 
 	Widgets::Widget *makeThreshavgGroup();
 

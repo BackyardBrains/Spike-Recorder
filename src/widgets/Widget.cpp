@@ -187,6 +187,10 @@ void Widget::close() {
 	_state.closed = true;
 }
 
+void Widget::unclose() {
+	_state.closed = false;
+}
+
 bool Widget::closed() {
 	return _state.closed;
 }
@@ -217,6 +221,10 @@ bool Widget::hasMouseTracking() const {
 
 void Widget::setDeleteOnClose(bool d) {
 	_state.deleteOnClose = d;
+}
+
+bool Widget::getDeleteOnClose() const {
+	return _state.deleteOnClose;
 }
 
 void Widget::advance() {

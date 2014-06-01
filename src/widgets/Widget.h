@@ -58,6 +58,7 @@ public:
 	WidgetVector &children();
 
 	void close();
+	void unclose();
 	bool closed();
 	void setVisible(bool visible);
 	void setHidden(bool hidden);
@@ -68,7 +69,8 @@ public:
 	void setMouseTracking(bool enable);
 	bool hasMouseTracking() const;
 
-	void setDeleteOnClose(bool d);// ignored for now because not sure if there is anything *not* needing it
+	void setDeleteOnClose(bool d);
+	bool getDeleteOnClose() const;
 
 	virtual void advance();
 	virtual void resizeEvent(ResizeEvent *event);
@@ -92,11 +94,11 @@ private:
 	Size _sizeHint;
 	struct WidgetState
 	{
-		WidgetState() {memset(this, 0, sizeof(*this));}
+		WidgetState() {memset(this, 0, sizeof(*this)); deleteOnClose = true;}
 		bool closed : 1;
 		bool hidden : 1;
 		bool mouseTracking : 1;
-		bool deleteOnClose : 1; // ignored for now because not sure if there is anything *not* needing it
+		bool deleteOnClose : 1;
 	} _state;
 
 

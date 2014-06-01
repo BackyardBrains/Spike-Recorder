@@ -56,7 +56,7 @@ Widgets::Widget *MainView::makeThreshavgGroup() {
 	return group;
 }
 
-MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent) : Widget(parent), _manager(mngr), _fileRec(fileRec) {
+MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent) : Widget(parent), _manager(mngr), _fileRec(fileRec), _anaView(NULL) {
 	_audioView = new AudioView(this, _manager);
 
 	_audioView->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Expanding, Widgets::SizePolicy::Expanding));
@@ -161,7 +161,9 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 
 }
 
-
+MainView::~MainView() {
+	delete _anaView;
+}
 
 void MainView::pausePressed() {
 	if(_manager.paused()) {
@@ -287,6 +289,8 @@ void MainView::filePressed() {
 
 	_recordButton->setVisible(false);
 	_analysisButton->setVisible(true);
+	delete _anaView;
+	_anaView = NULL;
 }
 
 void MainView::configPressed() {
@@ -297,10 +301,12 @@ void MainView::configPressed() {
 }
 
 void MainView::analysisPressed() {
-	AnalysisView *a = new AnalysisView(_manager);
-	a->setDeleteOnClose(true);
-	a->setGeometry(this->rect());
-	Widgets::Application::getInstance()->addWindow(a);
+	if(_anaView == NULL)
+		_anaView = new AnalysisView(_manager);
+	
+	_anaView->setDeleteOnClose(false);
+	_anaView->setGeometry(this->rect());
+	Widgets::Application::getInstance()->addWindow(_anaView);
 
 	if(!_manager.paused())
 		pausePressed();

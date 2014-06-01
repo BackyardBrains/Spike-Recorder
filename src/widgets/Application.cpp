@@ -94,7 +94,8 @@ void Application::removeClosed(WidgetList &w) {
 			tmp.push_back(*it);
 	w.remove_if(close_cond);
 	for(WidgetList::const_iterator it = tmp.begin(); it != tmp.end(); ++it)
-		delete *it;
+		if((*it)->getDeleteOnClose())
+			delete *it;
 }
 
 void Application::run() {
@@ -154,10 +155,12 @@ void Application::run() {
 }
 
 void Application::addPopup(Widget *w) {
+	w->unclose();
 	_popupStack.push_back(w);
 }
 
 void Application::addWindow(Widget *w) {
+	w->unclose();
 	_windowStack.push_back(w);
 }
 
