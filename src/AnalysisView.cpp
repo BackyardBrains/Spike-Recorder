@@ -36,7 +36,7 @@ AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Wi
 	seekBar->setPageStep(25);
 	seekBar->valueChanged.connect((AudioView *)_audioView, &AudioView::setRelOffset);
  	_audioView->relOffsetChanged.connect(seekBar, &Widgets::ScrollBar::updateValue);
-	seekBar->setValue(0);
+	seekBar->setValue(1000);
 
 	Widgets::PushButton *saveButton = new Widgets::PushButton(this);
 	saveButton->setNormalTex(Widgets::TextureGL::get("data/save.png"));
@@ -68,7 +68,7 @@ AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Wi
 
 	_wasThreshMode = _manager.threshMode();
 	_manager.setThreshMode(false);
-	_manager.setPos(0);
+	_manager.setPos(_manager.fileLength()/2);
 }
 
 
