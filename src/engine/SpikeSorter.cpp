@@ -3,6 +3,7 @@
 #include <iostream>
 #include <bass.h>
 #include <cmath>
+#include <algorithm>
 
 namespace BackyardBrains {
 
@@ -21,15 +22,26 @@ static int16_t convert_bytedepth(int8_t *pos, int bytes) {
 	return res;
 }
 
+double SpikeSorter::calcRMS(int8_t *buffer, int size, int chan, int channels, int bytedepth) {
+	double sum = 0;
+	const int nsamples = size/channels/bytedepth;
+	for(int i = 0; i < nsamples; i++) {
+		const int16_t val = convert_bytedepth(&buffer[(i*channels+chan)*bytedepth], bytedepth);
+		sum += val*val;
+	}
+
+	return sqrt(sum/nsamples);
+}
+
 void SpikeSorter::searchPart(int8_t *buffer, int size, int chan, int channels, int bytedepth, int threshold, int holdoff, int64_t toffset) {
 	int trigger = 0;
 	int16_t peakval = 0;
 	int64_t peakpos = 0;
-
+	const int nsamples = size/channels/bytedepth;
 	std::vector<std::pair<int64_t, int16_t> > posspikes, negspikes;
 
 	// looking for positive peaks
-	for(int i = 0; i < size/channels/bytedepth; i++) {
+	for(int i = 0; i < nsamples; i++) {
 		const int16_t val = convert_bytedepth(&buffer[(i*channels+chan)*bytedepth], bytedepth);
 
 		if(trigger) {
@@ -49,7 +61,7 @@ void SpikeSorter::searchPart(int8_t *buffer, int size, int chan, int channels, i
 	}
 
 	// looking for negative peaks
-	for(int i = 0; i < size/channels/bytedepth; i++) {
+	for(int i = 0; i < nsamples; i++) {
 		const int16_t val = convert_bytedepth(&buffer[(i*channels+chan)*bytedepth], bytedepth);
 		if(trigger) {
 			if(val > 0) {
@@ -96,7 +108,34 @@ void SpikeSorter::searchPart(int8_t *buffer, int size, int chan, int channels, i
 	}
 }
 
-void SpikeSorter::findSpikes(const std::string &filename, int channel, int threshold, int holdoff) {
+int SpikeSorter::findThreshold(int handle, int channel, int channels, int bytedepth) {
+	int64_t left = BASS_ChannelGetLength(handle, BASS_POS_BYTE);
+	int8_t buffer[BUFSIZE];
+
+	std::vector<double> rms(left/channels/bytedepth/BUFSIZE);
+	unsigned int i = 0;
+	while(left > 0) {
+		DWORD bytesread = BASS_ChannelGetData(handle, buffer, std::min(left,(int64_t)BUFSIZE));
+		if(bytesread == (DWORD)-1) {
+			std::cerr << "Bass Error: getting channel data failed: " << BASS_ErrorGetCode() << "\n";
+			break;
+		}
+
+		double r = calcRMS(buffer, bytesread, channel, channels, bytedepth);
+		left -= bytesread;
+
+		if(i == rms.size())
+			rms.resize(2*rms.size());
+		rms[i++] = r;
+	}
+
+	rms.resize(i+1);
+	std::sort(rms.begin(),rms.end());
+	BASS_ChannelSetPosition(handle, 0, BASS_POS_BYTE);
+	return rms[rms.size()*4/10];
+}
+
+void SpikeSorter::findSpikes(const std::string &filename, int channel, int holdoff) {
 	HSTREAM handle = BASS_StreamCreateFile(false, filename.c_str(), 0, 0, BASS_STREAM_DECODE);
 	if(handle == 0) {
 		std::cerr << "Bass Error: Failed to load file '" << filename << "': " << BASS_ErrorGetCode() << "\n";
@@ -106,12 +145,12 @@ void SpikeSorter::findSpikes(const std::string &filename, int channel, int thres
 	int8_t buffer[BUFSIZE];
 
 	BASS_CHANNELINFO info;
-
 	BASS_ChannelGetInfo(handle, &info);
 	int bytespersample = info.origres/8;
 
-
 	_spikes.reserve(256);
+
+	int threshold = findThreshold(handle, channel, info.chans, bytespersample);
 
 	int64_t left = BASS_ChannelGetLength(handle, BASS_POS_BYTE);
 	int64_t pos = 0;
