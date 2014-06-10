@@ -24,9 +24,18 @@ static int16_t convert_bytedepth(int8_t *pos, int bytes) {
 
 double SpikeSorter::calcRMS(int8_t *buffer, int size, int chan, int channels, int bytedepth) {
 	double sum = 0;
+	double mean = 0;
 	const int nsamples = size/channels/bytedepth;
+
 	for(int i = 0; i < nsamples; i++) {
 		const int16_t val = convert_bytedepth(&buffer[(i*channels+chan)*bytedepth], bytedepth);
+		mean += val;
+	}
+
+	mean /= nsamples;
+
+	for(int i = 0; i < nsamples; i++) {
+		const int16_t val = convert_bytedepth(&buffer[(i*channels+chan)*bytedepth], bytedepth)-mean;
 		sum += val*val;
 	}
 
