@@ -60,7 +60,7 @@ void Game::loadResources() {
 void Game::advance() {
 	static uint32_t t = 0; // TODO make this cleaner
 	uint32_t newt = SDL_GetTicks();
-	_manager.advance((newt-t)*_manager.sampleRate()/1000);
+	_manager.advance((newt-t)*_manager.sampleRate()/(1000-100)); // fetch more samples than necessary to prevent lag
 	_fileRec.advance();
 
 	t = newt;
