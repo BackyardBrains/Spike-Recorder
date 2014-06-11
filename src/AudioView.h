@@ -16,6 +16,7 @@ public:
 	struct Channel
 	{
 		Channel() : virtualDevice(RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX), colorIdx(1), gain(1.f), pos(0.5f) {}
+		void setGain(float ngain);
 
 		int virtualDevice;
 		int colorIdx;
@@ -54,6 +55,9 @@ protected:
 	static const int MARKER_COLOR_NUM;
 
 	static const int MOVEPIN_SIZE = 30;
+	static const int GAINCONTROL_XOFF = MOVEPIN_SIZE*6/5;
+	static const int GAINCONTROL_YOFF = MOVEPIN_SIZE*3/5;
+	static const int GAINCONTROL_RAD = MOVEPIN_SIZE/4;
 
 	static const float ampScale; // pixels per amplitude unit
 	RecordingManager &_manager;
@@ -66,6 +70,7 @@ protected:
 	void drawRulerTime();
 	void drawMarkers();
 	void drawThreshold(int screenw);
+	void drawGainControls();
 	void drawData(std::vector<std::pair<int16_t, int16_t> > &data, int channel, int samples, int x, int y, int width);
 	void paintEvent();
 
@@ -78,6 +83,7 @@ protected:
 	void mouseReleaseEvent(Widgets::MouseEvent *event);
 
 	int determineThreshHover(int x, int y, int thresholdPos, int *yoffset);
+	int determineGainControlHover(int x, int y);
 private:
 	int _clickedGain;
 	float _prevGain;
@@ -86,6 +92,9 @@ private:
 	int _clickedPixelOffset;
 
 	bool _clickedThresh;
+
+	uint32_t _gainCtrlHoldTime;
+	int8_t _gainCtrlDir;
 
 	bool _rulerClicked;
 	int _rulerStart;

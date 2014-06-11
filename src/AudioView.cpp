@@ -356,6 +356,15 @@ static float calculateRMS(std::vector<std::pair<int16_t, int16_t> > &data, unsig
 	return 0.f;
 }
 
+void AudioView::drawGainControls() {
+	int y = _channels[selectedChannel()].pos*height();
+	Widgets::TextureGL::get("data/gaindown.png")->bind();
+	Widgets::Painter::drawTexRect(Widgets::Rect(GAINCONTROL_XOFF-GAINCONTROL_RAD,y+GAINCONTROL_YOFF-GAINCONTROL_RAD,2*GAINCONTROL_RAD,2*GAINCONTROL_RAD));
+	Widgets::TextureGL::get("data/gainup.png")->bind();
+	Widgets::Painter::drawTexRect(Widgets::Rect(GAINCONTROL_XOFF-GAINCONTROL_RAD,y-GAINCONTROL_YOFF-GAINCONTROL_RAD,2*GAINCONTROL_RAD,2*GAINCONTROL_RAD));
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 void AudioView::drawAudio() {
 	float scalew = scaleWidth();
 	float xoff = MOVEPIN_SIZE*1.48f;
@@ -402,6 +411,9 @@ void AudioView::drawAudio() {
 			}
 		}
 	}
+	Widgets::Painter::setColor(Widgets::Colors::white);
+	drawGainControls();
+
 }
 
 void AudioView::drawRulerBox() {
@@ -508,6 +520,30 @@ void AudioView::drawThreshold(int screenw) {
 void AudioView::advance() {
 	if(_manager.fileMode() && !_manager.paused())
 		setOffset(_manager.pos());
+
+	if(_gainCtrlHoldTime) {
+		int t = SDL_GetTicks() - _gainCtrlHoldTime;
+
+		if(t > 400) {
+			Channel &c = _channels[selectedChannel()];
+			c.setGain(c.gain*pow(1.01f,_gainCtrlDir));
+		}
+	}
+}
+
+int AudioView::determineGainControlHover(int x, int y) {
+	int xx = GAINCONTROL_XOFF-x;
+	int dy = _channels[selectedChannel()].pos*height()-y;
+	xx *= xx;
+
+	dy -= GAINCONTROL_YOFF;
+	if(xx + dy*dy < GAINCONTROL_RAD*GAINCONTROL_RAD)
+		return 1;
+	dy += 2*GAINCONTROL_YOFF;
+	if(xx + dy*dy < GAINCONTROL_RAD*GAINCONTROL_RAD)
+		return -1;
+
+	return 0;
 }
 
 int AudioView::determineSliderHover(int x, int y, int *yoffset) {
@@ -515,8 +551,7 @@ int AudioView::determineSliderHover(int x, int y, int *yoffset) {
 	xx *= xx;
 
 	for(unsigned int i = 0; i < _channels.size(); i++) {
-		int dy = y - height()*_channels[i].pos ;
-
+		int dy = y - height()*_channels[i].pos;
 		int yy = dy*dy;
 		if(xx + yy < MOVEPIN_SIZE*MOVEPIN_SIZE*0.25f) {
 			if(yoffset)
@@ -545,6 +580,10 @@ int AudioView::determineThreshHover(int x, int y, int threshPos, int *yoffset) {
 	return 0;
 }
 
+void AudioView::Channel::setGain(float ngain) {
+	gain = std::min(10.f, std::max(0.001f, ngain));
+}
+
 void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 	int x = event->pos().x;
 	int y = event->pos().y;
@@ -552,10 +591,18 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 	if(event->button() == Widgets::LeftButton) {
 
 		if(_clickedSlider == -1 && x <= MOVEPIN_SIZE*1.5f) {
-			_clickedSlider = determineSliderHover(x,y,&_clickedPixelOffset);
-			if(_clickedSlider != -1) {
-				_manager.setSelectedVDevice(_channels[_clickedSlider].virtualDevice);
+			_gainCtrlDir = determineGainControlHover(x,y);
+			if(_gainCtrlDir != 0) {
+				Channel &c = _channels[selectedChannel()];
+				c.setGain(c.gain*pow(1.3f,_gainCtrlDir));
+				_gainCtrlHoldTime = SDL_GetTicks();
 				event->accept();
+			} else {
+				_clickedSlider = determineSliderHover(x,y,&_clickedPixelOffset);
+				if(_clickedSlider != -1) {
+					_manager.setSelectedVDevice(_channels[_clickedSlider].virtualDevice);
+					event->accept();
+				}
 			}
 		} else if(_clickedGain == -1 && (!_manager.threshMode() || x <= width()-MOVEPIN_SIZE*1.5f)) { // in thresh mode we don't want it to react on the tresh slider area
 			int yy;
@@ -584,7 +631,7 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 		int s = -1;
 		if(x < MOVEPIN_SIZE*3/2) {
 			if((s = determineSliderHover(x,y,NULL)) != -1)
-				_channels[s].gain = std::min(10.f, _channels[s].gain*1.2f);
+				_channels[s].setGain(_channels[s].gain*1.2f);
 		} else if(!_manager.threshMode() || x < width()-MOVEPIN_SIZE*3/2) {
 			const int centeroff = (-sampleCount(screenWidth(), scaleWidth())+sampleCount(screenWidth(), scaleWidth()/0.8f))/2;
 
@@ -598,7 +645,7 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 		int s = -1;
 		if(x < MOVEPIN_SIZE*3/2) {
 			if((s = determineSliderHover(x,y,NULL)) != -1)
-			_channels[s].gain = std::max(0.001f, _channels[s].gain*0.8f);
+			_channels[s].setGain(_channels[s].gain*0.8f);
 		} else if(!_manager.threshMode() || x < width()-MOVEPIN_SIZE*3/2) {
 			const int centeroff = (-sampleCount(screenWidth(), scaleWidth())+sampleCount(screenWidth(), scaleWidth()/1.2f))/2;
 			_timeScale = std::min(2.f, _timeScale*1.2f);
@@ -627,6 +674,7 @@ void AudioView::mouseReleaseEvent(Widgets::MouseEvent *event) {
 		_clickedSlider = -1;
 		_clickedThresh = false;
 		_clickedGain = -1;
+		_gainCtrlHoldTime = 0;
 	}
 
 	if(event->button() == Widgets::RightButton && _rulerStart-_rulerEnd == 0) {
@@ -640,6 +688,14 @@ void AudioView::mouseMotionEvent(Widgets::MouseEvent *event) {
 		event->accept();
 	}
 
+	if(_gainCtrlHoldTime) {
+		int dir = determineGainControlHover(event->pos().x, event->pos().y);
+
+		if(dir != _gainCtrlDir)
+			_gainCtrlHoldTime = 0;
+	}
+
+
 	if(_clickedThresh) {
 		int selected = selectedChannel();
 
@@ -652,7 +708,7 @@ void AudioView::mouseMotionEvent(Widgets::MouseEvent *event) {
 
 	if(_clickedGain != -1) {
 		float newGain = _prevGain*std::fabs((height()*_channels[_clickedGain].pos-event->pos().y)/(float)_clickedPixelOffset);
-		_channels[_clickedGain].gain = std::max(0.001f, std::min(10.f, newGain));
+		_channels[_clickedGain].setGain(newGain);
 		event->accept();
 	}
 

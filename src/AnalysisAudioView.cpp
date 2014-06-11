@@ -53,8 +53,8 @@ void AnalysisAudioView::paintEvent() {
 	drawTargetMarkers();
 	drawScale();
 
+	Widgets::Painter::setColor(Widgets::Colors::white);
 	if(!_channels.empty()) {
-		Widgets::Painter::setColor(Widgets::Colors::white);
 		for(unsigned int i = 0; i < _spikes.spikes().size(); i++) {
 			int samplepos = _manager.pos()-_spikes.spikes()[i].first;
 			if(samplepos < -samples/2 || samplepos > samples/2)
@@ -72,6 +72,12 @@ void AnalysisAudioView::paintEvent() {
 
 		}
 	}
+
+	Widgets::TextureGL::get("data/pin.png")->bind();
+	Widgets::Painter::drawTexRect(Widgets::Rect(MOVEPIN_SIZE/2, _channels[0].pos*height()-MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	drawGainControls();
 }
 
 void AnalysisAudioView::mousePressEvent(Widgets::MouseEvent *event) {
@@ -81,7 +87,7 @@ void AnalysisAudioView::mousePressEvent(Widgets::MouseEvent *event) {
 	if(event->button() == Widgets::RightButton)
 		return;
 	if(event->button() == Widgets::LeftButton) {
-		if(x < MOVEPIN_SIZE*1.5f)
+		if(x < MOVEPIN_SIZE*1.5f && determineGainControlHover(x, y) == 0)
 			return;
 
 		if(_clickedThresh == -1 && x > width() - MOVEPIN_SIZE*1.5f) {
