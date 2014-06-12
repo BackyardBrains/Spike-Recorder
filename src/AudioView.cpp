@@ -46,7 +46,7 @@ const float AudioView::ampScale = .0005f;
 
 AudioView::AudioView(Widgets::Widget *parent, RecordingManager &mngr)
 	: Widgets::Widget(parent), _manager(mngr), _clickedGain(-1), _clickedSlider(-1), _clickedPixelOffset(0),
-	_clickedThresh(false), _rulerClicked(false), _rulerStart(-1), _rulerEnd(-1), _channelOffset(0), _timeScale(0.1f)  {
+	_clickedThresh(false), _rulerClicked(false), _rulerStart(-1.f), _rulerEnd(-1.f), _channelOffset(0), _timeScale(0.1f)  {
 }
 
 AudioView::~AudioView() {
@@ -342,7 +342,6 @@ static float calculateRMS(std::vector<std::pair<int16_t, int16_t> > &data, unsig
 	float sum = 0.f;
 
 	assert(startsample < data.size() && endsample < data.size());
-
 	for(unsigned int i = startsample; i < endsample; i++) {
 		sum += data[i].first*data[i].first;
 		sum += data[i].second*data[i].second;
@@ -396,8 +395,8 @@ void AudioView::drawAudio() {
 			glBindTexture(GL_TEXTURE_2D, 0);
 
 			if(_rulerClicked) {
-				int startsample = (std::min(_rulerStart, _rulerEnd)-MOVEPIN_SIZE*1.5f)*data.size()/screenw;
-				int endsample = (std::max(_rulerStart, _rulerEnd)-MOVEPIN_SIZE*1.5f)*data.size()/screenw;
+				int startsample = std::min(_rulerStart, _rulerEnd)*data.size();
+				int endsample = std::max(_rulerStart, _rulerEnd)*data.size();
 
 				float rms = calculateRMS(data, startsample, endsample);
 
@@ -418,11 +417,11 @@ void AudioView::drawAudio() {
 
 void AudioView::drawRulerBox() {
 	if(_rulerClicked) {
-		int x = std::min(_rulerEnd, _rulerStart);
-		int w = std::max(_rulerEnd, _rulerStart) - x;
+		int x = std::min(_rulerEnd, _rulerStart)*screenWidth();
+		int w = std::max(_rulerEnd, _rulerStart)*screenWidth() - x;
 
 		Widgets::Painter::setColor(Widgets::Color(50,50,50));
-		Widgets::Painter::drawRect(Widgets::Rect(x, -100, w, height()+200));
+		Widgets::Painter::drawRect(Widgets::Rect(x+MOVEPIN_SIZE*1.5f, -100, w, height()+200));
 	}
 }
 
@@ -431,8 +430,8 @@ void AudioView::drawRulerTime() {
 	const int samples = sampleCount(screenw, scaleWidth());
 
 	if(_rulerClicked) {
-		int w = abs(_rulerStart-_rulerEnd);
-		float dtime = w/(float)screenw*samples/_manager.sampleRate();
+		int w = fabs(_rulerStart-_rulerEnd);
+		float dtime = w*samples/_manager.sampleRate();
 		int unit = -std::log(dtime/100)/std::log(1000);
 		unit = std::max(0, unit);
 		dtime *= std::pow(1000, unit);
@@ -441,9 +440,9 @@ void AudioView::drawRulerTime() {
 		s << std::fixed << dtime << " " << get_unit_str(unit);
 
 		Widgets::Painter::setColor(Widgets::Color(50,50,50,200));
-		drawtextbgbox(s.str(), (_rulerStart+_rulerEnd)/2, height()-50, Widgets::AlignCenter);
+		drawtextbgbox(s.str(), (_rulerStart+_rulerEnd)*screenWidth()/2.f+MOVEPIN_SIZE*1.5f, height()-50, Widgets::AlignCenter);
 		Widgets::Painter::setColor(Widgets::Colors::white);
-		Widgets::Application::font()->draw(s.str().c_str(), (_rulerStart+_rulerEnd)/2, height()-50, Widgets::AlignCenter);
+		Widgets::Application::font()->draw(s.str().c_str(), (_rulerStart+_rulerEnd)/2.f*screenWidth()+MOVEPIN_SIZE*1.5f, height()-50, Widgets::AlignCenter);
 
 	}
 }
@@ -656,8 +655,8 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 	} else if(event->button() == Widgets::RightButton) {
 		if(!_rulerClicked && x > MOVEPIN_SIZE*1.5f && (!_manager.threshMode() || x <= width()-MOVEPIN_SIZE*1.5f)) {
 			_rulerClicked = true;
-			_rulerStart = x;
-			_rulerEnd = x;
+			_rulerStart = (x-MOVEPIN_SIZE*1.5f)/(float)screenWidth();
+			_rulerEnd = (x-MOVEPIN_SIZE*1.5f)/(float)screenWidth();
 			event->accept();
 		} else if(_rulerClicked) {
 			 _rulerClicked = false;
@@ -677,7 +676,7 @@ void AudioView::mouseReleaseEvent(Widgets::MouseEvent *event) {
 		_gainCtrlHoldTime = 0;
 	}
 
-	if(event->button() == Widgets::RightButton && _rulerStart-_rulerEnd == 0) {
+	if(event->button() == Widgets::RightButton && fabs(_rulerStart-_rulerEnd)*screenWidth() < 1.f) {
 		_rulerClicked = false;
 	}
 }
@@ -713,7 +712,7 @@ void AudioView::mouseMotionEvent(Widgets::MouseEvent *event) {
 	}
 
 	if(_rulerClicked) {
-		_rulerEnd = std::max(event->pos().x, MOVEPIN_SIZE*3/2);
+		_rulerEnd = std::max(event->pos().x-MOVEPIN_SIZE*3/2, 0)/(float)screenWidth();
 		event->accept();
 	}
 

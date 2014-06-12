@@ -97,8 +97,8 @@ private:
 	int8_t _gainCtrlDir;
 
 	bool _rulerClicked;
-	int _rulerStart;
-	int _rulerEnd;
+	float _rulerStart;
+	float _rulerEnd;
 
 	int64_t _channelOffset;
 
