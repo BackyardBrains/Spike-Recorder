@@ -111,7 +111,7 @@ bool RecordingManager::loadFile(const char *filename) {
 		return false;
 	}
 
-	clear();
+
 	BASS_CHANNELINFO info;
 	BASS_ChannelGetInfo(stream, &info);
 
@@ -120,6 +120,8 @@ bool RecordingManager::loadFile(const char *filename) {
 		return false;
 	if(bytespersample >= 3)
 		bytespersample = 4; // bass converts everything it doesn’t support.
+
+	clear();
 	setSampleRate(info.freq);
 	_devices[0].create(_pos, info.chans);
 	_devices[0].bytespersample = bytespersample;
