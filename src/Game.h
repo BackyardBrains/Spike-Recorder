@@ -13,8 +13,6 @@ public:
 	Game();
 	~Game();
 private:
-
-
 	void loadResources();
 	RecordingManager _manager;
 	FileRecorder _fileRec;

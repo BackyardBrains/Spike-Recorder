@@ -14,7 +14,7 @@ public:
 	BitmapFontGL();
 
 	void draw(const char *text, int x, int y, Alignment alignment = 0) const;
-
+	void drawMultiline(const char *text, int x, int y, int width, Alignment alignment = 0) const;
 	int characterWidth() const;
 	int characterHeight() const;
 private:

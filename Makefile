@@ -30,6 +30,7 @@ OBJECTS = \
 	src/widgets/LoadTexture.o \
 	src/widgets/Label.o \
 	src/widgets/ErrorBox.o \
+	src/widgets/ToolTip.o \
 	src/Game.o \
 	src/main.o \
 	src/MainView.o \

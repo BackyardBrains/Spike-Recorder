@@ -16,40 +16,14 @@ ErrorBox::ErrorBox(const char *text) : text(text) {
 }
 
 void ErrorBox::paintEvent() {
-	Widgets::Color bg = Widgets::Colors::background;
+	Widgets::Color bg = Colors::background;
 	bg.a = 200;
 	Painter::setColor(bg);
 	Painter::drawRect(rect());
 
-	const BitmapFontGL &font = *Application::font();
-	int linelen = std::max(1,(width()-20)/font.characterWidth());
-
 	Painter::setColor(Colors::white);
-
-	std::string::iterator lstart = text.begin();
-	std::string::iterator lbreak = text.begin();
-	int i = 0;
-	int line = 0;
-	for(std::string::iterator it = text.begin(); it != text.end(); it++) {
-		if(*it == ' ' || *it == '\n') {
-			lbreak = it;
-		}
-
-		if(i >= linelen || *it == '\n') {
-			if(lbreak < lstart) {
-				lbreak = it;
-			}
-			font.draw(std::string(lstart, lbreak).c_str(), 10, 10+line*(font.characterHeight()+2));
-			lstart = lbreak+1;
-			i = it-lstart;
-			line++;
-		} else {
-			i++;
-		}
-	}
-
-	font.draw(std::string(lstart, text.end()).c_str(), 10, 10+line*(font.characterHeight()+2));
-
+	const BitmapFontGL &font = *Application::font();
+	font.drawMultiline(text.c_str(), 10, 10, width()-20);
 }
 
 void ErrorBox::mousePressEvent(MouseEvent *event) {

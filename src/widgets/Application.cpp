@@ -200,14 +200,14 @@ void Application::_HandleEvent(const void *eventRaw) {
 		Widget *windowWidget = NULL;
 		if (event.type != SDL_MOUSEBUTTONDOWN) {
 			for (WidgetList::const_reverse_iterator it = _popupStack.rbegin(); it != _popupStack.rend(); ++it) {
-				if ((*it)->geometry().contains(newPos)) {
+				if ((*it)->geometry().contains(newPos) && (*it)->hasMouseTracking()) {
 					windowWidget = *it;
 					break;
 				}
 			}
 		}
 		else { // if (event.type == SDL_MOUSEBUTTONDOWN)
-			// NOTE: for the case of a button press, if closes popups that it doesn't click on until it hits a popup, or closes all popups
+			// NOTE: for the case of a button press, it closes all popups that weren’t hit
 			while (!_popupStack.empty()) {
 				if (_popupStack.back()->geometry().contains(Point(event.button.x, event.button.y))) {
 					windowWidget = _popupStack.back();

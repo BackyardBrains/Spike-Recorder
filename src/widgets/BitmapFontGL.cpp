@@ -1,6 +1,7 @@
 #include "BitmapFontGL.h"
 #include <cstring>
 #include <iostream>
+#include <string>
 
 namespace BackyardBrains {
 
@@ -72,6 +73,36 @@ void BitmapFontGL::draw(const char *text, int xx, int yy, Alignment alignment) c
 	glEnd();
 
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void BitmapFontGL::drawMultiline(const char *t, int x, int y, int width, Alignment alignment) const {
+	std::string text(t);
+	
+	std::string::iterator lstart = text.begin();
+	std::string::iterator lbreak = text.begin();
+	int i = 0;
+	int line = 0;
+	int linelen = std::max(1,width/characterWidth());
+
+	for(std::string::iterator it = text.begin(); it != text.end(); it++) {
+		if(*it == ' ' || *it == '\n') {
+			lbreak = it;
+		}
+
+		if(i >= linelen || *it == '\n') {
+			if(lbreak < lstart) {
+				lbreak = it;
+			}
+			draw(std::string(lstart, lbreak).c_str(), 10, 10+line*(characterHeight()+2), alignment);
+			lstart = lbreak+1;
+			i = it-lstart;
+			line++;
+		} else {
+			i++;
+		}
+	}
+
+	draw(std::string(lstart, text.end()).c_str(), x, y+line*(characterHeight()+2), alignment);
 }
 
 } // namespace Widgets
