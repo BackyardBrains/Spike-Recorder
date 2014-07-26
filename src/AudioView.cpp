@@ -255,7 +255,7 @@ static const char *get_unit_str(int unit) {
 
 void AudioView::drawScale() {
 	int unit = -std::log(_timeScale)/std::log(10);
-	float shownscalew = scaleWidth()/std::pow(10, unit);
+	float shownscalew = scaleWidth()/std::pow(10.f, (float)unit);
 	std::stringstream o;
 	o << pow(10,-unit%3) << ' ';
 	o << get_unit_str(unit/3);
@@ -434,7 +434,7 @@ void AudioView::drawRulerTime() {
 		float dtime = w*samples/_manager.sampleRate();
 		int unit = -std::log(dtime/100)/std::log(1000);
 		unit = std::max(0, unit);
-		dtime *= std::pow(1000, unit);
+		dtime *= std::pow(1000.f, (float)unit);
 		std::stringstream s;
 		s.precision(3);
 		s << std::fixed << dtime << " " << get_unit_str(unit);
