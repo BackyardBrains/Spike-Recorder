@@ -90,7 +90,7 @@ else
 
 	ifeq ($(OS),Linux)
 		OBJECTS += $(OBJECTS_LINUX)
-		LIBS = `sdl-config --libs` -lSDL_image -lGL -lGLU -lbass # for Linux
+		LIBS = `sdl-config --libs` -lSDL_image -lGL -lGLU -lbass -lpthread # for Linux
 	else
 
 
