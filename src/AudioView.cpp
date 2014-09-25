@@ -430,7 +430,7 @@ void AudioView::drawRulerTime() {
 	const int samples = sampleCount(screenw, scaleWidth());
 
 	if(_rulerClicked) {
-		int w = fabs(_rulerStart-_rulerEnd);
+		float w = fabs(_rulerStart-_rulerEnd);
 		float dtime = w*samples/_manager.sampleRate();
 		int unit = -std::log(dtime/100)/std::log(1000);
 		unit = std::max(0, unit);
