@@ -75,7 +75,7 @@ ifeq ($(OS),MacOSX)
 
 	LIBS = -Wl,-rpath,@executable_path/../Frameworks libbass.dylib $(OBJCFILES) -F. -framework SDL -framework Cocoa -framework SDL_image -framework OpenGL -framework GLUT
 
-	FWPATH = /Library/Frameworks
+	FRAMEWORK_PATH = /Library/Frameworks
 
 	ifneq ($(FRAMEWORK_PATH),)
 		FWPATH = $(FRAMEWORK_PATH)
