@@ -81,7 +81,7 @@ ifeq ($(OS),MacOSX)
 		FWPATH = $(FRAMEWORK_PATH)
 	endif
 	
-	CFLAGS += -I$(FWPATH)/SDL.framework/Headers -I$(FRAMEWORK_PATH)/SDL_image.framework/Headers # for Mac OS X
+	CFLAGS += -I$(FWPATH)/SDL.framework/Headers -I$(FWPATH)/SDL_image.framework/Headers # for Mac OS X
 	LIBS += -F$(FWPATH)
 
 
