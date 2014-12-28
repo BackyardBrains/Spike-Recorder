@@ -11,6 +11,8 @@ To build BYB Spike Recorder follow these steps.
 
 ### Installing dependencies
 
+***on Linux***
+
 ```
 $ sudo apt-get install build-essential libsdl1.2-dev libsdl-image1.2-dev
 ```
@@ -36,6 +38,10 @@ $ sudo cp x64/libbass.so /usr/lib/
 ```
 
 (or on a 32-bit system 'cp libbass.so /usr/lib')
+
+***on OS X***
+
+Install the dependencies [libsdl](https://www.libsdl.org/download-1.2.php) and [sdl_image](https://www.libsdl.org/projects/SDL_image/release-1.2.html) by downloading the linked .dmg files and moving the .framework files to `/Library/Frameworks`.
 
 ### Compilation
 
