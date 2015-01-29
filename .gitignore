@@ -1,6 +1,7 @@
 *.o
 *.exe
 *.app
+tags
 SpikeRecorder
 SpikeRecorder.zip
 SDL.framework
