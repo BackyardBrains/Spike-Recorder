@@ -16,7 +16,7 @@ static void permute(std::vector<complex float> &data) {
 		for(unsigned int m = n >>1; (!((r^=m)&m)); m>>=1);
 		if(r > x) {
 			complex float tmp = data[x];
-			data[x] = result[r];
+			data[x] = data[r];
 			data[r] = tmp;
 		}
 	}

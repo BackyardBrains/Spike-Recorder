@@ -181,18 +181,22 @@ int AudioView::offset() const{
 	return _channelOffset;
 }
 
-float AudioView::scaleWidth() {
+int AudioView::channelOffset() const {
+	return _channelOffset;
+}
+
+float AudioView::scaleWidth() const {
 	return 0.05f*screenWidth()/_timeScale;
 }
 
-int AudioView::screenWidth() {
-	int screenw = width()-MOVEPIN_SIZE*1.5f;
+int AudioView::screenWidth() const {
+	int screenw = width()-DATA_XOFF;
 	if(_manager.threshMode())
-		screenw -= MOVEPIN_SIZE*1.5f;
+		screenw -= DATA_XOFF;
 	return std::max(0,screenw);
 }
 
-int AudioView::sampleCount(int screenw, float scalew) {
+int AudioView::sampleCount(int screenw, float scalew)  const {
 	if(screenw == 0)
 		return 0;
 
@@ -366,7 +370,7 @@ void AudioView::drawGainControls() {
 
 void AudioView::drawAudio() {
 	float scalew = scaleWidth();
-	float xoff = MOVEPIN_SIZE*1.48f;
+	float xoff = DATA_XOFF;
 	int screenw = screenWidth();
 	int samples = sampleCount(screenw, scalew);
 
@@ -421,7 +425,7 @@ void AudioView::drawRulerBox() {
 		int w = std::max(_rulerEnd, _rulerStart)*screenWidth() - x;
 
 		Widgets::Painter::setColor(Widgets::Color(50,50,50));
-		Widgets::Painter::drawRect(Widgets::Rect(x+MOVEPIN_SIZE*1.5f, -100, w, height()+200));
+		Widgets::Painter::drawRect(Widgets::Rect(x+DATA_XOFF, -100, w, height()+200));
 	}
 }
 
@@ -440,9 +444,9 @@ void AudioView::drawRulerTime() {
 		s << std::fixed << dtime << " " << get_unit_str(unit);
 
 		Widgets::Painter::setColor(Widgets::Color(50,50,50,200));
-		drawtextbgbox(s.str(), (_rulerStart+_rulerEnd)*screenWidth()/2.f+MOVEPIN_SIZE*1.5f, height()-50, Widgets::AlignCenter);
+		drawtextbgbox(s.str(), (_rulerStart+_rulerEnd)*screenWidth()/2.f+DATA_XOFF, height()-50, Widgets::AlignCenter);
 		Widgets::Painter::setColor(Widgets::Colors::white);
-		Widgets::Application::font()->draw(s.str().c_str(), (_rulerStart+_rulerEnd)/2.f*screenWidth()+MOVEPIN_SIZE*1.5f, height()-50, Widgets::AlignCenter);
+		Widgets::Application::font()->draw(s.str().c_str(), (_rulerStart+_rulerEnd)/2.f*screenWidth()+DATA_XOFF, height()-50, Widgets::AlignCenter);
 
 	}
 }
@@ -483,18 +487,18 @@ void AudioView::drawThreshold(int screenw) {
 
 	if(thresholdPos() > MOVEPIN_SIZE/2 && thresholdPos() < height() - MOVEPIN_SIZE/2) {
 		Widgets::TextureGL::get("data/threshpin.png")->bind();
-		Widgets::Painter::drawTexRect(Widgets::Rect(width()-MOVEPIN_SIZE*1.5f, thresholdPos()-MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
+		Widgets::Painter::drawTexRect(Widgets::Rect(width()-DATA_XOFF, thresholdPos()-MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		const int dotw = 20;
 		int movement = SDL_GetTicks()/20%dotw;
 		int y = thresholdPos();
 		for(int i = 0; i <= screenw/dotw+1; i++) {
-			float x = MOVEPIN_SIZE*1.5f+dotw*i-movement;
+			float x = DATA_XOFF+dotw*i-movement;
 
 			glBegin(GL_LINES);
-			glVertex3f(std::max(MOVEPIN_SIZE*1.5f, std::min(MOVEPIN_SIZE*1.5f+screenw, x)), y, 0.f);
-			glVertex3f(std::max(MOVEPIN_SIZE*1.5f, std::min(MOVEPIN_SIZE*1.5f+screenw, x+dotw*0.7f)), y, 0.f);
+			glVertex3f(std::max((float)DATA_XOFF, std::min((float)DATA_XOFF+screenw, x)), y, 0.f);
+			glVertex3f(std::max((float)DATA_XOFF, std::min((float)DATA_XOFF+screenw, x+dotw*0.7f)), y, 0.f);
 			glEnd();
 		}
 		drawScale();
@@ -589,7 +593,7 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 
 	if(event->button() == Widgets::LeftButton) {
 
-		if(_clickedSlider == -1 && x <= MOVEPIN_SIZE*1.5f) {
+		if(_clickedSlider == -1 && x <= DATA_XOFF) {
 			_gainCtrlDir = determineGainControlHover(x,y);
 			if(_gainCtrlDir != 0) {
 				Channel &c = _channels[selectedChannel()];
@@ -603,7 +607,7 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 					event->accept();
 				}
 			}
-		} else if(_clickedGain == -1 && (!_manager.threshMode() || x <= width()-MOVEPIN_SIZE*1.5f)) { // in thresh mode we don't want it to react on the tresh slider area
+		} else if(_clickedGain == -1 && (!_manager.threshMode() || x <= width()-DATA_XOFF)) { // in thresh mode we don't want it to react on the tresh slider area
 			int yy;
 			unsigned int i;
 			for(i = 0; i < _channels.size(); i++) {
@@ -628,10 +632,10 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 
 	} else if(event->button() == Widgets::WheelUpButton) {
 		int s = -1;
-		if(x < MOVEPIN_SIZE*3/2) {
+		if(x < DATA_XOFF) {
 			if((s = determineSliderHover(x,y,NULL)) != -1)
 				_channels[s].setGain(_channels[s].gain*1.2f);
-		} else if(!_manager.threshMode() || x < width()-MOVEPIN_SIZE*3/2) {
+		} else if(!_manager.threshMode() || x < width()-DATA_XOFF) {
 			const int centeroff = (-sampleCount(screenWidth(), scaleWidth())+sampleCount(screenWidth(), scaleWidth()/0.8f))/2;
 
 			_timeScale = std::max(1.f/_manager.sampleRate(), _timeScale*0.8f);
@@ -642,10 +646,10 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 		event->accept();
 	} else if(event->button() == Widgets::WheelDownButton) {
 		int s = -1;
-		if(x < MOVEPIN_SIZE*3/2) {
+		if(x < DATA_XOFF) {
 			if((s = determineSliderHover(x,y,NULL)) != -1)
 			_channels[s].setGain(_channels[s].gain*0.8f);
-		} else if(!_manager.threshMode() || x < width()-MOVEPIN_SIZE*3/2) {
+		} else if(!_manager.threshMode() || x < width()-DATA_XOFF) {
 			const int centeroff = (-sampleCount(screenWidth(), scaleWidth())+sampleCount(screenWidth(), scaleWidth()/1.2f))/2;
 			_timeScale = std::min(2.f, _timeScale*1.2f);
 			if(!_manager.fileMode())
@@ -653,10 +657,10 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 		}
 		event->accept();
 	} else if(event->button() == Widgets::RightButton) {
-		if(!_rulerClicked && x > MOVEPIN_SIZE*1.5f && (!_manager.threshMode() || x <= width()-MOVEPIN_SIZE*1.5f)) {
+		if(!_rulerClicked && x > DATA_XOFF && (!_manager.threshMode() || x <= width()-DATA_XOFF)) {
 			_rulerClicked = true;
-			_rulerStart = (x-MOVEPIN_SIZE*1.5f)/(float)screenWidth();
-			_rulerEnd = (x-MOVEPIN_SIZE*1.5f)/(float)screenWidth();
+			_rulerStart = (x-DATA_XOFF)/(float)screenWidth();
+			_rulerEnd = (x-DATA_XOFF)/(float)screenWidth();
 			event->accept();
 		} else if(_rulerClicked) {
 			 _rulerClicked = false;
@@ -712,7 +716,7 @@ void AudioView::mouseMotionEvent(Widgets::MouseEvent *event) {
 	}
 
 	if(_rulerClicked) {
-		_rulerEnd = std::max(event->pos().x-MOVEPIN_SIZE*3/2, 0)/(float)screenWidth();
+		_rulerEnd = std::max(event->pos().x-DATA_XOFF,0)/(float)screenWidth();
 		event->accept();
 	}
 

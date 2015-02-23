@@ -1,6 +1,7 @@
 *.o
 *.exe
 *.app
+*.swp
 tags
 SpikeRecorder
 SpikeRecorder.zip

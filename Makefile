@@ -40,7 +40,8 @@ OBJECTS = \
 	src/AnalysisView.o \
 	src/AnalysisAudioView.o \
 	src/RecordingBar.o \
-	src/ColorDropDownList.o
+	src/ColorDropDownList.o \
+	src/FFTView.o
 
 OBJECTS_WIN = \
 	src/widgets/native/FileDialogWin.o \

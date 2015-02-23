@@ -16,6 +16,7 @@
 #include "ConfigView.h"
 #include "AnalysisView.h"
 #include "RecordingBar.h"
+#include "FFTView.h"
 #include <SDL_opengl.h>
 #include <SDL.h>
 #include <iostream>
@@ -82,6 +83,12 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	_recordButton->setNormalTex(Widgets::TextureGL::get("data/rec.png"));
 	_recordButton->setHoverTex(Widgets::TextureGL::get("data/rechigh.png"));
 	_recordButton->clicked.connect(this, &MainView::recordPressed);
+
+	_fftButton = new Widgets::PushButton(this);
+	_fftButton->setNormalTex(Widgets::TextureGL::get("data/fft.png"));
+	_fftButton->setHoverTex(Widgets::TextureGL::get("data/ffthigh.png"));
+	_fftButton->clicked.connect(this, &MainView::fftPressed);
+
 	_fileButton = new Widgets::PushButton(this);
 	_fileButton->setNormalTex(Widgets::TextureGL::get("data/file.png"));
 	_fileButton->setHoverTex(Widgets::TextureGL::get("data/filehigh.png"));
@@ -117,12 +124,16 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	_threshavgGroup = makeThreshavgGroup();
 
 	_recBar = new RecordingBar(_fileRec, this);
+	
+	_fftView = new FFTView(*_audioView, _manager, this);
 
 	Widgets::BoxLayout *topBar = new Widgets::BoxLayout(Widgets::Horizontal);
 	topBar->addSpacing(10);
 	topBar->addWidget(_configButton);
 	topBar->addSpacing(5);
 	topBar->addWidget(threshButton);
+	topBar->addSpacing(5);
+	topBar->addWidget(_fftButton);
 	topBar->addSpacing(5);
 	topBar->addWidget(_analysisButton);
 	topBar->addSpacing(10);
@@ -150,6 +161,7 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	vbox->addLayout(topBar);
 	vbox->addSpacing(10);
 	vbox->addWidget(_audioView, Widgets::AlignVCenter);
+	vbox->addWidget(_fftView);
 	vbox->addWidget(_seekBar);
 	vbox->addSpacing(10);
 	vbox->addLayout(seekBarBox);
@@ -253,6 +265,16 @@ void MainView::recordPressed() {
 		Widgets::ErrorBox *box = new Widgets::ErrorBox(s.str().c_str());
 		box->setGeometry(Widgets::Rect(this->width()/2-250, this->height()/2-40, 500, 80));
 		Widgets::Application::getInstance()->addPopup(box);
+	}
+
+	Widgets::Application::getInstance()->updateLayout();
+}
+
+void MainView::fftPressed() {
+	if(_fftView->active()) {
+		_fftView->setActive(false);
+	} else {
+		_fftView->setActive(true);
 	}
 
 	Widgets::Application::getInstance()->updateLayout();
