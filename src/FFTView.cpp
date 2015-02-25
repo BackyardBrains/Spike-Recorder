@@ -47,8 +47,8 @@ static void val2hue(uint8_t *p, double val) {
 		p[2] = 255;
 		break;
 	case 5:
-		p[0] = t;
-		p[1] = 0;
+		p[0] = 255;
+		p[1] = q;
 		p[2] = 255;
 		break;
 	case 4:
@@ -61,7 +61,7 @@ static void val2hue(uint8_t *p, double val) {
 	p[3] = 255;
 }
 
-FFTView::FFTView(AudioView &av, RecordingManager &manager, Widget *parent) : Widget(parent), _pos(0), _active(0),
+FFTView::FFTView(AudioView &av, RecordingManager &manager, Widget *parent) : Widget(parent), _active(0),
 	_startTime(-2000), _manager(manager), _av(av)
 	 {
 	setSizeHint(Widgets::Size());
@@ -93,6 +93,7 @@ FFTView::~FFTView() {
 void FFTView::setActive(bool active) {
 	_startTime = SDL_GetTicks();
 	_active = active;
+	update(1);
 }
 
 bool FFTView::active() const {
@@ -113,13 +114,21 @@ void FFTView::paintEvent() {
 
 	Widgets::Rect r1(xoff,0,
 			w*FFTTRES/(float)_viewwidth,height());
+	glMatrixMode(GL_TEXTURE);
+	glPushMatrix();
+	float texoff = _offset/(float)FFTTRES;
 
+	glTranslatef(texoff,0,0);
+	glMatrixMode(GL_MODELVIEW);
 	glBindTexture(GL_TEXTURE_2D, _ffttex);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, FFTTRES, FFTFRES, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, _fftviewbuffer);
 		
 	Widgets::Painter::drawTexRect(r1);
 	glBindTexture(GL_TEXTURE_2D, 0);
+	glMatrixMode(GL_TEXTURE);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
 }
 
 void FFTView::addWindow(uint32_t *result, int pos, int device, int len, int samplerate) {
@@ -142,11 +151,13 @@ void FFTView::addWindow(uint32_t *result, int pos, int device, int len, int samp
 
 		double max = creal(_fftbuf[lower]);
 		for(int j = lower; j <= upper; j++) {
-			if(creal(_fftbuf[j]) > max) {
-				max = creal(_fftbuf[j]);
+			if(cabs(_fftbuf[j]) > max) {
+				max = cabs(_fftbuf[j]);
 			}
 		}
-		val2hue((uint8_t *)&result[FFTFRES-1-i],5./6.*tanh(1e-5*max));
+		
+		double val = tanh(2e-5*max);
+		val2hue((uint8_t *)&result[FFTFRES-1-i],val);
 	}	
 
 	for(int i = 1; i < FFTFRES-1; i++) {
@@ -160,25 +171,47 @@ void FFTView::addWindow(uint32_t *result, int pos, int device, int len, int samp
 
 }
 
-void FFTView::update() {
+void FFTView::update(int force) {
 	int len = _av.sampleCount(_av.screenWidth(), _av.scaleWidth());
-	int pos = _manager.pos()+_av.channelOffset()-len;
+	int pos = _manager.pos()+_av.channelOffset()-len+_manager.fileMode()*len/2;
 	uint32_t resultbuf[FFTFRES];
-	float step = 1.;
-	
+	int windowdist = SWINDOW;
+
+	if(_laststate != len) {
+		force = true;
+		_laststate = len;
+	}
+
 	_viewwidth = len/SWINDOW;
 	if(_viewwidth > FFTTRES) {
-		step = _viewwidth/(float)FFTTRES;
+		windowdist = SWINDOW*_viewwidth/(float)FFTTRES;
 		_viewwidth = FFTTRES;
 	}
-	
-	pos = pos/(int)(step*SWINDOW)*(int)(step*SWINDOW); // + len-_viewwidth*step*SWINDOW;
-	for(int i = 0; i < _viewwidth; i++) {
-		addWindow(resultbuf, pos+i*step*SWINDOW, _av.channelVirtualDevice(_av.selectedChannel()),
-				SWINDOW, _manager.sampleRate());
-		for(int j = 0; j < FFTFRES; j++)
-			_fftviewbuffer[j][i] = resultbuf[j];
+
+	pos = pos/windowdist*windowdist;
+
+	if(force) { // overwrite all ffts
+		_lastfirst = -1;
+		_lastlast = -1;
+		_offset = 0;
 	}
+		
+	_offset += (pos-_lastfirst)/(float)windowdist;
+	for(int i = 0; i < _viewwidth; i++) {
+		int spos = pos+i*windowdist;
+		if(spos >= _lastfirst && spos < _lastlast) { // already computed
+			continue;
+		}
+		addWindow(resultbuf, pos+i*windowdist, _av.channelVirtualDevice(_av.selectedChannel()),
+				SWINDOW, _manager.sampleRate());
+		for(int j = 0; j < FFTFRES; j++) {
+			int idx = (((i+(int)_offset)%FFTTRES)+FFTTRES)%FFTTRES;
+			_fftviewbuffer[j][idx] = resultbuf[j];
+		}
+	}
+
+	_lastfirst = pos;
+	_lastlast = pos+_viewwidth*windowdist;
 }
 
 void FFTView::advance() {
@@ -196,10 +229,9 @@ void FFTView::advance() {
 	if(!_active)
 		return;
 
-	if(abs(_manager.pos()+_av.channelOffset()-_pos) >= SWINDOW) {
-		update();
-		_pos = _manager.pos()+_av.channelOffset();
-	}	
+	//if(abs(_manager.pos()+_av.channelOffset()-_pos) >= SWINDOW) {
+	update(false);
+		
 }
 
 }

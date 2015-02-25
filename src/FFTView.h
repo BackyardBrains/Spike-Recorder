@@ -19,15 +19,15 @@ public:
 	virtual ~FFTView();
 	bool active() const;
 	void setActive(bool);
+	void update(int force);
 private:
 	void addWindow(uint32_t *result, int pos, int device, int len, int samplerate);
-	void update();
 
 	static const int FFTTRES = 256; // time axis resolution
 	static const int FFTFRES = 64; // frequency axis resolution
-	static const int FFTMAXF = 500;
+	static const int FFTMAXF = 50;
 	
-	static const int SWINDOW = 2048; // window length in samples
+	static const int SWINDOW = 4096; // window length in samples
 
 	int16_t *_samplebuf;
 	std::vector<complex float> _fftbuf;
@@ -35,7 +35,11 @@ private:
 	int32_t _fftviewbuffer[FFTFRES][FFTTRES];
 	int _viewwidth;
 
-	int _pos;
+	// variables to handle forced refreshes
+	int _laststate;
+	int _lastfirst;
+	int _lastlast;
+	float _offset;
 
 	int _active;
 	int _startTime;
