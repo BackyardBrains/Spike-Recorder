@@ -7,3 +7,5 @@ SpikeRecorder
 SpikeRecorder.zip
 SDL.framework
 SDL_image.framework
+SpikeRecorder.dSYM
+.DS_Store
