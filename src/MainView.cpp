@@ -286,7 +286,7 @@ void MainView::fftPressed() {
 
 void MainView::filePressed() {
 	Widgets::FileDialog d(Widgets::FileDialog::OpenFile);
-
+	
 	d.open();
 	while(d.isOpen())
 		SDL_Delay(16);
@@ -316,6 +316,7 @@ void MainView::filePressed() {
 
 	_recordButton->setVisible(false);
 	_analysisButton->setVisible(true);
+	_fftView->setActive(false);
 	delete _anaView;
 	_anaView = NULL;
 
@@ -343,7 +344,6 @@ void MainView::analysisPressed() {
 	if(!_manager.paused())
 		pausePressed();
 }
-
 
 void MainView::keyPressEvent(Widgets::KeyboardEvent *e) {
 	if(e->key() >= Widgets::Key0 && e->key() <= Widgets::Key9) {

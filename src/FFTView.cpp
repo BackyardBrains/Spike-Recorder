@@ -15,11 +15,13 @@
 namespace BackyardBrains {
 
 static void val2hue(uint8_t *p, double val) {
-	val *= 6;
+	if(val > 1.)
+		val = 1.;	
+	val *= 4;
 	double m = val-((int)(val));
 	double q = 255*(m);
 	double t = 255*(1-m);
-	
+
 	assert(!isnan(val) && !isinf(val));
 	switch(((int)val)%6) {
 	case 0:
@@ -192,7 +194,7 @@ void FFTView::addWindow(uint32_t *result, int pos, int device, int len, int samp
 			}
 		}
 		
-		double val = tanh(2e-5*max);
+		double val = -tanh(0.5)+tanh(3e-5*max+0.5); // TODO: replace this with something smarter
 		val2hue((uint8_t *)&result[FFTFRES-1-i],val);
 	}	
 
