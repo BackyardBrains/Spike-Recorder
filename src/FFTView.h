@@ -21,13 +21,14 @@ public:
 	void setActive(bool);
 	void update(int force);
 private:
-	void addWindow(uint32_t *result, int pos, int device, int len, int samplerate);
-
 	static const int FFTTRES = 256; // time axis resolution
 	static const int FFTFRES = 64; // frequency axis resolution
 	static const int FFTMAXF = 50;
 	
 	static const int SWINDOW = 4096; // window length in samples
+
+	// Frequency scale properties
+	static const int SCALETICKS = 4;
 
 	int16_t *_samplebuf;
 	std::vector<complex float> _fftbuf;
@@ -49,6 +50,9 @@ private:
 
 	GLuint _ffttex;
 
+	void addWindow(uint32_t *result, int pos, int device, int len, int samplerate);
+	void drawDataRect() const;
+	void drawScale() const;
 	void initTextures();	
 	void paintEvent();
 	void advance();

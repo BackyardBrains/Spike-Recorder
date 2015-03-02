@@ -5,8 +5,10 @@
 #include "widgets/Application.h"
 #include "widgets/Painter.h"
 #include "widgets/TextureGL.h"
+#include "widgets/BitmapFontGL.h"
 #include <cmath>
 #include <iostream>
+#include <sstream>
 #include <cassert>
 
 #include <SDL.h>
@@ -100,6 +102,41 @@ bool FFTView::active() const {
 	return _active;
 }
 
+void FFTView::drawDataRect() const {
+	glMatrixMode(GL_TEXTURE);
+	glPushMatrix();
+	float texoff = _offset/(float)FFTTRES;
+	
+	int xoff = AudioView::DATA_XOFF;
+	int w = _av.screenWidth();
+	
+	Widgets::Rect r(xoff,0,
+			w*FFTTRES/(float)_viewwidth,height());
+
+	glTranslatef(texoff,0,0);
+	glMatrixMode(GL_MODELVIEW);
+	glBindTexture(GL_TEXTURE_2D, _ffttex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, FFTTRES, FFTFRES, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, _fftviewbuffer);
+		
+	Widgets::Painter::drawTexRect(r);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glMatrixMode(GL_TEXTURE);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+}
+
+void FFTView::drawScale() const {
+
+	int x = 3;
+	for(int i = 1; i < SCALETICKS+1; i++) {
+		std::stringstream o;
+		int y = height()*i/(float)(SCALETICKS+1);
+		o << FFTMAXF-FFTMAXF*i/(float)(SCALETICKS+1) << " Hz -";
+		Widgets::Application::font()->draw(o.str().c_str(), x, y, Widgets::AlignVCenter);
+	}
+}
+
 void FFTView::paintEvent() {
 	if(sizeHint().h == 0)
 		return;
@@ -109,26 +146,8 @@ void FFTView::paintEvent() {
 
 	Widgets::Painter::setColor(Widgets::Colors::white);
 	
-	int xoff = AudioView::MOVEPIN_SIZE*1.48f;
-	int w = _av.screenWidth();
-
-	Widgets::Rect r1(xoff,0,
-			w*FFTTRES/(float)_viewwidth,height());
-	glMatrixMode(GL_TEXTURE);
-	glPushMatrix();
-	float texoff = _offset/(float)FFTTRES;
-
-	glTranslatef(texoff,0,0);
-	glMatrixMode(GL_MODELVIEW);
-	glBindTexture(GL_TEXTURE_2D, _ffttex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, FFTTRES, FFTFRES, 0,
-			GL_RGBA, GL_UNSIGNED_BYTE, _fftviewbuffer);
-		
-	Widgets::Painter::drawTexRect(r1);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glMatrixMode(GL_TEXTURE);
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
+	drawDataRect();
+	drawScale();
 }
 
 void FFTView::addWindow(uint32_t *result, int pos, int device, int len, int samplerate) {
