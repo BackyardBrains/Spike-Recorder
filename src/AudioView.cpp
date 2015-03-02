@@ -293,10 +293,9 @@ void AudioView::drawMarkers() {
 	bool lastyoff = 0;
 
 	for(std::list<std::pair<std::string, int64_t> >::const_iterator it = _manager.markers().begin(); it != _manager.markers().end(); it++) {
-		if(_manager.pos()+_channelOffset-it->second > samples || _manager.pos()+_channelOffset-it->second < -samples/2)
-			continue;
-
 		float x = width()+screenWidth()*(it->second-_manager.pos()-samples/2*_manager.fileMode()-_channelOffset)/(float)samples;
+		if(x < DATA_XOFF || x > width())
+			continue;
 		assert(it->first.size() > 0);
 		Widgets::Painter::setColor(MARKER_COLORS[(it->first[0]-'0') % MARKER_COLOR_NUM]);
 
