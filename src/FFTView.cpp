@@ -111,7 +111,8 @@ bool FFTView::active() const {
 void FFTView::drawDataRect() const {
 	glMatrixMode(GL_TEXTURE);
 	glPushMatrix();
-	float texoff = _offset/(float)FFTTRES;
+
+	float texoff = (_offset+_offsetcorrection)/(float)FFTTRES;
 	
 	int xoff = AudioView::DATA_XOFF;
 	int w = _av.screenWidth();
@@ -143,7 +144,7 @@ void FFTView::drawScale() const {
 	}
 }
 
-void FFTView::drawToShortMsg() const {
+void FFTView::drawTooShortMsg() const {
 	const char *msg = "-- Time window too small for FFT --";
 	Widgets::Application::font()->draw(msg, width()/2, height()/2, Widgets::AlignCenter);
 }
@@ -160,7 +161,7 @@ void FFTView::paintEvent() {
 	if(_viewwidth != 0) {	
 		drawDataRect();
 	} else {
-		drawToShortMsg();
+		drawTooShortMsg();
 	}
 
 	drawScale();
@@ -208,7 +209,7 @@ void FFTView::addWindow(uint32_t *result, int pos, int device, int len, int samp
 
 void FFTView::update(int force) {
 	int len = _av.sampleCount(_av.screenWidth(), _av.scaleWidth());
-	int pos = _manager.pos()+_av.channelOffset()-len+_manager.fileMode()*len/2;
+	int opos = _manager.pos()+_av.channelOffset()-len+_manager.fileMode()*len/2;
 	uint32_t resultbuf[FFTFRES];
 	int windowdist = SWINDOW;
 
@@ -223,7 +224,7 @@ void FFTView::update(int force) {
 		_viewwidth = FFTTRES;
 	}
 
-	pos = pos/windowdist*windowdist;
+	int pos = opos/windowdist*windowdist;
 
 	if(force) { // overwrite all ffts
 		_lastfirst = -1;
@@ -231,9 +232,10 @@ void FFTView::update(int force) {
 		_offset = 0;
 	}
 	
-	_offset += (pos-_lastfirst)/(float)windowdist;
-	
-	for(int i = 0; i < _viewwidth; i++) {
+	_offset += (pos-_lastfirst)/windowdist;
+	_offsetcorrection = (opos-pos)/(float)windowdist;	
+
+	for(int i = 0; i < _viewwidth+OFFSCREENWINS; i++) {
 		int spos = pos+i*windowdist;
 		if(spos >= _lastfirst && spos < _lastlast) { // already computed
 			continue;

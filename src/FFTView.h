@@ -26,7 +26,8 @@ private:
 	static const int FFTMAXF = 50;
 	
 	static const int SWINDOW = 4096; // window length in samples
-
+	
+	static const int OFFSCREENWINS = 2; // number of windows to compute in advance
 	// Frequency scale properties
 	static const int SCALETICKS = 4;
 
@@ -40,7 +41,9 @@ private:
 	int _laststate;
 	int _lastfirst;
 	int _lastlast;
-	float _offset;
+	
+	int _offset;
+	float _offsetcorrection;
 
 	int _active;
 	int _startTime;
@@ -52,7 +55,7 @@ private:
 
 	void addWindow(uint32_t *result, int pos, int device, int len, int samplerate);
 	void drawDataRect() const;
-	void drawToShortMsg() const;
+	void drawTooShortMsg() const;
 	void drawScale() const;
 	void initTextures();	
 	void paintEvent();
