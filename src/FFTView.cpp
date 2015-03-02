@@ -169,7 +169,7 @@ void FFTView::paintEvent() {
 void FFTView::addWindow(uint32_t *result, int pos, int device, int len, int samplerate) {
 	_manager.getData(device, pos, len, _samplebuf);
 
-	int ds = 4; // simple downsampling because only low frequencies are required
+	const int ds = 4; // simple downsampling because only low frequencies are required
 	_fftbuf.resize(len/ds);
 	for(int i = 0; i < len/ds; i++)
 		_fftbuf[i] = _samplebuf[ds*i];
@@ -219,7 +219,7 @@ void FFTView::update(int force) {
 
 	_viewwidth = len/SWINDOW;
 	if(_viewwidth > FFTTRES) {
-		windowdist = SWINDOW*_viewwidth/(float)FFTTRES;
+		windowdist = len/FFTTRES;
 		_viewwidth = FFTTRES;
 	}
 
@@ -230,8 +230,9 @@ void FFTView::update(int force) {
 		_lastlast = -1;
 		_offset = 0;
 	}
-		
+	
 	_offset += (pos-_lastfirst)/(float)windowdist;
+	
 	for(int i = 0; i < _viewwidth; i++) {
 		int spos = pos+i*windowdist;
 		if(spos >= _lastfirst && spos < _lastlast) { // already computed
@@ -246,7 +247,7 @@ void FFTView::update(int force) {
 	}
 
 	_lastfirst = pos;
-	_lastlast = pos+_viewwidth*windowdist;
+	_lastlast = pos+(_viewwidth-1)*windowdist;
 }
 
 void FFTView::advance() {
@@ -264,7 +265,6 @@ void FFTView::advance() {
 	if(!_active)
 		return;
 
-	//if(abs(_manager.pos()+_av.channelOffset()-_pos) >= SWINDOW) {
 	update(false);
 		
 }
