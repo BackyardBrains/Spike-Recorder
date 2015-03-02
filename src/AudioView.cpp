@@ -264,8 +264,8 @@ void AudioView::drawScale() {
 	o << pow(10,-unit%3) << ' ';
 	o << get_unit_str(unit/3);
 	Widgets::Painter::setColor(Widgets::Colors::white);
-	Widgets::Painter::drawRect(Widgets::Rect(width()-shownscalew-20,height()*0.9f, shownscalew, 1));
-	Widgets::Application::font()->draw(o.str().c_str(), width()-shownscalew/2-20, height()*0.9f+15, Widgets::AlignHCenter);
+	Widgets::Painter::drawRect(Widgets::Rect(width()-shownscalew-20,height()-50, shownscalew, 1));
+	Widgets::Application::font()->draw(o.str().c_str(), width()-shownscalew/2-20, height()-50+15, Widgets::AlignHCenter);
 }
 
 void AudioView::drawData(std::vector<std::pair<int16_t, int16_t> > &data, int channel, int samples, int x, int y, int width) {
