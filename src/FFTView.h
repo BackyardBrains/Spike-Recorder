@@ -52,6 +52,7 @@ private:
 
 	void addWindow(uint32_t *result, int pos, int device, int len, int samplerate);
 	void drawDataRect() const;
+	void drawToShortMsg() const;
 	void drawScale() const;
 	void initTextures();	
 	void paintEvent();

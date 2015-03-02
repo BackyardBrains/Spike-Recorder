@@ -21,12 +21,6 @@ static void val2hue(uint8_t *p, double val) {
 	double t = 255*(1-m);
 	
 	assert(!isnan(val) && !isinf(val));
-	if(isnan(val)) {
-		printf("nan!!\n");
-		p[0] = 0;
-		p[1] = 0;
-		p[2] = 0;
-	}
 	switch(((int)val)%6) {
 	case 0:
 		p[0] = 0;
@@ -149,6 +143,11 @@ void FFTView::drawScale() const {
 	}
 }
 
+void FFTView::drawToShortMsg() const {
+	const char *msg = "-- Time window too small for FFT --";
+	Widgets::Application::font()->draw(msg, width()/2, height()/2, Widgets::AlignCenter);
+}
+
 void FFTView::paintEvent() {
 	if(sizeHint().h == 0)
 		return;
@@ -157,8 +156,13 @@ void FFTView::paintEvent() {
 		init_texture(_ffttex);
 
 	Widgets::Painter::setColor(Widgets::Colors::white);
-	
-	drawDataRect();
+
+	if(_viewwidth != 0) {	
+		drawDataRect();
+	} else {
+		drawToShortMsg();
+	}
+
 	drawScale();
 }
 
