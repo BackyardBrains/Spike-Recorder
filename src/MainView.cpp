@@ -162,6 +162,7 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	vbox->addSpacing(10);
 	vbox->addWidget(_audioView, Widgets::AlignVCenter);
 	vbox->addWidget(_fftView);
+	vbox->addSpacing(10);
 	vbox->addWidget(_seekBar);
 	vbox->addSpacing(10);
 	vbox->addLayout(seekBarBox);
@@ -212,10 +213,13 @@ void MainView::forwardPressed() {
 
 void MainView::threshPressed() {
 	if(!_manager.threshMode()) {
+		_fftView->setActive(false);
 		_manager.setThreshMode(true);
 		_threshavgGroup->setVisible(true);
+		_fftButton->setVisible(false);
 	} else {
 		_manager.setThreshMode(false);
+		_fftButton->setVisible(true);
 		_threshavgGroup->setVisible(false);
 	}
 }

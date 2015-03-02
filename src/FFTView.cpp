@@ -28,38 +28,38 @@ static void val2hue(uint8_t *p, double val) {
 		p[2] = 0;
 	}
 	switch(((int)val)%6) {
-	case 3:
-		p[0] = 255;
-		p[1] = t;
-		p[2] = 0;
+	case 0:
+		p[0] = 0;
+		p[1] = q;
+		p[2] = 200;
+		break;
+	case 1:
+		p[0] = 0;
+		p[1] = 255;
+		p[2] = t*200/255;
 		break;
 	case 2:
 		p[0] = q;
 		p[1] = 255;
 		p[2] = 0;
 		break;
-	case 1:
-		p[0] = 0;
-		p[1] = 255;
-		p[2] = t;
-		break;
-	case 0:
-		p[0] = 0;
-		p[1] = q;
-		p[2] = 255;
-		break;
-	case 5:
+	case 3:
 		p[0] = 255;
-		p[1] = q;
-		p[2] = 255;
+		p[1] = t;
+		p[2] = 0;
 		break;
 	case 4:
 		p[0] = 255;
 		p[1] = 0;
 		p[2] = q;
 		break;
+	case 5:
+		p[0] = 255;
+		p[1] = q;
+		p[2] = 255;
+		break;
 	}
-
+	
 	p[3] = 255;
 }
 
@@ -73,7 +73,17 @@ FFTView::FFTView(AudioView &av, RecordingManager &manager, Widget *parent) : Wid
 	_fftbuf.reserve(SWINDOW);
 	_ffttex = 0;
 	_viewwidth = FFTTRES;
-	memset(_fftviewbuffer,0, sizeof(_fftviewbuffer));	
+
+	// prefill buffer with blue
+	for(int f = 0; f < FFTFRES; f++) {
+		for(int t = 0; t < FFTTRES; t++) {
+			uint8_t *p = (uint8_t *)&_fftviewbuffer[f][t];
+			p[0] = 0;
+			p[1] = 0;
+			p[2] = 255;
+			p[3] = 255;
+		}
+	}
 }
 
 static void init_texture(GLuint &tex) {
@@ -93,9 +103,11 @@ FFTView::~FFTView() {
 }
 
 void FFTView::setActive(bool active) {
-	_startTime = SDL_GetTicks();
-	_active = active;
-	update(1);
+	if(_active != active) {
+		_startTime = SDL_GetTicks();
+		_active = active;
+		update(true);
+	}
 }
 
 bool FFTView::active() const {

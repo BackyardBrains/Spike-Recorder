@@ -22,7 +22,7 @@ public:
 	void update(int force);
 private:
 	static const int FFTTRES = 256; // time axis resolution
-	static const int FFTFRES = 64; // frequency axis resolution
+	static const int FFTFRES = 32; // frequency axis resolution
 	static const int FFTMAXF = 50;
 	
 	static const int SWINDOW = 4096; // window length in samples
