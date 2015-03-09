@@ -54,7 +54,7 @@ void SpikeAnalysis::autocorrelation(std::vector<int> &histogram,
 
 void SpikeAnalysis::isipartition(std::vector<double> binxs, int nbin) {
 	const double MIN = -3*M_LN10;
-	const double MAX = -1*M_LN10;
+	const double MAX = 1*M_LN10;
 
 	assert(nbin > 0);
 
