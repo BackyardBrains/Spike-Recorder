@@ -395,9 +395,8 @@ void AudioView::drawAudio() {
 			glBindTexture(GL_TEXTURE_2D, 0);
 
 			if(_rulerClicked) {
-				int startsample = std::min(_rulerStart, _rulerEnd)*data.size();
-				int endsample = std::max(_rulerStart, _rulerEnd)*data.size();
-
+				int startsample = std::min(_rulerStart, _rulerEnd)*(data.size()-1);
+				int endsample = std::max(_rulerStart, _rulerEnd)*(data.size()-1);
 				float rms = calculateRMS(data, startsample, endsample);
 
 				std::stringstream s;
@@ -655,8 +654,8 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 	} else if(event->button() == Widgets::RightButton) {
 		if(!_rulerClicked && x > MOVEPIN_SIZE*1.5f && (!_manager.threshMode() || x <= width()-MOVEPIN_SIZE*1.5f)) {
 			_rulerClicked = true;
-			_rulerStart = (x-MOVEPIN_SIZE*1.5f)/(float)screenWidth();
-			_rulerEnd = (x-MOVEPIN_SIZE*1.5f)/(float)screenWidth();
+			_rulerStart = std::max(0.f,std::min(1.f,(x-MOVEPIN_SIZE*1.5f)/(float)screenWidth()));
+			_rulerEnd = std::max(0.f,std::min(1.f,(x-MOVEPIN_SIZE*1.5f)/(float)screenWidth()));
 			event->accept();
 		} else if(_rulerClicked) {
 			 _rulerClicked = false;
@@ -712,7 +711,7 @@ void AudioView::mouseMotionEvent(Widgets::MouseEvent *event) {
 	}
 
 	if(_rulerClicked) {
-		_rulerEnd = std::max(event->pos().x-MOVEPIN_SIZE*3/2, 0)/(float)screenWidth();
+		_rulerEnd = std::min(1.f,std::max(event->pos().x-MOVEPIN_SIZE*3/2, 0)/(float)screenWidth());
 		event->accept();
 	}
 
