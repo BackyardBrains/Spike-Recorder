@@ -17,6 +17,7 @@ OBJECTS = \
 	src/engine/FileRecorder.o \
 	src/engine/Player.o \
 	src/engine/SpikeSorter.o \
+	src/engine/SpikeAnalysis.o \
 	src/widgets/LayoutItem.o \
 	src/widgets/BoxLayout.o \
 	src/widgets/Widget.o \
