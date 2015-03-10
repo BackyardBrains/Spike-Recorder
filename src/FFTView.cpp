@@ -187,10 +187,10 @@ void FFTView::addWindow(uint32_t *result, int pos, int device, int len, int samp
 		int lower = f*windowt;
 		int upper = std::min((int)(f*windowt+binsize+1), len/ds-1);
 
-		double max = creal(_fftbuf[lower]);
+		double max = std::abs(_fftbuf[lower]);
 		for(int j = lower; j <= upper; j++) {
-			if(cabs(_fftbuf[j]) > max) {
-				max = cabs(_fftbuf[j]);
+			if(std::abs(_fftbuf[j]) > max) {
+				max = std::abs(_fftbuf[j]);
 			}
 		}
 		
