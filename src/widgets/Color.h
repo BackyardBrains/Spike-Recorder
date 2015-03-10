@@ -63,6 +63,8 @@ static const Color cyan(0, 255, 255);
 static const Color violet(255, 0, 255);
 static const Color gray(128, 128, 128);
 
+static const Color lightblue(46,120,210);
+
 static const Color background(25,25,25);
 static const Color button(128,128,128);
 static const Color buttonhigh(150,150,150);
