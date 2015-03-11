@@ -215,6 +215,11 @@ void FFTView::update(int force) {
 	uint32_t resultbuf[FFTFRES];
 	int windowdist = SWINDOW;
 
+	if(_av.selectedChannel() == -1) {
+		memset(_fftviewbuffer,0,FFTTRES*FFTFRES*sizeof(int32_t));
+		return;
+	}
+
 	if(_laststate != len) {
 		force = true;
 		_laststate = len;
