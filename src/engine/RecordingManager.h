@@ -66,7 +66,7 @@ public:
 	const std::list<std::pair<std::string, int64_t> > &markers() const {return _markers;}
 	void addMarker(const std::string &id, int64_t offset);
 
-	void incRef(int virtualDeviceIndex);
+	bool incRef(int virtualDeviceIndex);
 	void decRef(int virtualDeviceIndex);
 
 	void setPaused(bool pausing);

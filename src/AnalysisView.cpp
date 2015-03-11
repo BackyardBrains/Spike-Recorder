@@ -71,8 +71,6 @@ AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Wi
 	_manager.setPos(_manager.fileLength()/2);
 }
 
-
-
 void AnalysisView::paintEvent() {
 	const Widgets::Color bg = Widgets::Colors::background;
 

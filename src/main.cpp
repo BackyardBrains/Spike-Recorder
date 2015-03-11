@@ -3,6 +3,8 @@
 #include <SDL.h>
 #include <cstring>
 #include <string>
+#include <cstdio>
+#include <cerrno>
 
 #ifdef __WIN32__
 #include <direct.h>
@@ -16,11 +18,14 @@ int main(int argc, char *argv[]) {
 		lastslash = argv[0]+strlen(argv[0]);
 
 	std::string path(argv[0], lastslash);
-	chdir(path.c_str());
+	int ret;
+	ret = chdir(path.c_str());
 
 #ifdef __APPLE__
-	chdir("../Resources");
+	ret += chdir("../Resources");
 #endif
+	if(ret != 0)
+		printf("ERROR: could not change directory: %s\n", strerror(errno));
 
 	BackyardBrains::Game game;
 	
