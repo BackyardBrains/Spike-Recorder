@@ -5,7 +5,11 @@
 #include <stdint.h>
 #include <vector>
 #include <utility>
-#include <complex.h>
+//#include <complex.h>
+
+extern "C" {
+#include <complex>
+}
 #include <SDL_opengl.h>
 
 namespace BackyardBrains {
@@ -33,7 +37,6 @@ private:
 
 	int16_t *_samplebuf;
 	std::vector<complex float> _fftbuf;
-
 	int32_t _fftviewbuffer[FFTFRES][FFTTRES];
 	int _viewwidth;
 
