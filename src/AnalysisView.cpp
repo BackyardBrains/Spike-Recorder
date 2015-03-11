@@ -7,7 +7,9 @@
 #include "widgets/BitmapFontGL.h"
 #include "widgets/Label.h"
 #include "widgets/ErrorBox.h"
+#include "widgets/Plot.h"
 #include "engine/FileRecorder.h"
+#include "engine/SpikeAnalysis.h"
 #include "AnalysisAudioView.h"
 
 #include <sstream>
@@ -45,6 +47,9 @@ AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Wi
 	saveButton->clicked.connect(this, &AnalysisView::savePressed);
 	Widgets::BoxLayout *saveBox = new Widgets::BoxLayout(Widgets::Horizontal);
 
+	_plot = new Widgets::Plot(this);
+	_plot->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Expanding, Widgets::SizePolicy::Expanding));
+
 	saveBox->addWidget(saveButton);
 	saveBox->setAlignment(Widgets::AlignCenter);
 	Widgets::BoxLayout *vbox = new Widgets::BoxLayout(Widgets::Vertical, this);
@@ -61,17 +66,42 @@ AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Wi
 	vbox->addSpacing(10);
 	vbox->addLayout(saveBox);
 	vbox->addSpacing(20);
-
+	vbox->addWidget(_plot);
 	vbox->update();
 
 	_spikes.findSpikes(_manager.fileName(), _manager.selectedVDevice(), _manager.sampleRate()/1000 /* 1 ms */);
-
+	
 	_wasThreshMode = _manager.threshMode();
 	_manager.setThreshMode(false);
 	_manager.setPos(_manager.fileLength()/2);
 }
 
+void AnalysisView::setPlotData() {
+	const int upperthresh = _audioView->upperThresh();
+	const int lowerthresh = _audioView->lowerThresh();
 
+	std::vector<std::pair<int64_t, int16_t> > selected;
+	selected.reserve(100);
+	for(unsigned int i = 0; i < _spikes.spikes().size(); i++)
+		if(_spikes.spikes()[i].second > lowerthresh && _spikes.spikes()[i].second < upperthresh)
+			selected.push_back(_spikes.spikes()[i]);
+
+	std::vector<int> buf;
+	SpikeAnalysis::autocorrelation(buf, selected, 0.1*_manager.sampleRate(), 0.01*_manager.sampleRate());
+	std::vector<float> x, y;
+	
+	buf.resize(1);
+	y.resize(buf.size());
+	x.resize(buf.size());
+	for(unsigned int i = 0; i < buf.size(); i++) {
+		x[i] = i;
+		y[i] = buf[i];
+	}
+	_plot->setData(x,y);
+	_plot->setStyle(Widgets::Plot::Bar);
+	_plot->setXLabel("time/s");
+
+}
 
 void AnalysisView::paintEvent() {
 	const Widgets::Color bg = Widgets::Colors::background;
@@ -88,6 +118,7 @@ void AnalysisView::closePressed() {
 
 void AnalysisView::savePressed() {
 	std::list<std::pair<std::string, int64_t> > markers;
+	setPlotData();
 
 	const int upperthresh = _audioView->upperThresh();
 	const int lowerthresh = _audioView->lowerThresh();

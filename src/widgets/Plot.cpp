@@ -4,48 +4,66 @@
 #include "BitmapFontGL.h"
 #include <cassert>
 #include <cmath>
+#include <cstdio>
 #include <sstream>
 
 namespace BackyardBrains {
 namespace Widgets {
 
 Plot::Plot(Widget *parent)
- : Widget(parent), _xoffset(0),_yoffset(0),_xscale(1),_yscale(1),_style(Line), _color(Colors::lightblue) {
+ : Widget(parent), _xoffset(0),_yoffset(0),_xscale(1),_yscale(1),
+	_xmin(0), _xmax(0), _ymin(0), _ymax(0), _style(Line), _color(Colors::lightblue) {
 }
 
-static void minmaxmean(std::vector<float> &v, float &min, float &max, float &mean) {
-	mean = 0;
+static void minmax(std::vector<float> &v, float &min, float &max) {
 	max = v[0];
 	min = v[0];
 
 	for(unsigned int i = 0; i < v.size(); i++) {
-		mean += v[i];
 		if(v[i] < min)
 			min = v[i];
 		if(v[i] > max)
 			max = v[i];
 	}
-	mean /= v.size();
 }
 
-void Plot::setData(const std::vector<float> &x, const std::vector<float> &y) {
-	_xs.assign(x.begin(),x.end());
-	_ys.assign(y.begin(),y.end());
-
-	assert(_xs.size() == _ys.size());
-
+void Plot::updateAxisScale() {
 	if(_xs.size() == 0)
 		return;
 
-	float xmean;
-	float ymean;
-	minmaxmean(_xs, _xmin, _xmax, xmean);
-	minmaxmean(_ys, _ymin, _ymax, ymean);
+	minmax(_xs, _xmin, _xmax);
+	minmax(_ys, _ymin, _ymax);
+
+	if(_style == Bar) {
+		_ymin = 0;
+		if(_xs.size() > 1) {
+			_xmin -= 0.5*(_xs[1]-_xs[0]);
+		}
+	}
+
+	if(_xs.size() == 1) {
+		_xmin = _xmax-1;
+
+		_ymin = _ymax-1;
+	}
 
 	_xoffset = _xmin;
 	_xscale = 1.f/fabs(_xmax-_xmin);
 	_yoffset = _ymin;
 	_yscale = 1.f/fabs(_ymax-_ymin);
+
+
+	if(_xs.size() == 1)
+		_xoffset -= (_xmin-_xmax)/2;
+}
+
+
+void Plot::setData(const std::vector<float> &x, const std::vector<float> &y) {
+	_xs = x;
+	_ys = y;
+
+	assert(_xs.size() == _ys.size());
+	updateAxisScale();
 }
 
 void Plot::setXLabel(const std::string &label) {
@@ -62,6 +80,7 @@ void Plot::setColor(const Color &clr) {
 
 void Plot::setStyle(PlotStyle style) {
 	_style = style;
+	updateAxisScale();
 }
 
 float Plot::plotWidth() const {
@@ -99,30 +118,45 @@ void Plot::drawLinePlot() {
 void Plot::drawBarPlot() {
 	glPushMatrix();
 	glTranslatef(axisOffsetX(),height()-axisOffsetY(),0);
-	glScalef(plotWidth()*_xscale,-plotHeight()*_yscale,1);
-	glTranslatef(-_xoffset,-_yoffset, 0);
-	for(unsigned int i = 0; i < _xs.size(); i++) {
-		float xl, xr;
-		float y1 = std::min(_ys[i],0.f);
-		float y2 = std::max(_ys[i],0.f);
-		if(i == 0) {
-			xl = 0;
-		} else {
-	       		xl = (_xs[i-1]+_xs[i])*0.5f;
-		}
 
-		if(i == _xs.size()-1) {
-			xr = _xs[i];
-		} else {
-			xr = (_xs[i+1]+_xs[i])*0.5f;
-		}
-
+	if(_xs.size() == 1) {
+		glScalef(1,-plotHeight()*_yscale,1);
+		float y1 = std::min(_ys[0],0.f);
+		float y2 = std::max(_ys[0],0.f);
+		float xl = 0;
+		float xr = plotWidth();
 		glBegin(GL_QUADS);
 		glVertex3f(xl,y1,0);
 		glVertex3f(xr,y1,0);
 		glVertex3f(xr,y2,0);
 		glVertex3f(xl,y2,0);
 		glEnd();
+	} else {
+		glScalef(plotWidth()*_xscale,-plotHeight()*_yscale,1);
+		glTranslatef(-_xoffset,-_yoffset, 0);
+		for(unsigned int i = 0; i < _xs.size(); i++) {
+			float xl, xr;
+			float y1 = std::min(_ys[i],0.f);
+			float y2 = std::max(_ys[i],0.f);
+			if(i == 0) {
+				xl = (_xs[0]-_xs[1])*0.5f;
+			} else {
+				xl = (_xs[i-1]+_xs[i])*0.5f;
+			}
+
+			if(i == _xs.size()-1) {
+				xr = _xs[i]*1.5-0.5*_xs[i-1];
+			} else {
+				xr = (_xs[i+1]+_xs[i])*0.5f;
+			}
+
+			glBegin(GL_QUADS);
+			glVertex3f(xl,y1,0);
+			glVertex3f(xr,y1,0);
+			glVertex3f(xr,y2,0);
+			glVertex3f(xl,y2,0);
+			glEnd();
+		}
 	}
 	glPopMatrix();
 }
@@ -132,6 +166,8 @@ static void ticparams(float &ticdst, float &ticoff, int &n, float min, float max
 	ticdst = pow(10,mag);
 	ticoff = floor(min/ticdst)*ticdst;
 	n = (max-ticoff)/ticdst+1;
+	if(n <= 0)
+		n = 1;
 }
 
 
@@ -144,7 +180,7 @@ void Plot::drawTics() {
 	Painter::setColor(Colors::white);
 	glPushMatrix();
 	glTranslatef(axisOffsetX(),height()-axisOffsetY(),0);
-
+	
 	glPushMatrix();
 
 	for(int i = 0; i < xn; i++) {
@@ -182,6 +218,13 @@ void Plot::drawTics() {
 }
 
 void Plot::paintEvent() {
+	Painter::setColor(_color);
+	if(_style == Line) {
+		drawLinePlot();
+	} else if(_style == Bar) {
+		drawBarPlot();
+	}
+
 	Painter::setColor(Colors::white);
 	glBegin(GL_LINE_STRIP);
 	glVertex3f(axisOffsetX(),axisOffsetY(),0);
@@ -196,13 +239,6 @@ void Plot::paintEvent() {
 	glRotatef(-90,0,0,1);
 	Application::font()->draw(_ylabel.c_str(), 0, 0, AlignHCenter);
 	glPopMatrix();
-
-	Painter::setColor(_color);
-	if(_style == Line) {
-		drawLinePlot();
-	} else if(_style == Bar) {
-		drawBarPlot();
-	}
 
 	drawTics();
 }

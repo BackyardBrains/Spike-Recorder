@@ -49,7 +49,7 @@ void SpikeAnalysis::autocorrelation(std::vector<int> &histogram,
 	crosscorrelation(histogram, train, train, maxsamples, binsize);
 	
 	tmp.assign(histogram.begin()+cutoff, histogram.end());
-	histogram.assign(tmp.begin(),tmp.end());
+	histogram = tmp;
 }
 
 void SpikeAnalysis::isipartition(std::vector<double> binxs, int nbin) {

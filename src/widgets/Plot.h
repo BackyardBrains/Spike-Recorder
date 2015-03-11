@@ -22,6 +22,7 @@ public:
 	Plot(Widget *parent = NULL);
 
 	void setData(const std::vector<float> &x, const std::vector<float> &y);
+	void updateAxisScale();
 
 	void setXLabel(const std::string &label);
 	void setYLabel(const std::string &label);
