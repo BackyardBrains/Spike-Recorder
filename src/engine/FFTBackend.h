@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <vector>
 #include <utility>
-#include <complex.h>
+#include <complex>
 
 namespace BackyardBrains {
 
@@ -13,7 +13,7 @@ public:
 
 	//FFTBackend();
 	//~FFTBackend();
-	static void transform(std::vector<complex float> &data); // inplace fft
+	static void transform(std::vector<std::complex<float> > &data); // inplace fft
 
 };
 

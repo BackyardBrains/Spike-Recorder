@@ -187,10 +187,10 @@ void FFTView::addWindow(uint32_t *result, int pos, int device, int len, int samp
 		int lower = f*windowt;
 		int upper = std::min((int)(f*windowt+binsize+1), len/ds-1);
 
-		double max = creal(_fftbuf[lower]);
+		double max = std::abs(_fftbuf[lower]);
 		for(int j = lower; j <= upper; j++) {
-			if(cabs(_fftbuf[j]) > max) {
-				max = cabs(_fftbuf[j]);
+			if(std::abs(_fftbuf[j]) > max) {
+				max = std::abs(_fftbuf[j]);
 			}
 		}
 		
@@ -214,6 +214,11 @@ void FFTView::update(int force) {
 	int opos = _manager.pos()+_av.channelOffset()-len+_manager.fileMode()*len/2;
 	uint32_t resultbuf[FFTFRES];
 	int windowdist = SWINDOW;
+
+	if(_av.selectedChannel() == -1) {
+		memset(_fftviewbuffer,0,FFTTRES*FFTFRES*sizeof(int32_t));
+		return;
+	}
 
 	if(_laststate != len) {
 		force = true;
