@@ -33,6 +33,7 @@ private:
 
 	int16_t *_samplebuf;
 	std::vector<std::complex<float> > _fftbuf;
+
 	int32_t _fftviewbuffer[FFTFRES][FFTTRES];
 	int _viewwidth;
 
