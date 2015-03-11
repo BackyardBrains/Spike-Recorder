@@ -190,6 +190,8 @@ void MainView::forwardPressed() {
 		_manager.initRecordingDevices();
 		_recordButton->setVisible(true);
 		_analysisButton->setVisible(false);
+		delete _anaView;
+		_anaView = NULL;
 	} else {
 		_audioView->setOffset(0);
 	}
@@ -269,6 +271,8 @@ void MainView::filePressed() {
 	if(s != Widgets::FileDialog::SUCCESS)
 		return;
 
+	delete _anaView;
+	_anaView = NULL;
 	bool rc = _manager.loadFile(d.getResultFilename().c_str());
 
 	if(rc == false) {
@@ -290,8 +294,6 @@ void MainView::filePressed() {
 
 	_recordButton->setVisible(false);
 	_analysisButton->setVisible(true);
-	delete _anaView;
-	_anaView = NULL;
 
 	Widgets::ToolTip *tip = new Widgets::ToolTip("Click to return to live mode \x1f", 2000);
 	tip->setGeometry(Widgets::Rect(width()/2-190, height()-150, 280, 40));

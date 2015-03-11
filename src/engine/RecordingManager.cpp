@@ -159,7 +159,6 @@ void RecordingManager::initRecordingDevices() {
 	clear();
 	_fileMode = false;
 
-
 	for (int i = 0; BASS_RecordGetDeviceInfo(i, &info); i++)
 	{
 		virtualDevice.enabled = info.flags & BASS_DEVICE_ENABLED;
@@ -172,6 +171,8 @@ void RecordingManager::initRecordingDevices() {
 			_recordingDevices.push_back(virtualDevice);
 		}
 	}
+
+
 	_player.setVolume(0);
 	setSampleRate(DEFAULT_SAMPLE_RATE);
 	deviceReload.emit();
@@ -543,47 +544,50 @@ void RecordingManager::Device::destroy() {
 }
 
 
-void RecordingManager::incRef(int virtualDeviceIndex) {
+bool RecordingManager::incRef(int virtualDeviceIndex) {
 	assert(virtualDeviceIndex >= 0);
+	if(virtualDeviceIndex >= (int)_recordingDevices.size())
+		return false;
+
 	const int device = _recordingDevices[virtualDeviceIndex].device;
 
 	if (_devices.count(device) == 0)
 		_devices[device].create(_pos, 2);
-
+	
 	_devices[device].refCount++;
 	_recordingDevices[virtualDeviceIndex].bound++;
-	assert(_recordingDevices[virtualDeviceIndex].bound < 2); // this shouldn’t happen at the moment
-
+	
 	if (!_fileMode && _devices[device].handle == 0) {
 		// make sure the device exists
 		BASS_DEVICEINFO info;
 		if(!BASS_RecordGetDeviceInfo(device, &info)) {
 			std::cerr << "Bass Error: getting record device info failed: " << BASS_ErrorGetCode() << "\n";
-			return;
+			return false;
 		}
 
 		// initialize the recording device if we haven't already
 		if(!(info.flags & BASS_DEVICE_INIT)) {
 			if(!BASS_RecordInit(device)) {
 				std::cerr << "Bass Error: initializing record device failed: " << BASS_ErrorGetCode() << "\n";
-				return;
+				return false;
 			}
 		}
 
 		// subsequent API calls will operate on this recording device
 		if(!BASS_RecordSetDevice(device)) {
 			std::cerr << "Bass Error: setting record device failed: " << BASS_ErrorGetCode() << "\n";
-			return;
+			return false;
 		}
 
 		const HRECORD handle = BASS_RecordStart(_sampleRate, 2, (_paused ? BASS_RECORD_PAUSE : 0), NULL, NULL);
 		if (handle == FALSE)
 		{
 			std::cerr << "Bass Error: starting the recording failed: " << BASS_ErrorGetCode() << "\n";
-			return;
+			return false;
 		}
 		_devices[device].handle = handle;
 	}
+	return true;
 }
 
 void RecordingManager::decRef(int virtualDeviceIndex) {
@@ -593,6 +597,10 @@ void RecordingManager::decRef(int virtualDeviceIndex) {
 		return;
 	_devices[device].refCount--;
 	_recordingDevices[virtualDeviceIndex].bound--;
+
+	assert(_recordingDevices[virtualDeviceIndex].bound >= 0);
+	assert(_devices[device].refCount >= 0);
+
 	if (_devices[device].refCount == 0)	{
 		if(!_fileMode) {
 			// make sure the device exists
