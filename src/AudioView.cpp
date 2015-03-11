@@ -47,6 +47,8 @@ const float AudioView::ampScale = .0005f;
 AudioView::AudioView(Widgets::Widget *parent, RecordingManager &mngr)
 	: Widgets::Widget(parent), _manager(mngr), _clickedGain(-1), _clickedSlider(-1), _clickedPixelOffset(0),
 	_clickedThresh(false), _rulerClicked(false), _rulerStart(-1.f), _rulerEnd(-1.f), _channelOffset(0), _timeScale(0.1f)  {
+	
+	_gainCtrlHoldTime = 0;
 }
 
 AudioView::~AudioView() {
@@ -56,7 +58,11 @@ AudioView::~AudioView() {
 }
 
 int AudioView::addChannel(int virtualDevice) {
-	_manager.incRef(virtualDevice);
+	bool rt;
+	rt = _manager.incRef(virtualDevice);
+
+	if(!rt)
+		return 0;
 	_channels.push_back(AudioView::Channel());
 	_channels.back().virtualDevice = virtualDevice;
 
@@ -80,8 +86,9 @@ void AudioView::removeChannel(int virtualDevice) {
 }
 
 void AudioView::clearChannels() {
-	for(unsigned int i = 0; i < _channels.size(); i++)
-		_manager.decRef(_channels[i].virtualDevice);
+	// these things have to be cleared up somewhere else.
+	//for(unsigned int i = 0; i < _channels.size(); i++)
+	//	_manager.decRef(_channels[i].virtualDevice);
 
 	_channels.clear();
 }
@@ -165,9 +172,8 @@ void AudioView::standardSettings() {
 		relOffsetChanged.emit(0);
 	} else {
 		relOffsetChanged.emit(1000);
+		addChannel(0);
 	}
-
-	addChannel(0);
 }
 
 int AudioView::channelCount() const {
@@ -204,6 +210,8 @@ int AudioView::sampleCount(int screenw, float scalew) {
 }
 
 float AudioView::thresholdPos() {
+	if(_channels.size() == 0)
+		return 0;
 	return height()*(_channels[selectedChannel()].pos-_manager.recordingDevices()[_manager.selectedVDevice()].threshold*ampScale*_channels[selectedChannel()].gain);
 }
 
@@ -356,6 +364,8 @@ static float calculateRMS(std::vector<std::pair<int16_t, int16_t> > &data, unsig
 }
 
 void AudioView::drawGainControls() {
+	if(_channels.size() == 0)
+		return;
 	int y = _channels[selectedChannel()].pos*height();
 	Widgets::TextureGL::get("data/gaindown.png")->bind();
 	Widgets::Painter::drawTexRect(Widgets::Rect(GAINCONTROL_XOFF-GAINCONTROL_RAD,y+GAINCONTROL_YOFF-GAINCONTROL_RAD,2*GAINCONTROL_RAD,2*GAINCONTROL_RAD));
@@ -475,9 +485,15 @@ void AudioView::paintEvent() {
 
 	drawRulerTime();
 	drawScale();
+
+	if(!_manager.fileMode() && _manager.recordingDevices().size() == 0) {
+		Widgets::Application::font()->draw("No input device available", width()/2, height()/2, Widgets::AlignCenter);
+	}
 }
 
 void AudioView::drawThreshold(int screenw) {
+	if(_channels.size() == 0)
+		return;
 	Widgets::Painter::setColor(COLORS[_channels[selectedChannel()].colorIdx]);
 
 	if(thresholdPos() > MOVEPIN_SIZE/2 && thresholdPos() < height() - MOVEPIN_SIZE/2) {
@@ -530,6 +546,8 @@ void AudioView::advance() {
 }
 
 int AudioView::determineGainControlHover(int x, int y) {
+	if(_channels.size() == 0)
+		return 0;
 	int xx = GAINCONTROL_XOFF-x;
 	int dy = _channels[selectedChannel()].pos*height()-y;
 	xx *= xx;
