@@ -57,7 +57,8 @@ typedef unsigned int uint;
 
 namespace BackyardBrains {
 
-
+    ArduinoSerial::ArduinoSerial() : _portOpened(false) {
+    }
 
     int ArduinoSerial::openPort(const char *portName)
     {
@@ -370,7 +371,7 @@ namespace BackyardBrains {
 #endif // defined
 #if defined(__linux__)
         int bits;
-        if (size == 0 && ioctl(port_fd, TIOCMGET, &bits) < 0)
+        if (size == 0 && ioctl(fd, TIOCMGET, &bits) < 0)
         {
             std::cout<<"Serial read error: 3\n";
         }

@@ -39,6 +39,7 @@ namespace BackyardBrains {
 
     class ArduinoSerial {
     public:
+	ArduinoSerial();
         int openPort(const char *portName);
         int readPort(int16_t *);
         std::list<std::string> list;
@@ -74,7 +75,7 @@ namespace BackyardBrains {
             COMMCONFIG port_cfg;
         #endif
         std::string _portName;
-        bool _portOpened=false;
+        bool _portOpened;
         bool triedToConfigureAgain;
     };
 

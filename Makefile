@@ -16,7 +16,7 @@ OBJECTS = \
 	src/engine/RecordingManager.o \
 	src/engine/FileRecorder.o \
 	src/engine/Player.o \
-    src/engine/ArduinoSerial.o \	
+	src/engine/ArduinoSerial.o \
 	src/engine/SpikeSorter.o \
 	src/engine/FFTBackend.o \
 	src/widgets/LayoutItem.o \
@@ -33,6 +33,7 @@ OBJECTS = \
 	src/widgets/Label.o \
 	src/widgets/ErrorBox.o \
 	src/widgets/ToolTip.o \
+	src/DropDownList.o \
 	src/Game.o \
 	src/main.o \
 	src/MainView.o \
