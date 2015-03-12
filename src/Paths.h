@@ -6,6 +6,7 @@
 namespace BackyardBrains {
 
 std::string getRecordingPath();
+std::string getLoggingPath();
 
 }
 

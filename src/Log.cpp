@@ -1,14 +1,25 @@
 #include "Log.h"
+#include "Paths.h"
 #include <cstdio>
 #include <cstdarg>
 #include <cstdlib>
 #include <string>
+#include <cstring>
+#include <cerrno>
 
 namespace BackyardBrains {
 
 Log *Log::_log = 0;
 Log::Log() {
-	_out = stdout;
+	if(getLoggingPath() == "") {
+		_out = stdout;
+	} else {
+		_out = fopen(getLoggingPath().c_str(), "w");
+		if(_out == 0) {
+			fprintf(stderr, "Error opening logging destination:%s\nRedirecting log to stdout.\n", strerror(errno));
+			_out = stdout;
+		}
+	}
 }
 
 void Log::init() {
