@@ -1,21 +1,21 @@
 #include "Game.h"
 #include "MainView.h"
+#include "Log.h"
 #include "widgets/TextureGL.h"
 #include <SDL.h>
-#include <iostream>
 
 namespace BackyardBrains {
 
 Game::Game() : _fileRec(_manager) {
-	std::cout << "Loading Resources...\n";
+	Log::msg("Loading Resources...");
 	loadResources();
-	std::cout << "Creating Window...\n";
+	Log::msg("Creating Window...");
 
 	addWindow(new MainView(_manager, _fileRec));
 	createWindow(800,600);
 	setWindowTitle("BYB Spike Recorder");
 
-	std::cout << "Starting GUI...\n";
+	Log::msg("Starting GUI...");
 
 }
 

@@ -4,7 +4,6 @@
 #include "widgets/BitmapFontGL.h"
 #include "widgets/Application.h"
 #include "engine/FileRecorder.h"
-#include <iostream>
 #include <cmath>
 #include <sstream>
 #include <iomanip>

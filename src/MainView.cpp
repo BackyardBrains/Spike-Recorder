@@ -19,7 +19,6 @@
 #include "FFTView.h"
 #include <SDL_opengl.h>
 #include <SDL.h>
-#include <iostream>
 #include <cerrno>
 #include <cstring>
 #include <ctime>

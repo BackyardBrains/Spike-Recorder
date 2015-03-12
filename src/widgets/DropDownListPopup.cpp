@@ -4,8 +4,6 @@
 #include "ScrollBar.h"
 
 // #include <SDL_opengl.h>
-#include <iostream>
-// #include <cstdio>
 
 namespace BackyardBrains {
 

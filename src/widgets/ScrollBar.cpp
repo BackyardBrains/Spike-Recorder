@@ -1,7 +1,6 @@
 #include "ScrollBar.h"
 #include "Painter.h"
 
-#include <iostream>
 #include <cassert>
 
 namespace BackyardBrains {

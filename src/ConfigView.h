@@ -8,6 +8,7 @@ namespace BackyardBrains {
 
 class RecordingManager;
 class AudioView;
+class ColorDropDownList;
 
 class ConfigView : public Widgets::Widget {
 public:
@@ -27,6 +28,7 @@ private:
 	Widgets::PushButton *_muteCKBox;
 
 	std::vector<SignalCatcher> _catchers;
+	std::vector<ColorDropDownList *> _clrs;
 
 	void colorChanged(int virtualDevice, int coloridx);
 

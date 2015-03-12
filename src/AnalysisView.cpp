@@ -11,8 +11,6 @@
 #include "AnalysisAudioView.h"
 
 #include <sstream>
-#include <iostream>
-
 
 namespace BackyardBrains {
 
