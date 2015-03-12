@@ -1,5 +1,6 @@
 #include "FileRecorder.h"
 #include "RecordingManager.h"
+#include "Log.h"
 #include <bass.h>
 #include <cstdio>
 #include <sstream>
@@ -8,7 +9,6 @@
 #include <cstring>
 #include <string>
 #include <cassert>
-
 namespace BackyardBrains {
 
 #ifdef __BIG_ENDIAN__
@@ -209,7 +209,7 @@ void FileRecorder::parseMarkerTextFile(std::list<std::pair<std::string, int64_t>
 	while((c = fgetc(f)) != EOF) {
 		if(c == '#') {
 			if(mode == MKEY || (mode == MVAL && i == 0)) {
-				std::cerr << "Marker Parser Error: line " << line << ": Key missing value.\n";
+				Log::error("Marker Parser Error: line %d: Key missing value.",line);
 				return;
 			}
 			if(mode == MVAL) {
@@ -221,7 +221,7 @@ void FileRecorder::parseMarkerTextFile(std::list<std::pair<std::string, int64_t>
 
 		if(c == '\n') {
 			if(mode == MKEY) {
-				std::cerr << "Marker Parser Error: line " << line << ": Key missing value.\n";
+				Log::error("Marker Parser Error: line %d: Key missing value.", line);
 				return;
 			}
 
@@ -240,12 +240,12 @@ void FileRecorder::parseMarkerTextFile(std::list<std::pair<std::string, int64_t>
 
 		if(c == ',') {
 			if(mode == MVAL) {
-				std::cerr << "Marker Parser Error: line " << line << ": Keys must not contain ','.\n";
+				Log::error("Marker Parser Error: line %d: Keys must not contain ','.", line);
 				return;
 			}
 
 			if(i == 0) {
-				std::cerr << "Marker Parser Error: line " << line << ": Keys must not be empty.\n";
+				Log::error("Marker Parser Error: line %d: Keys must not be empty.", line);
 				return;
 			}
 
@@ -292,7 +292,7 @@ int FileRecorder::parseMetadataStr(MetadataChunk *meta, const char *str) {
 		while(*p != 0) {
 			if(*p == '=') {
 				if(mode != MKEY) {
-					std::cerr << "Metadata Parser Error: unexpected '='.\n";
+					Log::error("Metadata Parser Error: unexpected '='.");
 					return 1;
 				}
 
@@ -309,7 +309,7 @@ int FileRecorder::parseMetadataStr(MetadataChunk *meta, const char *str) {
 				else if(strncmp(beg, "cnam", p-beg) == 0)
 					keytype = CNAM;
 				else {
-					std::cerr << "Metadata Parser Error: skipped key '" << std::string(beg,p) << "'.\n";
+					Log::error("Metadata Parser Error: skipped key '%s'.", std::string(beg,p).c_str());
 					mode = MVAL;
 					break;
 				}
@@ -355,7 +355,7 @@ int FileRecorder::parseMetadataStr(MetadataChunk *meta, const char *str) {
 		}
 
 		if(mode == MKEY) {
-			std::cerr << "Metadata Parser Error: expected value after key!\n";
+			Log::error("Metadata Parser Error: expected value after key!");
 			return 1;
 		}
 

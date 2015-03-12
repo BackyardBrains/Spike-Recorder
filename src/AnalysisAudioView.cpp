@@ -2,7 +2,6 @@
 #include "widgets/Painter.h"
 #include "widgets/TextureGL.h"
 #include <SDL_opengl.h>
-#include <iostream>
 namespace BackyardBrains {
 
 AnalysisAudioView::AnalysisAudioView(RecordingManager &manager, SpikeSorter &spikes, Widgets::Widget *parent) : AudioView(parent, manager), _spikes(spikes), _clickedThresh(-1) {

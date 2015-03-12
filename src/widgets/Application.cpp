@@ -3,10 +3,9 @@
 #include "LayoutItem.h"
 #include "BitmapFontGL.h"
 #include "Color.h"
+#include "Log.h"
 #include <SDL.h>
 #include <SDL_opengl.h>
-#include <iostream>
-#include <cstdlib>
 #include <bass.h>
 #include <cassert>
 
@@ -21,8 +20,7 @@ const int Application::MIN_WINDOW_H = 100;
 
 Application::Application() : _running(false), _mouseGrabber(0), _keyboardGrabber(0), _hoverWidget(0), _windowStack(0), _popupStack(0) {
 	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
-		std::cerr << "SDL Error: Failed to initialize: " << SDL_GetError() << "\n";
-		exit(1);
+		Log::fatal("SDL Error: Failed to initialize: %s", SDL_GetError());
 	}
 	
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -46,8 +44,7 @@ Application::Application() : _running(false), _mouseGrabber(0), _keyboardGrabber
 	if(!app) {
 		app = this;
 	} else {
-		std::cerr << "Fatal: Only one Application instance can exist.\n";
-		exit(1);
+		Log::fatal("Fatal: Only one Application instance can exist.");
 	}
 
 }
@@ -335,8 +332,7 @@ void Application::createWindow(int w, int h) {
 
 	screen = SDL_SetVideoMode(w, h, 0, SDL_OPENGL|SDL_RESIZABLE);
 	if(!screen) {
-		std::cerr << "SDL Error: Failed to set video mode: " << SDL_GetError() << "\n";
-		exit(1);
+		Log::fatal("SDL Error: Failed to set video mode: %d",SDL_GetError());
 	}
 
 	glViewport(0, 0, screen->w, screen->h);

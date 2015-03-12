@@ -1,6 +1,6 @@
 #include "BitmapFontGL.h"
+#include "Log.h"
 #include <cstring>
-#include <iostream>
 #include <string>
 
 namespace BackyardBrains {
@@ -12,7 +12,7 @@ static const int strideX = 8;
 static const int strideY = 16;
 
 BitmapFontGL::BitmapFontGL() {
-	std::cout << "Initializing font...\n";
+	Log::msg("Initializing font...");
 	characters = TextureGL::get("data/ascii.png");
 }
 

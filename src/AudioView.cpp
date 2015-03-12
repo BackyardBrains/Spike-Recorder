@@ -7,7 +7,6 @@
 #include "widgets/Application.h"
 #include "engine/SampleBuffer.h"
 #include "engine/FileRecorder.h"
-#include <iostream>
 #include <sstream>
 #include <utility>
 #include <algorithm>

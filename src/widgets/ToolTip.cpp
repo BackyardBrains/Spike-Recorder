@@ -6,7 +6,6 @@
 
 #include <SDL.h>
 #include <sstream>
-#include <iostream>
 #include <cassert>
 
 namespace BackyardBrains {

@@ -1,9 +1,9 @@
 #include "widgets/Application.h"
 #include "Game.h"
+#include "Log.h"
 #include <SDL.h>
 #include <cstring>
 #include <string>
-#include <cstdio>
 #include <cerrno>
 
 #ifdef __WIN32__
@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
 	ret += chdir("../Resources");
 #endif
 	if(ret != 0)
-		printf("ERROR: could not change directory: %s\n", strerror(errno));
+		BackyardBrains::Log::fatal("Fatal: could not change directory: %s", strerror(errno));
 
 	BackyardBrains::Game game;
 	

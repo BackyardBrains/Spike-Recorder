@@ -2,7 +2,6 @@
 #include "widgets/Painter.h"
 #include "widgets/Application.h"
 #include "widgets/Event.h"
-#include <iostream>
 #include "widgets/BoxLayout.h"
 #include "widgets/ScrollBar.h"
 #include "widgets/TextureGL.h"

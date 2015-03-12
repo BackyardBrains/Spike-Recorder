@@ -31,6 +31,7 @@ OBJECTS = \
 	src/widgets/Label.o \
 	src/widgets/ErrorBox.o \
 	src/widgets/ToolTip.o \
+	src/Log.o \
 	src/Game.o \
 	src/main.o \
 	src/MainView.o \
