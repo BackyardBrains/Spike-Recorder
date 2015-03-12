@@ -404,7 +404,7 @@ void AudioView::drawAudio() {
 			Widgets::Painter::drawTexRect(Widgets::Rect(MOVEPIN_SIZE/2, _channels[i].pos*height()-MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
 			glBindTexture(GL_TEXTURE_2D, 0);
 
-			if(_rulerClicked) {
+			if(_rulerEnd != _rulerStart) {
 				int startsample = std::min(_rulerStart, _rulerEnd)*(data.size()-1);
 				int endsample = std::max(_rulerStart, _rulerEnd)*(data.size()-1);
 				float rms = calculateRMS(data, startsample, endsample);
@@ -425,7 +425,7 @@ void AudioView::drawAudio() {
 }
 
 void AudioView::drawRulerBox() {
-	if(_rulerClicked) {
+	if(_rulerEnd != _rulerStart) {
 		int x = std::min(_rulerEnd, _rulerStart)*screenWidth();
 		int w = std::max(_rulerEnd, _rulerStart)*screenWidth() - x;
 
@@ -438,7 +438,7 @@ void AudioView::drawRulerTime() {
 	const int screenw = screenWidth();
 	const int samples = sampleCount(screenw, scaleWidth());
 
-	if(_rulerClicked) {
+	if(_rulerEnd != _rulerStart) {
 		float w = fabs(_rulerStart-_rulerEnd);
 		float dtime = w*samples/_manager.sampleRate();
 		int unit = -std::log(dtime/100)/std::log(1000);
@@ -580,7 +580,8 @@ int AudioView::determineSliderHover(int x, int y, int *yoffset) {
 }
 
 int AudioView::determineThreshHover(int x, int y, int threshPos, int *yoffset) {
-
+	if(_channels.size() == 0)
+		return 0;
 	int xx = width()-MOVEPIN_SIZE-x;
 	int dy = y - std::min(height()-MOVEPIN_SIZE/2, std::max(MOVEPIN_SIZE/2, threshPos));
 
@@ -672,13 +673,14 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 		}
 		event->accept();
 	} else if(event->button() == Widgets::RightButton) {
-		if(!_rulerClicked && x > MOVEPIN_SIZE*1.5f && (!_manager.threshMode() || x <= width()-MOVEPIN_SIZE*1.5f)) {
+		if(_rulerEnd == _rulerStart && x > MOVEPIN_SIZE*1.5f && (!_manager.threshMode() || x <= width()-MOVEPIN_SIZE*1.5f)) {
 			_rulerClicked = true;
 			_rulerStart = std::max(0.f,std::min(1.f,(x-MOVEPIN_SIZE*1.5f)/(float)screenWidth()));
 			_rulerEnd = std::max(0.f,std::min(1.f,(x-MOVEPIN_SIZE*1.5f)/(float)screenWidth()));
 			event->accept();
-		} else if(_rulerClicked) {
-			 _rulerClicked = false;
+		} else if(_rulerEnd != _rulerStart) {
+			 _rulerEnd = 0;
+			 _rulerStart = 0;
 		}
 	}
 
@@ -695,8 +697,12 @@ void AudioView::mouseReleaseEvent(Widgets::MouseEvent *event) {
 		_gainCtrlHoldTime = 0;
 	}
 
-	if(event->button() == Widgets::RightButton && fabs(_rulerStart-_rulerEnd)*screenWidth() < 1.f) {
+	if(event->button() == Widgets::RightButton ) {
 		_rulerClicked = false;
+		if(fabs(_rulerStart-_rulerEnd)*screenWidth() < 1.f) {
+			_rulerEnd = 0;
+			_rulerStart = 0;
+		}
 	}
 }
 
