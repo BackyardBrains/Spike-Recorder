@@ -16,6 +16,7 @@
 #include "ConfigView.h"
 #include "AnalysisView.h"
 #include "RecordingBar.h"
+#include "Log.h"
 #include <SDL_opengl.h>
 #include <SDL.h>
 #include <cerrno>
@@ -282,7 +283,7 @@ void MainView::filePressed() {
 		Widgets::Application::getInstance()->addPopup(box);
 		return;
 	}
-
+	Log::msg("Loading metadata, if present...");
 	MetadataChunk m;
 	const char *mdatastr = _manager.fileMetadataString();
 	if(mdatastr)

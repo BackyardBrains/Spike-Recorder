@@ -15,4 +15,8 @@ std::string getRecordingPath() {
 	return res;
 }
 
+std::string getLoggingPath() {
+	return "";
+}
+
 }
