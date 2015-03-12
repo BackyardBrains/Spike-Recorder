@@ -6,8 +6,6 @@
 #include <SDL_opengl.h>
 
 #include <algorithm>
-#include <iostream>
-#include <typeinfo>
 #include <cassert>
 
 namespace BackyardBrains {

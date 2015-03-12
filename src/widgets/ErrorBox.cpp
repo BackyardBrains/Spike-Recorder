@@ -4,9 +4,6 @@
 #include "Application.h"
 #include "Painter.h"
 
-#include <sstream>
-#include <iostream>
-
 namespace BackyardBrains {
 
 namespace Widgets {

@@ -1,9 +1,6 @@
 #include "BoxLayout.h"
 #include "Widget.h"
 
-#include <iostream>
-#include <typeinfo>
-
 namespace BackyardBrains {
 
 namespace Widgets {

@@ -1,7 +1,7 @@
 #include "TextureGL.h"
 #include "LoadTexture.h"
+#include "Log.h"
 #include <cstdlib>
-#include <iostream>
 
 namespace BackyardBrains {
 
@@ -31,7 +31,7 @@ void TextureGL::load(const char *f)
 	TextureGL tex;
 	tex.filename.assign(f);
 // 	tex.id = LoadTexture(f); // do that later.
-	std::cout << "Texture '" << f << "' loaded.\n";
+	Log::msg("Texture '%s' loaded.",f);
 	instances.push_back(tex);
 
 }
@@ -61,8 +61,7 @@ const TextureGL* TextureGL::get(const char *filename) {
 	for(InstanceSet::iterator it = instances.begin(); it != instances.end(); it++)
 		if((*it).filename == filename)
 			return &*it;
-	std::cerr << "Fatal: Texture '" << filename << "' not loaded!\n";
-	_Exit(1); // to skip bass atexit crap
+	Log::fatal("no texture called '%s' loaded!",filename);
 	return NULL;
 }
 

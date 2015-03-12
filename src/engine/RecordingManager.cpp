@@ -1,8 +1,8 @@
 #include "RecordingManager.h"
 #include "SampleBuffer.h"
 #include "FileRecorder.h"
+#include "Log.h"
 
-#include <iostream>
 #include <cstdlib>
 
 namespace BackyardBrains {
@@ -11,10 +11,9 @@ const int RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX = -2;
 const int RecordingManager::DEFAULT_SAMPLE_RATE = 22050;
 
 RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(false), _fileMode(false), _sampleRate(DEFAULT_SAMPLE_RATE), _selectedVDevice(0), _threshAvgCount(1) {
-	std::cout << "Initializing libbass...\n";
+	Log::msg("Initializing libbass...");
 	if(!BASS_Init(-1, _sampleRate, 0, 0, NULL)) {
-		std::cerr << "Bass Error: Initialization failed: " << BASS_ErrorGetCode() << "\n";
-		exit(1);
+		Log::fatal("Bass initialization failed: %d", BASS_ErrorGetCode());
 	}
 
     _numOfSerialChannels = 1;
@@ -35,6 +34,7 @@ RecordingManager::~RecordingManager() {
 	clear();
 	_player.stop();
 	BASS_Free();
+	Log::msg("libbass deinitialized.");
 }
 
 void RecordingManager::constructMetadata(MetadataChunk *m) const {
@@ -236,7 +236,7 @@ bool RecordingManager::loadFile(const char *filename) {
 
 	HSTREAM stream = BASS_StreamCreateFile(false, filename, 0, 0, BASS_STREAM_DECODE);
 	if(stream == 0) {
-		std::cerr << "Bass Error: Failed to load file '" << filename << "': " << BASS_ErrorGetCode() << "\n";
+		Log::error("Bass Error: Failed to load file '%s': %d", filename, BASS_ErrorGetCode());
 		return false;
 	}
 
@@ -277,6 +277,7 @@ bool RecordingManager::loadFile(const char *filename) {
 		setPaused(true);
 	}
 
+	Log::msg("loaded file '%s'.", filename);
 	return true;
 }
 
@@ -306,6 +307,7 @@ void RecordingManager::initRecordingDevices() {
 	_player.setVolume(0);
 	setSampleRate(DEFAULT_SAMPLE_RATE);
 	deviceReload.emit();
+	Log::msg("Found %d recording devices.", _recordingDevices.size());
 }
 
 // TODO: consolidate this function somewhere
@@ -333,10 +335,10 @@ void RecordingManager::setPaused(bool pausing) {
 		for(std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it) {
 			if(pausing) {
 				if(!BASS_ChannelPause(it->second.handle))
-					std::cerr << "Bass Error: pausing channel failed: " << BASS_ErrorGetCode() << "\n";
+					Log::error("Bass Error: pausing channel failed: %d", BASS_ErrorGetCode());
 			} else {
 				if(!BASS_ChannelPlay(it->second.handle, FALSE))
-					std::cerr << "Bass Error: resuming channel playback failed: " << BASS_ErrorGetCode() << "\n";
+					Log::error("Bass Error: resuming channel playback failed: %d", BASS_ErrorGetCode());
 			}
 		}
 	}
@@ -465,7 +467,7 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 
 		DWORD samplesRead = BASS_ChannelGetData(it->second.handle, buffer, channum*std::min(len,bufsize)*bytespersample);
 		if(samplesRead == (DWORD)-1) {
-			std::cerr << "Bass Error: getting channel data failed: " << BASS_ErrorGetCode() << "\n";
+			Log::error("Bass Error: getting channel data failed: %d", BASS_ErrorGetCode());
 			delete[] channels;
 			delete[] buffer;
 			continue;
@@ -657,7 +659,7 @@ void RecordingManager::advance(uint32_t samples) {
 
 		DWORD samplesRead = BASS_ChannelGetData(it->second.handle, buffer, channum*len*sizeof(int16_t));
 		if(samplesRead == (DWORD)-1) {
-			std::cerr << "Bass Error: getting channel data failed: " << BASS_ErrorGetCode() << "\n";
+			Log::error("Bass Error: getting channel data failed: %d", BASS_ErrorGetCode());
 			delete[] channels;
 			delete[] buffer;
 			continue;
@@ -776,7 +778,6 @@ bool RecordingManager::incRef(int virtualDeviceIndex) {
 		_devices[device].create(_pos, 2);
 	
 	_devices[device].refCount++;
-	_recordingDevices[virtualDeviceIndex].bound++;
 	
 	//Stanislav patched for serial. Not sure if this has to be here
 	//Refactor
@@ -792,33 +793,41 @@ bool RecordingManager::incRef(int virtualDeviceIndex) {
 		// make sure the device exists
 		BASS_DEVICEINFO info;
 		if(!BASS_RecordGetDeviceInfo(device, &info)) {
-			std::cerr << "Bass Error: getting record device info failed: " << BASS_ErrorGetCode() << "\n";
-			return false;
+			Log::error("Bass Error: getting record device info failed: %d", BASS_ErrorGetCode());
+			goto error;
 		}
 
 		// initialize the recording device if we haven't already
 		if(!(info.flags & BASS_DEVICE_INIT)) {
 			if(!BASS_RecordInit(device)) {
-				std::cerr << "Bass Error: initializing record device failed: " << BASS_ErrorGetCode() << "\n";
-				return false;
+				Log::error("Bass Error: initializing record device failed: %d", BASS_ErrorGetCode());
+				goto error;
 			}
 		}
 
 		// subsequent API calls will operate on this recording device
 		if(!BASS_RecordSetDevice(device)) {
-			std::cerr << "Bass Error: setting record device failed: " << BASS_ErrorGetCode() << "\n";
-			return false;
+			Log::error("Bass Error: setting record device failed: %d",BASS_ErrorGetCode());
+			goto error;
 		}
 
 		const HRECORD handle = BASS_RecordStart(_sampleRate, 2, (_paused ? BASS_RECORD_PAUSE : 0), NULL, NULL);
 		if (handle == FALSE)
 		{
-			std::cerr << "Bass Error: starting the recording failed: " << BASS_ErrorGetCode() << "\n";
-			return false;
+			Log::error("Bass Error: starting the recording failed: %d",BASS_ErrorGetCode());
+			goto error;
 		}
 		_devices[device].handle = handle;
 	}
+	_recordingDevices[virtualDeviceIndex].bound++;
 	return true;
+error:
+	_devices[device].refCount--;
+	if(_devices[device].refCount == 0) {
+		_devices[device].destroy();
+		_devices.erase(device);
+	}
+	return false;
 }
 
 void RecordingManager::decRef(int virtualDeviceIndex) {
@@ -847,20 +856,20 @@ void RecordingManager::decRef(int virtualDeviceIndex) {
 			// make sure the device exists
 			BASS_DEVICEINFO info;
 			if (!BASS_RecordGetDeviceInfo(device, &info)) {
-				std::cerr << "Bass Error: getting record device info failed: " << BASS_ErrorGetCode() << "\n";
+				Log::error("Bass Error: getting record device info failed: %d",BASS_ErrorGetCode());
 				return;
 			}
 
 			// subsequent API calls will operate on this recording device
 			if (!BASS_RecordSetDevice(device)) {
-				std::cerr << "Bass Error: setting record device failed: " << BASS_ErrorGetCode() << "\n";
+				Log::error("Bass Error: setting record device failed: %d",BASS_ErrorGetCode());
 				return;
 			}
 
 			// free the recording device if we haven't already
 			if(info.flags & BASS_DEVICE_INIT) {
 				if(!BASS_RecordFree()) {
-					std::cerr << "Bass Error: freeing record device failed: " << BASS_ErrorGetCode() << "\n";
+					Log::error("Bass Error: freeing record device failed: %d",BASS_ErrorGetCode());
 				}
 			}
 

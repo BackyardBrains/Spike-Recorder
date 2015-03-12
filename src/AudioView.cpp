@@ -7,7 +7,6 @@
 #include "widgets/Application.h"
 #include "engine/SampleBuffer.h"
 #include "engine/FileRecorder.h"
-#include <iostream>
 #include <sstream>
 #include <utility>
 #include <algorithm>
@@ -60,9 +59,8 @@ AudioView::~AudioView() {
 int AudioView::addChannel(int virtualDevice) {
 	bool rt;
 	rt = _manager.incRef(virtualDevice);
-
 	if(!rt)
-		return 0;
+		return -1;
 	_channels.push_back(AudioView::Channel());
 	_channels.back().virtualDevice = virtualDevice;
 
@@ -138,15 +136,15 @@ void AudioView::applyMetadata(const MetadataChunk &m) {
 }
 
 void AudioView::setChannelColor(int channel, int colorIdx) {
-	_channels[channel].colorIdx = std::max(0,std::min(COLOR_NUM-1, colorIdx));
+	_channels.at(channel).colorIdx = std::max(0,std::min(COLOR_NUM-1, colorIdx));
 }
 
 int AudioView::channelColor(int channel) const {
-	return _channels[channel].colorIdx;
+	return _channels.at(channel).colorIdx;
 }
 
 int AudioView::channelVirtualDevice(int channel) const {
-	return _channels[channel].virtualDevice;
+	return _channels.at(channel).virtualDevice;
 }
 
 int AudioView::virtualDeviceChannel(int virtualDevice) const {
@@ -436,7 +434,7 @@ void AudioView::drawAudio() {
 			Widgets::Painter::drawTexRect(Widgets::Rect(MOVEPIN_SIZE/2, _channels[i].pos*height()-MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
 			glBindTexture(GL_TEXTURE_2D, 0);
 
-			if(_rulerClicked) {
+			if(_rulerEnd != _rulerStart) {
 				int startsample = std::min(_rulerStart, _rulerEnd)*(data.size()-1);
 				int endsample = std::max(_rulerStart, _rulerEnd)*(data.size()-1);
 				float rms = calculateRMS(data, startsample, endsample);
@@ -457,7 +455,7 @@ void AudioView::drawAudio() {
 }
 
 void AudioView::drawRulerBox() {
-	if(_rulerClicked) {
+	if(_rulerEnd != _rulerStart) {
 		int x = std::min(_rulerEnd, _rulerStart)*screenWidth();
 		int w = std::max(_rulerEnd, _rulerStart)*screenWidth() - x;
 
@@ -470,7 +468,7 @@ void AudioView::drawRulerTime() {
 	const int screenw = screenWidth();
 	const int samples = sampleCount(screenw, scaleWidth());
 
-	if(_rulerClicked) {
+	if(_rulerEnd != _rulerStart) {
 		float w = fabs(_rulerStart-_rulerEnd);
 		float dtime = w*samples/_manager.sampleRate();
 		int unit = -std::log(dtime/100)/std::log(1000);
@@ -612,7 +610,8 @@ int AudioView::determineSliderHover(int x, int y, int *yoffset) {
 }
 
 int AudioView::determineThreshHover(int x, int y, int threshPos, int *yoffset) {
-
+	if(_channels.size() == 0)
+		return 0;
 	int xx = width()-MOVEPIN_SIZE-x;
 	int dy = y - std::min(height()-MOVEPIN_SIZE/2, std::max(MOVEPIN_SIZE/2, threshPos));
 
@@ -667,6 +666,8 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 				_clickedGain = i;
 				_clickedPixelOffset = yy;
 				_prevGain = _channels[i].gain;
+				_prevDragX = x/(float)width();
+				_prevDragOffset = offset();
 				event->accept();
 			}
 		} else if(_manager.threshMode()) {
@@ -702,13 +703,14 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 		}
 		event->accept();
 	} else if(event->button() == Widgets::RightButton) {
-		if(!_rulerClicked && x > DATA_XOFF && (!_manager.threshMode() || x <= width()-DATA_XOFF)) {
+		if(_rulerEnd == _rulerStart && x > DATA_XOFF && (!_manager.threshMode() || x <= width()-DATA_XOFF)) {
 			_rulerClicked = true;
 			_rulerStart = std::max(0.f,std::min(1.f,(x-DATA_XOFF)/(float)screenWidth()));
 			_rulerEnd = std::max(0.f, std::min(1.f,(x-DATA_XOFF)/(float)screenWidth()));
 			event->accept();
-		} else if(_rulerClicked) {
-			 _rulerClicked = false;
+		} else if(_rulerEnd != _rulerStart) {
+			 _rulerEnd = 0;
+			 _rulerStart = 0;
 		}
 	}
 
@@ -725,8 +727,12 @@ void AudioView::mouseReleaseEvent(Widgets::MouseEvent *event) {
 		_gainCtrlHoldTime = 0;
 	}
 
-	if(event->button() == Widgets::RightButton && fabs(_rulerStart-_rulerEnd)*screenWidth() < 1.f) {
+	if(event->button() == Widgets::RightButton ) {
 		_rulerClicked = false;
+		if(fabs(_rulerStart-_rulerEnd)*screenWidth() < 1.f) {
+			_rulerEnd = 0;
+			_rulerStart = 0;
+		}
 	}
 }
 
@@ -756,6 +762,8 @@ void AudioView::mouseMotionEvent(Widgets::MouseEvent *event) {
 
 	if(_clickedGain != -1) {
 		float newGain = _prevGain*std::fabs((height()*_channels[_clickedGain].pos-event->pos().y)/(float)_clickedPixelOffset);
+		int doffset = (width()*_prevDragX-event->pos().x)/(float)scaleWidth()*_manager.sampleRate();
+		setOffset(_prevDragOffset+doffset);
 		_channels[_clickedGain].setGain(newGain);
 		event->accept();
 	}

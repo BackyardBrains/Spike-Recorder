@@ -1,9 +1,6 @@
 #include "PushButton.h"
 #include "Painter.h"
 #include "BitmapFontGL.h"
-#include <iostream>
-
-// #include <map>
 
 namespace BackyardBrains {
 
@@ -48,20 +45,16 @@ void PushButton::setHoverTex(const TextureGL *tex) {
 void PushButton::mousePressEvent(MouseEvent *event)
 {
 	event->accept();
-
-// 	std::cout << this << ": mousePressEvent:   " << event->pos().x << ',' << event->pos().y << std::endl;
 }
 
 void PushButton::mouseReleaseEvent(MouseEvent *event)
 {
 	if(event->button() == LeftButton && _hover)
 		clicked.emit();
-	// std::cout << this << ": mouseReleaseEvent: " << event->pos().x << ',' << event->pos().y << std::endl;
 }
 
 void PushButton::mouseMotionEvent(MouseEvent *event)
 {
-	// std::cout << this << ": mouseMotionEvent:  " << event->pos().x << ',' << event->pos().y << std::endl;
 }
 
 void PushButton::enterEvent() {
