@@ -87,6 +87,8 @@ protected:
 private:
 	int _clickedGain;
 	float _prevGain;
+	float _prevDragX;
+	int64_t _prevDragOffset;
 	
 	int _clickedSlider;
 	int _clickedPixelOffset;

@@ -635,6 +635,8 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 				_clickedGain = i;
 				_clickedPixelOffset = yy;
 				_prevGain = _channels[i].gain;
+				_prevDragX = x/(float)width();
+				_prevDragOffset = offset();
 				event->accept();
 			}
 		} else if(_manager.threshMode()) {
@@ -724,6 +726,8 @@ void AudioView::mouseMotionEvent(Widgets::MouseEvent *event) {
 
 	if(_clickedGain != -1) {
 		float newGain = _prevGain*std::fabs((height()*_channels[_clickedGain].pos-event->pos().y)/(float)_clickedPixelOffset);
+		int doffset = (width()*_prevDragX-event->pos().x)/(float)scaleWidth()*_manager.sampleRate();
+		setOffset(_prevDragOffset+doffset);
 		_channels[_clickedGain].setGain(newGain);
 		event->accept();
 	}
