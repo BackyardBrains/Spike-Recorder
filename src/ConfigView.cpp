@@ -1,5 +1,6 @@
 #include "ConfigView.h"
 #include "engine/RecordingManager.h"
+#include "engine/BASSErrors.h"
 #include "widgets/Painter.h"
 #include "widgets/Color.h"
 #include "widgets/BoxLayout.h"
@@ -7,9 +8,12 @@
 #include "widgets/TextureGL.h"
 #include "widgets/Application.h"
 #include "widgets/BitmapFontGL.h"
+#include "widgets/ErrorBox.h"
 #include "widgets/Label.h"
 #include "AudioView.h"
 #include "ColorDropDownList.h"
+#include <bass.h>
+#include <sstream>
 
 namespace BackyardBrains {
 
@@ -119,10 +123,19 @@ void ConfigView::colorChanged(int virtualDevice, int coloridx) {
 	int channel = _audioView.virtualDeviceChannel(virtualDevice);
 	if(channel < 0 && coloridx != 0) {
 		int nchan = _audioView.addChannel(virtualDevice);
-		if(nchan != -1)
+		if(nchan != -1) {
 			_audioView.setChannelColor(nchan, coloridx);
-		else
+		} else {
 			_clrs[virtualDevice]->setSelectionSilent(0);
+
+			std::stringstream s;
+			s << "Error: Cannot open channel";
+			if(BASS_ErrorGetCode())
+				s << ": " << GetBassStrError();
+			Widgets::ErrorBox *box = new Widgets::ErrorBox(s.str().c_str());
+			box->setGeometry(Widgets::Rect(this->width()/2-200, this->height()/2-40, 400, 80));
+			Widgets::Application::getInstance()->addPopup(box);
+		}
 	} else if(coloridx == 0) {
 		_audioView.removeChannel(virtualDevice);
 	} else {
