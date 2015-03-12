@@ -16,6 +16,7 @@ OBJECTS = \
 	src/engine/RecordingManager.o \
 	src/engine/FileRecorder.o \
 	src/engine/Player.o \
+    src/engine/ArduinoSerial.o \	
 	src/engine/SpikeSorter.o \
 	src/engine/FFTBackend.o \
 	src/widgets/LayoutItem.o \
