@@ -60,9 +60,8 @@ AudioView::~AudioView() {
 int AudioView::addChannel(int virtualDevice) {
 	bool rt;
 	rt = _manager.incRef(virtualDevice);
-
 	if(!rt)
-		return 0;
+		return -1;
 	_channels.push_back(AudioView::Channel());
 	_channels.back().virtualDevice = virtualDevice;
 
@@ -138,15 +137,15 @@ void AudioView::applyMetadata(const MetadataChunk &m) {
 }
 
 void AudioView::setChannelColor(int channel, int colorIdx) {
-	_channels[channel].colorIdx = std::max(0,std::min(COLOR_NUM-1, colorIdx));
+	_channels.at(channel).colorIdx = std::max(0,std::min(COLOR_NUM-1, colorIdx));
 }
 
 int AudioView::channelColor(int channel) const {
-	return _channels[channel].colorIdx;
+	return _channels.at(channel).colorIdx;
 }
 
 int AudioView::channelVirtualDevice(int channel) const {
-	return _channels[channel].virtualDevice;
+	return _channels.at(channel).virtualDevice;
 }
 
 int AudioView::virtualDeviceChannel(int virtualDevice) const {

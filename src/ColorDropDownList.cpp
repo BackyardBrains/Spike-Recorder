@@ -26,9 +26,13 @@ void ColorDropDownList::setContent(const std::vector<Widgets::Color> &content) {
 
 void ColorDropDownList::setSelection(int selection) {
 	int old = _selection;
-	_selection = std::max(0, std::min((int)_content.size()-1,selection));
+	setSelectionSilent(selection);
 	if(_selection != old)
 		selectionChanged.emit(_selection);
+}
+
+void ColorDropDownList::setSelectionSilent(int selection) {
+	_selection = std::max(0, std::min((int)_content.size()-1,selection));
 }
 
 int ColorDropDownList::selection() const {

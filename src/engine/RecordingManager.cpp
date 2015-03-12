@@ -555,39 +555,46 @@ bool RecordingManager::incRef(int virtualDeviceIndex) {
 		_devices[device].create(_pos, 2);
 	
 	_devices[device].refCount++;
-	_recordingDevices[virtualDeviceIndex].bound++;
 	
 	if (!_fileMode && _devices[device].handle == 0) {
 		// make sure the device exists
 		BASS_DEVICEINFO info;
 		if(!BASS_RecordGetDeviceInfo(device, &info)) {
 			std::cerr << "Bass Error: getting record device info failed: " << BASS_ErrorGetCode() << "\n";
-			return false;
+			goto error;
 		}
 
 		// initialize the recording device if we haven't already
 		if(!(info.flags & BASS_DEVICE_INIT)) {
 			if(!BASS_RecordInit(device)) {
 				std::cerr << "Bass Error: initializing record device failed: " << BASS_ErrorGetCode() << "\n";
-				return false;
+				goto error;
 			}
 		}
 
 		// subsequent API calls will operate on this recording device
 		if(!BASS_RecordSetDevice(device)) {
 			std::cerr << "Bass Error: setting record device failed: " << BASS_ErrorGetCode() << "\n";
-			return false;
+			goto error;
 		}
 
 		const HRECORD handle = BASS_RecordStart(_sampleRate, 2, (_paused ? BASS_RECORD_PAUSE : 0), NULL, NULL);
 		if (handle == FALSE)
 		{
 			std::cerr << "Bass Error: starting the recording failed: " << BASS_ErrorGetCode() << "\n";
-			return false;
+			goto error;
 		}
 		_devices[device].handle = handle;
 	}
+	_recordingDevices[virtualDeviceIndex].bound++;
 	return true;
+error:
+	_devices[device].refCount--;
+	if(_devices[device].refCount == 0) {
+		_devices[device].destroy();
+		_devices.erase(device);
+	}
+	return false;
 }
 
 void RecordingManager::decRef(int virtualDeviceIndex) {

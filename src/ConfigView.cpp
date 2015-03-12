@@ -24,8 +24,8 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 	topLabel->updateSize();
 
 	std::vector<Widgets::Color> c(AudioView::COLORS, AudioView::COLORS+AudioView::COLOR_NUM);
-	std::vector<ColorDropDownList *> clrs(_manager.recordingDevices().size());
-	_catchers.reserve(clrs.size());
+	_clrs.resize(_manager.recordingDevices().size());
+	_catchers.reserve(_clrs.size());
 
 	Widgets::Widget *group = new Widgets::Widget(this);
 	group->setSizeHint(Widgets::Size(500,400));
@@ -56,17 +56,17 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 	for(unsigned int i = 0; i < _manager.recordingDevices().size(); i++) {
 		if(!_manager.recordingDevices()[i].enabled)
 			continue;
-		clrs[i] = new ColorDropDownList(group);
-		clrs[i]->setContent(c);
+		_clrs[i] = new ColorDropDownList(group);
+		_clrs[i]->setContent(c);
 
 		_catchers.push_back(SignalCatcher(i, this));
-		clrs[i]->selectionChanged.connect(&_catchers[i], &SignalCatcher::catchColor);
+		_clrs[i]->selectionChanged.connect(&_catchers[i], &SignalCatcher::catchColor);
 		Widgets::Label *name = new Widgets::Label(group);
 		name->setText(_manager.recordingDevices()[i].name.c_str());
 		name->updateSize();
 
 		Widgets::BoxLayout *ghbox = new Widgets::BoxLayout(Widgets::Horizontal);
-		ghbox->addWidget(clrs[i]);
+		ghbox->addWidget(_clrs[i]);
 		ghbox->addSpacing(20);
 		ghbox->addWidget(name,Widgets::AlignVCenter);
 		gvbox->addLayout(ghbox);
@@ -74,7 +74,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 	}
 
 	for(int i = 0; i < audioView.channelCount(); i++)
-		clrs[audioView.channelVirtualDevice(i)]->setSelection(audioView.channelColor(i));
+		_clrs[audioView.channelVirtualDevice(i)]->setSelection(audioView.channelColor(i));
 
 	gvbox->update();
 
@@ -119,7 +119,10 @@ void ConfigView::colorChanged(int virtualDevice, int coloridx) {
 	int channel = _audioView.virtualDeviceChannel(virtualDevice);
 	if(channel < 0 && coloridx != 0) {
 		int nchan = _audioView.addChannel(virtualDevice);
-		_audioView.setChannelColor(nchan, coloridx);
+		if(nchan != -1)
+			_audioView.setChannelColor(nchan, coloridx);
+		else
+			_clrs[virtualDevice]->setSelectionSilent(0);
 	} else if(coloridx == 0) {
 		_audioView.removeChannel(virtualDevice);
 	} else {

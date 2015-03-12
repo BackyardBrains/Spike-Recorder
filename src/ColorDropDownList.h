@@ -21,6 +21,7 @@ public:
 	void setContent(const std::vector<Widgets::Color> &content);
 
 	void setSelection(int selection);
+	void setSelectionSilent(int selection); // won't emit a signal
 	int selection() const;
 	sigslot::signal1<int> selectionChanged;
 private:
