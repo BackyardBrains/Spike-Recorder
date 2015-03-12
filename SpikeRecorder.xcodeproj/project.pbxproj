@@ -28,6 +28,7 @@
 		24079FA91AB1C90E00820291 /* data in Resources */ = {isa = PBXBuildFile; fileRef = 24079FA81AB1C90E00820291 /* data */; };
 		24079FAC1AB1D1F500820291 /* DropDownList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24079FAA1AB1D1F500820291 /* DropDownList.cpp */; };
 		24079FAD1AB1DCF900820291 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 248E58711AAE0CF60011707F /* Info.plist */; };
+		248646421AB1FBAD003852AA /* Log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248646401AB1FBAD003852AA /* Log.cpp */; };
 		248E58E21AAE19570011707F /* AnalysisAudioView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248E58901AAE19570011707F /* AnalysisAudioView.cpp */; };
 		248E58E31AAE19570011707F /* AnalysisView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248E58921AAE19570011707F /* AnalysisView.cpp */; };
 		248E58E41AAE19570011707F /* AudioView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248E58941AAE19570011707F /* AudioView.cpp */; };
@@ -115,6 +116,8 @@
 		24079FAA1AB1D1F500820291 /* DropDownList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DropDownList.cpp; path = src/DropDownList.cpp; sourceTree = SOURCE_ROOT; };
 		24079FAB1AB1D1F500820291 /* DropDownList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DropDownList.h; path = src/DropDownList.h; sourceTree = SOURCE_ROOT; };
 		24079FAE1AB1DE7E00820291 /* SpikeRecorder.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = SpikeRecorder.entitlements; sourceTree = "<group>"; };
+		248646401AB1FBAD003852AA /* Log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Log.cpp; path = src/Log.cpp; sourceTree = SOURCE_ROOT; };
+		248646411AB1FBAD003852AA /* Log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Log.h; path = src/Log.h; sourceTree = SOURCE_ROOT; };
 		248E586D1AAE0CF60011707F /* SpikeRecorder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpikeRecorder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		248E58711AAE0CF60011707F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../src/xcode/Info.plist; sourceTree = "<group>"; };
 		248E58901AAE19570011707F /* AnalysisAudioView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AnalysisAudioView.cpp; path = src/AnalysisAudioView.cpp; sourceTree = SOURCE_ROOT; };
@@ -320,6 +323,8 @@
 				248E58AA1AAE19570011707F /* main.cpp */,
 				248E58AB1AAE19570011707F /* MainView.cpp */,
 				248E58AC1AAE19570011707F /* MainView.h */,
+				248646401AB1FBAD003852AA /* Log.cpp */,
+				248646411AB1FBAD003852AA /* Log.h */,
 				248E58AD1AAE19570011707F /* native */,
 				248E58B11AAE19570011707F /* Paths.h */,
 				248E58B21AAE19570011707F /* RecordingBar.cpp */,
@@ -621,6 +626,7 @@
 				248E58EB1AAE19570011707F /* SpikeSorter.cpp in Sources */,
 				248E58ED1AAE19570011707F /* Game.cpp in Sources */,
 				24079FAC1AB1D1F500820291 /* DropDownList.cpp in Sources */,
+				248646421AB1FBAD003852AA /* Log.cpp in Sources */,
 				248E58F41AAE19570011707F /* Application.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
