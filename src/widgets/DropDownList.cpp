@@ -7,8 +7,6 @@
 #include "Application.h"
 
 #include <SDL_opengl.h>
-#include <iostream>
-#include <cstdio>
 
 namespace BackyardBrains {
 
@@ -18,12 +16,6 @@ static const int BORDER_WIDTH = 2;
 
 DropDownList::DropDownList(Widget *parent) : Widget(parent), /*_state2(WAITING_FOR_CLICK_ON_BUTTON),*/ _selectedIndex(0)/*, _highlightedIndex(0), _verticalOffset(0)*/
 {
-	char buffer[32];
-	for (int i = 0; i < 3; i++)
-	{
-		snprintf(buffer, sizeof(buffer), "Test %i!", i);
-		_entries.push_back(std::string(buffer));
-	}
 
 	setSizeHint(Size(Application::font()->characterWidth()*24 + 2*BORDER_WIDTH, Application::font()->characterHeight() + 2*BORDER_WIDTH));
 }

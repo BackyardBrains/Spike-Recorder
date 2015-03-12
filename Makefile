@@ -33,6 +33,7 @@ OBJECTS = \
 	src/widgets/ErrorBox.o \
 	src/widgets/ToolTip.o \
 	src/widgets/Plot.o \
+	src/Log.o \
 	src/Game.o \
 	src/main.o \
 	src/MainView.o \

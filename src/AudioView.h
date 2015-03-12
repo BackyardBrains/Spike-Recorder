@@ -35,7 +35,7 @@ public:
 	AudioView(Widgets::Widget *parent, RecordingManager &mngr);
 	virtual ~AudioView();
 
-	int addChannel(int virtualDeviceIndex);
+	int addChannel(int virtualDeviceIndex); // returns new channel on success and -1 on failure
 	void removeChannel(int virtualDeviceIndex);
 	void setChannelColor(int channel, int coloridx);
 	int channelColor(int channel) const;
@@ -87,6 +87,8 @@ protected:
 private:
 	int _clickedGain;
 	float _prevGain;
+	float _prevDragX;
+	int64_t _prevDragOffset;
 	
 	int _clickedSlider;
 	int _clickedPixelOffset;
