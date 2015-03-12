@@ -550,7 +550,7 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
     
     uint32_t len = 4024;
     //len = std::min(samples, len);
-    std::cout<<len<<"\n";
+   // std::cout<<len<<"\n";
     const int channum = _arduinoSerial.numberOfChannels();
     std::vector<int16_t> *channels = new std::vector<int16_t>[channum];//non-interleaved
     int16_t *buffer = new int16_t[channum*len];

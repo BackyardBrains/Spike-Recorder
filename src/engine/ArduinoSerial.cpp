@@ -427,7 +427,7 @@ namespace BackyardBrains {
 
 #endif // defined
 
-       std::cout<<"------------------ Size: "<<size<<"\n";
+       //std::cout<<"------------------ Size: "<<size<<"\n";
         for(int i=0;i<size;i++)
         {
             circularBuffer[cBufHead++] = buffer[i];

@@ -27,6 +27,7 @@
 		24079FA71AB1C73600820291 /* ArduinoSerial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24079FA51AB1C73600820291 /* ArduinoSerial.cpp */; };
 		24079FA91AB1C90E00820291 /* data in Resources */ = {isa = PBXBuildFile; fileRef = 24079FA81AB1C90E00820291 /* data */; };
 		24079FAC1AB1D1F500820291 /* DropDownList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24079FAA1AB1D1F500820291 /* DropDownList.cpp */; };
+		24079FAD1AB1DCF900820291 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 248E58711AAE0CF60011707F /* Info.plist */; };
 		248E58E21AAE19570011707F /* AnalysisAudioView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248E58901AAE19570011707F /* AnalysisAudioView.cpp */; };
 		248E58E31AAE19570011707F /* AnalysisView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248E58921AAE19570011707F /* AnalysisView.cpp */; };
 		248E58E41AAE19570011707F /* AudioView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248E58941AAE19570011707F /* AudioView.cpp */; };
@@ -113,8 +114,9 @@
 		24079FA81AB1C90E00820291 /* data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = data; sourceTree = SOURCE_ROOT; };
 		24079FAA1AB1D1F500820291 /* DropDownList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DropDownList.cpp; path = src/DropDownList.cpp; sourceTree = SOURCE_ROOT; };
 		24079FAB1AB1D1F500820291 /* DropDownList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DropDownList.h; path = src/DropDownList.h; sourceTree = SOURCE_ROOT; };
+		24079FAE1AB1DE7E00820291 /* SpikeRecorder.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = SpikeRecorder.entitlements; sourceTree = "<group>"; };
 		248E586D1AAE0CF60011707F /* SpikeRecorder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpikeRecorder.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		248E58711AAE0CF60011707F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; name = Info.plist; path = src/xcode/Info.plist; sourceTree = "<group>"; };
+		248E58711AAE0CF60011707F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../src/xcode/Info.plist; sourceTree = "<group>"; };
 		248E58901AAE19570011707F /* AnalysisAudioView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AnalysisAudioView.cpp; path = src/AnalysisAudioView.cpp; sourceTree = SOURCE_ROOT; };
 		248E58911AAE19570011707F /* AnalysisAudioView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AnalysisAudioView.h; path = src/AnalysisAudioView.h; sourceTree = SOURCE_ROOT; };
 		248E58921AAE19570011707F /* AnalysisView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AnalysisView.cpp; path = src/AnalysisView.cpp; sourceTree = SOURCE_ROOT; };
@@ -294,6 +296,7 @@
 		248E586F1AAE0CF60011707F /* SpikeRecorder */ = {
 			isa = PBXGroup;
 			children = (
+				24079FAE1AB1DE7E00820291 /* SpikeRecorder.entitlements */,
 				24079FA81AB1C90E00820291 /* data */,
 				24079F271AB0CBE700820291 /* icons */,
 				248E59071AAE1A180011707F /* support */,
@@ -528,6 +531,12 @@
 				TargetAttributes = {
 					248E586C1AAE0CF60011707F = {
 						CreatedOnToolsVersion = 6.1;
+						DevelopmentTeam = MLGRKD657P;
+						SystemCapabilities = {
+							com.apple.Sandbox = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -566,6 +575,7 @@
 				24079F381AB0CBE700820291 /* icon_32x32.png in Resources */,
 				24079FA91AB1C90E00820291 /* data in Resources */,
 				24079F361AB0CBE700820291 /* icon_256x256.png in Resources */,
+				24079FAD1AB1DCF900820291 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -700,6 +710,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
+				CODE_SIGN_ENTITLEMENTS = SpikeRecorder/SpikeRecorder.entitlements;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -736,6 +748,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
+				CODE_SIGN_ENTITLEMENTS = SpikeRecorder/SpikeRecorder.entitlements;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
