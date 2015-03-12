@@ -10,6 +10,7 @@
 #include <map>
 #include <stdint.h>
 #include "Player.h"
+#include "ArduinoSerial.h"
 
 namespace BackyardBrains {
 
@@ -56,6 +57,7 @@ public:
 	bool paused() const {return _paused;}
 	bool threshMode() const {return _threshMode;}
 	bool fileMode() const {return _fileMode;}
+    std::list<std::string> serailPortsList() const {return _arduinoSerial.list;}	
 	const std::string &fileName() const { return _filename; }
 	int64_t fileLength(); // file mode only
 	const char *fileMetadataString(); // file mode only
@@ -79,6 +81,17 @@ public:
 	sigslot::signal0<> pauseChanged;
 
 	void advance(uint32_t milliseconds);
+	
+    //Serial port functions
+    bool serialMode() const {return _serialMode;}
+    void changeSerialPort(int portIndex);
+    bool initSerial(const char *portName);
+    void disconnectFromSerial();
+    int serialPortIndex();
+    void setSerialNumberOfChannels(int numberOfChannels);
+    int numberOfSerialChannels();
+    std::string serialError;
+    void refreshSerialPorts();	
 private:
 	struct Device
 	{
@@ -100,7 +113,9 @@ private:
 	};
 
 	void clear();
+    void advanceSerialMode(uint32_t samples);	
 	void advanceFileMode(uint32_t samples);
+    void closeSerial();	
 	SampleBuffer *sampleBuffer(int virtualDeviceIndex);
 
 	VirtualDevices _recordingDevices;
@@ -110,6 +125,7 @@ private:
 	bool _threshMode;
 
 	bool _fileMode;
+    bool _serialMode;	
 	std::string _filename;
 
 	int _sampleRate;
@@ -119,8 +135,11 @@ private:
 	std::list<int64_t> _triggers;
 	std::list<std::pair<std::string,int64_t> > _markers;
 	std::vector<std::list<int64_t> > _spikeTrains;
-
 	Player _player;
+	
+	int _serialPortIndex;
+    ArduinoSerial _arduinoSerial;
+    int _numOfSerialChannels;
 };
 
 } // namespace BackyardBrains

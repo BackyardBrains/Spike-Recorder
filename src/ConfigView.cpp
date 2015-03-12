@@ -8,6 +8,8 @@
 #include "widgets/Application.h"
 #include "widgets/BitmapFontGL.h"
 #include "widgets/Label.h"
+#include "widgets/ErrorBox.h"
+#include "DropDownList.h"
 #include "AudioView.h"
 #include "ColorDropDownList.h"
 
@@ -76,6 +78,103 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 	for(int i = 0; i < audioView.channelCount(); i++)
 		clrs[audioView.channelVirtualDevice(i)]->setSelection(audioView.channelColor(i));
 
+
+
+    // -------- Serial configuration
+    
+    if(!_manager.fileMode())
+    {
+        //Serial  config widgets
+        Widgets::Label *name2 = new Widgets::Label(group);
+        name2->setText("Select port:");
+        name2->updateSize();
+        gvbox->addSpacing(0);
+        gvbox->addWidget(name2, Widgets::AlignLeft);
+        
+        
+        
+        //Dropdown for select port
+        Widgets::BoxLayout *serialHbox = new Widgets::BoxLayout(Widgets::Horizontal);
+        serialPortWidget = new DropDownList(group);
+        serialPortWidget->clear();
+        std::list<std::string> sps =  _manager.serailPortsList();
+        std::list<std::string>::iterator it;
+        for(it = sps.begin();it!=sps.end();it++)
+        {
+            serialPortWidget->addItem(it->c_str());
+        }
+        serialPortWidget->setSelection(_manager.serialPortIndex());
+        _catchers.push_back(SignalCatcher(_catchers.size(), this));
+        serialPortWidget->indexChanged.connect(&_catchers[_catchers.size()-1], &SignalCatcher::catchPort);
+        serialPortWidget->setDisabled(_manager.serialMode());
+        
+        serialHbox->addWidget(serialPortWidget);
+        serialHbox->addSpacing(5);
+
+    
+
+    
+        //Button for connect to serial
+        _connectButton = new Widgets::PushButton(group);
+        _connectButton->clicked.connect(this, &ConfigView::connectPressed);
+        if(_manager.serialMode())
+        {
+            _connectButton->setNormalTex(Widgets::TextureGL::get("data/connected.png"));
+            _connectButton->setHoverTex(Widgets::TextureGL::get("data/connected.png"));
+        }
+        else
+        {
+            _connectButton->setNormalTex(Widgets::TextureGL::get("data/disconnected.png"));
+            _connectButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.png"));
+        }
+        _connectButton->setSizeHint(Widgets::Size(26,26));
+        serialHbox->addWidget(_connectButton);
+        serialHbox->update();
+        gvbox->addSpacing(3);
+        gvbox->addLayout(serialHbox);
+        
+        
+        if(_manager.serialMode())
+        {
+                //Number of channels chooser
+                Widgets::BoxLayout *numberOfChannelsHbox = new Widgets::BoxLayout(Widgets::Horizontal);
+                
+                Widgets::Label *numChannelsLabel = new Widgets::Label(group);
+                numChannelsLabel->setText("Number of channels:");
+                numChannelsLabel->updateSize();
+                numberOfChannelsHbox->addWidget(numChannelsLabel);
+                numberOfChannelsHbox->addSpacing(5);
+                
+                
+                
+                numberOfChannelsWidget = new DropDownList(group, 50,30);
+                numberOfChannelsWidget->clear();
+
+                numberOfChannelsWidget->addItem("1");
+                numberOfChannelsWidget->addItem("2");
+                numberOfChannelsWidget->addItem("3");
+                numberOfChannelsWidget->addItem("4");
+                numberOfChannelsWidget->addItem("5");
+                numberOfChannelsWidget->addItem("6");
+                
+                numberOfChannelsWidget->setSelection(_manager.numberOfSerialChannels()-1);
+                _catchers.push_back(SignalCatcher(_catchers.size(), this));
+                numberOfChannelsWidget->indexChanged.connect(&_catchers[_catchers.size()-1], &SignalCatcher::setNumOfChannelsHandler);
+                numberOfChannelsWidget->setDisabled(!_manager.serialMode());
+                
+                numberOfChannelsHbox->addWidget(numberOfChannelsWidget);
+
+                numberOfChannelsHbox->update();
+                
+                gvbox->addSpacing(10);
+                gvbox->addLayout(numberOfChannelsHbox);
+        }
+        
+    
+    }
+    
+
+
 	gvbox->update();
 
 	Widgets::BoxLayout *vbox = new Widgets::BoxLayout(Widgets::Vertical, this);
@@ -101,6 +200,47 @@ void ConfigView::paintEvent() {
 	
 }
 
+   
+//
+// Connect/dsconnect from serial port
+//
+void ConfigView::connectPressed()
+{
+    if(_manager.serialMode())
+    {
+        _manager.setSerialNumberOfChannels(1);
+        _manager.disconnectFromSerial();
+        
+    }
+    else
+    {
+        if(!_manager.initSerial(serialPortWidget->item(serialPortWidget->selection()).c_str()))
+        {
+            std::cout<<"Can't init serial port. \n";
+            
+
+            Widgets::ErrorBox *box = new Widgets::ErrorBox(_manager.serialError.c_str());
+            box->setGeometry(Widgets::Rect(this->width()/2-250, this->height()/2-40, 500, 80));
+            Widgets::Application::getInstance()->addPopup(box);
+        }
+    }
+    if(_manager.serialMode())
+    {
+        _connectButton->setNormalTex(Widgets::TextureGL::get("data/connected.png"));
+        _connectButton->setHoverTex(Widgets::TextureGL::get("data/connected.png"));
+        close();
+    }
+    else
+    {
+        _connectButton->setNormalTex(Widgets::TextureGL::get("data/disconnected.png"));
+        _connectButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.png"));
+        close();
+        
+    }
+    serialPortWidget->setDisabled(_manager.serialMode());
+}
+
+
 void ConfigView::closePressed() {
 	close();
 }
@@ -113,6 +253,18 @@ void ConfigView::mutePressed() {
 		_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxon.png"));
 		_manager.player().setVolume(0);
 	}
+}
+
+
+void ConfigView::serialPortChanged(int virtualDevice, int portidx)
+{
+    _manager.changeSerialPort(portidx);
+}
+   
+void ConfigView::setSerialNumberOfChannels(int numberOfChannels)
+{
+    _manager.setSerialNumberOfChannels(numberOfChannels);
+    close();
 }
 
 void ConfigView::colorChanged(int virtualDevice, int coloridx) {

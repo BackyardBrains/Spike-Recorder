@@ -24,7 +24,9 @@
 		24079F431AB0CCFC00820291 /* libbass.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 248E591A1AAE1AD50011707F /* libbass.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		24079F441AB0CCFC00820291 /* SDL_image.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 248E59181AAE1AC10011707F /* SDL_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		24079F451AB0CCFC00820291 /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 248E59161AAE1AB20011707F /* SDL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		24079FA41AB0CE0500820291 /* data in Resources */ = {isa = PBXBuildFile; fileRef = 24079FA31AB0CE0500820291 /* data */; };
+		24079FA71AB1C73600820291 /* ArduinoSerial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24079FA51AB1C73600820291 /* ArduinoSerial.cpp */; };
+		24079FA91AB1C90E00820291 /* data in Resources */ = {isa = PBXBuildFile; fileRef = 24079FA81AB1C90E00820291 /* data */; };
+		24079FAC1AB1D1F500820291 /* DropDownList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24079FAA1AB1D1F500820291 /* DropDownList.cpp */; };
 		248E58E21AAE19570011707F /* AnalysisAudioView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248E58901AAE19570011707F /* AnalysisAudioView.cpp */; };
 		248E58E31AAE19570011707F /* AnalysisView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248E58921AAE19570011707F /* AnalysisView.cpp */; };
 		248E58E41AAE19570011707F /* AudioView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248E58941AAE19570011707F /* AudioView.cpp */; };
@@ -106,7 +108,11 @@
 		24079F301AB0CBE700820291 /* icon_512x512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_512x512.png; sourceTree = "<group>"; };
 		24079F311AB0CBE700820291 /* icon_512x512@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_512x512@2x.png"; sourceTree = "<group>"; };
 		24079F3C1AB0CC1000820291 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		24079FA31AB0CE0500820291 /* data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = data; sourceTree = SOURCE_ROOT; };
+		24079FA51AB1C73600820291 /* ArduinoSerial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ArduinoSerial.cpp; sourceTree = "<group>"; };
+		24079FA61AB1C73600820291 /* ArduinoSerial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArduinoSerial.h; sourceTree = "<group>"; };
+		24079FA81AB1C90E00820291 /* data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = data; sourceTree = SOURCE_ROOT; };
+		24079FAA1AB1D1F500820291 /* DropDownList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DropDownList.cpp; path = src/DropDownList.cpp; sourceTree = SOURCE_ROOT; };
+		24079FAB1AB1D1F500820291 /* DropDownList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DropDownList.h; path = src/DropDownList.h; sourceTree = SOURCE_ROOT; };
 		248E586D1AAE0CF60011707F /* SpikeRecorder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpikeRecorder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		248E58711AAE0CF60011707F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; name = Info.plist; path = src/xcode/Info.plist; sourceTree = "<group>"; };
 		248E58901AAE19570011707F /* AnalysisAudioView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AnalysisAudioView.cpp; path = src/AnalysisAudioView.cpp; sourceTree = SOURCE_ROOT; };
@@ -288,7 +294,7 @@
 		248E586F1AAE0CF60011707F /* SpikeRecorder */ = {
 			isa = PBXGroup;
 			children = (
-				24079FA31AB0CE0500820291 /* data */,
+				24079FA81AB1C90E00820291 /* data */,
 				24079F271AB0CBE700820291 /* icons */,
 				248E59071AAE1A180011707F /* support */,
 				248E58901AAE19570011707F /* AnalysisAudioView.cpp */,
@@ -299,6 +305,8 @@
 				248E58951AAE19570011707F /* AudioView.h */,
 				248E58961AAE19570011707F /* ColorDropDownList.cpp */,
 				248E58971AAE19570011707F /* ColorDropDownList.h */,
+				24079FAA1AB1D1F500820291 /* DropDownList.cpp */,
+				24079FAB1AB1D1F500820291 /* DropDownList.h */,
 				248E58981AAE19570011707F /* ConfigView.cpp */,
 				248E58991AAE19570011707F /* ConfigView.h */,
 				248E589A1AAE19570011707F /* engine */,
@@ -331,6 +339,8 @@
 		248E589A1AAE19570011707F /* engine */ = {
 			isa = PBXGroup;
 			children = (
+				24079FA51AB1C73600820291 /* ArduinoSerial.cpp */,
+				24079FA61AB1C73600820291 /* ArduinoSerial.h */,
 				248E589B1AAE19570011707F /* FFTBackend.cpp */,
 				248E589C1AAE19570011707F /* FFTBackend.h */,
 				248E589D1AAE19570011707F /* FileRecorder.cpp */,
@@ -554,7 +564,7 @@
 				24079F331AB0CBE700820291 /* icon_128x128@2x.png in Resources */,
 				24079F321AB0CBE700820291 /* icon_128x128.png in Resources */,
 				24079F381AB0CBE700820291 /* icon_32x32.png in Resources */,
-				24079FA41AB0CE0500820291 /* data in Resources */,
+				24079FA91AB1C90E00820291 /* data in Resources */,
 				24079F361AB0CBE700820291 /* icon_256x256.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -566,6 +576,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				24079FA71AB1C73600820291 /* ArduinoSerial.cpp in Sources */,
 				248E58FA1AAE19570011707F /* Label.cpp in Sources */,
 				248E58E31AAE19570011707F /* AnalysisView.cpp in Sources */,
 				248E59021AAE19570011707F /* PushButton.cpp in Sources */,
@@ -599,6 +610,7 @@
 				248E58F91AAE19570011707F /* ErrorBox.cpp in Sources */,
 				248E58EB1AAE19570011707F /* SpikeSorter.cpp in Sources */,
 				248E58ED1AAE19570011707F /* Game.cpp in Sources */,
+				24079FAC1AB1D1F500820291 /* DropDownList.cpp in Sources */,
 				248E58F41AAE19570011707F /* Application.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

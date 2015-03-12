@@ -172,8 +172,19 @@ void AudioView::standardSettings() {
 		relOffsetChanged.emit(0);
 	} else {
 		relOffsetChanged.emit(1000);
-		addChannel(0);
 	}
+    if(_manager.serialMode())
+    {
+        for(int i=0;i<_manager.numberOfSerialChannels();i++)
+        {
+            int nchan = addChannel(i);
+            setChannelColor(nchan, (i%COLOR_NUM)+1);
+        }
+    }
+    else
+    {
+        addChannel(0);
+    }
 }
 
 int AudioView::channelCount() const {
@@ -393,10 +404,28 @@ void AudioView::drawAudio() {
 			std::vector<std::pair<int16_t, int16_t> > data;
 
 			if(!_manager.threshMode()) {
-				int pos = _manager.pos()+_channelOffset-samples;
-				if(_manager.fileMode())
-					pos += samples/2;
-				data = _manager.getSamplesEnvelope(_channels[i].virtualDevice, pos, samples, screenw == 0 ? 1 : std::max(samples/screenw,1));
+				if(_manager.serialMode())
+                {
+                    int pos = _manager.pos()-samples;
+                    int16_t tempData[samples];
+                    std::vector< std::pair<int16_t, int16_t> > tempVectorData(samples);
+                    _manager.getData(_channels[i].virtualDevice, pos, samples, tempData);
+                    for(int ind = 0;ind<samples;ind++)
+                    {
+                        tempVectorData[ind].first = tempData[ind];
+                        tempVectorData[ind].second = tempData[ind];
+                    }
+                    data = tempVectorData;
+                }
+                else
+                {
+                    int pos = _manager.pos()+_channelOffset-samples;
+                    if(_manager.fileMode())
+                    {
+                        pos += samples/2;
+                    }
+                    data = _manager.getSamplesEnvelope(_channels[i].virtualDevice, pos, samples, screenw == 0 ? 1 : std::max(samples/screenw,1));
+                }
 			} else {
 				data = _manager.getTriggerSamplesEnvelope(_channels[i].virtualDevice, samples, screenw == 0 ? 1 : std::max(samples/screenw,1));
 			}

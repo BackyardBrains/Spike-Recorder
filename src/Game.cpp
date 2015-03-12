@@ -59,6 +59,9 @@ void Game::loadResources() {
 
 	Widgets::TextureGL::load("data/ckboxon.png");
 	Widgets::TextureGL::load("data/ckboxoff.png");
+    
+    Widgets::TextureGL::load("data/disconnected.png");
+    Widgets::TextureGL::load("data/connected.png");	
 }
 
 void Game::advance() {

@@ -4,6 +4,7 @@
 #include "widgets/Application.h"
 #include "engine/RecordingManager.h"
 #include "engine/FileRecorder.h"
+#include "engine/ArduinoSerial.h"
 
 namespace BackyardBrains {
 
@@ -16,7 +17,7 @@ private:
 	void loadResources();
 	RecordingManager _manager;
 	FileRecorder _fileRec;
-
+    ArduinoSerial _arduinoSerial;
 	void advance();
 };
 
