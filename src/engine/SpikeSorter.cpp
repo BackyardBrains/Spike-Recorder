@@ -1,5 +1,6 @@
 #include "SpikeSorter.h"
 #include "Log.h"
+#include "BASSErrors.h"
 #include <cstring>
 #include <bass.h>
 #include <cmath>
@@ -126,7 +127,7 @@ int SpikeSorter::findThreshold(int handle, int channel, int channels, int bytede
 	while(left > 0) {
 		DWORD bytesread = BASS_ChannelGetData(handle, buffer, std::min(left,(int64_t)BUFSIZE));
 		if(bytesread == (DWORD)-1) {
-			Log::error("Bass Error: getting channel data failed: %d", BASS_ErrorGetCode());
+			Log::error("Bass Error: getting channel data failed: %s", GetBassStrError());
 			break;
 		}
 
@@ -147,7 +148,7 @@ int SpikeSorter::findThreshold(int handle, int channel, int channels, int bytede
 void SpikeSorter::findSpikes(const std::string &filename, int channel, int holdoff) {
 	HSTREAM handle = BASS_StreamCreateFile(false, filename.c_str(), 0, 0, BASS_STREAM_DECODE);
 	if(handle == 0) {
-		Log::error("Bass Error: Failed to load file '%s': %d", filename.c_str(), BASS_ErrorGetCode());
+		Log::error("Bass Error: Failed to load file '%s': %s", filename.c_str(), GetBassStrError());
 		return;
 	}
 
@@ -166,7 +167,7 @@ void SpikeSorter::findSpikes(const std::string &filename, int channel, int holdo
 	while(left > 0) {
 		DWORD bytesread = BASS_ChannelGetData(handle, buffer, std::min(left,(int64_t)BUFSIZE));
 		if(bytesread == (DWORD)-1) {
-			Log::error("Bass Error: getting channel data failed: %d", BASS_ErrorGetCode());
+			Log::error("Bass Error: getting channel data failed: %s", GetBassStrError());
 			break;
 		}
 
@@ -177,6 +178,7 @@ void SpikeSorter::findSpikes(const std::string &filename, int channel, int holdo
 
 	BASS_StreamFree(handle);
 }
+
 
 void SpikeSorter::freeSpikes() {
 	_spikes.clear();

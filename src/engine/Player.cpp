@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "BASSErrors.h"
 #include "Log.h"
 
 namespace BackyardBrains {
@@ -47,10 +48,10 @@ void Player::setPaused(bool npaused) {
 
 	if(npaused) {
 		if(!BASS_ChannelPause(_output))
-			Log::error("Bass Error: pausing channel failed: %d", BASS_ErrorGetCode());
+			Log::error("Bass Error: pausing channel failed: %s", GetBassStrError());
 	} else {
 		if(!BASS_ChannelPlay(_output, FALSE))
-			Log::error("Bass Error: resuming channel playback failed: %d", BASS_ErrorGetCode());
+			Log::error("Bass Error: resuming channel playback failed: %s", GetBassStrError());
 	}
 }
 
@@ -66,7 +67,7 @@ void Player::setSampleRate(int sampleRate) {
 
 void Player::push(void *data, uint32_t size) {
 	if(BASS_StreamPutData(_output, data, size) == (DWORD)-1)
-		Log::error("Bass Error: putting stream data failed: %d",BASS_ErrorGetCode());
+		Log::error("Bass Error: putting stream data failed: %s", GetBassStrError());
 
 	_pos += size/sizeof(int16_t);
 }
