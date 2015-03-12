@@ -61,7 +61,7 @@ const TextureGL* TextureGL::get(const char *filename) {
 	for(InstanceSet::iterator it = instances.begin(); it != instances.end(); it++)
 		if((*it).filename == filename)
 			return &*it;
-	Log::fatal("Fatal: Texture '%s' not loaded!",filename);
+	Log::fatal("no texture called '%s' loaded!",filename);
 	return NULL;
 }
 

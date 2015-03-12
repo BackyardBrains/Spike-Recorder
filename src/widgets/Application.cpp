@@ -20,7 +20,7 @@ const int Application::MIN_WINDOW_H = 100;
 
 Application::Application() : _running(false), _mouseGrabber(0), _keyboardGrabber(0), _hoverWidget(0), _windowStack(0), _popupStack(0) {
 	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
-		Log::fatal("SDL Error: Failed to initialize: %s", SDL_GetError());
+		Log::fatal("SDL failed to initialize: %s", SDL_GetError());
 	}
 	
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -44,7 +44,7 @@ Application::Application() : _running(false), _mouseGrabber(0), _keyboardGrabber
 	if(!app) {
 		app = this;
 	} else {
-		Log::fatal("Fatal: Only one Application instance can exist.");
+		Log::fatal("only one Application instance can exist.");
 	}
 
 }
@@ -56,6 +56,7 @@ Application *Application::getInstance() {
 Application::~Application() {
 	// clean up and exit
 	SDL_Quit();
+	Log::msg("GUI closed.");
 }
 
 static MouseButton ToMouseButtonFromSDL(Uint8 button) {
@@ -332,7 +333,7 @@ void Application::createWindow(int w, int h) {
 
 	screen = SDL_SetVideoMode(w, h, 0, SDL_OPENGL|SDL_RESIZABLE);
 	if(!screen) {
-		Log::fatal("SDL Error: Failed to set video mode: %d",SDL_GetError());
+		Log::fatal("SDL failed to set video mode: %d",SDL_GetError());
 	}
 
 	glViewport(0, 0, screen->w, screen->h);

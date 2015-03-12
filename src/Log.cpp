@@ -31,7 +31,7 @@ void Log::msg(const char *fmt, ...) {
 void Log::warn(const char *fmt, ...) {
 	init();
 
-	std::string format = "ww Warning: ";
+	std::string format = "Warning: ";
 	format += fmt;
 	format += "\n";
 	va_list args;
@@ -43,7 +43,7 @@ void Log::warn(const char *fmt, ...) {
 void Log::error(const char *fmt, ...) {
 	init();
 
-	std::string format = "EE Error: ";
+	std::string format = "Error: ";
 	format += fmt;
 	format += "\n";
 	va_list args;
@@ -55,7 +55,7 @@ void Log::error(const char *fmt, ...) {
 void Log::fatal(const char *fmt, ...) {
 	init();
 
-	std::string format = "FF FATAL: ";
+	std::string format = "FATAL: ";
 	format += fmt;
 	format += "\n";
 	va_list args;

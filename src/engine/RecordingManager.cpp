@@ -13,7 +13,7 @@ const int RecordingManager::DEFAULT_SAMPLE_RATE = 22050;
 RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(false), _fileMode(false), _sampleRate(DEFAULT_SAMPLE_RATE), _selectedVDevice(0), _threshAvgCount(1) {
 	Log::msg("Initializing libbass...");
 	if(!BASS_Init(-1, _sampleRate, 0, 0, NULL)) {
-		Log::fatal("Bass Error: Initialization failed: %d", BASS_ErrorGetCode());
+		Log::fatal("Bass initialization failed: %d", BASS_ErrorGetCode());
 	}
 
 	_player.start(_sampleRate);
@@ -24,6 +24,7 @@ RecordingManager::~RecordingManager() {
 	clear();
 	_player.stop();
 	BASS_Free();
+	Log::msg("libbass deinitialized.");
 }
 
 void RecordingManager::constructMetadata(MetadataChunk *m) const {
@@ -148,6 +149,7 @@ bool RecordingManager::loadFile(const char *filename) {
 		setPaused(true);
 	}
 
+	Log::msg("loaded file '%s'.", filename);
 	return true;
 }
 
@@ -175,6 +177,7 @@ void RecordingManager::initRecordingDevices() {
 	_player.setVolume(0);
 	setSampleRate(DEFAULT_SAMPLE_RATE);
 	deviceReload.emit();
+	Log::msg("Found %d recording devices.", _recordingDevices.size());
 }
 
 // TODO: consolidate this function somewhere
