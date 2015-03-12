@@ -8,7 +8,7 @@ namespace BackyardBrains {
 std::string getRecordingPath() {
 	char path[MAX_PATH];
 
-	SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, path);
+	SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, 0, path);
 	std::string res = std::string(path) + "/BYB";
 	mkdir(res.c_str());
 

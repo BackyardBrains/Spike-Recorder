@@ -16,13 +16,13 @@ namespace BackyardBrains {
 
 static void val2hue(uint8_t *p, double val) {
 	if(val > 1.)
-		val = 1.;	
+		val = 1.;
 	val *= 4;
 	double m = val-((int)(val));
 	double q = 255*(m);
 	double t = 255*(1-m);
 
-	assert(!isnan(val) && !isinf(val));
+	//assert(!isnan(val) && !isinf(val));
 	switch(((int)val)%6) {
 	case 0:
 		p[0] = 0;
@@ -55,7 +55,7 @@ static void val2hue(uint8_t *p, double val) {
 		p[2] = 255;
 		break;
 	}
-	
+
 	p[3] = 255;
 }
 
@@ -89,7 +89,7 @@ static void init_texture(GLuint &tex) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	
+
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
@@ -115,10 +115,10 @@ void FFTView::drawDataRect() const {
 	glPushMatrix();
 
 	float texoff = (_offset+_offsetcorrection)/(float)FFTTRES;
-	
+
 	int xoff = AudioView::DATA_XOFF;
 	int w = _av.screenWidth();
-	
+
 	Widgets::Rect r(xoff,0,
 			w*FFTTRES/(float)_viewwidth,height());
 
@@ -127,7 +127,7 @@ void FFTView::drawDataRect() const {
 	glBindTexture(GL_TEXTURE_2D, _ffttex);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, FFTTRES, FFTFRES, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, _fftviewbuffer);
-		
+
 	Widgets::Painter::drawTexRect(r);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glMatrixMode(GL_TEXTURE);
@@ -154,13 +154,13 @@ void FFTView::drawTooShortMsg() const {
 void FFTView::paintEvent() {
 	if(sizeHint().h == 0)
 		return;
-	
+
 	if(_ffttex == 0)
 		init_texture(_ffttex);
 
 	Widgets::Painter::setColor(Widgets::Colors::white);
 
-	if(_viewwidth != 0) {	
+	if(_viewwidth != 0) {
 		drawDataRect();
 	} else {
 		drawTooShortMsg();
@@ -193,10 +193,10 @@ void FFTView::addWindow(uint32_t *result, int pos, int device, int len, int samp
 				max = std::abs(_fftbuf[j]);
 			}
 		}
-		
+
 		double val = tanh(2e-5*max); // TODO: replace this with something smarter
 		val2hue((uint8_t *)&result[FFTFRES-1-i],val);
-	}	
+	}
 
 	for(int i = 1; i < FFTFRES-1; i++) {
 		uint8_t *p = (uint8_t *)&result[i];
@@ -238,9 +238,9 @@ void FFTView::update(int force) {
 		_lastlast = -1;
 		_offset = 0;
 	}
-	
+
 	_offset += (pos-_lastfirst)/windowdist;
-	_offsetcorrection = (opos-pos)/(float)windowdist;	
+	_offsetcorrection = (opos-pos)/(float)windowdist;
 
 	for(int i = 0; i < _viewwidth+OFFSCREENWINS; i++) {
 		int spos = pos+i*windowdist;
@@ -275,7 +275,7 @@ void FFTView::advance() {
 		return;
 
 	update(false);
-		
+
 }
 
 }

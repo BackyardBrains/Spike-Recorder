@@ -17,7 +17,12 @@ int main(int argc, char *argv[]) {
 	time_t t;
 	time(&t);
 	BackyardBrains::Log::msg("BYB SpikeRecorder started on %s", ctime(&t));
-	char *lastslash = strrchr(argv[0], '/');
+    #ifdef __WIN32__
+    char *lastslash = strrchr(argv[0], '\\');
+    #else
+    char *lastslash = strrchr(argv[0], '/');
+    #endif
+
 	if(lastslash == NULL)
 		lastslash = argv[0]+strlen(argv[0]);
 
@@ -33,7 +38,7 @@ int main(int argc, char *argv[]) {
 
 	{
 	BackyardBrains::Game game;
-	
+
 	game.run();
 	}
 	BackyardBrains::Log::msg("BYB SpikeRecorder exited normally.");
