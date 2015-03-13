@@ -47,11 +47,11 @@ public:
 	// 
 	// average: average of spikes, output
 	// train: spike times
-	// manager, vdev: recordingmanager und virtual device to use
+	// filename, chan: file and channel to use
 	
+	static const double SPIKEHALFLEN = 0.002; // s
 	static void averageWaveform(std::vector<double> &average, std::vector<double> &std,
-			const std::vector<int64_t> &train,
-			RecordingManager &manager, int vdev); 
+			const std::vector<int64_t> &train, const char *filename, int chan); 
 };
 
 }
