@@ -85,7 +85,7 @@ void AnalysisView::setPlotData() {
 			selected.push_back(_spikes.spikes()[i]);
 
 	std::vector<int> buf;
-	SpikeAnalysis::autocorrelation(buf, selected, 0.1*_manager.sampleRate(), 0.01*_manager.sampleRate());
+	SpikeAnalysis::autoCorrelation(buf, selected, 0.1*_manager.sampleRate(), 0.01*_manager.sampleRate());
 	std::vector<float> x, y;
 	
 	buf.resize(1);

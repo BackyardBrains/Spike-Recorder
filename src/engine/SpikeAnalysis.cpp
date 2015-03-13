@@ -4,7 +4,7 @@
 
 namespace BackyardBrains {
 
-void SpikeAnalysis::crosscorrelation(std::vector<int> &histogram,
+void SpikeAnalysis::crossCorrelation(std::vector<int> &histogram,
 		const std::vector<std::pair<int64_t, int16_t> > &train1,
 		const std::vector<std::pair<int64_t, int16_t> > &train2,
 		int maxsamples,
@@ -39,20 +39,20 @@ void SpikeAnalysis::crosscorrelation(std::vector<int> &histogram,
 	}
 }
 
-void SpikeAnalysis::autocorrelation(std::vector<int> &histogram,
+void SpikeAnalysis::autoCorrelation(std::vector<int> &histogram,
 		const std::vector<std::pair<int64_t, int16_t> > &train,
 		int maxsamples,
 		int binsize) {
 	int cutoff = maxsamples/binsize;
 	std::vector<int> tmp;
 
-	crosscorrelation(histogram, train, train, maxsamples, binsize);
+	crossCorrelation(histogram, train, train, maxsamples, binsize);
 	
 	tmp.assign(histogram.begin()+cutoff, histogram.end());
 	histogram = tmp;
 }
 
-void SpikeAnalysis::isipartition(std::vector<double> binxs, int nbin) {
+void SpikeAnalysis::isiPartition(std::vector<double> &binxs, int nbin) {
 	const double MIN = -3*M_LN10;
 	const double MAX = 1*M_LN10;
 
@@ -64,7 +64,7 @@ void SpikeAnalysis::isipartition(std::vector<double> binxs, int nbin) {
 		binxs[i] = exp(MIN+delta*i);
 }
 
-void SpikeAnalysis::isi(std::vector<int> hist,
+void SpikeAnalysis::isi(std::vector<int> &hist,
 		const std::vector<std::pair<int64_t, int16_t> > &train,
 		const std::vector<double> &binxs,
 		int nbin, int samplerate) {
@@ -84,5 +84,10 @@ void SpikeAnalysis::isi(std::vector<int> hist,
 			}
 		}
 	}
+}	
+
+void averageWaveform(std::vector<double> &average, std::vector<double> &std,
+	const std::vector<int64_t> &train, RecordingManager &manager) {
+
 }	
 }

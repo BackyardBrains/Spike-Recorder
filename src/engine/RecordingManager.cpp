@@ -2,6 +2,7 @@
 #include "BASSErrors.h"
 #include "SampleBuffer.h"
 #include "FileRecorder.h"
+#include "FileReadUtil.h"
 #include "Log.h"
 
 #include <cstdlib>
@@ -106,29 +107,20 @@ void RecordingManager::clear() {
 }
 
 bool RecordingManager::loadFile(const char *filename) {
-	HSTREAM stream = BASS_StreamCreateFile(false, filename, 0, 0, BASS_STREAM_DECODE);
-	if(stream == 0) {
-		Log::error("Bass Error: Failed to load file '%s': %s", filename, GetBassStrError());
+	HSTREAM stream;
+	int bytespersample, samplerate, chans;
+
+	bool rc = OpenWAVFile(filename, stream, chans, samplerate, bytespersample);
+	if(!rc)
 		return false;
-	}
-
-
-	BASS_CHANNELINFO info;
-	BASS_ChannelGetInfo(stream, &info);
-
-	int bytespersample = info.origres/8;
-	if(bytespersample == 0)
-		return false;
-	if(bytespersample >= 3)
-		bytespersample = 4; // bass converts everything it doesn’t support.
 
 	clear();
-	setSampleRate(info.freq);
-	_devices[0].create(_pos, info.chans);
+	setSampleRate(samplerate);
+	_devices[0].create(_pos, chans);
 	_devices[0].bytespersample = bytespersample;
 
-	_recordingDevices.resize(info.chans);
-	for(unsigned int i = 0; i < info.chans; i++) {
+	_recordingDevices.resize(chans);
+	for(int i = 0; i < chans; i++) {
 		VirtualDevice &virtualDevice = _recordingDevices[i];
 
 		virtualDevice.enabled = true;
@@ -327,56 +319,39 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 			continue;
 		const int channum = it->second.channels;
 		const int bytespersample = it->second.bytespersample;
-		std::vector<int16_t> *channels = new std::vector<int16_t>[channum];
-		uint8_t *buffer = new uint8_t[bytespersample*channum*bufsize];
+		std::vector<std::vector<int16_t> > channels; 
 
 		unsigned int len;
 		if(it->second.sampleBuffers[0]->head() < SampleBuffer::SIZE/2)
 			len = SampleBuffer::SIZE/2-1 - it->second.sampleBuffers[0]->head();
 		else
 			len = SampleBuffer::SIZE-1 - it->second.sampleBuffers[0]->head();
-
-		DWORD samplesRead = BASS_ChannelGetData(it->second.handle, buffer, channum*std::min(len,bufsize)*bytespersample);
-		if(samplesRead == (DWORD)-1) {
-			Log::error("Bass Error: getting channel data failed: %s", GetBassStrError());
-			delete[] channels;
-			delete[] buffer;
+	
+		bool rc = ReadWAVFile(channels, channum*std::min(len,bufsize)*bytespersample, it->second.handle,
+				channum, bytespersample);
+		if(!rc)
 			continue;
-		}
-		samplesRead /= bytespersample;
 
-		for(int chan = 0; chan < channum; chan++)
-			channels[chan].resize(samplesRead/channum);
-
-		// de-interleave the channels
-		for(DWORD i = 0; i < samplesRead/channum; i++) {
-			for(int chan = 0; chan < channum; chan++) {
-				if(bytespersample == 1) { // unsigned 8 bit format
-					channels[chan][i] = (buffer[i*channum + chan]-128)<<7;
-				} else { // else assume signedness and take the 2 most significant bytes
-					memcpy(&channels[chan][i], buffer+(i*channum + chan)*bytespersample, 2);
-				}
-
-				if(it->second.dcBiasNum < _sampleRate*10) {
+		// TODO make this more sane
+		for(int chan = 0; chan < channum; chan++) {
+			if(it->second.dcBiasNum < _sampleRate*10) {
+				for(unsigned int i = 0; i < channels[chan].size(); i++) {
 					it->second.dcBiasSum[chan] += channels[chan][i];
 					if(chan == 0)
 						it->second.dcBiasNum++;
 				}
 			}
+			int dcBias = it->second.dcBiasSum[chan]/it->second.dcBiasNum;
+
+			for(unsigned int i = 0; i < channels[chan].size(); i++) {
+				channels[chan][i] -= dcBias;
+			}
 		}
 
 		for(int chan = 0; chan < channum; chan++) {
-			int dcBias = it->second.dcBiasSum[chan]/it->second.dcBiasNum;
-
-			for(DWORD i = 0; i < samplesRead/channum; i++) {
-				channels[chan][i] -= dcBias;
-			}
-
-			it->second.sampleBuffers[chan]->addData(channels[chan].data(), samplesRead/channum);
+			it->second.sampleBuffers[chan]->addData(channels[chan].data(), channels[chan].size());
 		}
 
-		delete[] channels;
-		delete[] buffer;
 	}
 
 	if(!_paused) {
