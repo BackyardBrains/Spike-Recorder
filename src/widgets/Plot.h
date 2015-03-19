@@ -22,6 +22,7 @@ public:
 	Plot(Widget *parent = NULL);
 
 	void setData(const std::vector<float> &x, const std::vector<float> &y);
+	void setSTD(const std::vector<float> &std);
 	void updateAxisScale();
 
 	void setXLabel(const std::string &label);
@@ -39,13 +40,17 @@ private:
 	void drawLinePlot();
 	void drawBarPlot();
 	void drawTics();
+	void drawLegend();
+
+	Color errorBarColor();
 
 	float plotWidth() const;
 	float plotHeight() const;
 
-	int axisOffsetX() const; // offset of x-axis in y-direction
+	int axisOffsetX() const; // offset of y-axis in x-direction
 	int axisOffsetY() const; // vice versa
 
+	std::vector<float> _stdy;
 	std::vector<float> _ys;
 	std::vector<float> _xs;
 

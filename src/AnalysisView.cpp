@@ -11,6 +11,7 @@
 #include "engine/FileRecorder.h"
 #include "engine/SpikeAnalysis.h"
 #include "AnalysisAudioView.h"
+#include "Log.h"
 
 #include <sstream>
 
@@ -78,25 +79,26 @@ void AnalysisView::setPlotData() {
 	const int upperthresh = _audioView->upperThresh();
 	const int lowerthresh = _audioView->lowerThresh();
 
-	std::vector<std::pair<int64_t, int16_t> > selected;
+	std::vector<int64_t > selected;
 	selected.reserve(100);
 	for(unsigned int i = 0; i < _spikes.spikes().size(); i++)
 		if(_spikes.spikes()[i].second > lowerthresh && _spikes.spikes()[i].second < upperthresh)
-			selected.push_back(_spikes.spikes()[i]);
+			selected.push_back(_spikes.spikes()[i].first);
 
-	std::vector<int> buf;
-	SpikeAnalysis::autoCorrelation(buf, selected, 0.1*_manager.sampleRate(), 0.01*_manager.sampleRate());
+	std::vector<float> buf, stdy;
+	SpikeAnalysis::averageWaveform(buf, stdy, selected, _manager.fileName().c_str(), 0);
 	std::vector<float> x, y;
 	
-	buf.resize(1);
 	y.resize(buf.size());
 	x.resize(buf.size());
-	for(unsigned int i = 0; i < buf.size(); i++) {
-		x[i] = i;
+
+	for(int i = 0; i < (int)buf.size(); i++) {
+		x[i] = (i-(int)buf.size()/2)/(float)_manager.sampleRate();
 		y[i] = buf[i];
 	}
 	_plot->setData(x,y);
-	_plot->setStyle(Widgets::Plot::Bar);
+	_plot->setSTD(stdy);
+	//_plot->setStyle(Widgets::Plot::Bar);
 	_plot->setXLabel("time/s");
 
 }

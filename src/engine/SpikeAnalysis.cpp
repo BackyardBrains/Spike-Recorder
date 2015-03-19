@@ -88,7 +88,7 @@ void SpikeAnalysis::isi(std::vector<int> &hist,
 	}
 }	
 
-void SpikeAnalysis::averageWaveform(std::vector<double> &average, std::vector<double> &std,
+void SpikeAnalysis::averageWaveform(std::vector<float> &average, std::vector<float> &std,
 		const std::vector<int64_t> &train, const char *filename, int chan) {
 	const int BUFSIZE = 32768;
 	HSTREAM handle;
@@ -112,14 +112,14 @@ void SpikeAnalysis::averageWaveform(std::vector<double> &average, std::vector<do
 		std[i] = 0;
 	}
 
-	std::vector<std::vector<int16_t> > channels;
+	std::vector<std::vector<int16_t> > channels(chans);
 	for(int i = 0; i < chans; i++)
 		channels[i].reserve(BUFSIZE);
 
 	int lastend = 0;
 	int spiken = 0;
 
-	while(pos < filelen) {
+	while(pos < filelen-1) {
 		int len = BUFSIZE;
 		if(pos + len >= filelen)
 			len = filelen-pos;
@@ -153,6 +153,7 @@ void SpikeAnalysis::averageWaveform(std::vector<double> &average, std::vector<do
 
 	for(int i = 0; i < size; i++) {
 		std[i] = sqrt(std[i]-average[i]*average[i]);
+		std[i] *= sqrt(spiken/(float)(spiken-1)); // correct std for empirical mean
 	}
 }	
 }

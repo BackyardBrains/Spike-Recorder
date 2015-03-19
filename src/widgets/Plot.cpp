@@ -15,24 +15,27 @@ Plot::Plot(Widget *parent)
 	_xmin(0), _xmax(0), _ymin(0), _ymax(0), _style(Line), _color(Colors::lightblue) {
 }
 
-static void minmax(std::vector<float> &v, float &min, float &max) {
+static void minmax(std::vector<float> &v, std::vector<float> &std, float &min, float &max) {
 	max = v[0];
 	min = v[0];
 
 	for(unsigned int i = 0; i < v.size(); i++) {
-		if(v[i] < min)
-			min = v[i];
-		if(v[i] > max)
-			max = v[i];
+		float s = 0;
+		if(std.size() > 0)
+			s = std[i];
+		if(v[i]-s < min)
+			min = v[i]-s;
+		if(v[i]+s > max)
+			max = v[i]+s;
 	}
 }
 
 void Plot::updateAxisScale() {
 	if(_xs.size() == 0)
 		return;
-
-	minmax(_xs, _xmin, _xmax);
-	minmax(_ys, _ymin, _ymax);
+	std::vector<float> dummy;
+	minmax(_xs, dummy,_xmin, _xmax);
+	minmax(_ys, _stdy, _ymin, _ymax);
 
 	if(_style == Bar) {
 		_ymin = 0;
@@ -63,6 +66,12 @@ void Plot::setData(const std::vector<float> &x, const std::vector<float> &y) {
 	_ys = y;
 
 	assert(_xs.size() == _ys.size());
+	updateAxisScale();
+}
+void Plot::setSTD(const std::vector<float> &std) {
+	_stdy = std;
+
+	assert(_stdy.size() == 0 || _xs.size() == _stdy.size());
 	updateAxisScale();
 }
 
@@ -103,16 +112,34 @@ int Plot::axisOffsetX() const {
 	return axisOffsetY()+std::max(o1.str().size(),o2.str().size())*Application::font()->characterWidth();
 }
 
+Color Plot::errorBarColor() {
+	Color tmp = _color;
+	tmp.a *= 0.5;
+	return tmp;
+}
+
 void Plot::drawLinePlot() {
 	glPushMatrix();
 	glTranslatef(axisOffsetX(),height()-axisOffsetY(),0);
 	glScalef(plotWidth()*_xscale,-plotHeight()*_yscale,1);
 	glTranslatef(-_xoffset,-_yoffset, 0);
+
+	Painter::setColor(errorBarColor());
+	if(_stdy.size() > 0) {
+		for(unsigned int i = 0; i < _xs.size(); i++) {
+			glBegin(GL_LINES);
+			glVertex3f(_xs[i],_ys[i]+_stdy[i],0);
+			glVertex3f(_xs[i],_ys[i]-_stdy[i],0);
+			glEnd();
+		}
+	}
+	Painter::setColor(_color);
 	glBegin(GL_LINE_STRIP);
 	for(unsigned int i = 0; i < _xs.size(); i++) {
 		glVertex3f(_xs[i],_ys[i],0);
 	}
 	glEnd();
+	glPopMatrix();
 }
 
 void Plot::drawBarPlot() {
@@ -217,6 +244,38 @@ void Plot::drawTics() {
 
 }
 
+void Plot::drawLegend() {
+	if(_style == Line && _stdy.size() > 0) {
+		int x = axisOffsetX()+plotWidth()-35;
+		int y = axisOffsetY()+10;
+		Painter::setColor(Colors::white);
+		glBegin(GL_LINE_LOOP);
+		glVertex3f(x-5,y-10,0);
+		glVertex3f(x-5,y+30,0);
+		glVertex3f(x+70,y+30,0);
+		glVertex3f(x+70,y-10,0);
+		glEnd();
+		Painter::setColor(_color);
+		glBegin(GL_LINES);
+		glVertex3f(x,y,0);
+		glVertex3f(x+20,y,0);
+		glEnd();
+		Painter::setColor(errorBarColor());
+		glBegin(GL_LINES);
+		glVertex3f(x,y+15,0);
+		glVertex3f(x,y+25,0);
+		glVertex3f(x+10,y+15,0);
+		glVertex3f(x+10,y+25,0);
+		glVertex3f(x+20,y+15,0);
+		glVertex3f(x+20,y+25,0);
+		glEnd();
+
+		Painter::setColor(Colors::white);
+		Application::font()->draw("Data",x+30, y, AlignVCenter);
+		Application::font()->draw("\xf1 1\xe5",x+30, y+20, AlignVCenter);
+	}
+}
+
 void Plot::paintEvent() {
 	Painter::setColor(_color);
 	if(_style == Line) {
@@ -241,6 +300,7 @@ void Plot::paintEvent() {
 	glPopMatrix();
 
 	drawTics();
+	drawLegend();
 }
 
 void Plot::mousePressEvent(MouseEvent *event) {
