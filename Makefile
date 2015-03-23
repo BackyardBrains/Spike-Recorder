@@ -16,8 +16,10 @@ OBJECTS = \
 	src/engine/RecordingManager.o \
 	src/engine/FileRecorder.o \
 	src/engine/Player.o \
+	src/engine/ArduinoSerial.o \
 	src/engine/SpikeSorter.o \
 	src/engine/BASSErrors.o \
+	src/engine/FFTBackend.o \
 	src/widgets/LayoutItem.o \
 	src/widgets/BoxLayout.o \
 	src/widgets/Widget.o \
@@ -32,6 +34,7 @@ OBJECTS = \
 	src/widgets/Label.o \
 	src/widgets/ErrorBox.o \
 	src/widgets/ToolTip.o \
+	src/DropDownList.o \
 	src/Log.o \
 	src/Game.o \
 	src/main.o \
@@ -41,7 +44,8 @@ OBJECTS = \
 	src/AnalysisView.o \
 	src/AnalysisAudioView.o \
 	src/RecordingBar.o \
-	src/ColorDropDownList.o
+	src/ColorDropDownList.o \
+	src/FFTView.o
 
 OBJECTS_WIN = \
 	src/widgets/native/FileDialogWin.o \
