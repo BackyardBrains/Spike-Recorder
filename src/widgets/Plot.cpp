@@ -114,7 +114,7 @@ int Plot::axisOffsetX() const {
 
 Color Plot::errorBarColor() {
 	Color tmp = _color;
-	tmp.a *= 0.5;
+	tmp.a *= 0.3;
 	return tmp;
 }
 
@@ -126,12 +126,12 @@ void Plot::drawLinePlot() {
 
 	Painter::setColor(errorBarColor());
 	if(_stdy.size() > 0) {
+		glBegin(GL_QUAD_STRIP);
 		for(unsigned int i = 0; i < _xs.size(); i++) {
-			glBegin(GL_LINES);
 			glVertex3f(_xs[i],_ys[i]+_stdy[i],0);
 			glVertex3f(_xs[i],_ys[i]-_stdy[i],0);
-			glEnd();
 		}
+		glEnd();
 	}
 	Painter::setColor(_color);
 	glBegin(GL_LINE_STRIP);
@@ -261,13 +261,11 @@ void Plot::drawLegend() {
 		glVertex3f(x+20,y,0);
 		glEnd();
 		Painter::setColor(errorBarColor());
-		glBegin(GL_LINES);
+		glBegin(GL_QUADS);
 		glVertex3f(x,y+15,0);
 		glVertex3f(x,y+25,0);
-		glVertex3f(x+10,y+15,0);
-		glVertex3f(x+10,y+25,0);
-		glVertex3f(x+20,y+15,0);
 		glVertex3f(x+20,y+25,0);
+		glVertex3f(x+20,y+15,0);
 		glEnd();
 
 		Painter::setColor(Colors::white);
