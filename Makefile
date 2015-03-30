@@ -43,6 +43,7 @@ OBJECTS = \
 	src/ConfigView.o \
 	src/AnalysisView.o \
 	src/AnalysisAudioView.o \
+	src/AnalysisTrainList.o \
 	src/RecordingBar.o \
 	src/ColorDropDownList.o
 

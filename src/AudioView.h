@@ -28,6 +28,8 @@ public:
 
 	static const Widgets::Color COLORS[];
 	static const int COLOR_NUM;
+	static const Widgets::Color MARKER_COLORS[];
+	static const int MARKER_COLOR_NUM;
 
 	void constructMetadata(MetadataChunk *mdata) const;
 	void applyMetadata(const MetadataChunk &mdata);
@@ -51,8 +53,6 @@ public:
 
 	sigslot::signal1<int> relOffsetChanged;
 protected:
-	static const Widgets::Color MARKER_COLORS[];
-	static const int MARKER_COLOR_NUM;
 
 	static const int MOVEPIN_SIZE = 30;
 	static const int GAINCONTROL_XOFF = MOVEPIN_SIZE*6/5;

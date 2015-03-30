@@ -11,17 +11,21 @@
 #include "engine/FileRecorder.h"
 #include "engine/SpikeAnalysis.h"
 #include "AnalysisAudioView.h"
+#include "AnalysisTrainList.h"
 #include "Log.h"
 
 #include <sstream>
+#include <cassert>
 
 namespace BackyardBrains {
 
 AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Widgets::Widget(parent), _manager(mngr) {
-	_audioView = new AnalysisAudioView(mngr, _spikes, this);
+	_audioView = new AnalysisAudioView(mngr, _spikeSorter, this);
 	_audioView->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Expanding, Widgets::SizePolicy::Expanding));
 	_audioView->addChannel(0);
 
+
+	_trainList = new AnalysisTrainList(_spikeTrains, this);
 
 	Widgets::PushButton *closeButton = new Widgets::PushButton(this);
 	closeButton->clicked.connect(this, &AnalysisView::closePressed);
@@ -39,40 +43,57 @@ AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Wi
  	_audioView->relOffsetChanged.connect(seekBar, &Widgets::ScrollBar::updateValue);
 	seekBar->setValue(1000);
 
+	Widgets::PushButton *addButton = new Widgets::PushButton(this);
+	addButton->setNormalTex(Widgets::TextureGL::get("data/plus.png"));
+	addButton->setHoverTex(Widgets::TextureGL::get("data/plushigh.png"));
+	addButton->setSizeHint(Widgets::Size(64,64));
+	addButton->clicked.connect(this, &AnalysisView::addPressed);
+	Widgets::BoxLayout *addBox = new Widgets::BoxLayout(Widgets::Horizontal);
+
 	Widgets::PushButton *saveButton = new Widgets::PushButton(this);
 	saveButton->setNormalTex(Widgets::TextureGL::get("data/save.png"));
 	saveButton->setHoverTex(Widgets::TextureGL::get("data/savehigh.png"));
-	saveButton->setSizeHint(Widgets::Size(64,64));
+	//saveButton->setSizeHint(Widgets::Size(32,32));
 	saveButton->clicked.connect(this, &AnalysisView::savePressed);
-	Widgets::BoxLayout *saveBox = new Widgets::BoxLayout(Widgets::Horizontal);
 
-	_plot = new Widgets::Plot(this);
-	_plot->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Expanding, Widgets::SizePolicy::Expanding));
+	addBox->addWidget(addButton);
+	addBox->setAlignment(Widgets::AlignCenter);
+	Widgets::BoxLayout *vbox = new Widgets::BoxLayout(Widgets::Vertical);
+	Widgets::BoxLayout *topBar = new Widgets::BoxLayout(Widgets::Horizontal);
+	Widgets::BoxLayout *analysisBar = new Widgets::BoxLayout(Widgets::Vertical);
+	Widgets::BoxLayout *hbox = new Widgets::BoxLayout(Widgets::Horizontal, this);
 
-	saveBox->addWidget(saveButton);
-	saveBox->setAlignment(Widgets::AlignCenter);
-	Widgets::BoxLayout *vbox = new Widgets::BoxLayout(Widgets::Vertical, this);
-	Widgets::BoxLayout *hbox = new Widgets::BoxLayout(Widgets::Horizontal);
-	hbox->addSpacing(10);
-	hbox->addWidget(closeButton);
-	hbox->addSpacing(17);
-	hbox->addWidget(label, Widgets::AlignVCenter);
+	topBar->addSpacing(10);
+	topBar->addWidget(closeButton);
+	topBar->addSpacing(17);
+	topBar->addWidget(label, Widgets::AlignVCenter);
 	vbox->addSpacing(10);
-	vbox->addLayout(hbox);
+	vbox->addLayout(topBar);
 	vbox->addSpacing(20);
 	vbox->addWidget(_audioView, Widgets::AlignCenter);
 	vbox->addWidget(seekBar);
 	vbox->addSpacing(10);
-	vbox->addLayout(saveBox);
-	vbox->addSpacing(20);
-	vbox->addWidget(_plot);
-	vbox->update();
+	vbox->addLayout(addBox);
 
-	_spikes.findSpikes(_manager.fileName(), _manager.selectedVDevice(), _manager.sampleRate()/1000 /* 1 ms */);
+	analysisBar->addWidget(_trainList);
+	analysisBar->addStretch();
+	analysisBar->addWidget(saveButton,Widgets::AlignHCenter);
+	analysisBar->addSpacing(10);
+	hbox->addLayout(vbox);
+	hbox->addSpacing(5);
+	hbox->addLayout(analysisBar);
+	
+	hbox->update();
+
+	_spikeSorter.findSpikes(_manager.fileName(), _manager.selectedVDevice(), _manager.sampleRate()/1000 /* 1 ms */);
 	
 	_wasThreshMode = _manager.threshMode();
 	_manager.setThreshMode(false);
 	_manager.setPos(_manager.fileLength()/2);
+
+	_spikeTrains.push_back(SpikeTrain());
+
+	_trainList->selectionChange.connect(this, &AnalysisView::selectionChanged);
 }
 
 void AnalysisView::setPlotData() {
@@ -81,9 +102,9 @@ void AnalysisView::setPlotData() {
 
 	std::vector<int64_t > selected;
 	selected.reserve(100);
-	for(unsigned int i = 0; i < _spikes.spikes().size(); i++)
-		if(_spikes.spikes()[i].second > lowerthresh && _spikes.spikes()[i].second < upperthresh)
-			selected.push_back(_spikes.spikes()[i].first);
+	for(unsigned int i = 0; i < _spikeSorter.spikes().size(); i++)
+		if(_spikeSorter.spikes()[i].second > lowerthresh && _spikeSorter.spikes()[i].second < upperthresh)
+			selected.push_back(_spikeSorter.spikes()[i].first);
 
 	std::vector<float> buf, stdy;
 	SpikeAnalysis::averageWaveform(buf, stdy, selected, _manager.fileName().c_str(), 0);
@@ -109,6 +130,11 @@ void AnalysisView::paintEvent() {
 	Widgets::Painter::setColor(bg);
 	Widgets::Painter::drawRect(rect());
 
+	Widgets::Rect sidebar = _trainList->geometry();
+	sidebar.h = height();
+	Widgets::Painter::setColor(Widgets::Colors::widgetbgdark);
+	Widgets::Painter::drawRect(sidebar);
+
 }
 
 void AnalysisView::closePressed() {
@@ -116,16 +142,36 @@ void AnalysisView::closePressed() {
 	close();
 }
 
-void AnalysisView::savePressed() {
-	std::list<std::pair<std::string, int64_t> > markers;
-	setPlotData();
+void AnalysisView::addPressed() {
+	unsigned int selectedTrain = _trainList->selectedTrain();
+
+	assert(selectedTrain < _spikeTrains.size());
+
+	_spikeTrains[selectedTrain].spikes.reserve(64);
 
 	const int upperthresh = _audioView->upperThresh();
 	const int lowerthresh = _audioView->lowerThresh();
 
-	for(unsigned int i = 0; i < _spikes.spikes().size(); i++)
-		if(_spikes.spikes()[i].second > lowerthresh && _spikes.spikes()[i].second < upperthresh)
-			markers.push_back(std::make_pair(std::string("_neuron1"), _spikes.spikes()[i].first));
+	for(unsigned int i = 0; i < _spikeSorter.spikes().size(); i++)
+		if(_spikeSorter.spikes()[i].second > lowerthresh && _spikeSorter.spikes()[i].second < upperthresh)
+			_spikeTrains[selectedTrain].spikes.push_back(_spikeSorter.spikes()[i].first);
+	_spikeTrains[selectedTrain].upperThresh = upperthresh;
+	_spikeTrains[selectedTrain].lowerThresh = lowerthresh;
+
+	if(selectedTrain == _spikeTrains.size()-1 && _spikeTrains[selectedTrain].spikes.size() > 0)
+		_spikeTrains.push_back(SpikeTrain());	
+}
+
+
+void AnalysisView::savePressed() {
+	std::list<std::pair<std::string, int64_t> > markers;
+
+	for(unsigned int i = 0; i < _spikeTrains.size(); i++) {
+		std::stringstream s;
+		s << "_neuron" << i;
+		for(unsigned int j = 0; j < _spikeTrains[i].spikes.size(); j++)
+			markers.push_back(std::make_pair(s.str(), _spikeTrains[i].spikes[j]));
+	}
 
 	FileRecorder f(_manager);
 	std::string filename = f.eventTxtFilename(_manager.fileName());
@@ -136,6 +182,12 @@ void AnalysisView::savePressed() {
 	Widgets::ErrorBox *box = new Widgets::ErrorBox(s.str().c_str());
 	box->setGeometry(Widgets::Rect(this->width()/2-200, this->height()/2-40, 400, 80));
 	Widgets::Application::getInstance()->addPopup(box);
+}
+
+void AnalysisView::selectionChanged(int idx) {
+	_audioView->setColorIdx(idx);
+	// TODO maybe implement threshold saving
+//	_audioView->setThresh(_spikeTrains[idx].upperThresh, _spikeTrains[idx].lowerThresh);
 }
 
 }

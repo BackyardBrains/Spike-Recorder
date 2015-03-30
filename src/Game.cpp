@@ -46,6 +46,9 @@ void Game::loadResources() {
 	Widgets::TextureGL::load("data/analysis.png");
 	Widgets::TextureGL::load("data/analysishigh.png");
 
+	Widgets::TextureGL::load("data/plus.png");
+	Widgets::TextureGL::load("data/plushigh.png");
+
 	Widgets::TextureGL::load("data/save.png");
 	Widgets::TextureGL::load("data/savehigh.png");
 

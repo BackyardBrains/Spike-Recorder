@@ -4,13 +4,13 @@
 #include <SDL_opengl.h>
 namespace BackyardBrains {
 
-AnalysisAudioView::AnalysisAudioView(RecordingManager &manager, SpikeSorter &spikes, Widgets::Widget *parent) : AudioView(parent, manager), _spikes(spikes), _clickedThresh(-1) {
+AnalysisAudioView::AnalysisAudioView(RecordingManager &manager, SpikeSorter &spikes, Widgets::Widget *parent) : AudioView(parent, manager), _spikes(spikes), _colorIdx(0), _clickedThresh(-1) {
 	_threshPos[0] = 0.3f;
 	_threshPos[1] = 0.4f;
 }
 
 void AnalysisAudioView::drawTargetMarkers() {
-	Widgets::Painter::setColor(MARKER_COLORS[1 % MARKER_COLOR_NUM]);
+	Widgets::Painter::setColor(MARKER_COLORS[_colorIdx % MARKER_COLOR_NUM]);
 	Widgets::TextureGL::get("data/threshpin.png")->bind();
 	for(int i = 0; i < 2; i++)
 		Widgets::Painter::drawTexRect(Widgets::Rect(width()-MOVEPIN_SIZE*1.5f, _threshPos[i]*height()-MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
@@ -29,6 +29,10 @@ int AnalysisAudioView::relPosToAmp(float rpos) const {
 	return (_channels[0].pos - rpos)/ampScale/_channels[0].gain;
 }
 
+float AnalysisAudioView::ampToRelPos(int amp) const {
+	return _channels[0].pos - amp*_channels[0].gain*ampScale;
+}
+
 int AnalysisAudioView::upperThresh() const {
 	return relPosToAmp(std::min(_threshPos[0], _threshPos[1]));
 }
@@ -37,6 +41,13 @@ int AnalysisAudioView::lowerThresh() const {
 	return relPosToAmp(std::max(_threshPos[0], _threshPos[1]));
 }
 
+void AnalysisAudioView::setColorIdx(int idx) {
+	_colorIdx = idx;
+}
+void AnalysisAudioView::setThresh(int upper, int lower) {
+	_threshPos[0] = ampToRelPos(upper);
+	_threshPos[1] = ampToRelPos(lower);
+}
 void AnalysisAudioView::paintEvent() {
 	const int samples = sampleCount(screenWidth(), scaleWidth());
 
@@ -64,7 +75,7 @@ void AnalysisAudioView::paintEvent() {
 
 			bool selected = y >= std::min(_threshPos[0], _threshPos[1])*height() && y <= std::max(_threshPos[0], _threshPos[1])*height();
 			if(selected)
-				Widgets::Painter::setColor(MARKER_COLORS[1 % MARKER_COLOR_NUM]);
+				Widgets::Painter::setColor(MARKER_COLORS[_colorIdx % MARKER_COLOR_NUM]);
 			Widgets::Painter::drawRect(Widgets::Rect(x-1,y-1, 3, 3));
 			if(selected)
 				Widgets::Painter::setColor(Widgets::Colors::white);

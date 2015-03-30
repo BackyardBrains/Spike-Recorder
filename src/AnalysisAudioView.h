@@ -20,8 +20,13 @@ public:
 	int upperThresh() const;
 	int lowerThresh() const;
 
+	void setColorIdx(int idx);
+	void setThresh(int upper, int lower);
+
 private:
 	SpikeSorter &_spikes;
+
+	int _colorIdx;
 
 	int _clickedThresh;
 	int _clickOffset;
@@ -30,6 +35,7 @@ private:
 	int screenWidth() const;
 
 	int relPosToAmp(float rpos) const;
+	float ampToRelPos(int amp) const;
 	void mousePressEvent(Widgets::MouseEvent *event);
 	void mouseMotionEvent(Widgets::MouseEvent *event);
 	void mouseReleaseEvent(Widgets::MouseEvent *event);
