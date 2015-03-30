@@ -5,19 +5,40 @@
 namespace BackyardBrains {
 
 AnalysisAudioView::AnalysisAudioView(RecordingManager &manager, SpikeSorter &spikes, Widgets::Widget *parent) : AudioView(parent, manager), _spikes(spikes), _colorIdx(0), _clickedThresh(-1) {
-	_threshPos[0] = 0.3f;
-	_threshPos[1] = 0.4f;
+	_threshPos[0] = -10;
+	_threshPos[1] = 10;
 }
 
 void AnalysisAudioView::drawTargetMarkers() {
 	Widgets::Painter::setColor(MARKER_COLORS[_colorIdx % MARKER_COLOR_NUM]);
 	Widgets::TextureGL::get("data/threshpin.png")->bind();
-	for(int i = 0; i < 2; i++)
-		Widgets::Painter::drawTexRect(Widgets::Rect(width()-MOVEPIN_SIZE*1.5f, _threshPos[i]*height()-MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
+
+	for(int i = 0; i < 2; i++) {
+		float y = ampToRelPos(_threshPos[i])*height();
+		glPushMatrix();
+		if(y < MOVEPIN_SIZE*0.5f || y > height()-MOVEPIN_SIZE*0.5f) {
+			bool bottom = y > MOVEPIN_SIZE/2;
+
+			y = MOVEPIN_SIZE*0.5f;
+			if(bottom)
+				y = height()-MOVEPIN_SIZE*0.5f;
+
+			glTranslatef(width()-MOVEPIN_SIZE, y, 0);
+			glRotatef(90-180*bottom,0,0,1);
+		} else {
+			glTranslatef(width()-MOVEPIN_SIZE*1.5f, y, 0);
+		}
+		Widgets::Painter::drawTexRect(Widgets::Rect(0, -MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
+		glPopMatrix();
+	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	for(int i = 0; i < 2; i++)
-		Widgets::Painter::drawRect(Widgets::Rect(MOVEPIN_SIZE*1.5f,_threshPos[i]*height(), width()-3*MOVEPIN_SIZE+3, 1));
+	for(int i = 0; i < 2; i++) {
+		float y = ampToRelPos(_threshPos[i])*height();
+		if(y >= MOVEPIN_SIZE*0.5f && y <= height()-MOVEPIN_SIZE*0.5f) {
+			Widgets::Painter::drawRect(Widgets::Rect(MOVEPIN_SIZE*1.5f,y, width()-3*MOVEPIN_SIZE+3, 1));
+		}
+	}
 }
 
 int AnalysisAudioView::screenWidth() const {
@@ -33,20 +54,20 @@ float AnalysisAudioView::ampToRelPos(int amp) const {
 	return _channels[0].pos - amp*_channels[0].gain*ampScale;
 }
 
-int AnalysisAudioView::upperThresh() const {
-	return relPosToAmp(std::min(_threshPos[0], _threshPos[1]));
+int16_t AnalysisAudioView::upperThresh() const {
+	return std::max(_threshPos[0], _threshPos[1]);
 }
 
-int AnalysisAudioView::lowerThresh() const {
-	return relPosToAmp(std::max(_threshPos[0], _threshPos[1]));
+int16_t AnalysisAudioView::lowerThresh() const {
+	return std::min(_threshPos[0], _threshPos[1]);
 }
 
 void AnalysisAudioView::setColorIdx(int idx) {
 	_colorIdx = idx;
 }
 void AnalysisAudioView::setThresh(int upper, int lower) {
-	_threshPos[0] = ampToRelPos(upper);
-	_threshPos[1] = ampToRelPos(lower);
+	_threshPos[0] = upper;
+	_threshPos[1] = lower;
 }
 void AnalysisAudioView::paintEvent() {
 	const int samples = sampleCount(screenWidth(), scaleWidth());
@@ -73,7 +94,7 @@ void AnalysisAudioView::paintEvent() {
 			const int y = height()*_channels[0].pos - _spikes.spikes()[i].second*height()*ampScale*_channels[0].gain;
 			const float x = MOVEPIN_SIZE*1.48f+screenWidth()*(samples/2-samplepos)/(float)samples;
 
-			bool selected = y >= std::min(_threshPos[0], _threshPos[1])*height() && y <= std::max(_threshPos[0], _threshPos[1])*height();
+			bool selected = _spikes.spikes()[i].second >= std::min(_threshPos[0], _threshPos[1]) && _spikes.spikes()[i].second <= std::max(_threshPos[0], _threshPos[1]);
 			if(selected)
 				Widgets::Painter::setColor(MARKER_COLORS[_colorIdx % MARKER_COLOR_NUM]);
 			Widgets::Painter::drawRect(Widgets::Rect(x-1,y-1, 3, 3));
@@ -102,7 +123,7 @@ void AnalysisAudioView::mousePressEvent(Widgets::MouseEvent *event) {
 
 		if(_clickedThresh == -1 && x > width() - MOVEPIN_SIZE*1.5f) {
 			for(int i = 0; i < 2; i++) {
-				if(determineThreshHover(x, y, _threshPos[i]*height(), &_clickOffset)) {
+				if(determineThreshHover(x, y, ampToRelPos(_threshPos[i])*height(), &_clickOffset)) {
 					_clickedThresh = i;
 					event->accept();
 					return;
@@ -116,7 +137,8 @@ void AnalysisAudioView::mousePressEvent(Widgets::MouseEvent *event) {
 
 void AnalysisAudioView::mouseMotionEvent(Widgets::MouseEvent *event) {
 	if(_clickedThresh != -1) {
-		_threshPos[_clickedThresh] = std::min(1.f, std::max(0.f, (event->pos().y-_clickOffset)/(float)height()));
+		int y = std::min(height()-MOVEPIN_SIZE/2, std::max(MOVEPIN_SIZE/2,event->pos().y-_clickOffset));
+		_threshPos[_clickedThresh] = relPosToAmp(y/(float)(height()));
 		event->accept();
 	}
 

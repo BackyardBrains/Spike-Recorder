@@ -14,6 +14,7 @@ class AnalysisAudioView;
 class AnalysisTrainList;
 
 struct SpikeTrain {
+	SpikeTrain() : upperThresh(0), lowerThresh(0) {}
 	std::vector<int64_t> spikes;
 	int16_t upperThresh;
 	int16_t lowerThresh;

@@ -147,6 +147,7 @@ void AnalysisView::addPressed() {
 
 	assert(selectedTrain < _spikeTrains.size());
 
+	_spikeTrains[selectedTrain].spikes.clear();
 	_spikeTrains[selectedTrain].spikes.reserve(64);
 
 	const int upperthresh = _audioView->upperThresh();
@@ -186,8 +187,7 @@ void AnalysisView::savePressed() {
 
 void AnalysisView::selectionChanged(int idx) {
 	_audioView->setColorIdx(idx);
-	// TODO maybe implement threshold saving
-//	_audioView->setThresh(_spikeTrains[idx].upperThresh, _spikeTrains[idx].lowerThresh);
+	_audioView->setThresh(_spikeTrains[idx].upperThresh, _spikeTrains[idx].lowerThresh);
 }
 
 }
