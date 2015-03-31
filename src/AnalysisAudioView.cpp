@@ -54,11 +54,11 @@ float AnalysisAudioView::ampToRelPos(int amp) const {
 	return _channels[0].pos - amp*_channels[0].gain*ampScale;
 }
 
-int16_t AnalysisAudioView::upperThresh() const {
+int AnalysisAudioView::upperThresh() const {
 	return std::max(_threshPos[0], _threshPos[1]);
 }
 
-int16_t AnalysisAudioView::lowerThresh() const {
+int AnalysisAudioView::lowerThresh() const {
 	return std::min(_threshPos[0], _threshPos[1]);
 }
 

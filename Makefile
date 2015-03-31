@@ -35,6 +35,7 @@ OBJECTS = \
 	src/widgets/ErrorBox.o \
 	src/widgets/ToolTip.o \
 	src/widgets/Plot.o \
+	src/widgets/TabBar.o \
 	src/Log.o \
 	src/Game.o \
 	src/main.o \
@@ -44,6 +45,7 @@ OBJECTS = \
 	src/AnalysisView.o \
 	src/AnalysisAudioView.o \
 	src/AnalysisTrainList.o \
+	src/AnalysisPlots.o \
 	src/RecordingBar.o \
 	src/ColorDropDownList.o
 

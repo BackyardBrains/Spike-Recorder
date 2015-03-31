@@ -48,7 +48,10 @@ private:
 	float plotHeight() const;
 
 	int axisOffsetX() const; // offset of y-axis in x-direction
+	int axisOffsetXRight() const; // offset of y-axis in x-direction
 	int axisOffsetY() const; // vice versa
+
+	void ticParams(float &ticdst, float &ticoff, int &n, float min, float max, int maxn) const;
 
 	std::vector<float> _stdy;
 	std::vector<float> _ys;

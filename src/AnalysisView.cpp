@@ -12,6 +12,7 @@
 #include "engine/SpikeAnalysis.h"
 #include "AnalysisAudioView.h"
 #include "AnalysisTrainList.h"
+#include "AnalysisPlots.h"
 #include "Log.h"
 
 #include <sstream>
@@ -24,8 +25,8 @@ AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Wi
 	_audioView->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Expanding, Widgets::SizePolicy::Expanding));
 	_audioView->addChannel(0);
 
-
 	_trainList = new AnalysisTrainList(_spikeTrains, this);
+	_plots = new AnalysisPlots(_spikeTrains,_manager, this);
 
 	Widgets::PushButton *closeButton = new Widgets::PushButton(this);
 	closeButton->clicked.connect(this, &AnalysisView::closePressed);
@@ -46,17 +47,26 @@ AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Wi
 	Widgets::PushButton *addButton = new Widgets::PushButton(this);
 	addButton->setNormalTex(Widgets::TextureGL::get("data/plus.png"));
 	addButton->setHoverTex(Widgets::TextureGL::get("data/plushigh.png"));
-	addButton->setSizeHint(Widgets::Size(64,64));
+	//addButton->setSizeHint(Widgets::Size(64,64));
 	addButton->clicked.connect(this, &AnalysisView::addPressed);
 	Widgets::BoxLayout *addBox = new Widgets::BoxLayout(Widgets::Horizontal);
 
 	Widgets::PushButton *saveButton = new Widgets::PushButton(this);
 	saveButton->setNormalTex(Widgets::TextureGL::get("data/save.png"));
 	saveButton->setHoverTex(Widgets::TextureGL::get("data/savehigh.png"));
-	//saveButton->setSizeHint(Widgets::Size(32,32));
 	saveButton->clicked.connect(this, &AnalysisView::savePressed);
 
-	addBox->addWidget(addButton);
+	_plotButton = new Widgets::PushButton(this);
+	_plotButton->setNormalTex(Widgets::TextureGL::get("data/plotview.png"));
+	_plotButton->setHoverTex(Widgets::TextureGL::get("data/plotviewhigh.png"));
+	_plotButton->setSizeHint(Widgets::Size(64,32));
+	_plotButton->clicked.connect(this, &AnalysisView::plotsPressed);
+
+	addBox->addWidget(_plotButton, Widgets::AlignBottom);
+	addBox->addStretch();
+	addBox->addWidget(addButton, Widgets::AlignVCenter);
+	addBox->addStretch();
+	addBox->addSpacing(64);
 	addBox->setAlignment(Widgets::AlignCenter);
 	Widgets::BoxLayout *vbox = new Widgets::BoxLayout(Widgets::Vertical);
 	Widgets::BoxLayout *topBar = new Widgets::BoxLayout(Widgets::Horizontal);
@@ -74,6 +84,7 @@ AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Wi
 	vbox->addWidget(seekBar);
 	vbox->addSpacing(10);
 	vbox->addLayout(addBox);
+	vbox->addWidget(_plots);
 
 	analysisBar->addWidget(_trainList);
 	analysisBar->addStretch();
@@ -161,6 +172,7 @@ void AnalysisView::addPressed() {
 
 	if(selectedTrain == _spikeTrains.size()-1 && _spikeTrains[selectedTrain].spikes.size() > 0)
 		_spikeTrains.push_back(SpikeTrain());	
+	_plots->update();
 }
 
 
@@ -185,9 +197,24 @@ void AnalysisView::savePressed() {
 	Widgets::Application::getInstance()->addPopup(box);
 }
 
+void AnalysisView::plotsPressed() {
+	if(_plots->active()) {
+		_plots->setActive(false);
+		_plotButton->setNormalTex(Widgets::TextureGL::get("data/plotview.png"));
+		_plotButton->setHoverTex(Widgets::TextureGL::get("data/plotviewhigh.png"));
+
+	} else {
+		_plotButton->setNormalTex(Widgets::TextureGL::get("data/plotviewdown.png"));
+		_plotButton->setHoverTex(Widgets::TextureGL::get("data/plotviewdownhigh.png"));
+		_plots->setActive(true);
+	}
+}
+
 void AnalysisView::selectionChanged(int idx) {
 	_audioView->setColorIdx(idx);
 	_audioView->setThresh(_spikeTrains[idx].upperThresh, _spikeTrains[idx].lowerThresh);
+	_plots->setTarget(idx);
+
 }
 
 }

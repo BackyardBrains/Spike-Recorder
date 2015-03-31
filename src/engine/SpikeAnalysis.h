@@ -2,7 +2,6 @@
 #define BACKYARDBRAINS_SPIKEANALYSIS_H
 
 #include <vector>
-#include <utility>
 #include <stdint.h>
 
 namespace BackyardBrains {
@@ -16,14 +15,14 @@ public:
 	// maxsamples: maximal signal timeshift in samples
 	// binsize: binsize of histogram
 	static void crossCorrelation(std::vector<int> &histogram,
-			const std::vector<std::pair<int64_t, int16_t> > &train1,
-			const std::vector<std::pair<int64_t, int16_t> > &train2,
+			const std::vector<int64_t> &train1,
+			const std::vector<int64_t> &train2,
 			int maxsamples,
 			int binsize);
 
 	// like crosscorrelation except only [-binsize/2, maxtime+binsize/2]
 	static void autoCorrelation(std::vector<int> &histogram,
-			const std::vector<std::pair<int64_t, int16_t> > &train,
+			const std::vector<int64_t> &train,
 			int maxsamples,
 			int binsize);
 
@@ -39,9 +38,9 @@ public:
 	// nbin: number of bins
 
 	static void isi(std::vector<int> &histogram,
-			const std::vector<std::pair<int64_t, int16_t> > &train,
+			const std::vector<int64_t> &train,
 			const std::vector<double> &binxs,
-			int nbin, int samplerate);
+			int samplerate);
 
 	// Average Waveform of spikes
 	// 

@@ -9,13 +9,7 @@ namespace Widgets {
 PushButton::PushButton(Widget *parent) : Widget(parent), _normaltex(NULL), _hovertex(NULL), _hover(false)
 {
 	setSizeHint(Size(48,48));
-	// setMouseTracking(true);
 }
-
-// Size PushButton::sizeHint() const
-// {
-// 	return Widget::sizeHint();
-// }
 
 void PushButton::paintEvent()
 {

@@ -17,8 +17,8 @@ class AnalysisAudioView : public AudioView {
 public:
 	AnalysisAudioView(RecordingManager &mngr, SpikeSorter &spikes, Widget *parent = NULL);
 
-	int16_t upperThresh() const;
-	int16_t lowerThresh() const;
+	int upperThresh() const;
+	int lowerThresh() const;
 
 	void setColorIdx(int idx);
 	void setThresh(int upper, int lower);
@@ -30,7 +30,7 @@ private:
 
 	int _clickedThresh;
 	int _clickOffset;
-	int16_t _threshPos[2];
+	int _threshPos[2];
 
 	int screenWidth() const;
 

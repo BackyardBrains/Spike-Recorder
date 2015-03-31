@@ -10,6 +10,7 @@
 namespace BackyardBrains {
 namespace Widgets {
 
+
 Plot::Plot(Widget *parent)
  : Widget(parent), _xoffset(0),_yoffset(0),_xscale(1),_yscale(1),
 	_xmin(0), _xmax(0), _ymin(0), _ymax(0), _style(Line), _color(Colors::lightblue) {
@@ -21,7 +22,7 @@ static void minmax(std::vector<float> &v, std::vector<float> &std, float &min, f
 
 	for(unsigned int i = 0; i < v.size(); i++) {
 		float s = 0;
-		if(std.size() > 0)
+		if(std.size() > i)
 			s = std[i];
 		if(v[i]-s < min)
 			min = v[i]-s;
@@ -93,21 +94,28 @@ void Plot::setStyle(PlotStyle style) {
 }
 
 float Plot::plotWidth() const {
-	return 0.9*(width()-2*axisOffsetX());
+	return std::max(0.,0.95*(width()-(axisOffsetX()+axisOffsetXRight())));
 }
 
 float Plot::plotHeight() const {
-	return 0.9*(height()-2*axisOffsetY());
+	return std::max(0.,0.9*(height()-2*axisOffsetY()));
 }
 
 int Plot::axisOffsetY() const {
 	return 40;
 }
 
+int Plot::axisOffsetXRight() const {
+	return 20;
+}
+
 int Plot::axisOffsetX() const {
+	float yticdst, yticoff;
+	int yn;
+	ticParams(yticdst, yticoff, yn, _yoffset, _ymax, 1000);
 	std::stringstream o1, o2;
-	o1 << _ymax;
-	o2 << _ymin;
+	o1 << yticoff;
+	o2 << yn*yticdst+yticoff;
 
 	return axisOffsetY()+std::max(o1.str().size(),o2.str().size())*Application::font()->characterWidth();
 }
@@ -120,7 +128,7 @@ Color Plot::errorBarColor() {
 
 void Plot::drawLinePlot() {
 	glPushMatrix();
-	glTranslatef(axisOffsetX(),height()-axisOffsetY(),0);
+	glTranslatef(axisOffsetX(),std::max(0,height()-axisOffsetY()),0);
 	glScalef(plotWidth()*_xscale,-plotHeight()*_yscale,1);
 	glTranslatef(-_xoffset,-_yoffset, 0);
 
@@ -144,7 +152,7 @@ void Plot::drawLinePlot() {
 
 void Plot::drawBarPlot() {
 	glPushMatrix();
-	glTranslatef(axisOffsetX(),height()-axisOffsetY(),0);
+	glTranslatef(axisOffsetX(),std::max(0,height()-axisOffsetY()),0);
 
 	if(_xs.size() == 1) {
 		glScalef(1,-plotHeight()*_yscale,1);
@@ -188,30 +196,47 @@ void Plot::drawBarPlot() {
 	glPopMatrix();
 }
 
-static void ticparams(float &ticdst, float &ticoff, int &n, float min, float max) {
+void Plot::ticParams(float &ticdst, float &ticoff, int &n, float min, float max, int maxn) const {
 	int mag = round(log10(max-min)-1);
 	ticdst = pow(10,mag);
 	ticoff = floor(min/ticdst)*ticdst;
 	n = (max-ticoff)/ticdst+1;
 	if(n <= 0)
 		n = 1;
+
+	if(n > maxn && maxn > 0) {
+		int fac = n/maxn+1;
+		n /= fac;
+		ticdst *= fac;
+	}
 }
 
 
 void Plot::drawTics() {
 	int xn, yn;
 	float xticoff, yticoff, xticdst, yticdst;
-	ticparams(xticdst, xticoff, xn, _xoffset, _xmax);
-	ticparams(yticdst, yticoff, yn, _yoffset, _ymax);
+	int plotw = plotWidth();
+	int ploth = plotHeight();
+
+	ticParams(xticdst, xticoff, xn, _xoffset, _xmax, plotw/20);
+	// estimate tic width
+	std::stringstream test1;
+	std::stringstream test2;
+	test1 << xticoff+xn*xticdst;
+	test2 << xticoff;
+	int len = std::max(test1.str().size(), test2.str().size())*Application::font()->characterWidth()+2;
+	// recalculate with estimated tic width
+	ticParams(xticdst, xticoff, xn, _xoffset, _xmax, plotw/len+1);
+	ticParams(yticdst, yticoff, yn, _yoffset, _ymax, ploth/(Application::font()->characterHeight()+1)+1);
 
 	Painter::setColor(Colors::white);
 	glPushMatrix();
-	glTranslatef(axisOffsetX(),height()-axisOffsetY(),0);
+	glTranslatef(axisOffsetX(),std::max(0,height()-axisOffsetY()),0);
 	
 	glPushMatrix();
 
 	for(int i = 0; i < xn; i++) {
-		float x = plotWidth()*_xscale*(xticoff+xticdst*i-_xoffset);
+		float x = plotw*_xscale*(xticoff+xticdst*i-_xoffset);
 		if(x < 0)
 			continue;
 		glBegin(GL_LINES);
@@ -227,7 +252,7 @@ void Plot::drawTics() {
 	glPushMatrix();
 	
 	for(int i = 0; i < yn; i++) {
-		float y = -plotHeight()*_yscale*(yticoff+yticdst*i-_yoffset);
+		float y = -ploth*_yscale*(yticoff+yticdst*i-_yoffset);
 		if(y > 0)
 			continue;
 		glBegin(GL_LINES);
@@ -285,8 +310,8 @@ void Plot::paintEvent() {
 	Painter::setColor(Colors::white);
 	glBegin(GL_LINE_STRIP);
 	glVertex3f(axisOffsetX(),axisOffsetY(),0);
-	glVertex3f(axisOffsetX(),height()-axisOffsetY(),0);
-	glVertex3f(width()-axisOffsetX(),height()-axisOffsetY(),0);
+	glVertex3f(axisOffsetX(),std::max(0,height()-axisOffsetY()),0);
+	glVertex3f(std::max(0,width()-axisOffsetXRight()),std::max(0,height()-axisOffsetY()),0);
 	glEnd();
 
 	Application::font()->draw(_xlabel.c_str(), width()/2, height()-Application::font()->characterHeight(), AlignHCenter);

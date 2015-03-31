@@ -60,6 +60,11 @@ void Game::loadResources() {
 
 	Widgets::TextureGL::load("data/ckboxon.png");
 	Widgets::TextureGL::load("data/ckboxoff.png");
+	
+	Widgets::TextureGL::load("data/plotview.png");
+	Widgets::TextureGL::load("data/plotviewhigh.png");
+	Widgets::TextureGL::load("data/plotviewdown.png");
+	Widgets::TextureGL::load("data/plotviewdownhigh.png");
 }
 
 void Game::advance() {

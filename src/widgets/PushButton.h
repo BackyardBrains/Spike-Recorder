@@ -27,12 +27,6 @@ private:
 	void leaveEvent();
 	void enterEvent();
 	
-	struct State
-	{
-		State() {memset(this, 0, sizeof(*this));}
-		bool pressing : 1;
-	} _state;
-
 	const TextureGL *_normaltex;
 	const TextureGL *_hovertex;
 

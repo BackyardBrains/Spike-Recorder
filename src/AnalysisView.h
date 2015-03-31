@@ -8,10 +8,12 @@ namespace BackyardBrains {
 
 namespace Widgets {
 class Plot;
+class PushButton;
 }
 class RecordingManager;
 class AnalysisAudioView;
 class AnalysisTrainList;
+class AnalysisPlots;
 
 struct SpikeTrain {
 	SpikeTrain() : upperThresh(0), lowerThresh(0) {}
@@ -28,7 +30,10 @@ private:
 	RecordingManager &_manager;
 	Widgets::Plot *_plot;
 
+
+	Widgets::PushButton *_plotButton;
 	AnalysisTrainList *_trainList;
+	AnalysisPlots *_plots;
 	std::vector<SpikeTrain> _spikeTrains;
 
 	SpikeSorter _spikeSorter;
@@ -39,6 +44,7 @@ private:
 	void closePressed();
 	void savePressed();
 	void addPressed();
+	void plotsPressed();
 
 	void selectionChanged(int i);
 };
