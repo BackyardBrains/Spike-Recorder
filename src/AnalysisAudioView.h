@@ -22,7 +22,8 @@ public:
 
 	void setColorIdx(int idx);
 	void setThresh(int upper, int lower);
-
+	
+	sigslot::signal0<> threshChanged;
 private:
 	SpikeSorter &_spikes;
 

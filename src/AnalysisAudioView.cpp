@@ -5,8 +5,8 @@
 namespace BackyardBrains {
 
 AnalysisAudioView::AnalysisAudioView(RecordingManager &manager, SpikeSorter &spikes, Widgets::Widget *parent) : AudioView(parent, manager), _spikes(spikes), _colorIdx(0), _clickedThresh(-1) {
-	_threshPos[0] = -10;
-	_threshPos[1] = 10;
+	_threshPos[0] = -0;
+	_threshPos[1] = 0;
 }
 
 void AnalysisAudioView::drawTargetMarkers() {
@@ -147,6 +147,9 @@ void AnalysisAudioView::mouseMotionEvent(Widgets::MouseEvent *event) {
 
 void AnalysisAudioView::mouseReleaseEvent(Widgets::MouseEvent *event) {
 	if(event->button() == Widgets::LeftButton) {
+		if(_clickedThresh != -1) {
+			threshChanged.emit();
+		}
 		_clickedThresh = -1;
 	}
 

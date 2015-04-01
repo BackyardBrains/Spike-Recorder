@@ -11,10 +11,13 @@ public:
 	AnalysisTrainList(std::vector<SpikeTrain> &spikeTrains, Widgets::Widget *parent = NULL);
 	int selectedTrain() const;
 	sigslot::signal1<int> selectionChange;
+	sigslot::signal1<int> trainDeleted;
 private:
 	static const int PADDING = 2;
 	static const int FIELDW = 30;
 	static const int FIELDH = 22;
+	static const int REMOVERAD = 6;
+	static const int REMOVEOFF = 14;
 	std::vector<SpikeTrain> &_spikeTrains;
 
 	int _selectedTrain;

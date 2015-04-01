@@ -37,7 +37,6 @@ AnalysisPlots::AnalysisPlots(const std::vector<SpikeTrain> &trains, const Record
 	for(unsigned int i = 0; i < _plots.size(); i++) {
 		_plots[i] = new Widgets::Plot(this);
 		_plots[i]->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Expanding, Widgets::SizePolicy::Expanding));
-		_plots[i]->setColor(AudioView::MARKER_COLORS[i%AudioView::MARKER_COLOR_NUM]);
 		plotLayout->addWidget(_plots[i]);
 	}
 
@@ -144,6 +143,8 @@ void AnalysisPlots::updateTrain(int idx) {
 }
 
 void AnalysisPlots::setData(int idx, int tab) {
+	if(idx >= _plots.size() || idx >= _spikeTrains.size())
+		return;
 	switch(tab) {
 	case TabAvgWave:
 		setAvgWaveformData(idx);
@@ -158,6 +159,7 @@ void AnalysisPlots::setData(int idx, int tab) {
 		setISIData(idx);
 		break;
 	}
+	_plots[idx]->setColor(AudioView::MARKER_COLORS[_spikeTrains[idx].color%AudioView::MARKER_COLOR_NUM]);
 }
 
 void AnalysisPlots::tabChanged(int ntab) {

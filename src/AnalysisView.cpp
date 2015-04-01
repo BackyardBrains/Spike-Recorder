@@ -21,11 +21,15 @@
 namespace BackyardBrains {
 
 AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Widgets::Widget(parent), _manager(mngr) {
+	_colorCounter = 0;
+
 	_audioView = new AnalysisAudioView(mngr, _spikeSorter, this);
 	_audioView->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Expanding, Widgets::SizePolicy::Expanding));
 	_audioView->addChannel(0);
+	_audioView->threshChanged.connect(this,&AnalysisView::addPressed);
 
 	_trainList = new AnalysisTrainList(_spikeTrains, this);
+	_trainList->trainDeleted.connect(this, &AnalysisView::trainDeleted);
 	_plots = new AnalysisPlots(_spikeTrains,_manager, this);
 
 	Widgets::PushButton *closeButton = new Widgets::PushButton(this);
@@ -42,13 +46,8 @@ AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Wi
 	seekBar->setPageStep(25);
 	seekBar->valueChanged.connect((AudioView *)_audioView, &AudioView::setRelOffset);
  	_audioView->relOffsetChanged.connect(seekBar, &Widgets::ScrollBar::updateValue);
-	seekBar->setValue(1000);
+	seekBar->setValue(500);
 
-	Widgets::PushButton *addButton = new Widgets::PushButton(this);
-	addButton->setNormalTex(Widgets::TextureGL::get("data/plus.png"));
-	addButton->setHoverTex(Widgets::TextureGL::get("data/plushigh.png"));
-	//addButton->setSizeHint(Widgets::Size(64,64));
-	addButton->clicked.connect(this, &AnalysisView::addPressed);
 	Widgets::BoxLayout *addBox = new Widgets::BoxLayout(Widgets::Horizontal);
 
 	Widgets::PushButton *saveButton = new Widgets::PushButton(this);
@@ -64,9 +63,6 @@ AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Wi
 
 	addBox->addWidget(_plotButton, Widgets::AlignBottom);
 	addBox->addStretch();
-	addBox->addWidget(addButton, Widgets::AlignVCenter);
-	addBox->addStretch();
-	addBox->addSpacing(64);
 	addBox->setAlignment(Widgets::AlignCenter);
 	Widgets::BoxLayout *vbox = new Widgets::BoxLayout(Widgets::Vertical);
 	Widgets::BoxLayout *topBar = new Widgets::BoxLayout(Widgets::Horizontal);
@@ -170,9 +166,13 @@ void AnalysisView::addPressed() {
 	_spikeTrains[selectedTrain].upperThresh = upperthresh;
 	_spikeTrains[selectedTrain].lowerThresh = lowerthresh;
 
-	if(selectedTrain == _spikeTrains.size()-1 && _spikeTrains[selectedTrain].spikes.size() > 0)
-		_spikeTrains.push_back(SpikeTrain());	
-	_plots->update();
+	if(selectedTrain == _spikeTrains.size()-1 && _spikeTrains[selectedTrain].spikes.size() > 0) {
+		_spikeTrains.push_back(SpikeTrain());		
+		_colorCounter++;
+		_spikeTrains.back().color = _colorCounter;
+	}
+	if(_plots->active())
+		_plots->updateTrain(selectedTrain);
 }
 
 
@@ -181,7 +181,7 @@ void AnalysisView::savePressed() {
 
 	for(unsigned int i = 0; i < _spikeTrains.size(); i++) {
 		std::stringstream s;
-		s << "_neuron" << i;
+		s << "_neuron" << _spikeTrains[i].color;
 		for(unsigned int j = 0; j < _spikeTrains[i].spikes.size(); j++)
 			markers.push_back(std::make_pair(s.str(), _spikeTrains[i].spikes[j]));
 	}
@@ -211,10 +211,15 @@ void AnalysisView::plotsPressed() {
 }
 
 void AnalysisView::selectionChanged(int idx) {
-	_audioView->setColorIdx(idx);
+	_audioView->setColorIdx(_spikeTrains[idx].color);
 	_audioView->setThresh(_spikeTrains[idx].upperThresh, _spikeTrains[idx].lowerThresh);
 	_plots->setTarget(idx);
+}
 
+void AnalysisView::trainDeleted(int idx) {
+	_spikeTrains.erase(_spikeTrains.begin()+idx);
+	_plots->update();
+	selectionChanged(_trainList->selectedTrain());
 }
 
 }
