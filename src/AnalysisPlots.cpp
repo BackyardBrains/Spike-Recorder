@@ -11,12 +11,6 @@
 #include <cmath>
 
 namespace BackyardBrains {
-enum Tabs {
-	TabAvgWave = 0,
-	TabAuto = 1,
-	TabCross = 2,
-	TabISI = 3
-};
 
 AnalysisPlots::AnalysisPlots(const std::vector<SpikeTrain> &trains, const RecordingManager &manager, Widget *parent) : Widget(parent), _manager(manager), _active(0), _spikeTrains(trains), _target(0) {
 	setSizeHint(Widgets::Size());
@@ -34,13 +28,7 @@ AnalysisPlots::AnalysisPlots(const std::vector<SpikeTrain> &trains, const Record
 	Widgets::BoxLayout *vbox = new Widgets::BoxLayout(Widgets::Vertical, this);
 	_plotLayout = new Widgets::BoxLayout(Widgets::Horizontal);
 	
-	_plots.resize(2);
-	for(unsigned int i = 0; i < _plots.size(); i++) {
-		_plots[i] = new Widgets::Plot(this);
-		_plots[i]->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Expanding, Widgets::SizePolicy::Expanding));
-		_plots[i]->setVisible(false);
-		_plotLayout->addWidget(_plots[i]);
-	}
+	setPlotCount(1);
 
 	vbox->addWidget(_tabs);
 	vbox->addLayout(_plotLayout);
@@ -75,7 +63,7 @@ void AnalysisPlots::setPlotCount(int ncount) {
 		_plotLayout->addWidget(_plots[i]);
 	}
 	_plotLayout->update();
-	Widgets::Application::getInstance()->updateLayout();
+//	Widgets::Application::getInstance()->updateLayout();
 }
 
 void AnalysisPlots::setTarget(int target) {
@@ -167,7 +155,9 @@ void AnalysisPlots::setISIData(int idx) {
 
 
 void AnalysisPlots::update() {
-	tabChanged(_tabs->selected());
+	for(unsigned int i = 0; i < std::min(_plots.size(),_spikeTrains.size()); i++) {
+		setData(i, _tabs->selected());
+	}
 }
 
 void AnalysisPlots::updateTrain(int idx) {
@@ -199,9 +189,9 @@ void AnalysisPlots::setData(int idx, int tab) {
 }
 
 void AnalysisPlots::tabChanged(int ntab) {
-	for(unsigned int i = 0; i < std::min(_plots.size(),_spikeTrains.size()); i++) {
-		setData(i, ntab);
-	}
+	update();
+
+	modeChanged.emit(ntab);
 }
 
 void AnalysisPlots::setActive(bool active) {

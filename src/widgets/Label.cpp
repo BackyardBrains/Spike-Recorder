@@ -20,7 +20,14 @@ void Label::setText(const char *text) {
 }
 
 void Label::updateSize() {
-	setSizeHint(Size(Application::font()->characterWidth()*_text.size()+2*PADDING, Application::font()->characterHeight()+2*PADDING));
+	const char *lb = strchr(_text.c_str(),'\n');
+	int len;
+	if(lb == 0) {
+		len = _text.size();
+	} else {
+		len = lb-_text.c_str();
+	}
+	setSizeHint(Size(Application::font()->characterWidth()*len+2*PADDING, Application::font()->characterHeight()+2*PADDING));
 }
 
 void Label::setText(int num) {

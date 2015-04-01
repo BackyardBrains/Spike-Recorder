@@ -20,6 +20,7 @@
 namespace BackyardBrains {
 
 AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Widgets::Widget(parent), _manager(mngr) {
+	_spikeTrains.push_back(SpikeTrain());
 	_colorCounter = 0;
 
 	_audioView = new AnalysisAudioView(mngr, _spikeSorter, this);
@@ -30,6 +31,7 @@ AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Wi
 	_trainList = new AnalysisTrainList(_spikeTrains, this);
 	_trainList->trainDeleted.connect(this, &AnalysisView::trainDeleted);
 	_plots = new AnalysisPlots(_spikeTrains,_manager, this);
+	_plots->modeChanged.connect(this, &AnalysisView::plotModeChanged);
 
 	Widgets::PushButton *closeButton = new Widgets::PushButton(this);
 	closeButton->clicked.connect(this, &AnalysisView::closePressed);
@@ -81,7 +83,13 @@ AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Wi
 	vbox->addLayout(addBox);
 	vbox->addWidget(_plots);
 
+	_crossLabel = new Widgets::Label(this);
+	_crossLabel->setText("        \x1e        \nSelect target for\ncrosscorrelogram\n");
+	_crossLabel->updateSize();
+	_crossLabel->setVisible(false);
+
 	analysisBar->addWidget(_trainList);
+	analysisBar->addWidget(_crossLabel,Widgets::AlignHCenter);
 	analysisBar->addStretch();
 	analysisBar->addWidget(saveButton,Widgets::AlignHCenter);
 	analysisBar->addSpacing(10);
@@ -97,7 +105,6 @@ AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Wi
 	_manager.setThreshMode(false);
 	_manager.setPos(_manager.fileLength()/2);
 
-	_spikeTrains.push_back(SpikeTrain());
 
 	_trainList->selectionChange.connect(this, &AnalysisView::selectionChanged);
 }
@@ -141,8 +148,10 @@ void AnalysisView::addPressed() {
 		_spikeTrains.push_back(SpikeTrain());		
 		_colorCounter++;
 		_spikeTrains.back().color = _colorCounter;
+		_plots->setPlotCount(_spikeTrains.size()-1);
+		_trainList->updateSize();
+		Widgets::Application::getInstance()->updateLayout();
 	}
-	_plots->setPlotCount(_spikeTrains.size()-1);
 	if(_plots->active())
 		_plots->updateTrain(selectedTrain);
 }
@@ -193,6 +202,11 @@ void AnalysisView::trainDeleted(int idx) {
 	_plots->update();
 	selectionChanged(_trainList->selectedTrain());
 	_plots->setPlotCount(_spikeTrains.size()-1);
+	_trainList->updateSize();
+	Widgets::Application::getInstance()->updateLayout();
+}
+void AnalysisView::plotModeChanged(int mode) {
+	_crossLabel->setVisible(mode == AnalysisPlots::TabCross);
 }
 
 }

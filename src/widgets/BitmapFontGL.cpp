@@ -29,18 +29,26 @@ int BitmapFontGL::characterHeight() const
 // TODO use display list calling directly of the text and strlen(text) to accelerate drawing all of the quads
 void BitmapFontGL::draw(const char *text, int xx, int yy, Alignment alignment) const
 {
+	// align on first line
+	const char *lb = strchr(text,'\n');
+	int len;
+	if(lb == 0) {
+		len = strlen(text);
+	} else {
+		len = lb-text;
+	}
+
+	if (alignment & AlignHCenter)
+		xx -= (strideX*len)/2;
+	else if (alignment & AlignRight)
+		xx -= strideX*len;
+	if (alignment & AlignVCenter)
+		yy -= strideY/2;
+	else if (alignment & AlignBottom)
+		yy -= strideY;
+	
 	int x = xx;
 	int y = yy;
-
-	const int len = strlen(text);
-	if (alignment & AlignHCenter)
-		x -= (strideX*len)/2;
-	else if (alignment & AlignRight)
-		x -= strideX*len;
-	if (alignment & AlignVCenter)
-		y -= strideY/2;
-	else if (alignment & AlignBottom)
-		y -= strideY;
 
 	characters->bind();
 	glBegin(GL_QUADS);

@@ -10,6 +10,7 @@ class AnalysisTrainList : public Widgets::Widget {
 public:
 	AnalysisTrainList(std::vector<SpikeTrain> &spikeTrains, Widgets::Widget *parent = NULL);
 	int selectedTrain() const;
+	void updateSize();
 	sigslot::signal1<int> selectionChange;
 	sigslot::signal1<int> trainDeleted;
 private:

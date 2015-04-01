@@ -15,6 +15,12 @@ class RecordingManager;
 
 class AnalysisPlots : public Widgets::Widget {
 public:
+	enum Tabs {
+		TabAvgWave = 0,
+		TabAuto = 1,
+		TabCross = 2,
+		TabISI = 3
+	};
 	AnalysisPlots(const std::vector<SpikeTrain> &spikeTrains, const RecordingManager &manager, Widget *parent = NULL);
 	void setActive(bool active);
 	bool active() const;
@@ -23,6 +29,8 @@ public:
 	void updateTrain(int idx);
 	void setTarget(int target);
 	void setPlotCount(int ncount);
+
+	sigslot::signal1<int> modeChanged;
 private:
 	const RecordingManager &_manager;
 	bool _active;

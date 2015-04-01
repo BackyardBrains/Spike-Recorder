@@ -8,6 +8,7 @@ namespace BackyardBrains {
 
 namespace Widgets {
 class PushButton;
+class Label;
 }
 class RecordingManager;
 class AnalysisAudioView;
@@ -31,6 +32,7 @@ private:
 	RecordingManager &_manager;
 
 	Widgets::PushButton *_plotButton;
+	Widgets::Label *_crossLabel;
 	AnalysisTrainList *_trainList;
 	AnalysisPlots *_plots;
 	std::vector<SpikeTrain> _spikeTrains;
@@ -50,6 +52,7 @@ private:
 	void selectionChanged(int i);
 	void threshChanged();
 	void trainDeleted(int idx);
+	void plotModeChanged(int mode);
 };
 
 }

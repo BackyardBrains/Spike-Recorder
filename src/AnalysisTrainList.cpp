@@ -12,8 +12,8 @@ namespace BackyardBrains {
 
 AnalysisTrainList::AnalysisTrainList(std::vector<SpikeTrain> &spikeTrains, Widgets::Widget *parent)
 	: Widget(parent), _spikeTrains(spikeTrains), _selectedTrain(0) {
-	setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Fixed, Widgets::SizePolicy::Expanding));
-	setSizeHint(Widgets::Size(150,310));
+//	setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Fixed, Widgets::SizePolicy::Expanding));
+	updateSize();
 }
 
 int AnalysisTrainList::selectedTrain() const {
@@ -23,6 +23,10 @@ int AnalysisTrainList::selectedTrain() const {
 	if(i >= (int)_spikeTrains.size())
 		i = _spikeTrains.size()-1;
 	return i;
+}
+
+void AnalysisTrainList::updateSize() {
+	setSizeHint(Widgets::Size(150,_spikeTrains.size()*(FIELDH+2*PADDING)));
 }
 
 void AnalysisTrainList::paintEvent() {

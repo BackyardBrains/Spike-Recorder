@@ -49,8 +49,8 @@ void TabBar::mousePressEvent(MouseEvent *event) {
 	if(event->button() == LeftButton) {
 		int s = event->pos().x*(int)_entries.size()/width();
 		if(s != _selected) {
-			selectionChanged.emit(s);
 			_selected = s;
+			selectionChanged.emit(s);
 		}
 	}
 	event->accept();
