@@ -8,6 +8,7 @@
 #include "widgets/BoxLayout.h"
 #include "widgets/Plot.h"
 #include "AudioView.h"
+#include <cmath>
 
 namespace BackyardBrains {
 enum Tabs {
@@ -31,19 +32,50 @@ AnalysisPlots::AnalysisPlots(const std::vector<SpikeTrain> &trains, const Record
 
 
 	Widgets::BoxLayout *vbox = new Widgets::BoxLayout(Widgets::Vertical, this);
-	Widgets::BoxLayout *plotLayout = new Widgets::BoxLayout(Widgets::Horizontal);
+	_plotLayout = new Widgets::BoxLayout(Widgets::Horizontal);
 	
 	_plots.resize(2);
 	for(unsigned int i = 0; i < _plots.size(); i++) {
 		_plots[i] = new Widgets::Plot(this);
 		_plots[i]->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Expanding, Widgets::SizePolicy::Expanding));
-		plotLayout->addWidget(_plots[i]);
+		_plots[i]->setVisible(false);
+		_plotLayout->addWidget(_plots[i]);
 	}
 
 	vbox->addWidget(_tabs);
-	vbox->addLayout(plotLayout);
+	vbox->addLayout(_plotLayout);
 
 	vbox->update();
+}
+
+void AnalysisPlots::setPlotCount(int ncount) {
+	int ocount = _plots.size();
+	if(ncount < 1)
+		ncount = 1;
+
+	if(ncount == ocount)
+		return;
+
+	if(ncount < ocount) {
+		for(int i = ncount; i < ocount; i++) {
+			delete _plots[i];
+		}
+	}
+	_plots.resize(ncount);
+	
+	_plotLayout->clear();
+	for(int i = 0; i < ncount; i++) {
+		if(i >= ocount) {
+			_plots[i] = new Widgets::Plot(this);
+			_plots[i]->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Expanding, Widgets::SizePolicy::Expanding));
+			_plots[i]->setVisible(_active);
+
+		}
+
+		_plotLayout->addWidget(_plots[i]);
+	}
+	_plotLayout->update();
+	Widgets::Application::getInstance()->updateLayout();
 }
 
 void AnalysisPlots::setTarget(int target) {
@@ -123,14 +155,14 @@ void AnalysisPlots::setISIData(int idx) {
 	x.resize(buf.size());
 
 	for(int i = 0; i < (int)buf.size(); i++) {
-		x[i] = bins[i];
+		x[i] = log10(bins[i]);
 		y[i] = buf[i];
 	}
 	_plots[idx]->setData(x,y);
 	_plots[idx]->setSTD(std::vector<float>());
 	_plots[idx]->setStyle(Widgets::Plot::Bar);
 	_plots[idx]->setYLabel("# of spikes");
-	_plots[idx]->setXLabel("time/s");
+	_plots[idx]->setXLabel("log10(time/s)");
 }
 
 
@@ -139,11 +171,15 @@ void AnalysisPlots::update() {
 }
 
 void AnalysisPlots::updateTrain(int idx) {
+	if(_tabs->selected() == TabCross && idx == _target) {
+		update();
+		return;
+	}
 	setData(idx, _tabs->selected());	
 }
 
 void AnalysisPlots::setData(int idx, int tab) {
-	if(idx >= _plots.size() || idx >= _spikeTrains.size())
+	if(idx < 0 || idx >= (int) _plots.size() || idx >= (int) _spikeTrains.size())
 		return;
 	switch(tab) {
 	case TabAvgWave:
@@ -175,6 +211,9 @@ void AnalysisPlots::setActive(bool active) {
 	} else {
 		setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Expanding, Widgets::SizePolicy::Fixed));
 	}
+
+	for(unsigned int i = 0; i < _plots.size(); i++)
+		_plots[i]->setVisible(active);
 
 	if(active != _active)
 		Widgets::Application::getInstance()->updateLayout();

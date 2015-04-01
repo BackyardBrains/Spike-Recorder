@@ -7,7 +7,6 @@
 #include "widgets/BitmapFontGL.h"
 #include "widgets/Label.h"
 #include "widgets/ErrorBox.h"
-#include "widgets/Plot.h"
 #include "engine/FileRecorder.h"
 #include "engine/SpikeAnalysis.h"
 #include "AnalysisAudioView.h"
@@ -103,34 +102,6 @@ AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Wi
 	_trainList->selectionChange.connect(this, &AnalysisView::selectionChanged);
 }
 
-void AnalysisView::setPlotData() {
-	const int upperthresh = _audioView->upperThresh();
-	const int lowerthresh = _audioView->lowerThresh();
-
-	std::vector<int64_t > selected;
-	selected.reserve(100);
-	for(unsigned int i = 0; i < _spikeSorter.spikes().size(); i++)
-		if(_spikeSorter.spikes()[i].second > lowerthresh && _spikeSorter.spikes()[i].second < upperthresh)
-			selected.push_back(_spikeSorter.spikes()[i].first);
-
-	std::vector<float> buf, stdy;
-	SpikeAnalysis::averageWaveform(buf, stdy, selected, _manager.fileName().c_str(), 0);
-	std::vector<float> x, y;
-	
-	y.resize(buf.size());
-	x.resize(buf.size());
-
-	for(int i = 0; i < (int)buf.size(); i++) {
-		x[i] = (i-(int)buf.size()/2)/(float)_manager.sampleRate();
-		y[i] = buf[i];
-	}
-	_plot->setData(x,y);
-	_plot->setSTD(stdy);
-	//_plot->setStyle(Widgets::Plot::Bar);
-	_plot->setXLabel("time/s");
-
-}
-
 void AnalysisView::paintEvent() {
 	const Widgets::Color bg = Widgets::Colors::background;
 
@@ -171,6 +142,7 @@ void AnalysisView::addPressed() {
 		_colorCounter++;
 		_spikeTrains.back().color = _colorCounter;
 	}
+	_plots->setPlotCount(_spikeTrains.size()-1);
 	if(_plots->active())
 		_plots->updateTrain(selectedTrain);
 }
@@ -220,6 +192,7 @@ void AnalysisView::trainDeleted(int idx) {
 	_spikeTrains.erase(_spikeTrains.begin()+idx);
 	_plots->update();
 	selectionChanged(_trainList->selectedTrain());
+	_plots->setPlotCount(_spikeTrains.size()-1);
 }
 
 }

@@ -9,6 +9,7 @@ namespace BackyardBrains {
 namespace Widgets {
 	class Plot;
 	class TabBar;
+	class BoxLayout;
 }
 class RecordingManager;
 
@@ -21,6 +22,7 @@ public:
 	void update();
 	void updateTrain(int idx);
 	void setTarget(int target);
+	void setPlotCount(int ncount);
 private:
 	const RecordingManager &_manager;
 	bool _active;
@@ -29,6 +31,7 @@ private:
 	int _target;
 
 	Widgets::TabBar *_tabs;
+	Widgets::BoxLayout *_plotLayout;
 	std::vector<Widgets::Plot *> _plots;
 
 	void setAvgWaveformData(int i);

@@ -7,7 +7,6 @@
 namespace BackyardBrains {
 
 namespace Widgets {
-class Plot;
 class PushButton;
 }
 class RecordingManager;
@@ -30,8 +29,6 @@ public:
 private:
 	AnalysisAudioView *_audioView;
 	RecordingManager &_manager;
-	Widgets::Plot *_plot;
-
 
 	Widgets::PushButton *_plotButton;
 	AnalysisTrainList *_trainList;
