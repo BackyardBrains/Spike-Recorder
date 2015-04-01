@@ -58,27 +58,44 @@ void RecordingManager::applyMetadata(const MetadataChunk &m) {
 		_recordingDevices[i].name = m.channels[i].name;
 	}
 
-	std::list<std::string> neuronNames;
+	std::vector<int> neuronIds;
 	_spikeTrains.clear();
 	_markers.clear();
 	for(std::list<std::pair<std::string, int64_t> >::const_iterator it = m.markers.begin(); it != m.markers.end(); it++) {
-		if(it->first.compare(0,7,"_neuron") == 0) {
-			int neunum = -1;
-			int i = 0;
-			for(std::list<std::string>::iterator it2 = neuronNames.begin(); it2 != neuronNames.end(); it2++, i++) {
-				if(*it2 == it->first)
-					neunum = i;
+		const char *name = it->first.c_str();
+		if(strncmp(name, "_neuron", 7) == 0) {
+			char *endptr;
+			int neuid = strtol(name+7, &endptr, 10);
+			if(name == endptr)
+				continue;
+			
+			int neuronidx = -1;
+			for(unsigned int i = 0; i < neuronIds.size(); i++) {
+				if(neuronIds[i] == neuid) {
+					neuronidx = i;
+					break;
+				}
 			}
 
-			if(neunum == -1) {
-				neuronNames.push_back(it->first);
-				neunum = neuronNames.size()-1;
-				if((int)_spikeTrains.capacity() == neunum)
-					_spikeTrains.reserve(_spikeTrains.capacity()*2);
-				_spikeTrains.push_back(std::list<int64_t>());
+			if(neuronidx == -1) {
+				neuronIds.push_back(neuid);
+				neuronidx = neuronIds.size()-1;
+				_spikeTrains.push_back(SpikeTrain());
+				int clr = neuid;
+				if(clr < 0)
+					clr = 0;
+				_spikeTrains.back().color = clr;
 			}
-
-			_spikeTrains[neunum].push_back(it->second);
+			if(strlen(endptr) > 9) {
+				int num = atoi(endptr+9);
+				if(strncmp(endptr,"threshhig",9) == 0) {
+					_spikeTrains[neuronidx].upperThresh = num;
+				} else if(strncmp(endptr,"threshlow",9) == 0) {
+					_spikeTrains[neuronidx].lowerThresh = num;
+				}
+			} else {
+				_spikeTrains[neuronidx].spikes.push_back(it->second);
+			}
 		} else {
 			_markers.push_back(*it);
 		}

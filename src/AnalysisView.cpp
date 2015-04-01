@@ -19,13 +19,20 @@
 
 namespace BackyardBrains {
 
-AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Widgets::Widget(parent), _manager(mngr) {
-	_spikeTrains.push_back(SpikeTrain());
+AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Widgets::Widget(parent), _manager(mngr), _spikeTrains(mngr.spikeTrains()) {
 	_colorCounter = 0;
+	for(unsigned int i = 0; i < _spikeTrains.size(); i++) {
+		if(_spikeTrains[i].color >= _colorCounter)
+			_colorCounter = _spikeTrains[i].color+1;
+	}
+	_spikeTrains.push_back(SpikeTrain());
+	_spikeTrains.back().color=_colorCounter;
+	_colorCounter++;
 
 	_audioView = new AnalysisAudioView(mngr, _spikeSorter, this);
 	_audioView->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Expanding, Widgets::SizePolicy::Expanding));
 	_audioView->addChannel(0);
+	_audioView->setThresh(_spikeTrains[0].lowerThresh, _spikeTrains[0].upperThresh);
 	_audioView->threshChanged.connect(this,&AnalysisView::addPressed);
 
 	_trainList = new AnalysisTrainList(_spikeTrains, this);
@@ -160,12 +167,20 @@ void AnalysisView::addPressed() {
 void AnalysisView::savePressed() {
 	std::list<std::pair<std::string, int64_t> > markers;
 
-	for(unsigned int i = 0; i < _spikeTrains.size(); i++) {
+	for(unsigned int i = 0; i < _spikeTrains.size()-1; i++) {
 		std::stringstream s;
 		s << "_neuron" << _spikeTrains[i].color;
 		for(unsigned int j = 0; j < _spikeTrains[i].spikes.size(); j++)
 			markers.push_back(std::make_pair(s.str(), _spikeTrains[i].spikes[j]));
+		// save thresholds
+		std::stringstream s1;
+		s1 << "_neuron" << _spikeTrains[i].color << "threshhig" << _spikeTrains[i].upperThresh;
+		std::stringstream s2;
+		s2 << "_neuron" << _spikeTrains[i].color << "threshlow" << _spikeTrains[i].lowerThresh;
+		markers.push_back(std::make_pair(s1.str(), 0));
+		markers.push_back(std::make_pair(s2.str(), 0));
 	}
+
 
 	FileRecorder f(_manager);
 	std::string filename = f.eventTxtFilename(_manager.fileName());

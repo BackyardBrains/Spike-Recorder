@@ -3,6 +3,7 @@
 
 #include "widgets/Widget.h"
 #include "engine/SpikeSorter.h"
+#include "engine/RecordingManager.h"
 
 namespace BackyardBrains {
 
@@ -15,15 +16,6 @@ class AnalysisAudioView;
 class AnalysisTrainList;
 class AnalysisPlots;
 
-struct SpikeTrain {
-	SpikeTrain() : upperThresh(0), lowerThresh(0), color(0) {}
-	std::vector<int64_t> spikes;
-	int16_t upperThresh;
-	int16_t lowerThresh;
-
-	int color;
-};
-
 class AnalysisView : public Widgets::Widget {
 public:
 	AnalysisView(RecordingManager &mngr, Widget *parent = NULL);
@@ -35,7 +27,7 @@ private:
 	Widgets::Label *_crossLabel;
 	AnalysisTrainList *_trainList;
 	AnalysisPlots *_plots;
-	std::vector<SpikeTrain> _spikeTrains;
+	std::vector<SpikeTrain> &_spikeTrains;
 
 	SpikeSorter _spikeSorter;
 	bool _wasThreshMode;
