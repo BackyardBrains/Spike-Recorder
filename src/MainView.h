@@ -10,6 +10,7 @@ class FileRecorder;
 class AudioView;
 class RecordingBar;
 class AnalysisView;
+class FFTView;
 namespace Widgets {
 	class PushButton;
 	class ScrollBar;
@@ -27,6 +28,7 @@ private:
 	Widgets::PushButton *_fileButton;
 	Widgets::PushButton *_forwardButton;
 	Widgets::PushButton *_recordButton;
+	Widgets::PushButton *_fftButton;
 	Widgets::PushButton *_analysisButton;
 
 	Widgets::ScrollBar *_seekBar;
@@ -34,6 +36,7 @@ private:
 	AudioView *_audioView;
 	RecordingBar *_recBar;
 	AnalysisView *_anaView;
+	FFTView *_fftView;
 
 	Widgets::Widget *makeThreshavgGroup();
 
@@ -49,6 +52,8 @@ private:
 	void configPressed();
 	void recordPressed();
 	void analysisPressed();
+
+	void fftPressed();
 };
 
 }

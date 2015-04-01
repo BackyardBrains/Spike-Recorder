@@ -3,6 +3,7 @@
 
 #include "widgets/Widget.h"
 #include "widgets/PushButton.h"
+#include "DropDownList.h"
 
 namespace BackyardBrains {
 
@@ -20,6 +21,12 @@ private:
 		void catchColor(int coloridx) {
 			_parent->colorChanged(_virtualDevice, coloridx);
 		}
+		void catchPort(int portidx) {
+            _parent->serialPortChanged(_virtualDevice, portidx);
+        }
+        void setNumOfChannelsHandler(int selectionNum) {
+            _parent->setSerialNumberOfChannels(selectionNum+1);
+        }
 	private:
 		int _virtualDevice;
 		ConfigView *_parent;
@@ -31,11 +38,16 @@ private:
 	std::vector<ColorDropDownList *> _clrs;
 
 	void colorChanged(int virtualDevice, int coloridx);
-
+    void serialPortChanged(int virtualDevice, int portidx);
+    void setSerialNumberOfChannels(int numberOfChannels);
 	RecordingManager &_manager;
 	AudioView &_audioView;
+    DropDownList *serialPortWidget;
+    DropDownList * numberOfChannelsWidget;
+    Widgets::PushButton *_connectButton;
+    	
 	void paintEvent();
-
+    void connectPressed();	
 	void closePressed();
 	void mutePressed();
 

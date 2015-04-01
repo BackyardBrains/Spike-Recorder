@@ -44,6 +44,12 @@ public:
 	int channelCount() const;
 	int channelVirtualDevice(int channel) const;
 	int virtualDeviceChannel(int virtualDevice) const;
+	
+	int selectedChannel() const;
+	
+	float scaleWidth() const; //pixels per second of audio
+	int screenWidth() const;
+	int sampleCount(int screenw, float scalew) const;
 
 	void standardSettings();
 
@@ -51,10 +57,14 @@ public:
 	void setRelOffset(int reloffset); // in per mille
 	int offset() const;
 
+	int channelOffset() const;
+
 	sigslot::signal1<int> relOffsetChanged;
+	
+	static const int MOVEPIN_SIZE = 30;
+	static const int DATA_XOFF = MOVEPIN_SIZE*1.48f;
 protected:
 
-	static const int MOVEPIN_SIZE = 30;
 	static const int GAINCONTROL_XOFF = MOVEPIN_SIZE*6/5;
 	static const int GAINCONTROL_YOFF = MOVEPIN_SIZE*3/5;
 	static const int GAINCONTROL_RAD = MOVEPIN_SIZE/4;
@@ -73,10 +83,6 @@ protected:
 	void drawGainControls();
 	void drawData(std::vector<std::pair<int16_t, int16_t> > &data, int channel, int samples, int x, int y, int width);
 	void paintEvent();
-
-	float scaleWidth(); //pixels per second of audio
-	int screenWidth();
-	int sampleCount(int screenw, float scalew);
 
 	void mousePressEvent(Widgets::MouseEvent *event);
 	void mouseMotionEvent(Widgets::MouseEvent *event);
@@ -108,7 +114,6 @@ private:
 
 	void clearChannels();
 
-	int selectedChannel() const;
 	float scaleLenFactor();
 
 	void resizeEvent(Widgets::ResizeEvent *e);

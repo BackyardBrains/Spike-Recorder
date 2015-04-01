@@ -17,6 +17,7 @@
 #include "AnalysisView.h"
 #include "RecordingBar.h"
 #include "Log.h"
+#include "FFTView.h"
 #include <SDL_opengl.h>
 #include <SDL.h>
 #include <cerrno>
@@ -82,6 +83,12 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	_recordButton->setNormalTex(Widgets::TextureGL::get("data/rec.png"));
 	_recordButton->setHoverTex(Widgets::TextureGL::get("data/rechigh.png"));
 	_recordButton->clicked.connect(this, &MainView::recordPressed);
+
+	_fftButton = new Widgets::PushButton(this);
+	_fftButton->setNormalTex(Widgets::TextureGL::get("data/fft.png"));
+	_fftButton->setHoverTex(Widgets::TextureGL::get("data/ffthigh.png"));
+	_fftButton->clicked.connect(this, &MainView::fftPressed);
+
 	_fileButton = new Widgets::PushButton(this);
 	_fileButton->setNormalTex(Widgets::TextureGL::get("data/file.png"));
 	_fileButton->setHoverTex(Widgets::TextureGL::get("data/filehigh.png"));
@@ -117,12 +124,16 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	_threshavgGroup = makeThreshavgGroup();
 
 	_recBar = new RecordingBar(_fileRec, this);
+	
+	_fftView = new FFTView(*_audioView, _manager, this);
 
 	Widgets::BoxLayout *topBar = new Widgets::BoxLayout(Widgets::Horizontal);
 	topBar->addSpacing(10);
 	topBar->addWidget(_configButton);
 	topBar->addSpacing(5);
 	topBar->addWidget(threshButton);
+	topBar->addSpacing(5);
+	topBar->addWidget(_fftButton);
 	topBar->addSpacing(5);
 	topBar->addWidget(_analysisButton);
 	topBar->addSpacing(10);
@@ -150,6 +161,8 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	vbox->addLayout(topBar);
 	vbox->addSpacing(10);
 	vbox->addWidget(_audioView, Widgets::AlignVCenter);
+	vbox->addWidget(_fftView);
+	vbox->addSpacing(10);
 	vbox->addWidget(_seekBar);
 	vbox->addSpacing(10);
 	vbox->addLayout(seekBarBox);
@@ -202,10 +215,13 @@ void MainView::forwardPressed() {
 
 void MainView::threshPressed() {
 	if(!_manager.threshMode()) {
+		_fftView->setActive(false);
 		_manager.setThreshMode(true);
 		_threshavgGroup->setVisible(true);
+		_fftButton->setVisible(false);
 	} else {
 		_manager.setThreshMode(false);
+		_fftButton->setVisible(true);
 		_threshavgGroup->setVisible(false);
 	}
 }
@@ -260,9 +276,19 @@ void MainView::recordPressed() {
 	Widgets::Application::getInstance()->updateLayout();
 }
 
+void MainView::fftPressed() {
+	if(_fftView->active()) {
+		_fftView->setActive(false);
+	} else {
+		_fftView->setActive(true);
+	}
+
+	Widgets::Application::getInstance()->updateLayout();
+}
+
 void MainView::filePressed() {
 	Widgets::FileDialog d(Widgets::FileDialog::OpenFile);
-
+	
 	d.open();
 	while(d.isOpen())
 		SDL_Delay(16);
@@ -294,6 +320,7 @@ void MainView::filePressed() {
 
 	_recordButton->setVisible(false);
 	_analysisButton->setVisible(true);
+	_fftView->setActive(false);
 
 	Widgets::ToolTip *tip = new Widgets::ToolTip("Click to return to live mode \x1f", 2000);
 	tip->setGeometry(Widgets::Rect(width()/2-190, height()-150, 280, 40));
@@ -302,6 +329,7 @@ void MainView::filePressed() {
 }
 
 void MainView::configPressed() {
+    _manager.refreshSerialPorts();
 	ConfigView *c = new ConfigView(_manager, *_audioView);
 	c->setDeleteOnClose(true);
 	c->setGeometry(rect());
@@ -319,7 +347,6 @@ void MainView::analysisPressed() {
 	if(!_manager.paused())
 		pausePressed();
 }
-
 
 void MainView::keyPressEvent(Widgets::KeyboardEvent *e) {
 	if(e->key() >= Widgets::Key0 && e->key() <= Widgets::Key9) {

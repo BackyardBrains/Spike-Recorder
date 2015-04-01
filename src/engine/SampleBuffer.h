@@ -48,6 +48,11 @@ public:
 		_notEmpty = other._notEmpty;
 		return *this;
 	}
+	
+    //
+    // Copy data from src to _buffer and
+    //For every level of _envelopes find min and max envelope
+    //	
 	void addData(const int16_t *src, int64_t len)
 	{
 		if (len > 0)
@@ -58,6 +63,11 @@ public:
 			{
 				const int skipCount = (1 << j);
 				const int envelopeIndex = (j-1);
+				
+                //This envelopeSampleIndex has same value for skipCount consecutive samples.
+                //So for every level of envelope resolution (envelopeIndex) we find max and min sample
+                //on interval of skipCount consecutive samples and store as one value of envelope
+                //at envelopeSampleIndex index				
 				const unsigned int envelopeSampleIndex = (_head / skipCount);
 				if (envelopeSampleIndex >= _envelopes[envelopeIndex].size())
 				{
@@ -67,10 +77,14 @@ public:
 				std::pair<int16_t, int16_t> &dst = _envelopes[envelopeIndex][envelopeSampleIndex];
 				if (_head % skipCount == 0)
 				{
+				    //if it is first in skipCount consecutive samples
+                    //take this to compare with others
 					dst = std::pair<int16_t, int16_t>(*src, *src);
 				}
 				else
 				{
+				    //if it is not first in skipCount consecutive samples
+                    // compare and keep max and min
 					dst = std::pair<int16_t, int16_t>(std::min(dst.first, *src), std::max(dst.second, *src));
 				}
 			}
@@ -80,6 +94,27 @@ public:
 		}
 		_pos += len;
 	}
+	
+    //
+    // Just copy data from src interleaved buffer to non-interleaved _buffer buffer
+    //for "stride" channel
+    //
+    void simpleAddData(const int16_t *src, int64_t len, int16_t stride)
+    {
+        if (len > 0)
+            _notEmpty = true;
+        for (int i = 0; i < len; i++)
+        {
+            _buffer[_head++] = *src;
+            src = src+stride;
+            if (_head == SIZE)
+                _head = 0;
+        }
+       // std::cout<< "**Pos: "<< _pos <<" Len: "" \n";
+        _pos += len;
+    }	
+	
+	
 	void getData(int16_t *dst, int64_t offset, int64_t len) const
 	{
 		int64_t j = 0;

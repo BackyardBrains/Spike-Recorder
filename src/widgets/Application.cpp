@@ -113,13 +113,13 @@ void Application::run() {
 		removeClosed(_windowStack);
 		removeClosed(_popupStack);
 
+		advance();
 		// Call step functions of widgets that actually need them. Are there any?
 		for (WidgetList::const_iterator it = _windowStack.begin(); it != _windowStack.end(); ++it)
 			(*it)->_CallAdvance();
 		for (WidgetList::const_iterator it = _popupStack.begin(); it != _popupStack.end(); ++it)
 			(*it)->_CallAdvance();
 
-		advance();
 		// draw
 		SDL_Surface * const screen = SDL_GetVideoSurface();
 		glMatrixMode(GL_PROJECTION);

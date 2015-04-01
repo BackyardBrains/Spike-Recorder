@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>3D98F4E9-F9DE-436E-BA27-7B7317029C12</string>
+	<key>IDESourceControlProjectName</key>
+	<string>SpikeRecorder</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>04748EC5FA2F3043B1D9712127E99DE42AD5EF92</key>
+		<string>https://github.com/BackyardBrains/BYB-Neural-Recorder.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>SpikeRecorder.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>04748EC5FA2F3043B1D9712127E99DE42AD5EF92</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/BackyardBrains/BYB-Neural-Recorder.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>04748EC5FA2F3043B1D9712127E99DE42AD5EF92</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>04748EC5FA2F3043B1D9712127E99DE42AD5EF92</string>
+			<key>IDESourceControlWCCName</key>
+			<string>SpikeRecorderSerial</string>
+		</dict>
+	</array>
+</dict>
+</plist>

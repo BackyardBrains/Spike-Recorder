@@ -45,6 +45,8 @@ void Game::loadResources() {
 	Widgets::TextureGL::load("data/filehigh.png");
 	Widgets::TextureGL::load("data/analysis.png");
 	Widgets::TextureGL::load("data/analysishigh.png");
+	Widgets::TextureGL::load("data/fft.png");
+	Widgets::TextureGL::load("data/ffthigh.png");
 
 	Widgets::TextureGL::load("data/save.png");
 	Widgets::TextureGL::load("data/savehigh.png");
@@ -62,6 +64,8 @@ void Game::loadResources() {
 	Widgets::TextureGL::load("data/plotviewhigh.png");
 	Widgets::TextureGL::load("data/plotviewdown.png");
 	Widgets::TextureGL::load("data/plotviewdownhigh.png");
+	Widgets::TextureGL::load("data/disconnected.png");
+	Widgets::TextureGL::load("data/connected.png");	
 }
 
 void Game::advance() {
