@@ -390,7 +390,6 @@ namespace BackyardBrains {
 	OVERLAPPED ov;
 	int count = 4000;
 
-	int r;
 	if (!ClearCommError(port_handle, &errmask, &st)) return -1;
 	//printf("Read, %d requested, %lu buffered\n", count, st.cbInQue);
 	if (st.cbInQue <= 0) return 0;
@@ -616,7 +615,6 @@ namespace BackyardBrains {
     int ArduinoSerial::writeToPort(const void *ptr, int len)
     {
 
-        int n, written=0;
         #if defined(__APPLE__) || defined(__linux__)
         fd_set wfds;
         struct timeval tv;

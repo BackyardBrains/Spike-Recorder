@@ -85,7 +85,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 
 
     // -------- Serial configuration
-    
+
     if(!_manager.fileMode())
     {
         //Serial  config widgets
@@ -94,9 +94,9 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
         name2->updateSize();
         gvbox->addSpacing(0);
         gvbox->addWidget(name2, Widgets::AlignLeft);
-        
-        
-        
+
+
+
         //Dropdown for select port
         Widgets::BoxLayout *serialHbox = new Widgets::BoxLayout(Widgets::Horizontal);
         serialPortWidget = new DropDownList(group);
@@ -111,13 +111,13 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
         _catchers.push_back(SignalCatcher(_catchers.size(), this));
         serialPortWidget->indexChanged.connect(&_catchers[_catchers.size()-1], &SignalCatcher::catchPort);
         serialPortWidget->setDisabled(_manager.serialMode());
-        
+
         serialHbox->addWidget(serialPortWidget);
         serialHbox->addSpacing(5);
 
-    
 
-    
+
+
         //Button for connect to serial
         _connectButton = new Widgets::PushButton(group);
         _connectButton->clicked.connect(this, &ConfigView::connectPressed);
@@ -136,21 +136,21 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
         serialHbox->update();
         gvbox->addSpacing(3);
         gvbox->addLayout(serialHbox);
-        
-        
+
+
         if(_manager.serialMode())
         {
                 //Number of channels chooser
                 Widgets::BoxLayout *numberOfChannelsHbox = new Widgets::BoxLayout(Widgets::Horizontal);
-                
+
                 Widgets::Label *numChannelsLabel = new Widgets::Label(group);
                 numChannelsLabel->setText("Number of channels:");
                 numChannelsLabel->updateSize();
                 numberOfChannelsHbox->addWidget(numChannelsLabel);
                 numberOfChannelsHbox->addSpacing(5);
-                
-                
-                
+
+
+
                 numberOfChannelsWidget = new DropDownList(group, 50,30);
                 numberOfChannelsWidget->clear();
 
@@ -160,23 +160,57 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
                 numberOfChannelsWidget->addItem("4");
                 numberOfChannelsWidget->addItem("5");
                 numberOfChannelsWidget->addItem("6");
-                
+
                 numberOfChannelsWidget->setSelection(_manager.numberOfSerialChannels()-1);
                 _catchers.push_back(SignalCatcher(_catchers.size(), this));
                 numberOfChannelsWidget->indexChanged.connect(&_catchers[_catchers.size()-1], &SignalCatcher::setNumOfChannelsHandler);
                 numberOfChannelsWidget->setDisabled(!_manager.serialMode());
-                
+
                 numberOfChannelsHbox->addWidget(numberOfChannelsWidget);
 
                 numberOfChannelsHbox->update();
-                
+
                 gvbox->addSpacing(10);
                 gvbox->addLayout(numberOfChannelsHbox);
         }
-        
-    
+
+
+        //HID device connect
+
+         Widgets::BoxLayout *hidHbox = new Widgets::BoxLayout(Widgets::Horizontal);
+        //USB  label
+        Widgets::Label *nameUSB = new Widgets::Label(group);
+        nameUSB->setText("Connect to USB device ");
+        nameUSB->updateSize();
+        hidHbox->addSpacing(0);
+        hidHbox->addWidget(nameUSB, Widgets::AlignLeft);
+        hidHbox->addSpacing(5);
+
+
+
+
+        //Button for connect to HID device
+        _hidButton = new Widgets::PushButton(group);
+        _hidButton->clicked.connect(this, &ConfigView::hidConnectPressed);
+        if(_manager.hidMode())
+        {
+            _hidButton->setNormalTex(Widgets::TextureGL::get("data/connected.png"));
+            _hidButton->setHoverTex(Widgets::TextureGL::get("data/connected.png"));
+        }
+        else
+        {
+            _hidButton->setNormalTex(Widgets::TextureGL::get("data/disconnected.png"));
+            _hidButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.png"));
+        }
+        _hidButton->setSizeHint(Widgets::Size(26,26));
+        hidHbox->addWidget(_hidButton);
+        hidHbox->update();
+        gvbox->addSpacing(10);
+        gvbox->addLayout(hidHbox);
+
+
     }
-    
+
 
 
 	gvbox->update();
@@ -201,10 +235,39 @@ void ConfigView::paintEvent() {
 	bg.a = 250;
 	Widgets::Painter::setColor(bg);
 	Widgets::Painter::drawRect(rect());
-	
+
 }
 
-   
+void ConfigView::hidConnectPressed()
+{
+    //connect/diconnect
+
+    if(_manager.hidMode())
+    {
+        _manager.setSerialNumberOfChannels(1);
+        _manager.disconnectFromSerial();
+
+        _hidButton->setNormalTex(Widgets::TextureGL::get("data/connected.png"));
+        _hidButton->setHoverTex(Widgets::TextureGL::get("data/connected.png"));
+        close();
+    }
+    else
+    {
+        if(!_manager.initHIDUSB())
+        {
+            std::cout<<"Can't open HID device. \n";
+
+
+            Widgets::ErrorBox *box = new Widgets::ErrorBox(_manager.serialError.c_str());
+            box->setGeometry(Widgets::Rect(this->width()/2-250, this->height()/2-40, 500, 80));
+            Widgets::Application::getInstance()->addPopup(box);
+        }
+        _hidButton->setNormalTex(Widgets::TextureGL::get("data/disconnected.png"));
+        _hidButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.png"));
+        close();
+    }
+}
+
 //
 // Connect/dsconnect from serial port
 //
@@ -214,14 +277,14 @@ void ConfigView::connectPressed()
     {
         _manager.setSerialNumberOfChannels(1);
         _manager.disconnectFromSerial();
-        
+
     }
     else
     {
         if(!_manager.initSerial(serialPortWidget->item(serialPortWidget->selection()).c_str()))
         {
             std::cout<<"Can't init serial port. \n";
-            
+
 
             Widgets::ErrorBox *box = new Widgets::ErrorBox(_manager.serialError.c_str());
             box->setGeometry(Widgets::Rect(this->width()/2-250, this->height()/2-40, 500, 80));
@@ -239,7 +302,7 @@ void ConfigView::connectPressed()
         _connectButton->setNormalTex(Widgets::TextureGL::get("data/disconnected.png"));
         _connectButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.png"));
         close();
-        
+
     }
     serialPortWidget->setDisabled(_manager.serialMode());
 }
@@ -264,7 +327,7 @@ void ConfigView::serialPortChanged(int virtualDevice, int portidx)
 {
     _manager.changeSerialPort(portidx);
 }
-   
+
 void ConfigView::setSerialNumberOfChannels(int numberOfChannels)
 {
     _manager.setSerialNumberOfChannels(numberOfChannels);

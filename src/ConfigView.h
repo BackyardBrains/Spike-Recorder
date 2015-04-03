@@ -45,9 +45,11 @@ private:
     DropDownList *serialPortWidget;
     DropDownList * numberOfChannelsWidget;
     Widgets::PushButton *_connectButton;
-    	
+    Widgets::PushButton *_hidButton;
+
 	void paintEvent();
-    void connectPressed();	
+    void connectPressed();
+    void hidConnectPressed();
 	void closePressed();
 	void mutePressed();
 
