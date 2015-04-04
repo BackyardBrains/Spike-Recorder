@@ -10,6 +10,7 @@
 #include <list>
 #include <string>
 #include <iostream>
+#include <sys/time.h>
 #ifdef _WIN32
 	#include <windows.h>
 #else
@@ -48,6 +49,7 @@ class HIDUsbManager
         bool areWeAtTheEndOfFrame();
         bool checkIfHaveWholeFrame();
         bool _deviceConnected;
+        struct timeval start, end;
     private:
 }; //class end
 

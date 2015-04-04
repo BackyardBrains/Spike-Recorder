@@ -616,6 +616,7 @@ namespace BackyardBrains {
     {
 
         #if defined(__APPLE__) || defined(__linux__)
+        int n, written=0;
         fd_set wfds;
         struct timeval tv;
         while (written < len) {

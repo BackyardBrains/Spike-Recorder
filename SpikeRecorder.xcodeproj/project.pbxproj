@@ -68,6 +68,9 @@
 		248E59221AAE1B820011707F /* SDL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 248E59161AAE1AB20011707F /* SDL.framework */; };
 		248E59231AAE1B820011707F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 248E59141AAE1A970011707F /* Cocoa.framework */; };
 		248E59241AAE1B820011707F /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 248E59121AAE1A910011707F /* OpenGL.framework */; };
+		24F40AB31ACEA94700B3CCE1 /* HIDUsbManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24F40AB11ACEA94700B3CCE1 /* HIDUsbManager.cpp */; };
+		24F40AB61ACEABB600B3CCE1 /* BASSErrors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24F40AB41ACEABB600B3CCE1 /* BASSErrors.cpp */; };
+		24F40AB81ACEAD1600B3CCE1 /* hid.c in Sources */ = {isa = PBXBuildFile; fileRef = 24F40AB71ACEAD1600B3CCE1 /* hid.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -241,6 +244,11 @@
 		248E594A1AAE1C290011707F /* SDL_version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDL_version.h; sourceTree = "<group>"; };
 		248E594B1AAE1C290011707F /* SDL_video.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDL_video.h; sourceTree = "<group>"; };
 		248E594C1AAEF7320011707F /* FFTView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FFTView.h; path = src/FFTView.h; sourceTree = SOURCE_ROOT; };
+		24F40AB11ACEA94700B3CCE1 /* HIDUsbManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HIDUsbManager.cpp; sourceTree = "<group>"; };
+		24F40AB21ACEA94700B3CCE1 /* HIDUsbManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HIDUsbManager.h; sourceTree = "<group>"; };
+		24F40AB41ACEABB600B3CCE1 /* BASSErrors.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BASSErrors.cpp; sourceTree = "<group>"; };
+		24F40AB51ACEABB600B3CCE1 /* BASSErrors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BASSErrors.h; sourceTree = "<group>"; };
+		24F40AB71ACEAD1600B3CCE1 /* hid.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hid.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -346,6 +354,11 @@
 		248E589A1AAE19570011707F /* engine */ = {
 			isa = PBXGroup;
 			children = (
+				24F40AB71ACEAD1600B3CCE1 /* hid.c */,
+				24F40AB41ACEABB600B3CCE1 /* BASSErrors.cpp */,
+				24F40AB51ACEABB600B3CCE1 /* BASSErrors.h */,
+				24F40AB11ACEA94700B3CCE1 /* HIDUsbManager.cpp */,
+				24F40AB21ACEA94700B3CCE1 /* HIDUsbManager.h */,
 				24079FA51AB1C73600820291 /* ArduinoSerial.cpp */,
 				24079FA61AB1C73600820291 /* ArduinoSerial.h */,
 				248E589B1AAE19570011707F /* FFTBackend.cpp */,
@@ -591,6 +604,7 @@
 			files = (
 				24079FA71AB1C73600820291 /* ArduinoSerial.cpp in Sources */,
 				248E58FA1AAE19570011707F /* Label.cpp in Sources */,
+				24F40AB31ACEA94700B3CCE1 /* HIDUsbManager.cpp in Sources */,
 				248E58E31AAE19570011707F /* AnalysisView.cpp in Sources */,
 				248E59021AAE19570011707F /* PushButton.cpp in Sources */,
 				248E58E81AAE19570011707F /* FileRecorder.cpp in Sources */,
@@ -621,7 +635,9 @@
 				248E59011AAE19570011707F /* Painter.cpp in Sources */,
 				248E58EF1AAE19570011707F /* MainView.cpp in Sources */,
 				248E58F91AAE19570011707F /* ErrorBox.cpp in Sources */,
+				24F40AB61ACEABB600B3CCE1 /* BASSErrors.cpp in Sources */,
 				248E58EB1AAE19570011707F /* SpikeSorter.cpp in Sources */,
+				24F40AB81ACEAD1600B3CCE1 /* hid.c in Sources */,
 				248E58ED1AAE19570011707F /* Game.cpp in Sources */,
 				24079FAC1AB1D1F500820291 /* DropDownList.cpp in Sources */,
 				248646421AB1FBAD003852AA /* Log.cpp in Sources */,
@@ -715,7 +731,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_ENTITLEMENTS = SpikeRecorder/SpikeRecorder.entitlements;
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -743,7 +759,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "2055fbbe-98be-4932-b461-7c95ff0ee143";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx10.7;
 			};
 			name = Debug;
@@ -755,7 +771,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_ENTITLEMENTS = SpikeRecorder/SpikeRecorder.entitlements;
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -783,7 +799,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "2055fbbe-98be-4932-b461-7c95ff0ee143";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx10.7;
 			};
 			name = Release;

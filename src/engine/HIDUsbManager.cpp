@@ -1,6 +1,7 @@
 #include "HIDUsbManager.h"
 #include <sstream>
 
+
 #define BYB_VID 0x2047
 #define BYB_PID 0x3e0
 
@@ -34,11 +35,26 @@ namespace BackyardBrains {
         _deviceConnected = true;
 
         setNumberOfChannelsAndSamplingRate(1, maxSamplingRate());
+        gettimeofday(&start, NULL);
         return 0;
     }
 
     int HIDUsbManager::readDevice(int16_t * obuffer)
     {
+        
+       
+        
+        long mtime, seconds, useconds;
+        gettimeofday(&end, NULL);
+        
+        seconds  = end.tv_sec  - start.tv_sec;
+        useconds = end.tv_usec - start.tv_usec;
+        
+        mtime = ((seconds) * 1000 + useconds/1000.0) + 0.5;
+        
+        printf("Elapsed time: %ld milliseconds\n", mtime);
+        start = end;
+        
         unsigned char buffer[256];
 
         int writeInteger = 0;
@@ -90,7 +106,7 @@ namespace BackyardBrains {
             {
                 if(checkIfHaveWholeFrame())
                 {
-                    std::cout<<"Number of frames: "<< numberOfFrames<<"\n";
+                   // std::cout<<"Number of frames: "<< numberOfFrames<<"\n";
                     numberOfFrames++;
                     while (1)
                     {
