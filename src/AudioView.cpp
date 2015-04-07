@@ -122,6 +122,8 @@ void AudioView::constructMetadata(MetadataChunk *m) const {
 void AudioView::applyMetadata(const MetadataChunk &m) {
 	_timeScale = m.timeScale;
 
+	for(unsigned int i = 0; i < _channels.size(); i++)
+		_manager.decRef(_channels[i].virtualDevice);
 	clearChannels();
 
 	for(unsigned int i = 0; i < m.channels.size(); i++) {

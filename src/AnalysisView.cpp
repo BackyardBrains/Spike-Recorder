@@ -16,6 +16,7 @@
 
 #include <sstream>
 #include <cassert>
+#include <cerrno>
 
 namespace BackyardBrains {
 
@@ -185,9 +186,13 @@ void AnalysisView::savePressed() {
 	FileRecorder f(_manager);
 	std::string filename = f.eventTxtFilename(_manager.fileName());
 
-	f.writeMarkerTextFile(filename, markers);
+	int rc = f.writeMarkerTextFile(filename, markers);
 	std::stringstream s;
-	s << markers.size() << " spikes were written to '" << filename << "'";
+	if(rc == 0) {
+		s << markers.size() << " spikes were written to '" << filename << "'";
+	} else {
+		s << "Could not write markers: " << strerror(errno);
+	}
 	Widgets::ErrorBox *box = new Widgets::ErrorBox(s.str().c_str());
 	box->setGeometry(Widgets::Rect(this->width()/2-200, this->height()/2-40, 400, 80));
 	Widgets::Application::getInstance()->addPopup(box);

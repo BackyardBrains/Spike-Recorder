@@ -80,6 +80,9 @@ FFTView::FFTView(AudioView &av, RecordingManager &manager, Widget *parent) : Wid
 			p[3] = 255;
 		}
 	}
+	_laststate = 0;
+	_offset = 0;
+	_offsetcorrection = 0;
 }
 
 static void init_texture(GLuint &tex) {

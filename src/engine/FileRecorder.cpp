@@ -9,6 +9,7 @@
 #include <cstring>
 #include <string>
 #include <cassert>
+#include <cerrno>
 namespace BackyardBrains {
 
 #ifdef __BIG_ENDIAN__
@@ -176,8 +177,12 @@ std::string FileRecorder::eventTxtFilename(const std::string &filename) {
 	return filename.substr(0,dotpos) + "-events.txt";
 }
 
-void FileRecorder::writeMarkerTextFile(const std::string &filename, const std::list<std::pair<std::string, int64_t> > &markers) const {
+int FileRecorder::writeMarkerTextFile(const std::string &filename, const std::list<std::pair<std::string, int64_t> > &markers) const {
 	FILE *f = fopen(filename.c_str(),"w");
+	if(f == 0) {
+		Log::warn("Could not create marker file: %s", strerror(errno));
+		return 1;
+	}
 	fprintf(f,"# Marker IDs can be arbitrary strings.\n");
 	fprintf(f,"# Marker ID,\tTime (in s)\n");
 
@@ -187,6 +192,7 @@ void FileRecorder::writeMarkerTextFile(const std::string &filename, const std::l
 			fprintf(f, "%s,\t%.4f\n", it->first.c_str(), (it->second-_startPos)/(float)_manager.sampleRate());
 
 	fclose(f);
+	return 0;
 }
 
 void FileRecorder::parseMarkerTextFile(std::list<std::pair<std::string, int64_t> > &markers, const std::string &filename, int sampleRate) {

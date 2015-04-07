@@ -200,10 +200,10 @@ void MainView::backwardPressed() {
 }
 void MainView::forwardPressed() {
 	if(_manager.fileMode()) { // end file mode when in file mode
+		delete _anaView;
 		_manager.initRecordingDevices();
 		_recordButton->setVisible(true);
 		_analysisButton->setVisible(false);
-		delete _anaView;
 		_anaView = NULL;
 	} else {
 		_audioView->setOffset(0);

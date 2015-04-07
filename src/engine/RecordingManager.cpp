@@ -251,7 +251,6 @@ void RecordingManager::closeSerial()
 bool RecordingManager::loadFile(const char *filename) {
 	HSTREAM stream;
 	int bytespersample, samplerate, chans;
-		_spikeTrains.clear();
 	closeSerial();
 
 	bool rc = OpenWAVFile(filename, stream, chans, samplerate, bytespersample);
@@ -278,13 +277,13 @@ bool RecordingManager::loadFile(const char *filename) {
 	_fileMode = true;
 	_filename = filename;
 
-	deviceReload.emit();
 	_player.setVolume(100);
 
 	if(!_paused) {
 		pauseChanged.emit();
 		setPaused(true);
 	}
+	deviceReload.emit();
 
 	Log::msg("loaded file '%s'.", filename);
 	return true;
@@ -770,16 +769,9 @@ bool RecordingManager::incRef(int virtualDeviceIndex) {
 		_devices[device].create(_pos, 2);
 	
 	_devices[device].refCount++;
+
 	
-	//Stanislav patched for serial. Not sure if this has to be here
-	//Refactor
-	//--------------------
-	if(_recordingDevices[virtualDeviceIndex].bound>1)
-	{
-	    _recordingDevices[virtualDeviceIndex].bound = 1;
-	}
-	assert(_recordingDevices[virtualDeviceIndex].bound < 2); // this shouldn’t happen at the moment
-	//----- end of patch
+	//assert(_recordingDevices[virtualDeviceIndex].bound < 2); // this shouldn’t happen at the moment
 	
 	if (!_fileMode && _devices[device].handle == 0) {
 		// make sure the device exists
@@ -812,6 +804,7 @@ bool RecordingManager::incRef(int virtualDeviceIndex) {
 		_devices[device].handle = handle;
 	}
 	_recordingDevices[virtualDeviceIndex].bound++;
+	
 	return true;
 error:
 	_devices[device].refCount--;
@@ -830,13 +823,13 @@ void RecordingManager::decRef(int virtualDeviceIndex) {
 	_devices[device].refCount--;
 	_recordingDevices[virtualDeviceIndex].bound--;
 
-
 	//Stanislav patched for serial
 	//Should be refactored
 	//-------------------------
 	if(_recordingDevices[virtualDeviceIndex].bound<0)
 	{
 	    _recordingDevices[virtualDeviceIndex].bound = 0;
+	    return;
 	}
 
 	//assert(_recordingDevices[virtualDeviceIndex].bound >= 0);
@@ -913,8 +906,7 @@ SampleBuffer *RecordingManager::sampleBuffer(int virtualDeviceIndex) {
 	assert(virtualDeviceIndex >= 0 && virtualDeviceIndex < (int) _recordingDevices.size());
 	const int device = _recordingDevices[virtualDeviceIndex].device;
 	const int channel = _recordingDevices[virtualDeviceIndex].channel;
-	if(_devices.count(device) == 0 || (unsigned int)channel >= _devices[device].sampleBuffers.size())
-		return NULL;
+	assert(_devices.count(device) != 0 && (unsigned int)channel < _devices[device].sampleBuffers.size());
 	SampleBuffer *result = _devices[device].sampleBuffers[channel];
 	return result;
 }

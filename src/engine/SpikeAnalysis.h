@@ -48,7 +48,7 @@ public:
 	// train: spike times
 	// filename, chan: file and channel to use
 	
-	constexpr static const double SPIKEHALFLEN = 0.002; // s
+	static const double SPIKEHALFLEN = 0.002; // s
 	static void averageWaveform(std::vector<float> &average, std::vector<float> &std,
 			const std::vector<int64_t> &train, const char *filename, int chan); 
 };
