@@ -11,6 +11,8 @@
 #include <string>
 #include <iostream>
 #include <sys/time.h>
+#include <thread>
+#include <functional> 
 #ifdef _WIN32
 	#include <windows.h>
 #else
@@ -35,8 +37,13 @@ class HIDUsbManager
         const char * currentDeviceName();
         std::string errorString;
         bool deviceOpened();
+        int readOneBatch(int16_t * obuffer);
+        int16_t *mainCircularBuffer;
     protected:
         char circularBuffer[SIZE_OF_CIRC_BUFFER];
+        std::thread t1;
+        int mainHead;
+        int mainTail;
         int cBufHead;
         int cBufTail;
         hid_device *handle;
@@ -48,6 +55,8 @@ class HIDUsbManager
         bool checkIfNextByteExist();
         bool areWeAtTheEndOfFrame();
         bool checkIfHaveWholeFrame();
+        void readThread(HIDUsbManager * ref);
+    
         bool _deviceConnected;
         struct timeval start, end;
     private:

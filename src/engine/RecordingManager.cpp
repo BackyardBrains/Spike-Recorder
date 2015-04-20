@@ -327,6 +327,7 @@ bool RecordingManager::loadFile(const char *filename) {
 
     _spikeTrains.clear();
     closeSerial();
+    closeHid();
 
 	HSTREAM stream = BASS_StreamCreateFile(false, filename, 0, 0, BASS_STREAM_DECODE);
 	if(stream == 0) {

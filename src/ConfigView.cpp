@@ -245,7 +245,7 @@ void ConfigView::hidConnectPressed()
     if(_manager.hidMode())
     {
         _manager.setSerialNumberOfChannels(1);
-        _manager.disconnectFromSerial();
+        _manager.disconnectFromHID();
 
         _hidButton->setNormalTex(Widgets::TextureGL::get("data/connected.png"));
         _hidButton->setHoverTex(Widgets::TextureGL::get("data/connected.png"));
