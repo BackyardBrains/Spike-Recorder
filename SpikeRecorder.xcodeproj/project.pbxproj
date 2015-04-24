@@ -23,7 +23,6 @@
 		24079FA71AB1C73600820291 /* ArduinoSerial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24079FA51AB1C73600820291 /* ArduinoSerial.cpp */; };
 		24079FA91AB1C90E00820291 /* data in Resources */ = {isa = PBXBuildFile; fileRef = 24079FA81AB1C90E00820291 /* data */; };
 		24079FAC1AB1D1F500820291 /* DropDownList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24079FAA1AB1D1F500820291 /* DropDownList.cpp */; };
-		2421F08A1ACFDD9800927F19 /* SpikeAnalysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2421F0881ACFDD9800927F19 /* SpikeAnalysis.cpp */; };
 		2421F08F1ACFDDBD00927F19 /* FileReadUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2421F08B1ACFDDBD00927F19 /* FileReadUtil.cpp */; };
 		2421F0901ACFDDBD00927F19 /* SpikeAnalysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2421F08D1ACFDDBD00927F19 /* SpikeAnalysis.cpp */; };
 		2421F0931ACFDDDA00927F19 /* BASSErrors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2421F0911ACFDDDA00927F19 /* BASSErrors.cpp */; };
@@ -672,7 +671,6 @@
 				2421F0931ACFDDDA00927F19 /* BASSErrors.cpp in Sources */,
 				24079FAC1AB1D1F500820291 /* DropDownList.cpp in Sources */,
 				248646421AB1FBAD003852AA /* Log.cpp in Sources */,
-				2421F08A1ACFDD9800927F19 /* SpikeAnalysis.cpp in Sources */,
 				248E58F41AAE19570011707F /* Application.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

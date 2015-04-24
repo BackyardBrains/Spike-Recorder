@@ -178,7 +178,7 @@ std::string FileRecorder::eventTxtFilename(const std::string &filename) {
 }
 
 int FileRecorder::writeMarkerTextFile(const std::string &filename, const std::list<std::pair<std::string, int64_t> > &markers) const {
-	FILE *f = fopen(filename.c_str(),"w");
+	FILE *f = fopen(filename.c_str(),"w+");
 	if(f == 0) {
 		Log::warn("Could not create marker file: %s", strerror(errno));
 		return 1;
