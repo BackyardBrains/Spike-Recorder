@@ -540,6 +540,7 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 
 void RecordingManager::advanceSerialMode(uint32_t samples)
 {
+
 	
 	uint32_t len = 4024;
 	//len = std::min(samples, len);
@@ -551,6 +552,10 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 	
 	//get interleaved data for all channels
 	int samplesRead = _arduinoSerial.readPort(buffer);
+    if(_paused)
+    {
+        return;
+    }
 	if(samplesRead != -1) {
 	   
 	    //make separate buffer for every channel

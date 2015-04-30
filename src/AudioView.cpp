@@ -406,7 +406,7 @@ void AudioView::drawAudio() {
 			if(!_manager.threshMode()) {
 				if(_manager.serialMode())
                 {
-                    int pos = _manager.pos()-samples;
+                    int pos = _manager.pos()+_channelOffset-samples;
                     int16_t tempData[samples];
                     std::vector< std::pair<int16_t, int16_t> > tempVectorData(samples);
                     _manager.getData(_channels[i].virtualDevice, pos, samples, tempData);
