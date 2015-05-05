@@ -737,6 +737,10 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 
     //get interleaved data for all channels
     int samplesRead = _hidUsbManager.readDevice(buffer);
+    if(_paused)
+    {
+        return;
+    }
     if(samplesRead != -1) {
 
         //make separate buffer for every channel
