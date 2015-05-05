@@ -11,12 +11,14 @@
 #include <string>
 #include <iostream>
 #include <sys/time.h>
-#include <thread>
-#include <functional> 
+
 #ifdef _WIN32
 	#include <windows.h>
+	#include "mingw.thread.h"
 #else
 	#include <unistd.h>
+	#include <thread>
+    #include <functional>
 #endif
 
 namespace BackyardBrains {
@@ -56,7 +58,7 @@ class HIDUsbManager
         bool areWeAtTheEndOfFrame();
         bool checkIfHaveWholeFrame();
         void readThread(HIDUsbManager * ref);
-    
+
         bool _deviceConnected;
         struct timeval start, end;
     private:
