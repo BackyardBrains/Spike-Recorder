@@ -38,7 +38,7 @@ namespace BackyardBrains {
 
         setNumberOfChannelsAndSamplingRate(1, maxSamplingRate());
         gettimeofday(&start, NULL);
-        
+
         t1 = std::thread(&HIDUsbManager::readThread, this, this);
         t1.detach();
         return 0;
@@ -69,34 +69,40 @@ namespace BackyardBrains {
         }
         numberOfFrames = 0;
     }
-    
-    
+
+
     int HIDUsbManager::readOneBatch(int16_t * obuffer)
     {
-        
+
         //------------- debug code ------
         /*long mtime, seconds, useconds;
         gettimeofday(&end, NULL);
-        
+
         seconds  = end.tv_sec  - start.tv_sec;
         useconds = end.tv_usec - start.tv_usec;
-        
+
         mtime = ((seconds) * 1000 + useconds/1000.0) + 0.5;
-        
+
         printf("Elapsed time: %ld milliseconds\n", mtime);
         start = end;
         //--------------- end of debug code -------
 
         */
-        
+
         unsigned char buffer[256];
-        
+
         int writeInteger = 0;
         int obufferIndex = 0;
         int numberOfFrames = 0;
         int size = -1;
-        
+
         //while (1) {
+        if(!_deviceConnected)
+        {
+            hid_close(handle);
+            handle = NULL;
+            return 0;
+        }
         size = hid_read(handle, buffer, sizeof(buffer));
         if (size == 0)
         {
@@ -116,7 +122,7 @@ namespace BackyardBrains {
         }
         //}
        // std::cout<<"Size: "<<buffer[0]<<"\n";
-        
+
         for(int i=2;i<size;i++)
         {
             circularBuffer[cBufHead++] = buffer[i];
@@ -127,14 +133,14 @@ namespace BackyardBrains {
                 cBufHead = 0;
             }
         }
-        
+
         unsigned int LSB;
         unsigned int MSB;
-        
+
         bool haveData = true;
         while (haveData)
         {
-            
+
             MSB  = ((unsigned int)(circularBuffer[cBufTail])) & 0xFF;
             if(MSB > 127)//if we are at the begining of frame
             {
@@ -149,7 +155,7 @@ namespace BackyardBrains {
                         //  MSB  = ((uint)(circularBuffer[cBufTail])) & 0xFF;
                         //std::cout<< cBufTail<<" -M "<<MSB<<"\n";
                         MSB  = ((unsigned int)(circularBuffer[cBufTail])) & 0x7F;
-                        
+
                         cBufTail++;
                         if(cBufTail>=SIZE_OF_CIRC_BUFFER)
                         {
@@ -164,10 +170,10 @@ namespace BackyardBrains {
                         }
                         // std::cout<< cBufTail<<" -L "<<LSB<<"\n";
                         LSB  = ((unsigned int)(circularBuffer[cBufTail])) & 0x7F;
-                        
+
                         MSB = MSB<<7;
                         writeInteger = LSB | MSB;
-                        
+
                         //std::cout<< obufferIndex<<" - "<<MSB<<":"<<LSB<<"\n";
                         obuffer[obufferIndex++] = writeInteger;
                         if(areWeAtTheEndOfFrame())
@@ -207,27 +213,27 @@ namespace BackyardBrains {
         }
         return numberOfFrames;
     }
-    
+
     int HIDUsbManager::readDevice(int16_t * obuffer)
     {
         int frames;
         int maxNumOfSamples = _numberOfChannels*SIZE_OF_MAIN_CIRCULAR_BUFFER;
         int tempMainHead = mainHead;//keep head position because input thread will move it.
-        
+
         //std::cout<<mainHead<<" - "<<mainTail;
        if(mainTail>tempMainHead)
        {
            memcpy ( obuffer, &mainCircularBuffer[mainTail], sizeof(int16_t)*(maxNumOfSamples-mainTail));
            memcpy ( &obuffer[maxNumOfSamples-mainTail], mainCircularBuffer, sizeof(int16_t)*(tempMainHead));
            frames = ((maxNumOfSamples-mainTail)+tempMainHead)/_numberOfChannels;
-           
+
        }
        else
        {
            memcpy ( obuffer, &mainCircularBuffer[mainTail], sizeof(int16_t)*(tempMainHead-mainTail));
            frames = (tempMainHead-mainTail)/_numberOfChannels;
        }
-        
+
         mainTail = tempMainHead;
 
         return frames;
@@ -377,11 +383,12 @@ namespace BackyardBrains {
 
     void HIDUsbManager::closeDevice()
     {
-        if(handle)
+        if(handle && _deviceConnected)
         {
-            hid_close(handle);
-            handle = NULL;
             _deviceConnected = false;
+            //hid_close(handle);
+            //handle = NULL;
+            //_deviceConnected = false;
         }
     }
 
