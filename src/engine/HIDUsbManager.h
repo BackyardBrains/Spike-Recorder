@@ -31,6 +31,7 @@ class HIDUsbManager
         std::list<std::string> list;
         void getAllDevicesList();
         void closeDevice();
+        void askForCapabilities();
         void setNumberOfChannelsAndSamplingRate(int numberOfChannels, int samplingRate);
         int writeToDevice(const void *ptr, int len);
         int maxSamplingRate();

@@ -36,7 +36,7 @@ namespace BackyardBrains {
 
         _deviceConnected = true;
 
-        setNumberOfChannelsAndSamplingRate(1, maxSamplingRate());
+        setNumberOfChannelsAndSamplingRate(2, maxSamplingRate());
         gettimeofday(&start, NULL);
 
         t1 = std::thread(&HIDUsbManager::readThread, this, this);
@@ -392,6 +392,12 @@ namespace BackyardBrains {
         }
     }
 
+    void HIDUsbManager::askForCapabilities()
+    {
+        std::stringstream sstm;
+        sstm << "?:"<<";\n";
+        writeToDevice(sstm.str().c_str(),sstm.str().length());
+    }
 
     void HIDUsbManager::setNumberOfChannelsAndSamplingRate(int numberOfChannels, int samplingRate)
     {
@@ -402,11 +408,18 @@ namespace BackyardBrains {
         sstm << "conf s:" << samplingRate<<";c:"<<numberOfChannels<<";\n";
         writeToDevice(sstm.str().c_str(),sstm.str().length());
     }
+
     int HIDUsbManager::writeToDevice(const void *ptr, int len)
     {
-        //TODO: write sending commands
+        int res = hid_write(handle, (const unsigned char *)ptr, len);
+        if (res < 0) {
+            std::stringstream sstm;//variable for log
+            sstm << "Could not write to device. Error reported was: " << hid_error(handle);
+            errorString = sstm.str();
+        }
         return 0;
     }
+
     int HIDUsbManager::maxSamplingRate()
     {
         return 10000;
@@ -414,7 +427,7 @@ namespace BackyardBrains {
 
     int HIDUsbManager::maxNumberOfChannels()
     {
-        return 3;
+        return 2;
     }
 
     int HIDUsbManager::numberOfChannels()

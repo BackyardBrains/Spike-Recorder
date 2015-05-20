@@ -18,7 +18,7 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
 	}
 
     _numOfSerialChannels = 1;
-    _numOfHidChannels = 1;
+    _numOfHidChannels = 2;
 	_player.start(_sampleRate);
 
     _arduinoSerial.getAllPortsList();
@@ -194,7 +194,7 @@ void RecordingManager::setHIDNumberOfChannels(int numberOfChannels)
 {
     std::cout<<"Number of channels on HID USB: "<<numberOfChannels<<"\n";
     _numOfHidChannels = numberOfChannels;
-    _hidUsbManager.setNumberOfChannelsAndSamplingRate(numberOfChannels, _hidUsbManager.maxSamplingRate()/numberOfChannels);
+    _hidUsbManager.setNumberOfChannelsAndSamplingRate(numberOfChannels, _hidUsbManager.maxSamplingRate());
     initHIDUSB();
 }
 
