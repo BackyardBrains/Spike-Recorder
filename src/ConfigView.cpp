@@ -205,7 +205,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
         _hidButton->setSizeHint(Widgets::Size(26,26));
         hidHbox->addWidget(_hidButton);
         hidHbox->update();
-        gvbox->addSpacing(10);
+        gvbox->addSpacing(20);
         gvbox->addLayout(hidHbox);
 
 
@@ -258,7 +258,7 @@ void ConfigView::hidConnectPressed()
             std::cout<<"Can't open HID device. \n";
 
 
-            Widgets::ErrorBox *box = new Widgets::ErrorBox(_manager.serialError.c_str());
+            Widgets::ErrorBox *box = new Widgets::ErrorBox(_manager.hidError.c_str());
             box->setGeometry(Widgets::Rect(this->width()/2-250, this->height()/2-40, 500, 80));
             Widgets::Application::getInstance()->addPopup(box);
         }

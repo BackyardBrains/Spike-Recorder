@@ -19,7 +19,7 @@ namespace BackyardBrains {
         std::stringstream sstm;//variable for log
         handle = hid_open(BYB_VID, BYB_PID, NULL);
         if (!handle) {
-            sstm << "unable to open HID device.";
+            sstm << "Unable to open HID USB device. Please plug in the BackyardBrains USB device and try again.";
             errorString = sstm.str();
             std::cout<<"unable to open HID device.\n";
             return -1;
