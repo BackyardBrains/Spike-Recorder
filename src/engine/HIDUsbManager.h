@@ -42,7 +42,10 @@ class HIDUsbManager
         bool deviceOpened();
         int readOneBatch(int16_t * obuffer);
         int16_t *mainCircularBuffer;
+        void stopDevice();
     protected:
+        void startDevice();
+
         char circularBuffer[SIZE_OF_CIRC_BUFFER];
         std::thread t1;
         int mainHead;

@@ -3,7 +3,7 @@
 #include "SampleBuffer.h"
 #include "FileRecorder.h"
 #include "Log.h"
-
+#include <sstream>
 #include <cstdlib>
 
 namespace BackyardBrains {
@@ -158,7 +158,12 @@ bool RecordingManager::initHIDUSB()
         virtualDevice.enabled = true;
         virtualDevice.device = 0;
         virtualDevice.channel = i;
-        virtualDevice.name = "Hid channel";
+
+         std::stringstream sstm;//variable for log
+         sstm << "Hid channel "<<(i+1);
+
+
+        virtualDevice.name = sstm.str();
         virtualDevice.threshold = 100;
         virtualDevice.bound = 0;
         _recordingDevices.push_back(virtualDevice);
@@ -185,7 +190,7 @@ void RecordingManager::disconnectFromHID()
 
 void RecordingManager::closeHid()
 {
-    _numOfHidChannels = 1;
+    _numOfHidChannels = 2;
     _hidUsbManager.closeDevice();
     _hidMode = false;
 }
@@ -737,7 +742,7 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 
     //get interleaved data for all channels
     int samplesRead = _hidUsbManager.readDevice(buffer);
-    if(_paused)
+    if(_paused || samplesRead==0)
     {
         return;
     }
