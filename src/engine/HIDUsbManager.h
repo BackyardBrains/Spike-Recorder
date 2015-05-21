@@ -33,7 +33,7 @@ class HIDUsbManager
         void closeDevice();
         void askForCapabilities();
         void setNumberOfChannelsAndSamplingRate(int numberOfChannels, int samplingRate);
-        int writeToDevice(const void *ptr, int len);
+        int writeToDevice(const unsigned char *ptr, size_t len);
         int maxSamplingRate();
         int maxNumberOfChannels();
         int numberOfChannels();

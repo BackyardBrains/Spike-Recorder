@@ -19,7 +19,7 @@ namespace BackyardBrains {
         std::stringstream sstm;//variable for log
         handle = hid_open(BYB_VID, BYB_PID, NULL);
         if (!handle) {
-            sstm << "unable to open HID device.";
+             sstm << "Unable to open HID USB device. Please plug in the BackyardBrains USB device and try again.";
             errorString = sstm.str();
             std::cout<<"unable to open HID device.\n";
             return -1;
@@ -396,7 +396,7 @@ namespace BackyardBrains {
     {
         std::stringstream sstm;
         sstm << "?:"<<";\n";
-        writeToDevice(sstm.str().c_str(),sstm.str().length());
+        writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
     }
 
     void HIDUsbManager::setNumberOfChannelsAndSamplingRate(int numberOfChannels, int samplingRate)
@@ -406,12 +406,12 @@ namespace BackyardBrains {
         std::cout<<"HID - Set number of channels:"<<numberOfChannels<<" and sampling rate: "<<samplingRate<<"\n";
         std::stringstream sstm;
         sstm << "conf s:" << samplingRate<<";c:"<<numberOfChannels<<";\n";
-        writeToDevice(sstm.str().c_str(),sstm.str().length());
+        writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
     }
 
-    int HIDUsbManager::writeToDevice(const void *ptr, int len)
+    int HIDUsbManager::writeToDevice(const unsigned char *ptr, size_t len)
     {
-        int res = hid_write(handle, (const unsigned char *)ptr, len);
+        int res = hid_write(handle, ptr, len);
         if (res < 0) {
             std::stringstream sstm;//variable for log
             sstm << "Could not write to device. Error reported was: " << hid_error(handle);
