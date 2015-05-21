@@ -37,12 +37,15 @@ namespace BackyardBrains {
         _deviceConnected = true;
 
         setNumberOfChannelsAndSamplingRate(2, maxSamplingRate());
+        startDevice();
         gettimeofday(&start, NULL);
 
         t1 = std::thread(&HIDUsbManager::readThread, this, this);
         t1.detach();
         return 0;
     }
+
+
 
     void HIDUsbManager::readThread(HIDUsbManager * ref)
     {
@@ -67,28 +70,18 @@ namespace BackyardBrains {
                 }
             }
         }
+        if(!_deviceConnected)
+        {
+            ref->stopDevice();
+            hid_close(ref->handle);
+            ref->handle = NULL;
+        }
         numberOfFrames = 0;
     }
 
 
     int HIDUsbManager::readOneBatch(int16_t * obuffer)
     {
-
-        //------------- debug code ------
-        /*long mtime, seconds, useconds;
-        gettimeofday(&end, NULL);
-
-        seconds  = end.tv_sec  - start.tv_sec;
-        useconds = end.tv_usec - start.tv_usec;
-
-        mtime = ((seconds) * 1000 + useconds/1000.0) + 0.5;
-
-        printf("Elapsed time: %ld milliseconds\n", mtime);
-        start = end;
-        //--------------- end of debug code -------
-
-        */
-
         unsigned char buffer[256];
 
         int writeInteger = 0;
@@ -97,12 +90,7 @@ namespace BackyardBrains {
         int size = -1;
 
         //while (1) {
-        if(!_deviceConnected)
-        {
-            hid_close(handle);
-            handle = NULL;
-            return 0;
-        }
+
         size = hid_read(handle, buffer, sizeof(buffer));
         if (size == 0)
         {
@@ -116,18 +104,14 @@ namespace BackyardBrains {
         }
         if(size<3)
         {
-            //printf("%.*s",res,buf);
-            //std::cout<<buffer;
             return-1;
         }
-        //}
-       // std::cout<<"Size: "<<buffer[0]<<"\n";
+
 
         for(int i=2;i<size;i++)
         {
             circularBuffer[cBufHead++] = buffer[i];
-            //uint MSB  = ((uint)(buffer[i])) & 0xFF;
-            //std::cout<<"M: " << MSB<<"\n";
+
             if(cBufHead>=SIZE_OF_CIRC_BUFFER)
             {
                 cBufHead = 0;
@@ -220,7 +204,6 @@ namespace BackyardBrains {
         int maxNumOfSamples = _numberOfChannels*SIZE_OF_MAIN_CIRCULAR_BUFFER;
         int tempMainHead = mainHead;//keep head position because input thread will move it.
 
-        //std::cout<<mainHead<<" - "<<mainTail;
        if(mainTail>tempMainHead)
        {
            memcpy ( obuffer, &mainCircularBuffer[mainTail], sizeof(int16_t)*(maxNumOfSamples-mainTail));
@@ -237,123 +220,6 @@ namespace BackyardBrains {
         mainTail = tempMainHead;
 
         return frames;
-       /* unsigned char buffer[256];
-
-        int writeInteger = 0;
-        int obufferIndex = 0;
-        int numberOfFrames = 0;
-        int size = -1;
-
-        //while (1) {
-            size = hid_read(handle, buffer, sizeof(buffer));
-            if (size == 0)
-            {
-                std::cout<<"No HID data\n";
-                return 0;
-            }
-            if (size < 0)
-            {
-                std::cout<<"Error HID: Unable to read\n";
-                return -1;
-            }
-            if(size<3)
-            {
-                //printf("%.*s",res,buf);
-                //std::cout<<buffer;
-                return-1;
-            }
-        //}
-        std::cout<<"Size: "<<size<<"\n";
-
-        for(int i=2;i<size;i++)
-        {
-            circularBuffer[cBufHead++] = buffer[i];
-            //uint MSB  = ((uint)(buffer[i])) & 0xFF;
-            //std::cout<<"M: " << MSB<<"\n";
-            if(cBufHead>=SIZE_OF_CIRC_BUFFER)
-            {
-                cBufHead = 0;
-            }
-        }
-
-        unsigned int LSB;
-        unsigned int MSB;
-
-        bool haveData = true;
-        while (haveData)
-        {
-
-            MSB  = ((unsigned int)(circularBuffer[cBufTail])) & 0xFF;
-            if(MSB > 127)//if we are at the begining of frame
-            {
-                if(checkIfHaveWholeFrame())
-                {
-                   // std::cout<<"Number of frames: "<< numberOfFrames<<"\n";
-                    numberOfFrames++;
-                    while (1)
-                    {
-                        //make sample value from two consecutive bytes
-                       // std::cout<<"Tail: "<<cBufTail<<"\n";
-                       //  MSB  = ((uint)(circularBuffer[cBufTail])) & 0xFF;
-                        //std::cout<< cBufTail<<" -M "<<MSB<<"\n";
-                        MSB  = ((unsigned int)(circularBuffer[cBufTail])) & 0x7F;
-
-                        cBufTail++;
-                        if(cBufTail>=SIZE_OF_CIRC_BUFFER)
-                        {
-                            cBufTail = 0;
-                        }
-                        LSB  = ((unsigned int)(circularBuffer[cBufTail])) & 0xFF;
-                        //if we have error in frame (lost data)
-                        if(LSB>127)
-                        {
-                            numberOfFrames--;
-                            break;//continue as if we have new frame
-                        }
-                       // std::cout<< cBufTail<<" -L "<<LSB<<"\n";
-                        LSB  = ((unsigned int)(circularBuffer[cBufTail])) & 0x7F;
-
-                        MSB = MSB<<7;
-                        writeInteger = LSB | MSB;
-
-                        //std::cout<< obufferIndex<<" - "<<MSB<<":"<<LSB<<"\n";
-                        obuffer[obufferIndex++] = writeInteger;
-                        if(areWeAtTheEndOfFrame())
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            cBufTail++;
-                            if(cBufTail>=SIZE_OF_CIRC_BUFFER)
-                            {
-                                cBufTail = 0;
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    haveData = false;
-                    break;
-                }
-            }
-            if(!haveData)
-            {
-                break;
-            }
-            cBufTail++;
-            if(cBufTail>=SIZE_OF_CIRC_BUFFER)
-            {
-                cBufTail = 0;
-            }
-            if(cBufTail==cBufHead)
-            {
-                haveData = false;
-                break;
-            }
-        }
-        return numberOfFrames;*/
     }
 
 
@@ -392,6 +258,18 @@ namespace BackyardBrains {
         }
     }
 
+    void HIDUsbManager::startDevice()
+    {
+        std::stringstream sstm;
+        sstm << "start:"<<";\n";
+        writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
+    }
+    void HIDUsbManager::stopDevice()
+    {
+        std::stringstream sstm;
+        sstm << "h:"<<";\n";
+        writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
+    }
     void HIDUsbManager::askForCapabilities()
     {
         std::stringstream sstm;
@@ -411,11 +289,19 @@ namespace BackyardBrains {
 
     int HIDUsbManager::writeToDevice(const unsigned char *ptr, size_t len)
     {
-        int res = hid_write(handle, ptr, len);
+        unsigned char outbuff[64];
+        outbuff[0] = 0x3f;
+        outbuff[1] = 62;
+        for(size_t i=0;i<len;i++)
+        {
+            outbuff[i+2] = ptr[i];
+        }
+        int res = hid_write(handle, outbuff, 64);
         if (res < 0) {
             std::stringstream sstm;//variable for log
             sstm << "Could not write to device. Error reported was: " << hid_error(handle);
             errorString = sstm.str();
+            std::cout<<"Error HID write: \n"<<sstm.str();
         }
         return 0;
     }
