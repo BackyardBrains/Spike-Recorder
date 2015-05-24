@@ -63,7 +63,6 @@ class HIDUsbManager
         void readThread(HIDUsbManager * ref);
 
         bool _deviceConnected;
-        struct timeval start, end;
     private:
 }; //class end
 

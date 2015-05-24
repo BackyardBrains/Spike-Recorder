@@ -8,12 +8,20 @@
 #define SIZE_OF_MAIN_CIRCULAR_BUFFER 10000
 
 namespace BackyardBrains {
+    
+    
+    //
+    // Constructor of HID USB manager
+    //
     HIDUsbManager::HIDUsbManager()
     {
         _deviceConnected = false;
 
     }
 
+    //
+    // Open USB connection to BYB device based on PID and VID
+    //
     int HIDUsbManager::openDevice()
     {
         std::stringstream sstm;//variable for log
@@ -33,20 +41,26 @@ namespace BackyardBrains {
         cBufTail = 0;
 
         serialCounter = 0;
-        
         _deviceConnected = true;
 
+        //set number of channels and sampling rate on micro
         setNumberOfChannelsAndSamplingRate(2, maxSamplingRate());
+        //send start command to micro
         startDevice();
-        gettimeofday(&start, NULL);
-
+        
+        //start thread that will periodicaly read
         t1 = std::thread(&HIDUsbManager::readThread, this, this);
         t1.detach();
         return 0;
     }
 
 
-
+    //
+    //Thread that periodicaly read new data from microcontroller
+    //read must be executed at least 1000 times per second.
+    // Thread stops and close connection to microcontroller
+    // when _deviceConnected is FALSE
+    //
     void HIDUsbManager::readThread(HIDUsbManager * ref)
     {
         ref->mainHead = 0;
@@ -79,6 +93,7 @@ namespace BackyardBrains {
                 ref->mainHead = indexOfHead;
             }
         }
+        //realy disconnect from device here
         if(!_deviceConnected)
         {
             ref->stopDevice();
@@ -89,6 +104,9 @@ namespace BackyardBrains {
     }
 
 
+    //
+    // Read one batch of data from HID usb
+    //
     int HIDUsbManager::readOneBatch(int16_t * obuffer)
     {
         unsigned char buffer[256];
@@ -98,7 +116,6 @@ namespace BackyardBrains {
         int numberOfFrames = 0;
         int size = -1;
 
-        //while (1) {
 
         size = hid_read(handle, buffer, sizeof(buffer));
         if (size == 0)
@@ -168,13 +185,10 @@ namespace BackyardBrains {
                         MSB = MSB<<7;
                         writeInteger = LSB | MSB;
 
-                        //std::cout<< obufferIndex<<" - "<<MSB<<":"<<LSB<<"\n";
-                       /* if((lastSample<10 && writeInteger<10) || (lastSample>1000 && writeInteger>1000))
-                        {
-                            lastSample = writeInteger;
-                        }
-                        lastSample = writeInteger;*/
+                        //write decoded integer to buffer
                         obuffer[obufferIndex++] = writeInteger;
+                        
+    
                         if(areWeAtTheEndOfFrame())
                         {
                             break;
@@ -213,6 +227,11 @@ namespace BackyardBrains {
         return numberOfFrames;
     }
 
+    //
+    //  Read newly arrived data from circular buffer.
+    // And return number of readed frames
+    // (not samples, one frame can contains multiple interleaved samples)
+    //
     int HIDUsbManager::readDevice(int16_t * obuffer)
     {
         int frames;
@@ -238,6 +257,9 @@ namespace BackyardBrains {
     }
 
 
+    //
+    // Get list of all HID devices attached to computer
+    //
     void HIDUsbManager::getAllDevicesList()
     {
         list.clear();
@@ -261,7 +283,13 @@ namespace BackyardBrains {
         hid_free_enumeration(devs);
     }
 
-
+    //
+    // Close connection with HID device
+    // This close connection just logicaly (puts flag _deviceConnected to false)
+    // Actual connection is closed later in fatching thread since we
+    // don't want to close connection while fetching thread is fatching data
+    // that will lead to crash
+    //
     void HIDUsbManager::closeDevice()
     {
         if(handle && _deviceConnected)
@@ -273,18 +301,31 @@ namespace BackyardBrains {
         }
     }
 
+    //
+    //Send start command to microcontroller: "start:;"
+    //It starts sampling and sending data
+    //
     void HIDUsbManager::startDevice()
     {
         std::stringstream sstm;
         sstm << "start:"<<";\n";
         writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
     }
+    
+    //
+    // Send stop command to microcontroller "h:;"
+    //
     void HIDUsbManager::stopDevice()
     {
         std::stringstream sstm;
         sstm << "h:"<<";\n";
         writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
     }
+    
+    //
+    // Ask microcontroller for it's capabilities
+    // (sampling rate, number of channels, firmware version)
+    //
     void HIDUsbManager::askForCapabilities()
     {
         std::stringstream sstm;
@@ -292,6 +333,9 @@ namespace BackyardBrains {
         writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
     }
 
+    //
+    // Sends command for seting number of channels and sampling rate on micro.
+    //
     void HIDUsbManager::setNumberOfChannelsAndSamplingRate(int numberOfChannels, int samplingRate)
     {
         _numberOfChannels = numberOfChannels;
@@ -302,6 +346,9 @@ namespace BackyardBrains {
         writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
     }
 
+    //
+    // Send string to device. Currently it supports strings up to 62 characters
+    //
     int HIDUsbManager::writeToDevice(const unsigned char *ptr, size_t len)
     {
         unsigned char outbuff[64];
@@ -321,31 +368,51 @@ namespace BackyardBrains {
         return 0;
     }
 
+    //
+    //Max sampling rate of microcontroller
+    //
     int HIDUsbManager::maxSamplingRate()
     {
         return 10000;
     }
 
+    //
+    // Max number of channels that microcontroller supports
+    //
     int HIDUsbManager::maxNumberOfChannels()
     {
         return 2;
     }
 
+    //
+    // Current number of channels on HID device
+    //
     int HIDUsbManager::numberOfChannels()
     {
         return _numberOfChannels;
     }
 
+    //
+    // Selected device name
+    //
     const char * HIDUsbManager::currentDeviceName()
     {
-        return "Spike Recorder dummy";
+        return "Spike Recorder USB HID";
     }
 
+    //
+    //Flag that is true when HID device is connected
+    //it does not mean that it is sampling data
+    //
     bool HIDUsbManager::deviceOpened()
     {
         return _deviceConnected;
     }
 
+    //
+    //Helper function
+    //Check if we have more data in circular buffer
+    //
     bool HIDUsbManager::checkIfNextByteExist()
     {
         int tempTail = cBufTail + 1;
@@ -360,6 +427,11 @@ namespace BackyardBrains {
         return true;
     }
 
+    //
+    //Check if we have at least one whole frame in circular buffer
+    // It searches for additional start-of-frame flag after current tail
+    // position. If it finds it than current frame is complete.
+    //
     bool HIDUsbManager::checkIfHaveWholeFrame()
     {
         int tempTail = cBufTail + 1;
@@ -382,7 +454,10 @@ namespace BackyardBrains {
         }
         return false;
     }
-
+    
+    //
+    //Check if newxt byte contains start-of-frame flag (8th bit set to 1)
+    //
     bool HIDUsbManager::areWeAtTheEndOfFrame()
     {
         int tempTail = cBufTail + 1;
