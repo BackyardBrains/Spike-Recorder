@@ -28,6 +28,8 @@ public:
 
 	static const Widgets::Color COLORS[];
 	static const int COLOR_NUM;
+	static const Widgets::Color MARKER_COLORS[];
+	static const int MARKER_COLOR_NUM;
 
 	void constructMetadata(MetadataChunk *mdata) const;
 	void applyMetadata(const MetadataChunk &mdata);
@@ -62,8 +64,6 @@ public:
 	static const int MOVEPIN_SIZE = 30;
 	static const int DATA_XOFF = MOVEPIN_SIZE*1.48f;
 protected:
-	static const Widgets::Color MARKER_COLORS[];
-	static const int MARKER_COLOR_NUM;
 
 	static const int GAINCONTROL_XOFF = MOVEPIN_SIZE*6/5;
 	static const int GAINCONTROL_YOFF = MOVEPIN_SIZE*3/5;

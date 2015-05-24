@@ -14,6 +14,7 @@
 #include "DropDownList.h"
 #include "AudioView.h"
 #include "ColorDropDownList.h"
+#include "Log.h"
 #include <bass.h>
 #include <sstream>
 
@@ -286,7 +287,7 @@ void ConfigView::connectPressed()
             std::cout<<"Can't init serial port. \n";
 
 
-            Widgets::ErrorBox *box = new Widgets::ErrorBox(_manager.serialError.c_str());
+            Widgets::ErrorBox *box = new Widgets::ErrorBox(error);
             box->setGeometry(Widgets::Rect(this->width()/2-250, this->height()/2-40, 500, 80));
             Widgets::Application::getInstance()->addPopup(box);
         }

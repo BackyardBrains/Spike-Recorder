@@ -59,9 +59,13 @@ void Game::loadResources() {
 
 	Widgets::TextureGL::load("data/ckboxon.png");
 	Widgets::TextureGL::load("data/ckboxoff.png");
-    
-    Widgets::TextureGL::load("data/disconnected.png");
-    Widgets::TextureGL::load("data/connected.png");	
+	
+	Widgets::TextureGL::load("data/plotview.png");
+	Widgets::TextureGL::load("data/plotviewhigh.png");
+	Widgets::TextureGL::load("data/plotviewdown.png");
+	Widgets::TextureGL::load("data/plotviewdownhigh.png");
+	Widgets::TextureGL::load("data/disconnected.png");
+	Widgets::TextureGL::load("data/connected.png");	
 }
 
 void Game::advance() {

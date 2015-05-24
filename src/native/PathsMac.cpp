@@ -15,7 +15,7 @@ std::string getRecordingPath() {
 	else
 		res = std::string(p->pw_dir);
 
-    res += "/Music/BYB";
+    res += "/Music/Spike Recorder";
 	mkdir(res.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 
 	return res;

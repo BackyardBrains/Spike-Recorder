@@ -175,6 +175,11 @@ void BoxLayout::update()
 	level--;
 }
 
+void BoxLayout::clear()
+{
+	_items.clear();
+}
+
 } // namespace Widgets
 
 } // namespace BackyardBrains

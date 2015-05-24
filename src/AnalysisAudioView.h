@@ -20,16 +20,23 @@ public:
 	int upperThresh() const;
 	int lowerThresh() const;
 
+	void setColorIdx(int idx);
+	void setThresh(int upper, int lower);
+	
+	sigslot::signal0<> threshChanged;
 private:
 	SpikeSorter &_spikes;
 
+	int _colorIdx;
+
 	int _clickedThresh;
 	int _clickOffset;
-	float _threshPos[2]; // relative position
+	int _threshPos[2];
 
 	int screenWidth() const;
 
 	int relPosToAmp(float rpos) const;
+	float ampToRelPos(int amp) const;
 	void mousePressEvent(Widgets::MouseEvent *event);
 	void mouseMotionEvent(Widgets::MouseEvent *event);
 	void mouseReleaseEvent(Widgets::MouseEvent *event);

@@ -122,6 +122,8 @@ void AudioView::constructMetadata(MetadataChunk *m) const {
 void AudioView::applyMetadata(const MetadataChunk &m) {
 	_timeScale = m.timeScale;
 
+	for(unsigned int i = 0; i < _channels.size(); i++)
+		_manager.decRef(_channels[i].virtualDevice);
 	clearChannels();
 
 	for(unsigned int i = 0; i < m.channels.size(); i++) {
@@ -404,7 +406,7 @@ void AudioView::drawAudio() {
 			if(!_manager.threshMode()) {
 				if(_manager.serialMode())
                 {
-                    int pos = _manager.pos()-samples;
+                    int pos = _manager.pos()+_channelOffset-samples;
                     int16_t tempData[samples];
                     std::vector< std::pair<int16_t, int16_t> > tempVectorData(samples);
                     _manager.getData(_channels[i].virtualDevice, pos, samples, tempData);
@@ -489,13 +491,15 @@ void AudioView::drawRulerTime() {
 void AudioView::drawSpikeTrain() {
 	int samples = sampleCount(screenWidth(), scaleWidth());
 	for(unsigned int i = 0; i < _manager.spikeTrains().size(); i++) {
-		for(std::list<int64_t>::const_iterator it = _manager.spikeTrains()[i].begin(); it != _manager.spikeTrains()[i].end(); it++) {
-			if(_manager.pos()+_channelOffset-*it > samples || _manager.pos()+_channelOffset-*it < -samples/2)
+		int clr = _manager.spikeTrains()[i].color;
+		for(unsigned int j = 0; j < _manager.spikeTrains()[i].spikes.size(); j++) {
+			int64_t t = _manager.spikeTrains()[i].spikes[j];
+			if(_manager.pos()+_channelOffset-t > samples || _manager.pos()+_channelOffset-t < -samples/2)
 				continue;
 
-			float x = width()+screenWidth()*(*it-_manager.pos()-samples/2*_manager.fileMode()-_channelOffset)/(float)samples;
+			float x = width()+screenWidth()*(t-_manager.pos()-samples/2*_manager.fileMode()-_channelOffset)/(float)samples;
 			float y = height()*(0.1f+0.1f*i);
-			Widgets::Painter::setColor(MARKER_COLORS[i+1 % MARKER_COLOR_NUM]);
+			Widgets::Painter::setColor(MARKER_COLORS[clr % MARKER_COLOR_NUM]);
 			Widgets::Painter::drawRect(Widgets::Rect(x-1,y-1,3,3));
 		}
 	}

@@ -18,7 +18,9 @@ OBJECTS = \
 	src/engine/Player.o \
 	src/engine/ArduinoSerial.o \
 	src/engine/SpikeSorter.o \
+	src/engine/SpikeAnalysis.o \
 	src/engine/BASSErrors.o \
+	src/engine/FileReadUtil.o \
 	src/engine/FFTBackend.o \
 	src/widgets/LayoutItem.o \
 	src/widgets/BoxLayout.o \
@@ -34,6 +36,8 @@ OBJECTS = \
 	src/widgets/Label.o \
 	src/widgets/ErrorBox.o \
 	src/widgets/ToolTip.o \
+	src/widgets/Plot.o \
+	src/widgets/TabBar.o \
 	src/DropDownList.o \
 	src/Log.o \
 	src/Game.o \
@@ -43,6 +47,8 @@ OBJECTS = \
 	src/ConfigView.o \
 	src/AnalysisView.o \
 	src/AnalysisAudioView.o \
+	src/AnalysisTrainList.o \
+	src/AnalysisPlots.o \
 	src/RecordingBar.o \
 	src/ColorDropDownList.o \
 	src/FFTView.o

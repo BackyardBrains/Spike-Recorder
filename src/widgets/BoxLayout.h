@@ -29,6 +29,8 @@ public:
 	Size sizeHint() const;
 
 	void update();
+
+	void clear();
 private:
 	Orientation _orientation;
 	typedef std::vector<LayoutItem*> ItemVector;
