@@ -76,7 +76,6 @@
 		248E59231AAE1B820011707F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 248E59141AAE1A970011707F /* Cocoa.framework */; };
 		248E59241AAE1B820011707F /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 248E59121AAE1A910011707F /* OpenGL.framework */; };
 		24F40AB31ACEA94700B3CCE1 /* HIDUsbManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24F40AB11ACEA94700B3CCE1 /* HIDUsbManager.cpp */; };
-		24F40AB61ACEABB600B3CCE1 /* BASSErrors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24F40AB41ACEABB600B3CCE1 /* BASSErrors.cpp */; };
 		24F40AB81ACEAD1600B3CCE1 /* hid.c in Sources */ = {isa = PBXBuildFile; fileRef = 24F40AB71ACEAD1600B3CCE1 /* hid.c */; };
 /* End PBXBuildFile section */
 
@@ -125,8 +124,6 @@
 		24079FAA1AB1D1F500820291 /* DropDownList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DropDownList.cpp; path = src/DropDownList.cpp; sourceTree = SOURCE_ROOT; };
 		24079FAB1AB1D1F500820291 /* DropDownList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DropDownList.h; path = src/DropDownList.h; sourceTree = SOURCE_ROOT; };
 		24079FAE1AB1DE7E00820291 /* SpikeRecorder.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = SpikeRecorder.entitlements; sourceTree = "<group>"; };
-		2421F0881ACFDD9800927F19 /* SpikeAnalysis.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpikeAnalysis.cpp; sourceTree = "<group>"; };
-		2421F0891ACFDD9800927F19 /* SpikeAnalysis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpikeAnalysis.h; sourceTree = "<group>"; };
 		2421F08B1ACFDDBD00927F19 /* FileReadUtil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileReadUtil.cpp; sourceTree = "<group>"; };
 		2421F08C1ACFDDBD00927F19 /* FileReadUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileReadUtil.h; sourceTree = "<group>"; };
 		2421F08D1ACFDDBD00927F19 /* SpikeAnalysis.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpikeAnalysis.cpp; sourceTree = "<group>"; };
@@ -269,8 +266,6 @@
 		248E594C1AAEF7320011707F /* FFTView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FFTView.h; path = src/FFTView.h; sourceTree = SOURCE_ROOT; };
 		24F40AB11ACEA94700B3CCE1 /* HIDUsbManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HIDUsbManager.cpp; sourceTree = "<group>"; };
 		24F40AB21ACEA94700B3CCE1 /* HIDUsbManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HIDUsbManager.h; sourceTree = "<group>"; };
-		24F40AB41ACEABB600B3CCE1 /* BASSErrors.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BASSErrors.cpp; sourceTree = "<group>"; };
-		24F40AB51ACEABB600B3CCE1 /* BASSErrors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BASSErrors.h; sourceTree = "<group>"; };
 		24F40AB71ACEAD1600B3CCE1 /* hid.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hid.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -382,10 +377,14 @@
 			isa = PBXGroup;
 			children = (
 				24F40AB71ACEAD1600B3CCE1 /* hid.c */,
-				24F40AB41ACEABB600B3CCE1 /* BASSErrors.cpp */,
-				24F40AB51ACEABB600B3CCE1 /* BASSErrors.h */,
 				24F40AB11ACEA94700B3CCE1 /* HIDUsbManager.cpp */,
 				24F40AB21ACEA94700B3CCE1 /* HIDUsbManager.h */,
+				2421F0911ACFDDDA00927F19 /* BASSErrors.cpp */,
+				2421F0921ACFDDDA00927F19 /* BASSErrors.h */,
+				2421F08B1ACFDDBD00927F19 /* FileReadUtil.cpp */,
+				2421F08C1ACFDDBD00927F19 /* FileReadUtil.h */,
+				2421F08D1ACFDDBD00927F19 /* SpikeAnalysis.cpp */,
+				2421F08E1ACFDDBD00927F19 /* SpikeAnalysis.h */,
 				24079FA51AB1C73600820291 /* ArduinoSerial.cpp */,
 				24079FA61AB1C73600820291 /* ArduinoSerial.h */,
 				248E589B1AAE19570011707F /* FFTBackend.cpp */,
@@ -671,9 +670,9 @@
 				248E59011AAE19570011707F /* Painter.cpp in Sources */,
 				248E58EF1AAE19570011707F /* MainView.cpp in Sources */,
 				248E58F91AAE19570011707F /* ErrorBox.cpp in Sources */,
-				24F40AB61ACEABB600B3CCE1 /* BASSErrors.cpp in Sources */,
 				248E58EB1AAE19570011707F /* SpikeSorter.cpp in Sources */,
 				24F40AB81ACEAD1600B3CCE1 /* hid.c in Sources */,
+				2421F08F1ACFDDBD00927F19 /* FileReadUtil.cpp in Sources */,
 				248E58ED1AAE19570011707F /* Game.cpp in Sources */,
 				2421F0931ACFDDDA00927F19 /* BASSErrors.cpp in Sources */,
 				24079FAC1AB1D1F500820291 /* DropDownList.cpp in Sources */,
