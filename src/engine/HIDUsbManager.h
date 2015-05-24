@@ -56,7 +56,6 @@ class HIDUsbManager
         int _numberOfChannels;
         int _samplingRate;
         int serialCounter;
-
         bool returnTailForOneAndCheck();
         bool checkIfNextByteExist();
         bool areWeAtTheEndOfFrame();

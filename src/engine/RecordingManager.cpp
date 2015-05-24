@@ -120,6 +120,7 @@ void RecordingManager::clear() {
 
 bool RecordingManager::initHIDUSB()
 {
+    std::cout<<"Init HID\n";
     if(!_hidUsbManager.deviceOpened())
     {
         if(_hidUsbManager.openDevice() == -1)
@@ -130,7 +131,7 @@ bool RecordingManager::initHIDUSB()
         }
     }
 
-    DWORD frequency = _hidUsbManager.maxSamplingRate()/_numOfHidChannels;
+    DWORD frequency = _hidUsbManager.maxSamplingRate();
     std::cout<<"HID Frequency: "<<frequency<<" Chan: "<<_numOfHidChannels<<" Samp: "<<_hidUsbManager.maxSamplingRate()<<"\n";
     HSTREAM stream = BASS_StreamCreate(frequency, _numOfHidChannels, BASS_STREAM_DECODE, STREAMPROC_PUSH, NULL);
     if(stream == 0) {
@@ -184,8 +185,9 @@ bool RecordingManager::initHIDUSB()
 
 void RecordingManager::disconnectFromHID()
 {
-    closeHid();
+
     initRecordingDevices();
+    closeHid();
 }
 
 void RecordingManager::closeHid()
@@ -757,7 +759,6 @@ void RecordingManager::advanceHidMode(uint32_t samples)
             for(int chan = 0; chan < channum; chan++) {
                 channels[chan][i] = buffer[i*channum + chan];//sort data to channels
 
-
                 //if we are in first 10 seconds interval
                 //add current sample to summ used to remove DC component
                 if(_devices.begin()->second.dcBiasNum < _sampleRate*10) {
@@ -1043,7 +1044,7 @@ void RecordingManager::decRef(int virtualDeviceIndex) {
 	//----------------- end of patch
 
 	if (_devices[device].refCount == 0)	{
-		if(!_fileMode) {
+		if(!_fileMode && !_hidMode) {
 			// make sure the device exists
 			BASS_DEVICEINFO info;
 			if (!BASS_RecordGetDeviceInfo(device, &info)) {

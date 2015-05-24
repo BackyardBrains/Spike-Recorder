@@ -5,7 +5,7 @@
 #define BYB_VID 0x2047
 #define BYB_PID 0x3e0
 
-#define SIZE_OF_MAIN_CIRCULAR_BUFFER 3000
+#define SIZE_OF_MAIN_CIRCULAR_BUFFER 10000
 
 namespace BackyardBrains {
     HIDUsbManager::HIDUsbManager()
@@ -33,7 +33,7 @@ namespace BackyardBrains {
         cBufTail = 0;
 
         serialCounter = 0;
-
+        
         _deviceConnected = true;
 
         setNumberOfChannelsAndSamplingRate(2, maxSamplingRate());
@@ -58,16 +58,25 @@ namespace BackyardBrains {
        // int k = 0;
         while (ref->_deviceConnected) {
             numberOfFrames = ref->readOneBatch(buffer);
+            //std::cout<<numberOfFrames<<"-";
             for(int i=0;i<numberOfFrames;i++)
             {
+                //we copy here head position since we dont want to cut the frame
+                //in half in reading thread. (thread race problem)
+                int indexOfHead=ref->mainHead;
+                
                 for(int j=0;j<ref->numberOfChannels();j++)
                 {
-                    ref->mainCircularBuffer[ref->mainHead++] = buffer[i*ref->numberOfChannels()+j];
-                    if(mainHead>=maxSamples)
+                    ref->mainCircularBuffer[indexOfHead++] = buffer[i*ref->numberOfChannels()+j];
+                    
+                    if(indexOfHead>=maxSamples)
                     {
-                        mainHead = 0;
+                        indexOfHead = 0;
                     }
                 }
+                //update head position after writting walue
+                //so that we always have shole frame when reading
+                ref->mainHead = indexOfHead;
             }
         }
         if(!_deviceConnected)
@@ -106,9 +115,10 @@ namespace BackyardBrains {
         {
             return-1;
         }
+        //get number of bytes
+        unsigned int sizeOfPackage =((unsigned int)buffer[1]& 0xFF);
 
-
-        for(int i=2;i<size;i++)
+        for(int i=2;i<sizeOfPackage+2;i++)
         {
             circularBuffer[cBufHead++] = buffer[i];
 
@@ -132,7 +142,7 @@ namespace BackyardBrains {
                 {
                     // std::cout<<"Number of frames: "<< numberOfFrames<<"\n";
                     numberOfFrames++;
-                    while (1)
+                    for(int channelind=0;channelind<_numberOfChannels;channelind++)
                     {
                         //make sample value from two consecutive bytes
                         // std::cout<<"Tail: "<<cBufTail<<"\n";
@@ -159,6 +169,11 @@ namespace BackyardBrains {
                         writeInteger = LSB | MSB;
 
                         //std::cout<< obufferIndex<<" - "<<MSB<<":"<<LSB<<"\n";
+                       /* if((lastSample<10 && writeInteger<10) || (lastSample>1000 && writeInteger>1000))
+                        {
+                            lastSample = writeInteger;
+                        }
+                        lastSample = writeInteger;*/
                         obuffer[obufferIndex++] = writeInteger;
                         if(areWeAtTheEndOfFrame())
                         {
