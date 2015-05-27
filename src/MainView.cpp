@@ -16,6 +16,7 @@
 #include "ConfigView.h"
 #include "AnalysisView.h"
 #include "RecordingBar.h"
+#include "ThresholdPanel.h"
 #include "Log.h"
 #include "FFTView.h"
 #include <SDL_opengl.h>
@@ -27,36 +28,6 @@
 
 namespace BackyardBrains {
 
-Widgets::Widget *MainView::makeThreshavgGroup() {
- 	Widgets::Widget *group = new Widgets::Widget(this);
- 	group->setVisible(false);
-
-
-	Widgets::ScrollBar *bar = new Widgets::ScrollBar(Widgets::Horizontal,group);
-	bar->setRange(1,50);
-	bar->setPageStep(5);
-	bar->valueChanged.connect(&_manager, &RecordingManager::setThreshAvgCount);
-	bar->setSizeHint(Widgets::Size(250,20));
-	bar->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Fixed, Widgets::SizePolicy::Maximum));
-
-	Widgets::Label *label = new Widgets::Label(group);
-	label->setText("00");
-	label->updateSize();
-	bar->valueChanged.connect(label, &Widgets::Label::setText);
-	bar->setValue(1);
-
-	Widgets::BoxLayout *layout = new Widgets::BoxLayout(Widgets::Horizontal, group);
-	layout->addWidget(bar);
-	layout->addSpacing(10);
-	layout->addWidget(label, Widgets::AlignVCenter);
-
-	int width = bar->sizeHint().w+label->sizeHint().w;
-
-	group->setSizeHint(Widgets::Size(width, 20));
-	bar->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Fixed, Widgets::SizePolicy::Expanding));
-
-	return group;
-}
 
 MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent) : Widget(parent), _manager(mngr), _fileRec(fileRec), _anaView(NULL) {
 	_audioView = new AudioView(this, _manager);
@@ -72,6 +43,7 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	threshButton->setNormalTex(Widgets::TextureGL::get("data/thresh.png"));
 	threshButton->setHoverTex(Widgets::TextureGL::get("data/threshhigh.png"));
 	threshButton->clicked.connect(this, &MainView::threshPressed);
+	
 
 	_analysisButton = new Widgets::PushButton(this);
 	_analysisButton->setNormalTex(Widgets::TextureGL::get("data/analysis.png"));
@@ -121,7 +93,8 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	_seekBar->valueChanged.connect(_audioView, &AudioView::setRelOffset);
  	_audioView->relOffsetChanged.connect(_seekBar, &Widgets::ScrollBar::updateValue);
 
-	_threshavgGroup = makeThreshavgGroup();
+	_threshavgGroup = new ThresholdPanel(_manager, this);
+	_threshavgGroup->setVisible(false);
 
 	_recBar = new RecordingBar(_fileRec, this);
 	
@@ -198,6 +171,10 @@ void MainView::backwardPressed() {
 	if(_manager.paused())
 		pausePressed();
 }
+
+void MainView::ekgPressed() {
+}
+
 void MainView::forwardPressed() {
 	if(_manager.fileMode()) { // end file mode when in file mode
 		_manager.initRecordingDevices();

@@ -511,6 +511,7 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 
 	if(!_paused) {
 		if(_threshMode) {
+			bool triggerd;
 			SampleBuffer &s = *sampleBuffer(_selectedVDevice);
 
 			for(int64_t i = _pos; i < _pos+samples; i++) {
@@ -519,11 +520,14 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 				if(_triggers.empty() || i - _triggers.front() > _sampleRate/10) {
 					if((thresh > 0 && s.at(i) > thresh) || (thresh <= 0 && s.at(i) < thresh)) {
 						_triggers.push_front(i);
+						triggerd = true;
 						if(_triggers.size() > (unsigned int)_threshAvgCount)
 							_triggers.pop_back();
 					}
 				}
 			}
+			if(triggerd)
+				triggered.emit();
 		}
 
 		SampleBuffer &s = *sampleBuffer(_selectedVDevice);
@@ -584,7 +588,8 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
                 }
             }
         }
-        
+
+	bool triggerd = false;	
         for(int chan = 0; chan < channum; chan++) {
             //calculate DC offset in fist 10 sec for channel
             int dcBias = _devices.begin()->second.dcBiasSum[chan]/_devices.begin()->second.dcBiasNum;
@@ -601,6 +606,7 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
                     if(_triggers.empty() || ntrigger - _triggers.front() > _sampleRate/10) {
                         if((thresh > 0 && channels[chan][i] > thresh) || (thresh <= 0 && channels[chan][i] < thresh)) {
                             _triggers.push_front(_pos + i);
+			    triggerd = true;
                             if(_triggers.size() > (unsigned int)_threshAvgCount)//_threshAvgCount == 1
                                 _triggers.pop_back();
                         }
@@ -615,6 +621,8 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
             //copy data from temporary de-inrleaved data buffer to permanent buffer
             _devices.begin()->second.sampleBuffers[chan]->addData(channels[chan].data(), samplesRead);
         }
+	if(triggerd)
+		triggered.emit();
         
         delete[] channels;
         delete[] buffer;
@@ -683,6 +691,7 @@ void RecordingManager::advance(uint32_t samples) {
 			}
 		}
 
+		bool triggerd = false;
 		for(int chan = 0; chan < channum; chan++) {
 			int dcBias = it->second.dcBiasSum[chan]/it->second.dcBiasNum;
 
@@ -695,6 +704,7 @@ void RecordingManager::advance(uint32_t samples) {
 					if(_triggers.empty() || ntrigger - _triggers.front() > _sampleRate/10) {
 						if((thresh > 0 && channels[chan][i] > thresh) || (thresh <= 0 && channels[chan][i] < thresh)) {
 							_triggers.push_front(oldPos + i);
+							triggerd = true;
 							if(_triggers.size() > (unsigned int)_threshAvgCount)
 								_triggers.pop_back();
 						}
@@ -707,6 +717,10 @@ void RecordingManager::advance(uint32_t samples) {
 			}
 			it->second.sampleBuffers[chan]->addData(channels[chan].data(), samplesRead/channum);
 		}
+
+		if(triggerd)
+			triggered.emit();
+
 		const int64_t posA = it->second.sampleBuffers[0]->pos();
 		if(!it->second.sampleBuffers[0]->empty() && (firstTime || posA < newPos)) {
 			newPos = posA;

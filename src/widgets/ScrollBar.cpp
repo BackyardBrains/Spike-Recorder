@@ -79,6 +79,9 @@ void ScrollBar::setPageStep(int val)
 
 void ScrollBar::paintEvent()
 {
+	if(width() == 0 && height() == 0) 
+		return;
+
 	Painter::setColor(Colors::widgetbg);
 	Painter::drawRect(rect());
 	
