@@ -24,6 +24,10 @@ ThresholdPanel::ThresholdPanel(RecordingManager &manager, Widgets::Widget *paren
 
 	_ekgWidget = new EkgWidget(this);
 	manager.triggered.connect(_ekgWidget,&EkgWidget::beat);
+	_speakerButton = new Widgets::PushButton(this);
+	_speakerButton->setNormalTex(Widgets::TextureGL::get("data/speakeroff.png"));
+	_speakerButton->setSizeHint(Widgets::Size(20,20));
+	_speakerButton->clicked.connect(this, &ThresholdPanel::speakerPressed);
 
 	_avg = new Widgets::ScrollBar(Widgets::Horizontal,this);
 	_avg->setRange(1,50);
@@ -46,8 +50,12 @@ ThresholdPanel::ThresholdPanel(RecordingManager &manager, Widgets::Widget *paren
 	avgBar->addSpacing(10);
 	avgBar->addWidget(label, Widgets::AlignVCenter);
 
+	Widgets::BoxLayout *ekgBar = new Widgets::BoxLayout(Widgets::Horizontal);
+	ekgBar->addWidget(_ekgWidget, Widgets::AlignVCenter);
+	ekgBar->addWidget(_speakerButton, Widgets::AlignVCenter);
+
 	_switchLayout->addLayout(avgBar);
-	_switchLayout->addWidget(_ekgWidget);
+	_switchLayout->addLayout(ekgBar);
 
 	Widgets::BoxLayout *layout = new Widgets::BoxLayout(Widgets::Horizontal, this);
 	layout->addWidget(_ekgButton, Widgets::AlignVCenter);
@@ -56,10 +64,18 @@ ThresholdPanel::ThresholdPanel(RecordingManager &manager, Widgets::Widget *paren
 	layout->update();
 
 	setSizeHint(layout->sizeHint());
-//	bar->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Fixed, Widgets::SizePolicy::Expanding));
-
 }
 
+void ThresholdPanel::speakerPressed() {
+	bool state = _ekgWidget->sound();
+	_ekgWidget->setSound(!state);
+
+	if(state) {
+		_speakerButton->setNormalTex(Widgets::TextureGL::get("data/speakeroff.png"));
+	} else {
+		_speakerButton->setNormalTex(Widgets::TextureGL::get("data/speaker.png"));
+	}
+}
 
 void ThresholdPanel::ekgPressed() {
 	int state = _switchLayout->selected();
@@ -73,6 +89,7 @@ void ThresholdPanel::ekgPressed() {
 	} else {
 		_ekgButton->setNormalTex(Widgets::TextureGL::get("data/ekg.png"));
 		_ekgButton->setHoverTex(Widgets::TextureGL::get("data/ekghigh.png"));
+		_ekgWidget->setSound(0);
 	}
 }
 
@@ -80,7 +97,18 @@ EkgWidget::EkgWidget(Widget *parent) : Widget(parent) {
 	_frequency = 0;
 	_lastTime = 0;
 	_beatt = 1.f;
-	setSizeHint(Widgets::Size(70,20));
+	_sound = false;
+	setSizeHint(Widgets::Size(300,32));
+
+	_beepSample = BASS_SampleLoad(false, "data/ekg.wav",0,0,10,0);
+}
+
+bool EkgWidget::sound() const {
+	return _sound;
+}
+
+void EkgWidget::setSound(bool sound) {
+	_sound = sound;
 }
 
 void EkgWidget::paintEvent() {
@@ -104,6 +132,11 @@ void EkgWidget::beat() {
 	_beatt = 1.f;
 
 	_lastTime = time;
+
+	if(_beepSample != (DWORD)-1 && _sound) {
+		HCHANNEL chan = BASS_SampleGetChannel(_beepSample, false);
+		BASS_ChannelPlay(chan, true);
+	}
 }
 
 void EkgWidget::advance() {

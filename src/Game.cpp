@@ -63,6 +63,8 @@ void Game::loadResources() {
 	Widgets::TextureGL::load("data/ckboxoff.png");
 	
 	Widgets::TextureGL::load("data/heart.png");
+	Widgets::TextureGL::load("data/speaker.png");
+	Widgets::TextureGL::load("data/speakeroff.png");
     
     Widgets::TextureGL::load("data/disconnected.png");
     Widgets::TextureGL::load("data/connected.png");	
