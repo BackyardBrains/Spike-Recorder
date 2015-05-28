@@ -19,14 +19,19 @@
 		24079F3B1AB0CBE700820291 /* icon_512x512@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 24079F311AB0CBE700820291 /* icon_512x512@2x.png */; };
 		24079F3D1AB0CC1000820291 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 24079F3C1AB0CC1000820291 /* Images.xcassets */; };
 		24079F3F1AB0CCDF00820291 /* libbass.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 248E591A1AAE1AD50011707F /* libbass.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		24079F401AB0CCDF00820291 /* SDL_image.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 248E59181AAE1AC10011707F /* SDL_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		24079F411AB0CCDF00820291 /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 248E59161AAE1AB20011707F /* SDL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		24079F431AB0CCFC00820291 /* libbass.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 248E591A1AAE1AD50011707F /* libbass.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		24079F441AB0CCFC00820291 /* SDL_image.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 248E59181AAE1AC10011707F /* SDL_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		24079F451AB0CCFC00820291 /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 248E59161AAE1AB20011707F /* SDL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		24079FA71AB1C73600820291 /* ArduinoSerial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24079FA51AB1C73600820291 /* ArduinoSerial.cpp */; };
 		24079FA91AB1C90E00820291 /* data in Resources */ = {isa = PBXBuildFile; fileRef = 24079FA81AB1C90E00820291 /* data */; };
 		24079FAC1AB1D1F500820291 /* DropDownList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24079FAA1AB1D1F500820291 /* DropDownList.cpp */; };
+		243E92E41B1713800067ED4A /* ThresholdPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 243E92E21B1713800067ED4A /* ThresholdPanel.cpp */; };
+		243E92EF1B1715A20067ED4A /* SwitchLayout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 243E92ED1B1715A20067ED4A /* SwitchLayout.cpp */; };
+		243E92F21B1715E80067ED4A /* BASSErrors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 243E92F01B1715E80067ED4A /* BASSErrors.cpp */; };
+		243E92F51B1716690067ED4A /* SDL_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 243E92F31B1716690067ED4A /* SDL_image.framework */; };
+		243E92F61B1716690067ED4A /* SDL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 243E92F41B1716690067ED4A /* SDL.framework */; };
+		243E92F71B1716760067ED4A /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 243E92F41B1716690067ED4A /* SDL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		243E92F81B1716790067ED4A /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 243E92F41B1716690067ED4A /* SDL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		243E92F91B17167D0067ED4A /* SDL_image.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 243E92F31B1716690067ED4A /* SDL_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		243E92FA1B17167F0067ED4A /* SDL_image.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 243E92F31B1716690067ED4A /* SDL_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		248646421AB1FBAD003852AA /* Log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248646401AB1FBAD003852AA /* Log.cpp */; };
 		248E58E21AAE19570011707F /* AnalysisAudioView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248E58901AAE19570011707F /* AnalysisAudioView.cpp */; };
 		248E58E31AAE19570011707F /* AnalysisView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248E58921AAE19570011707F /* AnalysisView.cpp */; };
@@ -64,8 +69,6 @@
 		248E59111AAE1A180011707F /* SDLMain.m in Sources */ = {isa = PBXBuildFile; fileRef = 248E590D1AAE1A180011707F /* SDLMain.m */; };
 		248E591F1AAE1B7C0011707F /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 248E591C1AAE1ADE0011707F /* IOKit.framework */; };
 		248E59201AAE1B820011707F /* libbass.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 248E591A1AAE1AD50011707F /* libbass.dylib */; };
-		248E59211AAE1B820011707F /* SDL_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 248E59181AAE1AC10011707F /* SDL_image.framework */; };
-		248E59221AAE1B820011707F /* SDL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 248E59161AAE1AB20011707F /* SDL.framework */; };
 		248E59231AAE1B820011707F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 248E59141AAE1A970011707F /* Cocoa.framework */; };
 		248E59241AAE1B820011707F /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 248E59121AAE1A910011707F /* OpenGL.framework */; };
 /* End PBXBuildFile section */
@@ -78,8 +81,8 @@
 			dstSubfolderSpec = 10;
 			files = (
 				24079F3F1AB0CCDF00820291 /* libbass.dylib in CopyFiles */,
-				24079F401AB0CCDF00820291 /* SDL_image.framework in CopyFiles */,
-				24079F411AB0CCDF00820291 /* SDL.framework in CopyFiles */,
+				243E92F71B1716760067ED4A /* SDL.framework in CopyFiles */,
+				243E92F91B17167D0067ED4A /* SDL_image.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,8 +93,8 @@
 			dstSubfolderSpec = 6;
 			files = (
 				24079F431AB0CCFC00820291 /* libbass.dylib in CopyFiles */,
-				24079F441AB0CCFC00820291 /* SDL_image.framework in CopyFiles */,
-				24079F451AB0CCFC00820291 /* SDL.framework in CopyFiles */,
+				243E92F81B1716790067ED4A /* SDL.framework in CopyFiles */,
+				243E92FA1B17167F0067ED4A /* SDL_image.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -115,6 +118,14 @@
 		24079FAA1AB1D1F500820291 /* DropDownList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DropDownList.cpp; path = src/DropDownList.cpp; sourceTree = SOURCE_ROOT; };
 		24079FAB1AB1D1F500820291 /* DropDownList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DropDownList.h; path = src/DropDownList.h; sourceTree = SOURCE_ROOT; };
 		24079FAE1AB1DE7E00820291 /* SpikeRecorder.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = SpikeRecorder.entitlements; sourceTree = "<group>"; };
+		243E92E21B1713800067ED4A /* ThresholdPanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ThresholdPanel.cpp; path = src/ThresholdPanel.cpp; sourceTree = SOURCE_ROOT; };
+		243E92E31B1713800067ED4A /* ThresholdPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThresholdPanel.h; path = src/ThresholdPanel.h; sourceTree = SOURCE_ROOT; };
+		243E92ED1B1715A20067ED4A /* SwitchLayout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SwitchLayout.cpp; sourceTree = "<group>"; };
+		243E92EE1B1715A20067ED4A /* SwitchLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchLayout.h; sourceTree = "<group>"; };
+		243E92F01B1715E80067ED4A /* BASSErrors.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BASSErrors.cpp; sourceTree = "<group>"; };
+		243E92F11B1715E80067ED4A /* BASSErrors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BASSErrors.h; sourceTree = "<group>"; };
+		243E92F31B1716690067ED4A /* SDL_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL_image.framework; sourceTree = "<group>"; };
+		243E92F41B1716690067ED4A /* SDL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL.framework; sourceTree = "<group>"; };
 		248646401AB1FBAD003852AA /* Log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Log.cpp; path = src/Log.cpp; sourceTree = SOURCE_ROOT; };
 		248646411AB1FBAD003852AA /* Log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Log.h; path = src/Log.h; sourceTree = SOURCE_ROOT; };
 		248E586D1AAE0CF60011707F /* SpikeRecorder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpikeRecorder.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -198,8 +209,6 @@
 		248E590E1AAE1A180011707F /* sigslot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sigslot.h; sourceTree = "<group>"; };
 		248E59121AAE1A910011707F /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		248E59141AAE1A970011707F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
-		248E59161AAE1AB20011707F /* SDL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL.framework; sourceTree = "<group>"; };
-		248E59181AAE1AC10011707F /* SDL_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL_image.framework; sourceTree = "<group>"; };
 		248E591A1AAE1AD50011707F /* libbass.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libbass.dylib; sourceTree = "<group>"; };
 		248E591C1AAE1ADE0011707F /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		248E59261AAE1C290011707F /* begin_code.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = begin_code.h; sourceTree = "<group>"; };
@@ -248,10 +257,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				243E92F61B1716690067ED4A /* SDL.framework in Frameworks */,
 				248E591F1AAE1B7C0011707F /* IOKit.framework in Frameworks */,
 				248E59201AAE1B820011707F /* libbass.dylib in Frameworks */,
-				248E59211AAE1B820011707F /* SDL_image.framework in Frameworks */,
-				248E59221AAE1B820011707F /* SDL.framework in Frameworks */,
+				243E92F51B1716690067ED4A /* SDL_image.framework in Frameworks */,
 				248E59231AAE1B820011707F /* Cocoa.framework in Frameworks */,
 				248E59241AAE1B820011707F /* OpenGL.framework in Frameworks */,
 			);
@@ -326,6 +335,8 @@
 				248646411AB1FBAD003852AA /* Log.h */,
 				248E58AD1AAE19570011707F /* native */,
 				248E58B11AAE19570011707F /* Paths.h */,
+				243E92E21B1713800067ED4A /* ThresholdPanel.cpp */,
+				243E92E31B1713800067ED4A /* ThresholdPanel.h */,
 				248E58B21AAE19570011707F /* RecordingBar.cpp */,
 				248E58B31AAE19570011707F /* RecordingBar.h */,
 				248E58B41AAE19570011707F /* widgets */,
@@ -346,6 +357,8 @@
 		248E589A1AAE19570011707F /* engine */ = {
 			isa = PBXGroup;
 			children = (
+				243E92F01B1715E80067ED4A /* BASSErrors.cpp */,
+				243E92F11B1715E80067ED4A /* BASSErrors.h */,
 				24079FA51AB1C73600820291 /* ArduinoSerial.cpp */,
 				24079FA61AB1C73600820291 /* ArduinoSerial.h */,
 				248E589B1AAE19570011707F /* FFTBackend.cpp */,
@@ -383,6 +396,8 @@
 				248E58B91AAE19570011707F /* BoxLayout.cpp */,
 				248E58BA1AAE19570011707F /* BoxLayout.h */,
 				248E58BB1AAE19570011707F /* Color.h */,
+				243E92ED1B1715A20067ED4A /* SwitchLayout.cpp */,
+				243E92EE1B1715A20067ED4A /* SwitchLayout.h */,
 				248E58BC1AAE19570011707F /* DropDownList.cpp */,
 				248E58BD1AAE19570011707F /* DropDownList.h */,
 				248E58C01AAE19570011707F /* ErrorBox.cpp */,
@@ -448,8 +463,8 @@
 				248E59251AAE1C290011707F /* SDL */,
 				248E591C1AAE1ADE0011707F /* IOKit.framework */,
 				248E591A1AAE1AD50011707F /* libbass.dylib */,
-				248E59181AAE1AC10011707F /* SDL_image.framework */,
-				248E59161AAE1AB20011707F /* SDL.framework */,
+				243E92F31B1716690067ED4A /* SDL_image.framework */,
+				243E92F41B1716690067ED4A /* SDL.framework */,
 				248E59141AAE1A970011707F /* Cocoa.framework */,
 				248E59121AAE1A910011707F /* OpenGL.framework */,
 			);
@@ -603,16 +618,19 @@
 				248E58E91AAE19570011707F /* Player.cpp in Sources */,
 				248E58E41AAE19570011707F /* AudioView.cpp in Sources */,
 				248E58F71AAE19570011707F /* DropDownList.cpp in Sources */,
+				243E92E41B1713800067ED4A /* ThresholdPanel.cpp in Sources */,
 				248E58E51AAE19570011707F /* ColorDropDownList.cpp in Sources */,
 				248E58F31AAE19570011707F /* RecordingBar.cpp in Sources */,
 				248E59041AAE19570011707F /* TextureGL.cpp in Sources */,
 				248E58EE1AAE19570011707F /* main.cpp in Sources */,
 				248E58FC1AAE19570011707F /* LoadTexture.cpp in Sources */,
 				248E58E61AAE19570011707F /* ConfigView.cpp in Sources */,
+				243E92F21B1715E80067ED4A /* BASSErrors.cpp in Sources */,
 				248E58FE1AAE19570011707F /* FileDialogMac.cpp in Sources */,
 				248E58E71AAE19570011707F /* FFTBackend.cpp in Sources */,
 				248E58F51AAE19570011707F /* BitmapFontGL.cpp in Sources */,
 				248E59101AAE1A180011707F /* GLee.c in Sources */,
+				243E92EF1B1715A20067ED4A /* SwitchLayout.cpp in Sources */,
 				248E59061AAE19570011707F /* Widget.cpp in Sources */,
 				248E59031AAE19570011707F /* ScrollBar.cpp in Sources */,
 				248E58FF1AAE19570011707F /* FileDialogMac.mm in Sources */,
@@ -715,7 +733,8 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_ENTITLEMENTS = SpikeRecorder/SpikeRecorder.entitlements;
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -743,7 +762,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "2055fbbe-98be-4932-b461-7c95ff0ee143";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx10.7;
 			};
 			name = Debug;
@@ -755,7 +774,8 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_ENTITLEMENTS = SpikeRecorder/SpikeRecorder.entitlements;
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -783,7 +803,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "2055fbbe-98be-4932-b461-7c95ff0ee143";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx10.7;
 			};
 			name = Release;
