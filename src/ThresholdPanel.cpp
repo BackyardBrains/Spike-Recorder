@@ -63,7 +63,6 @@ ThresholdPanel::ThresholdPanel(RecordingManager &manager, Widgets::Widget *paren
 	layout->addLayout(_switchLayout);
 	layout->update();
 
-	setSizeHint(layout->sizeHint());
 }
 
 void ThresholdPanel::speakerPressed() {

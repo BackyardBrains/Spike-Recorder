@@ -49,6 +49,7 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	_analysisButton->setNormalTex(Widgets::TextureGL::get("data/analysis.png"));
 	_analysisButton->setHoverTex(Widgets::TextureGL::get("data/analysishigh.png"));
 	_analysisButton->clicked.connect(this, &MainView::analysisPressed);
+	_analysisButton->setSizeHint(Widgets::Size(0,0));
 	_analysisButton->setVisible(false);
 
 	_recordButton = new Widgets::PushButton(this);
@@ -180,6 +181,7 @@ void MainView::forwardPressed() {
 		_manager.initRecordingDevices();
 		_recordButton->setVisible(true);
 		_analysisButton->setVisible(false);
+		_analysisButton->setSizeHint(Widgets::Size(0,0));
 		delete _anaView;
 		_anaView = NULL;
 	} else {
@@ -195,12 +197,17 @@ void MainView::threshPressed() {
 		_fftView->setActive(false);
 		_manager.setThreshMode(true);
 		_threshavgGroup->setVisible(true);
+		_threshavgGroup->setSizeHint(Widgets::Size(400,32));
+		_fftButton->setSizeHint(Widgets::Size());
 		_fftButton->setVisible(false);
 	} else {
 		_manager.setThreshMode(false);
 		_fftButton->setVisible(true);
+		_fftButton->setSizeHint(Widgets::Size(48,48));
+		_threshavgGroup->setSizeHint(Widgets::Size());
 		_threshavgGroup->setVisible(false);
 	}
+	Widgets::Application::getInstance()->updateLayout();
 }
 
 void MainView::recordPressed() {
@@ -297,11 +304,13 @@ void MainView::filePressed() {
 
 	_recordButton->setVisible(false);
 	_analysisButton->setVisible(true);
+	_analysisButton->setSizeHint(Widgets::Size(48,48));
 	_fftView->setActive(false);
 
 	Widgets::ToolTip *tip = new Widgets::ToolTip("Click to return to live mode \x1f", 2000);
 	tip->setGeometry(Widgets::Rect(width()/2-190, height()-150, 280, 40));
 	tip->setMouseTracking(false);
+	Widgets::Application::getInstance()->updateLayout();
 	Widgets::Application::getInstance()->addPopup(tip);
 }
 
