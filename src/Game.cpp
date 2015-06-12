@@ -65,13 +65,20 @@ void Game::loadResources() {
 	Widgets::TextureGL::load("data/plotviewdown.png");
 	Widgets::TextureGL::load("data/plotviewdownhigh.png");
 	Widgets::TextureGL::load("data/disconnected.png");
-	Widgets::TextureGL::load("data/connected.png");	
+	Widgets::TextureGL::load("data/connected.png");
+    Widgets::TextureGL::load("data/usbcon.png");
+    Widgets::TextureGL::load("data/usbconhigh.png");
+    Widgets::TextureGL::load("data/usbdiscon.png");
+    Widgets::TextureGL::load("data/usbdisconhigh.png");     
 }
 
 void Game::advance() {
 	static uint32_t t = 0; // TODO make this cleaner
 	uint32_t newt = SDL_GetTicks();
-	_manager.advance((newt-t)*_manager.sampleRate()/(1000-100)); // fetch more samples than necessary to prevent lag
+    float timediff = (newt-t);
+    float sampleNumber = (float)(_manager.sampleRate())*(timediff/1000.0);
+
+    _manager.advance((int32_t)sampleNumber); // fetch more samples than necessary to prevent lag
 	_fileRec.advance();
 
 	t = newt;

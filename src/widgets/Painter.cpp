@@ -28,6 +28,15 @@ void Painter::drawRect(const Rect &rect, bool filled)
 	drawRectFast(rect);
 	glEnd();
 }
+    
+void Painter::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool filled)
+{
+    glBegin(filled ? GL_TRIANGLES : GL_LINE_LOOP);
+    glVertex2i(x1, y1);
+    glVertex2i(x2, y2);
+    glVertex2i(x3, y3);
+    glEnd();
+}
 
 void Painter::drawTexRect(const Rect &rect) {
 	glBegin(GL_QUADS);
@@ -49,6 +58,8 @@ void Painter::drawRectFast(const Rect &rect)
 	glVertex2i(rect.right(), rect.bottom());
 	glVertex2i(rect.right(), rect.top());
 }
+    
+
 
 void Painter::drawCircle(const Point &center, int radius, int points)
 {

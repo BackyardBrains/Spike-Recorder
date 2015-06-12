@@ -141,7 +141,7 @@ bool RecordingManager::initHIDUSB()
     std::cout<<"Init HID\n";
     if(!_hidUsbManager.deviceOpened())
     {
-        if(_hidUsbManager.openDevice() == -1)
+        if(_hidUsbManager.openDevice(this) == -1)
         {
             _hidMode = false;
             hidError = _hidUsbManager.errorString;
@@ -185,6 +185,7 @@ bool RecordingManager::initHIDUSB()
         virtualDevice.name = sstm.str();
         virtualDevice.threshold = 100;
         virtualDevice.bound = 0;
+        
         _recordingDevices.push_back(virtualDevice);
     }
 
@@ -195,6 +196,8 @@ bool RecordingManager::initHIDUSB()
     _hidMode = true;
 
     deviceReload.emit();
+   // _player.stop();
+   // _player.start(_hidUsbManager.maxSamplingRate())
     _player.setVolume(0);
 
 
@@ -228,8 +231,31 @@ int RecordingManager::numberOfHIDChannels()
     return _numOfHidChannels;
 }
 
+bool RecordingManager::hidDevicePresent()
+{
+    
+    return _hidDevicePresent;
 
+}
+    
+void RecordingManager::scanForHIDDevices()
+{
+    _hidUsbManager.getAllDevicesList();
+}
 
+    
+void RecordingManager::scanUSBDevices()
+{
+
+    clock_t end = clock();
+    double elapsed_secs = double(end - timerUSB) / CLOCKS_PER_SEC;
+    if(elapsed_secs>0.5)
+    {
+        timerUSB = end;
+        scanForHIDDevices();
+    }
+    _hidDevicePresent = _hidUsbManager.list.size()>0;
+}
 
 //--------------- Serial port functions ---------------------
 
@@ -360,6 +386,8 @@ bool RecordingManager::loadFile(const char *filename) {
         Log::error("Bass Error: Failed to load file '%s': %s", filename, GetBassStrError());
         return false;
     }
+    
+    currentPositionOfWaveform = 0;//set position of waveform to begining
     
     clear();
     BASS_CHANNELINFO info;
@@ -574,7 +602,36 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 		setPaused(true);
 		return;
 	}
-
+    
+   /* samples = 0;
+    
+    int temp = 0;
+    //determine true number of samples
+    for(std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it) {
+        
+        temp++;
+            if(temp==2)
+            {
+                int64_t positionInAudioFile = BASS_ChannelGetPosition(it->second.handle, BASS_POS_BYTE);
+               // std::cout<<positionInAudioFile<<"\n";
+                double seconds = BASS_ChannelBytes2Seconds(it->second.handle, positionInAudioFile);
+                std::cout<<seconds<<"\n";
+                //seconds = seconds - 60;
+                if(seconds<0)
+                {
+                    seconds = 0;
+                }
+                positionInAudioFile = seconds * sampleRate();
+                
+               // samples = positionInAudioFile - currentPositionOfWaveform;
+                currentPositionOfWaveform = currentPositionOfWaveform+samples;
+                break;
+            }
+    }
+    */
+    
+    
+    
 	const unsigned int bufsize = 1*sampleRate();
 	for(std::map<int, Device>::iterator it = _devices.begin(); it != _devices.end(); ++it) {
 		if(it->second.sampleBuffers[0]->head()%(SampleBuffer::SIZE/2) >= SampleBuffer::SIZE/2-1 || it->second.sampleBuffers[0]->pos() >= fileLength()-1)
@@ -743,14 +800,24 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 
 void RecordingManager::advanceHidMode(uint32_t samples)
 {
+    
+    if(!_hidUsbManager.deviceOpened())
+    {
+        _hidDevicePresent = false;
+        disconnectFromHID();
+        scanForHIDDevices();
+    }
+    
     uint32_t len = 4024;
     //len = std::min(samples, len);
    // std::cout<<len<<"\n";
     const int channum = _hidUsbManager.numberOfChannels();
     std::vector<int16_t> *channels = new std::vector<int16_t>[channum];//non-interleaved
-    int16_t *buffer = new int16_t[channum*len];
+    int32_t *buffer = new int32_t[channum*len];
 
 
+    
+    
     //get interleaved data for all channels
     int samplesRead = _hidUsbManager.readDevice(buffer);
     if(_paused || samplesRead==0)
@@ -771,7 +838,7 @@ void RecordingManager::advanceHidMode(uint32_t samples)
                 //if we are in first 10 seconds interval
                 //add current sample to summ used to remove DC component
                 if(_devices.begin()->second.dcBiasNum < _sampleRate*10) {
-                    _devices.begin()->second.dcBiasSum[chan] += channels[chan][i];
+                    _devices.begin()->second.dcBiasSum[chan] += 0;//channels[chan][i];
                     if(chan == 0)
                     {
                         _devices.begin()->second.dcBiasNum++;
@@ -814,6 +881,35 @@ void RecordingManager::advanceHidMode(uint32_t samples)
         delete[] channels;
         delete[] buffer;
         _pos+=samplesRead;
+        
+        
+        //====================== push USB data to speaker =================
+        
+        
+        if(_pos-_sampleRate/2 > _player.pos()) {
+            const uint32_t bsamples = _pos-_player.pos();
+            
+            if(_player.volume() > 0) {
+                int16_t *buf = new int16_t[bsamples];
+                
+                SampleBuffer *s = sampleBuffer(_selectedVDevice);
+                if(s != NULL) {
+                    s->getData(buf, _player.pos(), bsamples);
+                } else {
+                    memset(buf, 0, bsamples*sizeof(int16_t));
+                }
+                
+                _player.push(buf, bsamples*sizeof(int16_t));
+                
+                delete[] buf;
+            } else {
+                _player.setPos(_pos);
+            }
+        }
+        
+        
+        
+        //====================================================================
 
     }
     else
@@ -826,6 +922,9 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 
 void RecordingManager::advance(uint32_t samples) {
 
+    
+    scanUSBDevices();
+    
 	if(_serialMode)
     {
         advanceSerialMode(samples);
@@ -1088,6 +1187,8 @@ void RecordingManager::setPos(int64_t pos, bool artificial) {
 	if(pos == _pos)
 		return;
 
+    currentPositionOfWaveform = pos;//set position of waveform to new value
+    
 	const int halfsize = SampleBuffer::SIZE/2;
 
 	const int seg1 = std::min(fileLength()-1,_pos+halfsize/2)/halfsize;

@@ -109,6 +109,9 @@ public:
     void disconnectFromHID();
     void setHIDNumberOfChannels(int numberOfChannels);
     int numberOfHIDChannels();
+    bool hidDevicePresent();
+    void scanForHIDDevices();
+    
     std::string hidError;
 private:
 	struct Device
@@ -144,6 +147,8 @@ private:
 	bool _paused;
 	bool _threshMode;
 
+    int64_t currentPositionOfWaveform;
+    
 	bool _fileMode;
     bool _serialMode;
     bool _hidMode;
@@ -165,6 +170,10 @@ private:
 
     HIDUsbManager _hidUsbManager;
     int _numOfHidChannels;
+    clock_t timerUSB;
+    bool _hidDevicePresent;
+    void scanUSBDevices();
+
 
 };
 

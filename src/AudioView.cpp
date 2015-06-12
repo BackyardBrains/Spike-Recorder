@@ -181,6 +181,16 @@ void AudioView::standardSettings() {
             setChannelColor(nchan, (i%COLOR_NUM)+1);
         }
     }
+    else if(_manager.hidMode())
+    {
+        for(int i=0;i<_manager.numberOfHIDChannels();i++)
+        {
+            int nchan = addChannel(i);
+            setChannelColor(nchan, (i%COLOR_NUM)+1);
+            _channels.at(nchan).gain = 0.02;
+        }
+    
+    }
     else
     {
         addChannel(0);
@@ -275,6 +285,135 @@ static const char *get_unit_str(int unit) {
 	}
 }
 
+    
+void AudioView::drawCenter()
+{
+    if(!_manager.paused())
+    {
+    int yBegining = -68;
+  //  int sizeOfTriangle = 8;
+        Widgets::Painter::setColor(Widgets::Colors::yellow);
+   // Widgets::Painter::drawTriangle(width()/2+20-sizeOfTriangle, yBegining, width()/2+20, yBegining+sizeOfTriangle, width()/2+20+sizeOfTriangle, yBegining,true);
+    
+    int position = yBegining;
+    int step = 10;
+    while (position<height()) {
+        Widgets::Painter::drawRect(Widgets::Rect(width()/2+19,position, 1, step));
+        position = position +2*step;
+    }
+    }
+    
+    
+    int64_t fullTime = _manager.fileLength();
+    int64_t fullMiliseconds = fullTime/(_manager.sampleRate()/1000);
+    fullMiliseconds = fullMiliseconds%1000;
+    int64_t fullSeconds = fullTime/_manager.sampleRate();
+    int64_t fullMinutes = fullSeconds/60;
+    fullSeconds = fullSeconds%60;
+    std::stringstream fullS;
+    if(fullMinutes<1)
+    {
+        fullS<<"00:";
+    }
+    else if (fullMinutes<10)
+    {
+        fullS<<"0"<<fullMinutes<<":";
+    }
+    else
+    {
+        fullS<<fullMinutes<<":";
+    }
+    
+    if(fullSeconds<10)
+    {
+        fullS<<"0"<<fullSeconds<<" ";
+    }
+    else
+    {
+        fullS<<fullSeconds<<" ";
+    }
+    
+    if(fullMiliseconds<10)
+    {
+        fullS<<"00"<<fullMiliseconds;
+    }
+    else if (fullMiliseconds<100)
+    {
+        fullS<<"0"<<fullMiliseconds;
+    }
+    else
+    {
+        fullS<<fullMiliseconds;
+    }
+
+    Widgets::Painter::setColor(Widgets::Colors::white);
+    Widgets::Application::font()->draw(fullS.str().c_str(), width()-15, height()+40, Widgets::AlignRight);
+    
+    
+    
+    
+    
+    int64_t time = _manager.pos();
+    int64_t miliseconds = time/(_manager.sampleRate()/1000);
+    miliseconds = miliseconds%1000;
+    int64_t seconds = time/_manager.sampleRate();
+    int64_t minutes = seconds/60;
+    seconds = seconds%60;
+    std::stringstream o;
+    
+    if(minutes<1)
+    {
+        o<<"00:";
+    }
+    else if (minutes<10)
+    {
+        o<<"0"<<minutes<<":";
+    }
+    else
+    {
+        o<<minutes<<":";
+    }
+    
+    if(seconds<10)
+    {
+        o<<"0"<<seconds<<" ";
+    }
+    else
+    {
+        o<<seconds<<" ";
+    }
+    
+    if(miliseconds<10)
+    {
+        o<<"00"<<miliseconds;
+    }
+    else if (miliseconds<100)
+    {
+        o<<"0"<<miliseconds;
+    }
+    else
+    {
+        o<<miliseconds;
+    }
+    
+    
+
+    
+   // Widgets::Painter::drawRect(Widgets::Rect(width()-shownscalew-20,height()-50, shownscalew, 1));
+    Widgets::Application::font()->draw(o.str().c_str(), 15, height()+40, Widgets::AlignLeft);
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    //Widgets::Painter::drawRect(Widgets::Rect(width()/2+19,yBegining, 1, 2*height()+10));
+    
+}
+    
 
 void AudioView::drawScale() {
 	int unit = -std::log(_timeScale)/std::log(10);
@@ -510,13 +649,19 @@ void AudioView::paintEvent() {
 
 	if(!_manager.threshMode())
 		drawSpikeTrain();
+    
 	drawAudio();
 
 	if(_manager.threshMode())
 		drawThreshold(screenWidth());
 	else
 		drawMarkers();
-
+    
+    if(_manager.fileMode())
+    {
+        drawCenter();
+    }
+    
 	drawRulerTime();
 	drawScale();
 

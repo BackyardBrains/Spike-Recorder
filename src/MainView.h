@@ -2,6 +2,7 @@
 #define BACKYARDBRAINS_MAINVIEW_H
 
 #include "widgets/Widget.h"
+#include <ctime>
 
 namespace BackyardBrains {
 
@@ -30,6 +31,7 @@ private:
 	Widgets::PushButton *_recordButton;
 	Widgets::PushButton *_fftButton;
 	Widgets::PushButton *_analysisButton;
+    Widgets::PushButton *_usbButton;
 
 	Widgets::ScrollBar *_seekBar;
 	Widgets::Widget *_threshavgGroup;
@@ -52,8 +54,15 @@ private:
 	void configPressed();
 	void recordPressed();
 	void analysisPressed();
+    
+    void usbPressed();
 
 	void fftPressed();
+    
+    void paintEvent();
+    clock_t timerUSB;
+        
+    
 };
 
 }

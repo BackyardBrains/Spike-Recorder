@@ -2,6 +2,8 @@
 #define HIDUSBMANAGER_H
 
 #define SIZE_OF_CIRC_BUFFER 4024
+#define SIZE_OF_MESSAGES_BUFFER 64
+#define ESCAPE_SEQUENCE_LENGTH 6
 #include <stdio.h>
 #include <wchar.h>
 #include <string.h>
@@ -11,6 +13,7 @@
 #include <string>
 #include <iostream>
 #include <sys/time.h>
+//
 
 #ifdef _WIN32
 	#include <windows.h>
@@ -22,12 +25,13 @@
 #endif
 
 namespace BackyardBrains {
+class RecordingManager;
 class HIDUsbManager
 {
     public:
         HIDUsbManager();
-        int openDevice();
-        int readDevice(int16_t * obuffer);
+        int openDevice(RecordingManager * managerin);
+        int readDevice(int32_t * obuffer);
         std::list<std::string> list;
         void getAllDevicesList();
         void closeDevice();
@@ -40,12 +44,17 @@ class HIDUsbManager
         const char * currentDeviceName();
         std::string errorString;
         bool deviceOpened();
-        int readOneBatch(int16_t * obuffer);
-        int16_t *mainCircularBuffer;
+        int readOneBatch(int32_t * obuffer);
+        int32_t *mainCircularBuffer;
         void stopDevice();
+    
+        std::string firmwareVersion;
+        std::string hardwareVersion;
+        std::string hardwareType;
     protected:
         void startDevice();
 
+        RecordingManager *_manager;
         char circularBuffer[SIZE_OF_CIRC_BUFFER];
         std::thread t1;
         int mainHead;
@@ -55,14 +64,25 @@ class HIDUsbManager
         hid_device *handle;
         int _numberOfChannels;
         int _samplingRate;
-        int serialCounter;
         bool returnTailForOneAndCheck();
         bool checkIfNextByteExist();
         bool areWeAtTheEndOfFrame();
         bool checkIfHaveWholeFrame();
         void readThread(HIDUsbManager * ref);
-
         bool _deviceConnected;
+    
+        void testEscapeSequence(unsigned int newByte, int offset);
+        void executeOneMessage(std::string typeOfMessage, std::string valueOfMessage, int offsetin);
+        void executeContentOfMessageBuffer(int offset);
+        int escapeSequenceDetectorIndex;
+        int watchDogTimerForEscapeSequence;
+        bool weAreInsideEscapeSequence;
+        char messagesBuffer[SIZE_OF_MESSAGES_BUFFER];//contains payload inside escape sequence
+        int messageBufferIndex;
+        unsigned int escapeSequence[ESCAPE_SEQUENCE_LENGTH];
+        unsigned int endOfescapeSequence[ESCAPE_SEQUENCE_LENGTH];
+        unsigned int tempHeadAndTailDifference;//used for precise events reference
+    
     private:
 }; //class end
 

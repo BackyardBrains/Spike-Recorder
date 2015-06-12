@@ -15,7 +15,7 @@ class AudioView : public Widgets::Widget
 public:
 	struct Channel
 	{
-		Channel() : virtualDevice(RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX), colorIdx(1), gain(1.f), pos(0.5f) {}
+		Channel() : virtualDevice(RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX), colorIdx(1), gain(0.5f), pos(0.5f) {}
 		void setGain(float ngain);
 
 		int virtualDevice;
@@ -78,6 +78,7 @@ protected:
 	void drawSpikeTrain();
 	void drawRulerBox();
 	void drawRulerTime();
+    void drawCenter();
 	void drawMarkers();
 	void drawThreshold(int screenw);
 	void drawGainControls();

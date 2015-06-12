@@ -193,8 +193,8 @@ namespace BackyardBrains {
         // disable parity generation and 2 stop bits
         options.c_cflag &= ~(PARENB | CSTOPB);
 
-        //cfsetispeed(&options, B9600);
-        //cfsetospeed(&options, B9600);
+        //cfsetispeed(&options, B115200);
+        //cfsetospeed(&options, B115200);
 
         cfsetispeed(&options, B230400);
         cfsetospeed(&options, B230400);
@@ -251,7 +251,7 @@ namespace BackyardBrains {
 		memcpy(&port_cfg_orig, &port_cfg, sizeof(COMMCONFIG));
 	}
 	// http://msdn2.microsoft.com/en-us/library/aa363188(VS.85).aspx
-	port_cfg.dcb.BaudRate = 230400;
+        port_cfg.dcb.BaudRate = 230400;
 	port_cfg.dcb.fBinary = TRUE;
 	port_cfg.dcb.fParity = FALSE;
 	port_cfg.dcb.fOutxCtsFlow = FALSE;

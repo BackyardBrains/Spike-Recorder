@@ -16,6 +16,7 @@ public:
 	~Painter();
 
 	static void setColor(const Color &color);
+    static void drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool filled = true);
 	static void drawRect(const Rect &rect, bool filled = true);
 	static void drawRectFast(const Rect &rect);
 	static void drawTexRect(const Rect &rect);

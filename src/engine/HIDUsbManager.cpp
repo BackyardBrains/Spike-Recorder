@@ -1,6 +1,6 @@
 #include "HIDUsbManager.h"
 #include <sstream>
-
+#include "RecordingManager.h"
 
 #define BYB_VID 0x2047
 #define BYB_PID 0x3e0
@@ -15,15 +15,38 @@ namespace BackyardBrains {
     //
     HIDUsbManager::HIDUsbManager()
     {
+        
         _deviceConnected = false;
 
+        escapeSequence[0] = 255;
+        escapeSequence[1] = 255;
+        escapeSequence[2] = 1;
+        escapeSequence[3] = 1;
+        escapeSequence[4] = 128;
+        escapeSequence[5] = 255;
+        
+        endOfescapeSequence[0] = 255;
+        endOfescapeSequence[1] = 255;
+        endOfescapeSequence[2] = 1;
+        endOfescapeSequence[3] = 1;
+        endOfescapeSequence[4] = 129;
+        endOfescapeSequence[5] = 255;
+        
+        firmwareVersion = "";
+        hardwareVersion = "";
+        hardwareType = "";
+        
     }
 
+    
+    
+    
     //
     // Open USB connection to BYB device based on PID and VID
     //
-    int HIDUsbManager::openDevice()
+    int HIDUsbManager::openDevice(RecordingManager * managerin)
     {
+        _manager = managerin;
         std::stringstream sstm;//variable for log
         handle = hid_open(BYB_VID, BYB_PID, NULL);
         if (!handle) {
@@ -40,9 +63,12 @@ namespace BackyardBrains {
         cBufHead = 0;
         cBufTail = 0;
 
-        serialCounter = 0;
+        escapeSequenceDetectorIndex = 0;
+        weAreInsideEscapeSequence = false;
+        messageBufferIndex =0;
         _deviceConnected = true;
 
+        askForCapabilities();
         //set number of channels and sampling rate on micro
         setNumberOfChannelsAndSamplingRate(2, maxSamplingRate());
         //send start command to micro
@@ -54,6 +80,149 @@ namespace BackyardBrains {
         return 0;
     }
 
+    //
+    // Detect start-of-message escape sequence and end-of-message sequence
+    // and set up weAreInsideEscapeSequence.
+    // When we detect end-of-message sequence call executeContentOfMessageBuffer()
+    //
+    void HIDUsbManager::testEscapeSequence(unsigned int newByte, int offset)
+    {
+        if(weAreInsideEscapeSequence)
+        {
+            if(endOfescapeSequence[escapeSequenceDetectorIndex] == newByte)
+            {
+                escapeSequenceDetectorIndex++;
+                if(escapeSequenceDetectorIndex ==  ESCAPE_SEQUENCE_LENGTH)
+                {
+                    weAreInsideEscapeSequence = false; //end of escape sequence
+                    executeContentOfMessageBuffer(offset+tempHeadAndTailDifference);
+                    escapeSequenceDetectorIndex = 0;//prepare for detecting begining of sequence
+                }
+            }
+            else
+            {
+                escapeSequenceDetectorIndex = 0;
+            }
+            
+        }
+        else
+        {
+            if(escapeSequence[escapeSequenceDetectorIndex] == newByte)
+            {
+                escapeSequenceDetectorIndex++;
+                if(escapeSequenceDetectorIndex ==  ESCAPE_SEQUENCE_LENGTH)
+                {
+                    weAreInsideEscapeSequence = true; //found escape sequence
+                    for(int i=0;i<SIZE_OF_MESSAGES_BUFFER;i++)
+                    {
+                        messagesBuffer[i] = 0;
+                    }
+                    messageBufferIndex = 0;//prepare for receiving message
+                    escapeSequenceDetectorIndex = 0;//prepare for detecting end of esc. sequence
+                    
+                    //rewind writing head and effectively delete escape sequence from data
+                    for(int i=0;i<ESCAPE_SEQUENCE_LENGTH;i++)
+                    {
+                        cBufHead--;
+                        if(cBufHead<0)
+                        {
+                            cBufHead = SIZE_OF_CIRC_BUFFER-1;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                escapeSequenceDetectorIndex = 0;
+            }
+        }
+        
+    }
+    
+    //
+    // Parse and check what we need to do with message that we received
+    // from microcontroller
+    //
+    void HIDUsbManager::executeContentOfMessageBuffer(int offset)
+    {
+        bool stillProcessing = true;
+        int currentPositionInString = 0;
+        char message[SIZE_OF_MESSAGES_BUFFER];
+        int endOfMessage = 0;
+        int startOfMessage = 0;
+
+
+        
+        while(stillProcessing)
+        {
+            
+            if(messagesBuffer[currentPositionInString]==';')
+            {
+               //we have message, parse it
+                for(int k=0;k<endOfMessage-startOfMessage;k++)
+                {
+                    if(message[k]==':')
+                    {
+                        std::string typeOfMessage(message, k);
+                        std::string valueOfMessage(message+k+1, (endOfMessage-startOfMessage)-k-1);
+                        executeOneMessage(typeOfMessage, valueOfMessage, offset);
+                        break;
+                    }
+                }
+                startOfMessage = endOfMessage+1;
+                currentPositionInString++;
+                endOfMessage++;
+            
+            }
+            else
+            {
+                message[currentPositionInString-startOfMessage] = messagesBuffer[currentPositionInString];
+                currentPositionInString++;
+                endOfMessage++;
+                
+            }
+            
+            if(currentPositionInString>=SIZE_OF_MESSAGES_BUFFER)
+            {
+                stillProcessing = false;
+            }
+        }
+        
+        //free(message);
+     
+    }
+    
+    
+    void HIDUsbManager::executeOneMessage(std::string typeOfMessage, std::string valueOfMessage, int offsetin)
+    {
+        std::cout<<"\nMESSAGE: "<<typeOfMessage<<" - "<<valueOfMessage<<"\n";
+        if(typeOfMessage == "FWV")
+        {
+            firmwareVersion = valueOfMessage;
+        }
+        if(typeOfMessage == "HWT")
+        {
+            hardwareType = valueOfMessage;
+        }
+    
+        if(typeOfMessage == "HWV")
+        {
+            hardwareVersion = valueOfMessage;
+        }
+        
+        if(typeOfMessage == "EVNT")
+        {
+            int mnum = (int)((unsigned int)valueOfMessage[0]-48);
+            int64_t offset = 0;
+           /* if(!_manager.fileMode())
+            {
+                
+                offset = _audioView->offset();
+            }*/
+            _manager->addMarker(std::string(1, mnum+'0'), offset+offsetin);
+        }
+        
+    }
 
     //
     //Thread that periodicaly read new data from microcontroller
@@ -65,13 +234,19 @@ namespace BackyardBrains {
     {
         ref->mainHead = 0;
         ref->mainTail = 0;
-        ref->mainCircularBuffer = new int16_t[ref->numberOfChannels()*SIZE_OF_MAIN_CIRCULAR_BUFFER];
+        ref->mainCircularBuffer = new int32_t[ref->numberOfChannels()*SIZE_OF_MAIN_CIRCULAR_BUFFER];
         int maxSamples = ref->numberOfChannels()*SIZE_OF_MAIN_CIRCULAR_BUFFER;
-        int16_t *buffer = new int16_t[256];
+        int32_t *buffer = new int32_t[256];
         int numberOfFrames;
        // int k = 0;
+        
+        tempHeadAndTailDifference-=SIZE_OF_MAIN_CIRCULAR_BUFFER;
         while (ref->_deviceConnected) {
             numberOfFrames = ref->readOneBatch(buffer);
+            if(numberOfFrames == -1)
+            {
+                ref->_deviceConnected = false;
+            }
             //std::cout<<numberOfFrames<<"-";
             for(int i=0;i<numberOfFrames;i++)
             {
@@ -91,6 +266,15 @@ namespace BackyardBrains {
                 //update head position after writting walue
                 //so that we always have shole frame when reading
                 ref->mainHead = indexOfHead;
+                int tempMainHead = mainHead;
+                if(tempMainHead>mainTail)
+                {
+                    tempHeadAndTailDifference =(tempMainHead-mainTail)/_numberOfChannels;
+                }
+                else
+                {
+                    tempHeadAndTailDifference = ((_numberOfChannels*SIZE_OF_MAIN_CIRCULAR_BUFFER-mainTail)+tempMainHead)/_numberOfChannels;
+                }
             }
         }
         //realy disconnect from device here
@@ -107,7 +291,7 @@ namespace BackyardBrains {
     //
     // Read one batch of data from HID usb
     //
-    int HIDUsbManager::readOneBatch(int16_t * obuffer)
+    int HIDUsbManager::readOneBatch(int32_t * obuffer)
     {
         unsigned char buffer[256];
 
@@ -134,15 +318,26 @@ namespace BackyardBrains {
         }
         //get number of bytes
         unsigned int sizeOfPackage =((unsigned int)buffer[1]& 0xFF);
-
+        
+        
         for(int i=2;i<sizeOfPackage+2;i++)
         {
-            circularBuffer[cBufHead++] = buffer[i];
-
-            if(cBufHead>=SIZE_OF_CIRC_BUFFER)
+            
+            if(weAreInsideEscapeSequence)
             {
-                cBufHead = 0;
+                messagesBuffer[messageBufferIndex] = buffer[i];
+                messageBufferIndex++;
             }
+            else
+            {
+                circularBuffer[cBufHead++] = buffer[i];
+
+                if(cBufHead>=SIZE_OF_CIRC_BUFFER)
+                {
+                    cBufHead = 0;
+                }
+            }
+            testEscapeSequence((unsigned int) buffer[i],  ((i-2)/2)/_numberOfChannels);
         }
 
         unsigned int LSB;
@@ -186,9 +381,8 @@ namespace BackyardBrains {
                         writeInteger = LSB | MSB;
 
                         //write decoded integer to buffer
-                        obuffer[obufferIndex++] = writeInteger;
+                        obuffer[obufferIndex++] = (writeInteger-512)*62;
                         
-    
                         if(areWeAtTheEndOfFrame())
                         {
                             break;
@@ -232,7 +426,7 @@ namespace BackyardBrains {
     // And return number of readed frames
     // (not samples, one frame can contains multiple interleaved samples)
     //
-    int HIDUsbManager::readDevice(int16_t * obuffer)
+    int HIDUsbManager::readDevice(int32_t * obuffer)
     {
         int frames;
         int maxNumOfSamples = _numberOfChannels*SIZE_OF_MAIN_CIRCULAR_BUFFER;
@@ -240,14 +434,14 @@ namespace BackyardBrains {
 
        if(mainTail>tempMainHead)
        {
-           memcpy ( obuffer, &mainCircularBuffer[mainTail], sizeof(int16_t)*(maxNumOfSamples-mainTail));
+           memcpy ( obuffer, &mainCircularBuffer[mainTail], sizeof(int32_t)*(maxNumOfSamples-mainTail));
            memcpy ( &obuffer[maxNumOfSamples-mainTail], mainCircularBuffer, sizeof(int16_t)*(tempMainHead));
            frames = ((maxNumOfSamples-mainTail)+tempMainHead)/_numberOfChannels;
 
        }
        else
        {
-           memcpy ( obuffer, &mainCircularBuffer[mainTail], sizeof(int16_t)*(tempMainHead-mainTail));
+           memcpy ( obuffer, &mainCircularBuffer[mainTail], sizeof(int32_t)*(tempMainHead-mainTail));
            frames = (tempMainHead-mainTail)/_numberOfChannels;
        }
 
@@ -262,6 +456,10 @@ namespace BackyardBrains {
     //
     void HIDUsbManager::getAllDevicesList()
     {
+        if(!_deviceConnected)
+        {
+            hid_exit();
+        }
         list.clear();
         struct hid_device_info *devs, *cur_dev;
         std::cout<<"Scan for HID devices... \n";
@@ -269,8 +467,13 @@ namespace BackyardBrains {
         cur_dev = devs;
         while (cur_dev) {
                 std::string nameOfHID((char *) cur_dev->product_string);
-            list.push_back(nameOfHID);
-            std::cout<<"HID device: "<<cur_dev->manufacturer_string<<", "<<cur_dev->product_string<<"\n";
+            if(cur_dev->vendor_id == BYB_VID)
+            {
+                list.push_back(nameOfHID);
+                 std::cout<<"HID device: "<<cur_dev->vendor_id<<", "<<cur_dev->product_string<<"\n";
+                
+            }
+           
            /* printf("Device Found\n  type: %04hx %04hx\n  path: %s\n  serial_number: %ls", cur_dev->vendor_id, cur_dev->product_id, cur_dev->path, cur_dev->serial_number);
             printf("\n");
             printf("  Manufacturer: %ls\n", cur_dev->manufacturer_string);
