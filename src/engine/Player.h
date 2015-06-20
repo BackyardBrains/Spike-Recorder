@@ -13,8 +13,6 @@ public:
 	Player();
 	~Player();
 
-	int64_t pos() const;
-	void setPos(int64_t pos);
 	void start(int sampleRate);
 
 	bool paused() const;
@@ -27,7 +25,6 @@ public:
 	void push(void *data, uint32_t size);
 	void stop();
 private:
-	int64_t _pos;
 	HSTREAM _output;
 };
 

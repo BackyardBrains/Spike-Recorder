@@ -16,7 +16,6 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
 	if(!BASS_Init(-1, _sampleRate, 0, 0, NULL)) {
 		Log::fatal("Bass initialization failed: %s", GetBassStrError());
 	}
-
     _numOfSerialChannels = 1;
 	_player.start(_sampleRate);
     
@@ -104,8 +103,6 @@ void RecordingManager::clear() {
 			it->second.destroy();
 		}
 	}
-
-	_player.setPos(0);
 
 	_markers.clear();
 	_triggers.clear();
@@ -374,7 +371,6 @@ void RecordingManager::setSelectedVDevice(int virtualDevice) {
 		return;
 
 	_selectedVDevice = virtualDevice;
-	_player.setPos(_pos); // empty player buffer
 	_triggers.clear();
 }
 
@@ -527,20 +523,16 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 		}
 
 		SampleBuffer &s = *sampleBuffer(_selectedVDevice);
-		if(s.pos() > _player.pos()) {
-			const uint32_t bsamples = s.pos()-_player.pos();
+		const uint32_t bsamples = samples;
 
-			if(_player.volume() > 0) {
-				int16_t *buf = new int16_t[bsamples];
+		if(_player.volume() > 0) {
+			int16_t *buf = new int16_t[bsamples];
 
-				s.getData(buf, _player.pos(), bsamples);
-				_player.push(buf, bsamples*sizeof(int16_t));
+			s.getData(buf, _pos, bsamples);
+			_player.push(buf, bsamples*sizeof(int16_t));
 
-				delete[] buf;
-			} else {
-				_player.setPos(_pos);
-			}
-		}
+			delete[] buf;
+		} 
 
 		setPos(_pos + samples, false);
 	}
@@ -717,28 +709,22 @@ void RecordingManager::advance(uint32_t samples) {
 		delete[] buffer;
 	}
 
-	if(_pos-_sampleRate/2 > _player.pos()) {
-		const uint32_t bsamples = _pos-_player.pos();
+	const uint32_t bsamples = newPos-_pos;
 
-		if(_player.volume() > 0) {
-			int16_t *buf = new int16_t[bsamples];
+	if(_player.volume() > 0) {
+		int16_t *buf = new int16_t[bsamples];
 
-			SampleBuffer *s = sampleBuffer(_selectedVDevice);
-			if(s != NULL) {
-				s->getData(buf, _player.pos(), bsamples);
-			} else {
-				memset(buf, 0, bsamples*sizeof(int16_t));
-			}
-
-			_player.push(buf, bsamples*sizeof(int16_t));
-
-			delete[] buf;
+		SampleBuffer *s = sampleBuffer(_selectedVDevice);
+		if(s != NULL) {
+			s->getData(buf, _pos, bsamples);
 		} else {
-			_player.setPos(_pos);
+			memset(buf, 0, bsamples*sizeof(int16_t));
 		}
-	}
-	_player.paused();
 
+		_player.push(buf, bsamples*sizeof(int16_t));
+
+		delete[] buf;
+	}
 
 	if(newPos > oldPos)
 		_pos = newPos;
@@ -912,8 +898,6 @@ void RecordingManager::setPos(int64_t pos, bool artificial) {
 			}
 		}
 	}
-	if(artificial)
-		_player.setPos(pos);
 
 	_pos = pos;
 }
