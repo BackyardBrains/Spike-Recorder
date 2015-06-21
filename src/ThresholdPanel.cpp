@@ -24,6 +24,7 @@ ThresholdPanel::ThresholdPanel(RecordingManager &manager, Widgets::Widget *paren
 
 	_ekgWidget = new EkgWidget(this);
 	manager.triggered.connect(_ekgWidget,&EkgWidget::beat);
+	manager.thresholdChanged.connect(_ekgWidget, &EkgWidget::reset);
 	_speakerButton = new Widgets::PushButton(this);
 	_speakerButton->setNormalTex(Widgets::TextureGL::get("data/speakeroff.png"));
 	_speakerButton->setSizeHint(Widgets::Size(20,20));
@@ -93,13 +94,17 @@ void ThresholdPanel::ekgPressed() {
 }
 
 EkgWidget::EkgWidget(Widget *parent) : Widget(parent) {
-	_frequency = 0;
-	_lastTime = 0;
-	_beatt = 1.f;
+	reset();
 	_sound = false;
 	setSizeHint(Widgets::Size(300,32));
 
 	_beepSample = BASS_SampleLoad(false, "data/ekg.wav",0,0,10,0);
+}
+
+void EkgWidget::reset() {
+	_beatt = 1.f;
+	_frequency = 0;
+	_lastTime = 0;
 }
 
 bool EkgWidget::sound() const {

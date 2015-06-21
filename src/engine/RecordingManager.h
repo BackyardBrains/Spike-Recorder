@@ -79,6 +79,7 @@ public:
 
 	sigslot::signal0<> deviceReload;
 	sigslot::signal0<> pauseChanged;
+	sigslot::signal0<> thresholdChanged;
 	
 	sigslot::signal0<> triggered;
 

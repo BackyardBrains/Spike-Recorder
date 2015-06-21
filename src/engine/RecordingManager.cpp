@@ -377,6 +377,7 @@ void RecordingManager::setSelectedVDevice(int virtualDevice) {
 void RecordingManager::setVDeviceThreshold(int virtualDevice, int threshold) {
 	_recordingDevices[virtualDevice].threshold = threshold;
 	_triggers.clear();
+	thresholdChanged.emit();
 }
 
 int64_t RecordingManager::fileLength() {

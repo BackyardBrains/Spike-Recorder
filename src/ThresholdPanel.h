@@ -17,6 +17,7 @@ class EkgWidget : public Widgets::Widget {
 public:
 	EkgWidget(Widget *parent = NULL);
 	void beat();
+	void reset();
 	bool sound() const;
 	void setSound(bool sound);
 private:
