@@ -72,6 +72,9 @@ void Game::loadResources() {
     Widgets::TextureGL::load("data/usbconhigh.png");
     Widgets::TextureGL::load("data/usbdiscon.png");
     Widgets::TextureGL::load("data/usbdisconhigh.png");     
+	Widgets::TextureGL::load("data/heart.png");
+	Widgets::TextureGL::load("data/speaker.png");
+	Widgets::TextureGL::load("data/speakeroff.png");
 }
 
 void Game::advance() {

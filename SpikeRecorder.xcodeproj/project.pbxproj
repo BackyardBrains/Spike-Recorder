@@ -37,6 +37,8 @@
 		2421F0A61ACFE2C400927F19 /* SDL_image.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2421F0A01ACFE2B300927F19 /* SDL_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		2421F0A71ACFE2C400927F19 /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2421F0A11ACFE2B300927F19 /* SDL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		248646421AB1FBAD003852AA /* Log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248646401AB1FBAD003852AA /* Log.cpp */; };
+		248BA1F51B3E42AD00EEB5E4 /* ThresholdPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248BA1F31B3E42AD00EEB5E4 /* ThresholdPanel.cpp */; };
+		248BA1F81B3E42D500EEB5E4 /* SwitchLayout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248BA1F61B3E42D500EEB5E4 /* SwitchLayout.cpp */; };
 		248E58E21AAE19570011707F /* AnalysisAudioView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248E58901AAE19570011707F /* AnalysisAudioView.cpp */; };
 		248E58E31AAE19570011707F /* AnalysisView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248E58921AAE19570011707F /* AnalysisView.cpp */; };
 		248E58E41AAE19570011707F /* AudioView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248E58941AAE19570011707F /* AudioView.cpp */; };
@@ -142,6 +144,10 @@
 		2421F0A11ACFE2B300927F19 /* SDL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL.framework; sourceTree = "<group>"; };
 		248646401AB1FBAD003852AA /* Log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Log.cpp; path = src/Log.cpp; sourceTree = SOURCE_ROOT; };
 		248646411AB1FBAD003852AA /* Log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Log.h; path = src/Log.h; sourceTree = SOURCE_ROOT; };
+		248BA1F31B3E42AD00EEB5E4 /* ThresholdPanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ThresholdPanel.cpp; path = src/ThresholdPanel.cpp; sourceTree = SOURCE_ROOT; };
+		248BA1F41B3E42AD00EEB5E4 /* ThresholdPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThresholdPanel.h; path = src/ThresholdPanel.h; sourceTree = SOURCE_ROOT; };
+		248BA1F61B3E42D500EEB5E4 /* SwitchLayout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SwitchLayout.cpp; sourceTree = "<group>"; };
+		248BA1F71B3E42D500EEB5E4 /* SwitchLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchLayout.h; sourceTree = "<group>"; };
 		248E586D1AAE0CF60011707F /* SpikeRecorder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpikeRecorder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		248E58711AAE0CF60011707F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../src/xcode/Info.plist; sourceTree = "<group>"; };
 		248E58901AAE19570011707F /* AnalysisAudioView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AnalysisAudioView.cpp; path = src/AnalysisAudioView.cpp; sourceTree = SOURCE_ROOT; };
@@ -356,8 +362,8 @@
 				248646411AB1FBAD003852AA /* Log.h */,
 				248E58AD1AAE19570011707F /* native */,
 				248E58B11AAE19570011707F /* Paths.h */,
-				243E92E21B1713800067ED4A /* ThresholdPanel.cpp */,
-				243E92E31B1713800067ED4A /* ThresholdPanel.h */,
+				248BA1F31B3E42AD00EEB5E4 /* ThresholdPanel.cpp */,
+				248BA1F41B3E42AD00EEB5E4 /* ThresholdPanel.h */,
 				248E58B21AAE19570011707F /* RecordingBar.cpp */,
 				248E58B31AAE19570011707F /* RecordingBar.h */,
 				248E58B41AAE19570011707F /* widgets */,
@@ -424,14 +430,14 @@
 				248E58B91AAE19570011707F /* BoxLayout.cpp */,
 				248E58BA1AAE19570011707F /* BoxLayout.h */,
 				248E58BB1AAE19570011707F /* Color.h */,
-				243E92ED1B1715A20067ED4A /* SwitchLayout.cpp */,
-				243E92EE1B1715A20067ED4A /* SwitchLayout.h */,
 				248E58BC1AAE19570011707F /* DropDownList.cpp */,
 				248E58BD1AAE19570011707F /* DropDownList.h */,
 				248E58C01AAE19570011707F /* ErrorBox.cpp */,
 				248E58C11AAE19570011707F /* ErrorBox.h */,
 				248E58C21AAE19570011707F /* Event.h */,
 				248E58C31AAE19570011707F /* FileDialog.h */,
+				248BA1F61B3E42D500EEB5E4 /* SwitchLayout.cpp */,
+				248BA1F71B3E42D500EEB5E4 /* SwitchLayout.h */,
 				248E58C41AAE19570011707F /* global.h */,
 				248E58C51AAE19570011707F /* Label.cpp */,
 				248E58C61AAE19570011707F /* Label.h */,
@@ -637,6 +643,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				24079FA71AB1C73600820291 /* ArduinoSerial.cpp in Sources */,
+				248BA1F81B3E42D500EEB5E4 /* SwitchLayout.cpp in Sources */,
 				248E58FA1AAE19570011707F /* Label.cpp in Sources */,
 				24F40AB31ACEA94700B3CCE1 /* HIDUsbManager.cpp in Sources */,
 				248E58E31AAE19570011707F /* AnalysisView.cpp in Sources */,
@@ -651,7 +658,6 @@
 				248E58E91AAE19570011707F /* Player.cpp in Sources */,
 				248E58E41AAE19570011707F /* AudioView.cpp in Sources */,
 				248E58F71AAE19570011707F /* DropDownList.cpp in Sources */,
-				243E92E41B1713800067ED4A /* ThresholdPanel.cpp in Sources */,
 				248E58E51AAE19570011707F /* ColorDropDownList.cpp in Sources */,
 				248E58F31AAE19570011707F /* RecordingBar.cpp in Sources */,
 				248E59041AAE19570011707F /* TextureGL.cpp in Sources */,
@@ -659,6 +665,7 @@
 				248E58FC1AAE19570011707F /* LoadTexture.cpp in Sources */,
 				248E58E61AAE19570011707F /* ConfigView.cpp in Sources */,
 				2421F09C1ACFDF5100927F19 /* Plot.cpp in Sources */,
+				248BA1F51B3E42AD00EEB5E4 /* ThresholdPanel.cpp in Sources */,
 				248E58FE1AAE19570011707F /* FileDialogMac.cpp in Sources */,
 				248E58E71AAE19570011707F /* FFTBackend.cpp in Sources */,
 				2421F0991ACFDE0300927F19 /* AnalysisTrainList.cpp in Sources */,
@@ -772,7 +779,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_ENTITLEMENTS = SpikeRecorder/SpikeRecorder.entitlements;
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -812,7 +819,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_ENTITLEMENTS = SpikeRecorder/SpikeRecorder.entitlements;
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (

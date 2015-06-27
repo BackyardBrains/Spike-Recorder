@@ -844,6 +844,7 @@ void RecordingManager::advanceHidMode(uint32_t samples)
             }
         }
 
+	bool triggerd = false;	
         for(int chan = 0; chan < channum; chan++) {
             //calculate DC offset in fist 10 sec for channel
             int dcBias = _devices.begin()->second.dcBiasSum[chan]/_devices.begin()->second.dcBiasNum;
@@ -875,7 +876,9 @@ void RecordingManager::advanceHidMode(uint32_t samples)
             //copy data from temporary de-inrleaved data buffer to permanent buffer
             _devices.begin()->second.sampleBuffers[chan]->addData(channels[chan].data(), samplesRead);
         }
-
+	if(triggerd)
+		triggered.emit();
+        
         delete[] channels;
         delete[] buffer;
         _pos+=samplesRead;
@@ -884,7 +887,7 @@ void RecordingManager::advanceHidMode(uint32_t samples)
         //====================== push USB data to speaker =================
         
         
-        if(_pos-_sampleRate/2 > _player.pos()) {
+     /*   if(_pos-_sampleRate/2 > _player.pos()) {
             const uint32_t bsamples = _pos-_player.pos();
             
             if(_player.volume() > 0) {
@@ -903,7 +906,7 @@ void RecordingManager::advanceHidMode(uint32_t samples)
             } else {
                 _player.setPos(_pos);
             }
-        }
+        }*/
         
         
         
