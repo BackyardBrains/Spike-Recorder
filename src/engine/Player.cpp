@@ -4,27 +4,17 @@
 
 namespace BackyardBrains {
 
-Player::Player() : _pos(0) {
+Player::Player() {
 }
 
 Player::~Player() {
 	stop();
 }
 
-int64_t Player::pos() const {
-	return _pos;
-}
-
-void Player::setPos(int64_t pos) {
-	BASS_ChannelSetPosition(_output, BASS_POS_BYTE, 0);
-	_pos = pos;
-}
-
 void Player::start(int sampleRate) {
 	_output = BASS_StreamCreate(sampleRate, 1, 0, STREAMPROC_PUSH, 0);
 	setVolume(0);
 	setPaused(false);
-	_pos = 0;
 }
 
 int Player::volume() const {
@@ -44,7 +34,6 @@ bool Player::paused() const {
 void Player::setPaused(bool npaused) {
 	if(npaused == paused())
 		return;
-
 
 	if(npaused) {
 		if(!BASS_ChannelPause(_output))
@@ -68,8 +57,6 @@ void Player::setSampleRate(int sampleRate) {
 void Player::push(void *data, uint32_t size) {
 	if(BASS_StreamPutData(_output, data, size) == (DWORD)-1)
 		Log::error("Bass Error: putting stream data failed: %s", GetBassStrError());
-
-	_pos += size/sizeof(int16_t);
 }
 
 void Player::stop() {

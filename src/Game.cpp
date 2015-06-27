@@ -39,6 +39,8 @@ void Game::loadResources() {
 	Widgets::TextureGL::load("data/confighigh.png");
 	Widgets::TextureGL::load("data/thresh.png");
 	Widgets::TextureGL::load("data/threshhigh.png");
+	Widgets::TextureGL::load("data/ekg.png");
+	Widgets::TextureGL::load("data/ekghigh.png");
 	Widgets::TextureGL::load("data/rec.png");
 	Widgets::TextureGL::load("data/rechigh.png");
 	Widgets::TextureGL::load("data/file.png");

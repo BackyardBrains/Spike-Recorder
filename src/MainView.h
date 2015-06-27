@@ -25,6 +25,7 @@ private:
 	RecordingManager &_manager;
 	FileRecorder &_fileRec;
 	Widgets::PushButton *_pauseButton;
+	Widgets::PushButton *_ekgButton;
 	Widgets::PushButton *_configButton;
 	Widgets::PushButton *_fileButton;
 	Widgets::PushButton *_forwardButton;
@@ -40,14 +41,14 @@ private:
 	AnalysisView *_anaView;
 	FFTView *_fftView;
 
-	Widgets::Widget *makeThreshavgGroup();
-
 	void keyPressEvent(Widgets::KeyboardEvent *e);
 
 	/* slots: */
 	void pausePressed();
 	void backwardPressed();
 	void forwardPressed();
+
+	void ekgPressed();
 
 	void threshPressed();
 	void filePressed();

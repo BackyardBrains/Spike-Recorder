@@ -16,6 +16,7 @@
 #include "ConfigView.h"
 #include "AnalysisView.h"
 #include "RecordingBar.h"
+#include "ThresholdPanel.h"
 #include "Log.h"
 #include "FFTView.h"
 #include <SDL_opengl.h>
@@ -27,36 +28,6 @@
 
 namespace BackyardBrains {
 
-Widgets::Widget *MainView::makeThreshavgGroup() {
- 	Widgets::Widget *group = new Widgets::Widget(this);
- 	group->setVisible(false);
-
-
-	Widgets::ScrollBar *bar = new Widgets::ScrollBar(Widgets::Horizontal,group);
-	bar->setRange(1,50);
-	bar->setPageStep(5);
-	bar->valueChanged.connect(&_manager, &RecordingManager::setThreshAvgCount);
-	bar->setSizeHint(Widgets::Size(250,20));
-	bar->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Fixed, Widgets::SizePolicy::Maximum));
-
-	Widgets::Label *label = new Widgets::Label(group);
-	label->setText("00");
-	label->updateSize();
-	bar->valueChanged.connect(label, &Widgets::Label::setText);
-	bar->setValue(1);
-
-	Widgets::BoxLayout *layout = new Widgets::BoxLayout(Widgets::Horizontal, group);
-	layout->addWidget(bar);
-	layout->addSpacing(10);
-	layout->addWidget(label, Widgets::AlignVCenter);
-
-	int width = bar->sizeHint().w+label->sizeHint().w;
-
-	group->setSizeHint(Widgets::Size(width, 20));
-	bar->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Fixed, Widgets::SizePolicy::Expanding));
-
-	return group;
-}
 
 MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent) : Widget(parent), _manager(mngr), _fileRec(fileRec), _anaView(NULL) {
 	_audioView = new AudioView(this, _manager);
@@ -76,11 +47,13 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	threshButton->setNormalTex(Widgets::TextureGL::get("data/thresh.png"));
 	threshButton->setHoverTex(Widgets::TextureGL::get("data/threshhigh.png"));
 	threshButton->clicked.connect(this, &MainView::threshPressed);
+	
 
 	_analysisButton = new Widgets::PushButton(this);
 	_analysisButton->setNormalTex(Widgets::TextureGL::get("data/analysis.png"));
 	_analysisButton->setHoverTex(Widgets::TextureGL::get("data/analysishigh.png"));
 	_analysisButton->clicked.connect(this, &MainView::analysisPressed);
+	_analysisButton->setSizeHint(Widgets::Size(0,0));
 	_analysisButton->setVisible(false);
     
     _usbButton = new Widgets::PushButton(this);
@@ -131,7 +104,8 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	_seekBar->valueChanged.connect(_audioView, &AudioView::setRelOffset);
  	_audioView->relOffsetChanged.connect(_seekBar, &Widgets::ScrollBar::updateValue);
 
-	_threshavgGroup = makeThreshavgGroup();
+	_threshavgGroup = new ThresholdPanel(_manager, this);
+	_threshavgGroup->setVisible(false);
 
 	_recBar = new RecordingBar(_fileRec, this);
 	
@@ -210,6 +184,10 @@ void MainView::backwardPressed() {
 	if(_manager.paused())
 		pausePressed();
 }
+
+void MainView::ekgPressed() {
+}
+
 void MainView::forwardPressed() {
 	if(_manager.fileMode()) { // end file mode when in file mode
 		delete _anaView;
@@ -230,12 +208,17 @@ void MainView::threshPressed() {
 		_fftView->setActive(false);
 		_manager.setThreshMode(true);
 		_threshavgGroup->setVisible(true);
+		_threshavgGroup->setSizeHint(Widgets::Size(400,32));
+		_fftButton->setSizeHint(Widgets::Size());
 		_fftButton->setVisible(false);
 	} else {
 		_manager.setThreshMode(false);
 		_fftButton->setVisible(true);
+		_fftButton->setSizeHint(Widgets::Size(48,48));
+		_threshavgGroup->setSizeHint(Widgets::Size());
 		_threshavgGroup->setVisible(false);
 	}
+	Widgets::Application::getInstance()->updateLayout();
 }
 
 void MainView::recordPressed() {
@@ -332,11 +315,13 @@ void MainView::filePressed() {
 
 	_recordButton->setVisible(false);
 	_analysisButton->setVisible(true);
+	_analysisButton->setSizeHint(Widgets::Size(48,48));
 	_fftView->setActive(false);
 
 	Widgets::ToolTip *tip = new Widgets::ToolTip("Click to return to live mode \x1f", 2000);
 	tip->setGeometry(Widgets::Rect(width()/2-190, height()-150, 280, 40));
 	tip->setMouseTracking(false);
+	Widgets::Application::getInstance()->updateLayout();
 	Widgets::Application::getInstance()->addPopup(tip);
 }
 

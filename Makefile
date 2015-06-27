@@ -35,6 +35,7 @@ OBJECTS = \
 	src/widgets/LoadTexture.o \
 	src/widgets/Label.o \
 	src/widgets/ErrorBox.o \
+	src/widgets/SwitchLayout.o \
 	src/widgets/ToolTip.o \
 	src/widgets/Plot.o \
 	src/widgets/TabBar.o \
@@ -51,7 +52,8 @@ OBJECTS = \
 	src/AnalysisPlots.o \
 	src/RecordingBar.o \
 	src/ColorDropDownList.o \
-	src/FFTView.o
+	src/FFTView.o \
+	src/ThresholdPanel.o
 
 OBJECTS_WIN = \
 	src/widgets/native/FileDialogWin.o \
