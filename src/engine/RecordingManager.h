@@ -114,6 +114,7 @@ public:
     int numberOfHIDChannels();
     bool hidDevicePresent();
     void scanForHIDDevices();
+    void sendEKGImpuls();
     
     std::string hidError;
 private:

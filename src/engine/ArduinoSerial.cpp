@@ -609,9 +609,19 @@ namespace BackyardBrains {
         //"conf s:%d;c:%d;"
         std::stringstream sstm;
         sstm << "conf s:" << samplingRate<<";c:"<<numberOfChannels<<";\n";
-        writeToPort(sstm.str().c_str(),sstm.str().length());
+        writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
     }
 
+    
+    void ArduinoSerial::sendEventMessage(int eventType)
+    {
+        std::stringstream sstm;
+        sstm << "p:" << eventType<<";\n";
+        writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
+    
+    }
+    
+    
     int ArduinoSerial::writeToPort(const void *ptr, int len)
     {
 

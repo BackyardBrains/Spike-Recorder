@@ -47,6 +47,7 @@ class HIDUsbManager
         int readOneBatch(int32_t * obuffer);
         int32_t *mainCircularBuffer;
         void stopDevice();
+
     
         std::string firmwareVersion;
         std::string hardwareVersion;

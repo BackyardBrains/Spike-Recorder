@@ -130,6 +130,14 @@ void RecordingManager::clear() {
 	_pos = 0;
 	_selectedVDevice = 0;
 }
+    
+    
+//--------------- Periferals ------------------------------
+void RecordingManager::sendEKGImpuls()
+{
+    _arduinoSerial.sendEventMessage(0);
+}
+    
 
 //--------------- HID USB functions -------------------------
 
@@ -749,7 +757,7 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 	            }
 	        }
 	    }
-	    
+	    bool triggerd = false;
 	    for(int chan = 0; chan < channum; chan++) {
 	        //calculate DC offset in fist 10 sec for channel
 	        int dcBias = _devices.begin()->second.dcBiasSum[chan]/_devices.begin()->second.dcBiasNum;
@@ -766,6 +774,7 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 	                if(_triggers.empty() || ntrigger - _triggers.front() > _sampleRate/10) {
 	                    if((thresh > 0 && channels[chan][i] > thresh) || (thresh <= 0 && channels[chan][i] < thresh)) {
 	                        _triggers.push_front(_pos + i);
+                            triggerd = true;
 	                        if(_triggers.size() > (unsigned int)_threshAvgCount)//_threshAvgCount == 1
 	                            _triggers.pop_back();
 	                    }
@@ -780,6 +789,8 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 	        //copy data from temporary de-inrleaved data buffer to permanent buffer
 	        _devices.begin()->second.sampleBuffers[chan]->addData(channels[chan].data(), samplesRead);
 	    }
+        if(triggerd)
+            triggered.emit();
 	    
 	    delete[] channels;
 	    delete[] buffer;

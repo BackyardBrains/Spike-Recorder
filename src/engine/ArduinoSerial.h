@@ -53,6 +53,7 @@ namespace BackyardBrains {
         const char * currentPortName();
         std::string errorString;
         bool portOpened();
+        void sendEventMessage(int eventType);
     private:
         char circularBuffer[SIZE_OF_CIRC_BUFFER];
         int cBufHead;

@@ -62,6 +62,8 @@ private:
     
     void paintEvent();
     clock_t timerUSB;
+    
+    void triggerEvent();
         
     
 };

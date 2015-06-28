@@ -36,6 +36,7 @@ private:
 class ThresholdPanel : public Widgets::Widget {
 public:
 	ThresholdPanel(RecordingManager &manager, Widget *parent = NULL);
+    BOOL ekgOn();
 private:
 	Widgets::PushButton *_ekgButton;
 	Widgets::PushButton *_speakerButton;
@@ -45,6 +46,7 @@ private:
 
 	void ekgPressed();
 	void speakerPressed();
+
 };
 }
 

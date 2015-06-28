@@ -66,6 +66,13 @@ ThresholdPanel::ThresholdPanel(RecordingManager &manager, Widgets::Widget *paren
 
 }
 
+    
+BOOL ThresholdPanel::ekgOn()
+{
+    return _switchLayout->selected();
+}
+    
+    
 void ThresholdPanel::speakerPressed() {
 	bool state = _ekgWidget->sound();
 	_ekgWidget->setSound(!state);

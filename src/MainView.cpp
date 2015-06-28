@@ -35,7 +35,7 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
     //setup timer that will periodicaly check for USB HID devices
     timerUSB = clock();
     _manager.scanForHIDDevices();
-    
+    _manager.triggered.connect(this,&MainView::triggerEvent);
 	_audioView->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Expanding, Widgets::SizePolicy::Expanding));
 	_manager.deviceReload.connect(_audioView, &AudioView::standardSettings);
 
@@ -165,6 +165,16 @@ MainView::~MainView() {
 	delete _anaView;
 }
 
+void MainView::triggerEvent()
+{
+    if(((ThresholdPanel *)_threshavgGroup)->ekgOn())
+    {
+        _manager.sendEKGImpuls();
+    }
+
+}
+    
+    
 void MainView::pausePressed() {
 	if(_manager.paused()) {
 		_manager.setPaused(false);
