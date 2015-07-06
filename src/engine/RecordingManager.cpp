@@ -78,7 +78,7 @@ void RecordingManager::applyMetadata(const MetadataChunk &m) {
 			int neuid = strtol(name+7, &endptr, 10);
 			if(name == endptr)
 				continue;
-			
+
 			int neuronidx = -1;
 			for(unsigned int i = 0; i < neuronIds.size(); i++) {
 				if(neuronIds[i] == neuid) {
@@ -130,14 +130,14 @@ void RecordingManager::clear() {
 	_pos = 0;
 	_selectedVDevice = 0;
 }
-    
-    
+
+
 //--------------- Periferals ------------------------------
 void RecordingManager::sendEKGImpuls()
 {
     _arduinoSerial.sendEventMessage(0);
 }
-    
+
 
 //--------------- HID USB functions -------------------------
 
@@ -190,7 +190,7 @@ bool RecordingManager::initHIDUSB()
         virtualDevice.name = sstm.str();
         virtualDevice.threshold = 100;
         virtualDevice.bound = 0;
-        
+
         _recordingDevices.push_back(virtualDevice);
     }
 
@@ -238,17 +238,17 @@ int RecordingManager::numberOfHIDChannels()
 
 bool RecordingManager::hidDevicePresent()
 {
-    
+
     return _hidDevicePresent;
 
 }
-    
+
 void RecordingManager::scanForHIDDevices()
 {
     _hidUsbManager.getAllDevicesList();
 }
 
-    
+
 void RecordingManager::scanUSBDevices()
 {
 
@@ -257,7 +257,7 @@ void RecordingManager::scanUSBDevices()
     if(elapsed_secs>0.5)
     {
         timerUSB = end;
-        scanForHIDDevices();
+//        scanForHIDDevices();
     }
     _hidDevicePresent = _hidUsbManager.list.size()>0;
 }
@@ -377,41 +377,41 @@ void RecordingManager::closeSerial()
 	_arduinoSerial.closeSerial();
 	_serialMode = false;
 }
-	
+
 
 
 bool RecordingManager::loadFile(const char *filename) {
-    
+
     _spikeTrains.clear();
     closeSerial();
     closeHid();
-    
+
     HSTREAM stream = BASS_StreamCreateFile(false, filename, 0, 0, BASS_STREAM_DECODE);
     if(stream == 0) {
         Log::error("Bass Error: Failed to load file '%s': %s", filename, GetBassStrError());
         return false;
     }
-    
+
     currentPositionOfWaveform = 0;//set position of waveform to begining
-    
+
     clear();
     BASS_CHANNELINFO info;
     BASS_ChannelGetInfo(stream, &info);
-    
+
     int bytespersample = info.origres/8;
     if(bytespersample == 0)
         return false;
     if(bytespersample >= 3)
         bytespersample = 4; // bass converts everything it doesn’t support.
-    
+
     setSampleRate(info.freq);
     _devices[0].create(_pos, info.chans);
     _devices[0].bytespersample = bytespersample;
-    
+
     _recordingDevices.resize(info.chans);
     for(unsigned int i = 0; i < info.chans; i++) {
         VirtualDevice &virtualDevice = _recordingDevices[i];
-        
+
         virtualDevice.enabled = true;
         virtualDevice.device = 0;
         virtualDevice.channel = i;
@@ -424,15 +424,15 @@ bool RecordingManager::loadFile(const char *filename) {
     _devices[0].handle = stream;
     _fileMode = true;
     _filename = filename;
-    
+
     deviceReload.emit();
     _player.setVolume(100);
-    
+
     if(!_paused) {
         pauseChanged.emit();
         setPaused(true);
     }
-    
+
     Log::msg("loaded file '%s'.", filename);
     return true;
 }
@@ -607,13 +607,13 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 		setPaused(true);
 		return;
 	}
-    
+
    /* samples = 0;
-    
+
     int temp = 0;
     //determine true number of samples
     for(std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it) {
-        
+
         temp++;
             if(temp==2)
             {
@@ -627,30 +627,30 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
                     seconds = 0;
                 }
                 positionInAudioFile = seconds * sampleRate();
-                
+
                // samples = positionInAudioFile - currentPositionOfWaveform;
                 currentPositionOfWaveform = currentPositionOfWaveform+samples;
                 break;
             }
     }
     */
-    
-    
-    
+
+
+
 	const unsigned int bufsize = 1*sampleRate();
 	for(std::map<int, Device>::iterator it = _devices.begin(); it != _devices.end(); ++it) {
 		if(it->second.sampleBuffers[0]->head()%(SampleBuffer::SIZE/2) >= SampleBuffer::SIZE/2-1 || it->second.sampleBuffers[0]->pos() >= fileLength()-1)
 			continue;
 		const int channum = it->second.channels;
 		const int bytespersample = it->second.bytespersample;
-		std::vector<std::vector<int16_t> > channels; 
+		std::vector<std::vector<int16_t> > channels;
 
 		unsigned int len;
 		if(it->second.sampleBuffers[0]->head() < SampleBuffer::SIZE/2)
 			len = SampleBuffer::SIZE/2-1 - it->second.sampleBuffers[0]->head();
 		else
 			len = SampleBuffer::SIZE-1 - it->second.sampleBuffers[0]->head();
-	
+
 		bool rc = ReadWAVFile(channels, channum*std::min(len,bufsize)*bytespersample, it->second.handle,
 				channum, bytespersample);
 		if(!rc)
@@ -709,7 +709,7 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 			_player.push(buf, bsamples*sizeof(int16_t));
 
 			delete[] buf;
-		} 
+		}
 
 		setPos(_pos + samples, false);
 	}
@@ -726,8 +726,8 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 	const int channum = _arduinoSerial.numberOfChannels();
 	std::vector<int16_t> *channels = new std::vector<int16_t>[channum];//non-interleaved
 	int16_t *buffer = new int16_t[channum*len];
-	
-	
+
+
 	//get interleaved data for all channels
 	int samplesRead = _arduinoSerial.readPort(buffer);
     if(_paused)
@@ -735,17 +735,17 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
         return;
     }
 	if(samplesRead != -1) {
-	   
+
 	    //make separate buffer for every channel
 	    for(int chan = 0; chan < channum; chan++)
 	        channels[chan].resize(len);
-	    
+
 	    // de-interleave the channels
 	    for (DWORD i = 0; i < samplesRead; i++) {
 	        for(int chan = 0; chan < channum; chan++) {
 	            channels[chan][i] = buffer[i*channum + chan];//sort data to channels
-	            
-	            
+
+
 	            //if we are in first 10 seconds interval
 	            //add current sample to summ used to remove DC component
 	            if(_devices.begin()->second.dcBiasNum < _sampleRate*10) {
@@ -761,16 +761,16 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 	    for(int chan = 0; chan < channum; chan++) {
 	        //calculate DC offset in fist 10 sec for channel
 	        int dcBias = _devices.begin()->second.dcBiasSum[chan]/_devices.begin()->second.dcBiasNum;
-	        
+
 	        for(DWORD i = 0; i < samplesRead; i++) {
-	            
+
 	            channels[chan][i] -= dcBias;//substract DC offset from channels data
-	            
+
 	            //add position of data samples that are greater than threshold to FIFO list _triggers
 	            if(_threshMode && _devices.begin()->first*channum+chan == _selectedVDevice) {
 	                const int64_t ntrigger = _pos + i;
 	                const int thresh = _recordingDevices[_selectedVDevice].threshold;
-	                
+
 	                if(_triggers.empty() || ntrigger - _triggers.front() > _sampleRate/10) {
 	                    if((thresh > 0 && channels[chan][i] > thresh) || (thresh <= 0 && channels[chan][i] < thresh)) {
 	                        _triggers.push_front(_pos + i);
@@ -781,7 +781,7 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 	                }
 	            }
 	        }
-	        
+
 	        if(_devices.begin()->second.sampleBuffers[0]->empty()) {
 	            _devices.begin()->second.sampleBuffers[chan]->setPos(_pos);
 	        }
@@ -791,31 +791,31 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 	    }
         if(triggerd)
             triggered.emit();
-	    
+
 	    delete[] channels;
 	    delete[] buffer;
 	    _pos+=samplesRead;
-	    
+
 	}
 	else
 	{
 	    //No new samples
 	    delete[] channels;
 	    delete[] buffer;
-	}   
+	}
 }
 
 
 void RecordingManager::advanceHidMode(uint32_t samples)
 {
-    
+
     if(!_hidUsbManager.deviceOpened())
     {
         _hidDevicePresent = false;
         disconnectFromHID();
         scanForHIDDevices();
     }
-    
+
     uint32_t len = 4024;
     //len = std::min(samples, len);
    // std::cout<<len<<"\n";
@@ -824,8 +824,8 @@ void RecordingManager::advanceHidMode(uint32_t samples)
     int32_t *buffer = new int32_t[channum*len];
 
 
-    
-    
+
+
     //get interleaved data for all channels
     int samplesRead = _hidUsbManager.readDevice(buffer);
     if(_paused || samplesRead==0)
@@ -855,7 +855,7 @@ void RecordingManager::advanceHidMode(uint32_t samples)
             }
         }
 
-	bool triggerd = false;	
+	bool triggerd = false;
         for(int chan = 0; chan < channum; chan++) {
             //calculate DC offset in fist 10 sec for channel
             int dcBias = _devices.begin()->second.dcBiasSum[chan]/_devices.begin()->second.dcBiasNum;
@@ -889,38 +889,38 @@ void RecordingManager::advanceHidMode(uint32_t samples)
         }
 	if(triggerd)
 		triggered.emit();
-        
+
         delete[] channels;
         delete[] buffer;
         _pos+=samplesRead;
-        
-        
+
+
         //====================== push USB data to speaker =================
-        
-        
+
+
      /*   if(_pos-_sampleRate/2 > _player.pos()) {
             const uint32_t bsamples = _pos-_player.pos();
-            
+
             if(_player.volume() > 0) {
                 int16_t *buf = new int16_t[bsamples];
-                
+
                 SampleBuffer *s = sampleBuffer(_selectedVDevice);
                 if(s != NULL) {
                     s->getData(buf, _player.pos(), bsamples);
                 } else {
                     memset(buf, 0, bsamples*sizeof(int16_t));
                 }
-                
+
                 _player.push(buf, bsamples*sizeof(int16_t));
-                
+
                 delete[] buf;
             } else {
                 _player.setPos(_pos);
             }
         }*/
-        
-        
-        
+
+
+
         //====================================================================
 
     }
@@ -934,9 +934,9 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 
 void RecordingManager::advance(uint32_t samples) {
 
-    
+
     scanUSBDevices();
-    
+
 	if(_serialMode)
     {
         advanceSerialMode(samples);
@@ -1132,7 +1132,7 @@ bool RecordingManager::incRef(int virtualDeviceIndex) {
 		_devices[device].handle = handle;
 	}
 	_recordingDevices[virtualDeviceIndex].bound++;
-	
+
 	return true;
 error:
 	_devices[device].refCount--;
@@ -1200,7 +1200,7 @@ void RecordingManager::setPos(int64_t pos, bool artificial) {
 		return;
 
     currentPositionOfWaveform = pos;//set position of waveform to new value
-    
+
 	const int halfsize = SampleBuffer::SIZE/2;
 
 	const int seg1 = std::min(fileLength()-1,_pos+halfsize/2)/halfsize;

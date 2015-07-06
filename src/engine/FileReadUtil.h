@@ -3,6 +3,7 @@
 
 #include <bass.h>
 #include <vector>
+#include <stdint.h>
 
 namespace BackyardBrains {
 // Utility functions for opening and reading wav files with bass

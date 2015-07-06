@@ -31,7 +31,7 @@ public:
 	static void isiPartition(std::vector<double> &binxs, int nbin);
 
 	// Inter Spike Interval Analysis
-	// 
+	//
 	// histogram: output
 	// train: train to analyse
 	// binxs: bin partition to use (use isipartition() to generate)
@@ -43,14 +43,14 @@ public:
 			int samplerate);
 
 	// Average Waveform of spikes
-	// 
+	//
 	// average: average of spikes, output
 	// train: spike times
 	// filename, chan: file and channel to use
-	
-	constexpr static const double SPIKEHALFLEN = 0.002; // s
+
+	constexpr static double SPIKEHALFLEN = 0.002; // s
 	static void averageWaveform(std::vector<float> &average, std::vector<float> &std,
-			const std::vector<int64_t> &train, const char *filename, int chan); 
+			const std::vector<int64_t> &train, const char *filename, int chan);
 };
 
 }
