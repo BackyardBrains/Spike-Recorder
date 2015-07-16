@@ -985,6 +985,7 @@ void RecordingManager::advance(uint32_t samples) {
 		for (DWORD i = 0; i < samplesRead/channum; i++) {
 			for(int chan = 0; chan < channum; chan++) {
 				channels[chan][i] = buffer[i*channum + chan];
+        //        printf("%u, ", buffer[i*channum + chan]);
 
 				if(it->second.dcBiasNum < _sampleRate*10) {
 					it->second.dcBiasSum[chan] += channels[chan][i];

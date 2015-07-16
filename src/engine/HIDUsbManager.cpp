@@ -68,15 +68,21 @@ namespace BackyardBrains {
         messageBufferIndex =0;
         _deviceConnected = true;
 
-        askForCapabilities();
-        //set number of channels and sampling rate on micro
+        //start thread that will periodicaly read HID
+        t1 = std::thread(&HIDUsbManager::readThread, this, this);
+        t1.detach();
+        
+        
+        askForCapabilities();//ask for firmware version etc.
+        askForMaximumRatings(); //ask for sample rate and number of channels
+        
+        //set number of channels and sampling rate on micro (this will not work with firmware V0.1)
         setNumberOfChannelsAndSamplingRate(2, maxSamplingRate());
         //send start command to micro
         startDevice();
         
-        //start thread that will periodicaly read
-        t1 = std::thread(&HIDUsbManager::readThread, this, this);
-        t1.detach();
+        
+
         return 0;
     }
 
@@ -220,6 +226,14 @@ namespace BackyardBrains {
                 offset = _audioView->offset();
             }*/
             _manager->addMarker(std::string(1, mnum+'0'), offset+offsetin);
+        }
+        if(typeOfMessage == "MSF")
+        {
+           //TODO: implement maximum sample rate
+        }
+        if(typeOfMessage == "MNC")
+        {
+            //TODO: implement maximum number of channels
         }
         
     }
@@ -535,6 +549,13 @@ namespace BackyardBrains {
         sstm << "?:"<<";\n";
         writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
     }
+    
+    void HIDUsbManager::askForMaximumRatings()
+    {
+        std::stringstream sstm;
+        sstm << "max:"<<";\n";
+        writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
+    }
 
     //
     // Sends command for seting number of channels and sampling rate on micro.
@@ -543,10 +564,10 @@ namespace BackyardBrains {
     {
         _numberOfChannels = numberOfChannels;
         _samplingRate = samplingRate;
-        std::cout<<"HID - Set number of channels:"<<numberOfChannels<<" and sampling rate: "<<samplingRate<<"\n";
+       /* std::cout<<"HID - Set number of channels:"<<numberOfChannels<<" and sampling rate: "<<samplingRate<<"\n";
         std::stringstream sstm;
         sstm << "conf s:" << samplingRate<<";c:"<<numberOfChannels<<";\n";
-        writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
+        writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());*/
     }
 
     //

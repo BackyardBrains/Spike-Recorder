@@ -36,6 +36,7 @@ class HIDUsbManager
         void getAllDevicesList();
         void closeDevice();
         void askForCapabilities();
+        void askForMaximumRatings();
         void setNumberOfChannelsAndSamplingRate(int numberOfChannels, int samplingRate);
         int writeToDevice(const unsigned char *ptr, size_t len);
         int maxSamplingRate();
