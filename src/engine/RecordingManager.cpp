@@ -138,6 +138,10 @@ void RecordingManager::sendEKGImpuls()
     _arduinoSerial.sendEventMessage(0);
 }
 
+void RecordingManager::sendVoltageToSerial(int voltage)
+{
+    _arduinoSerial.sendVoltageToArduino(voltage);
+}
 
 //--------------- HID USB functions -------------------------
 

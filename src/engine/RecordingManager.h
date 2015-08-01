@@ -114,6 +114,7 @@ public:
     int numberOfHIDChannels();
     bool hidDevicePresent();
     void scanForHIDDevices();
+    void sendVoltageToSerial(int voltage);
     void sendEKGImpuls();
     
     std::string hidError;

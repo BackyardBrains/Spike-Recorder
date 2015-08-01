@@ -621,63 +621,77 @@ namespace BackyardBrains {
     
     }
     
+    void ArduinoSerial::sendVoltageToArduino(int voltage)
+    {
+       
+        std::stringstream sstm;
+        sstm << "v:" << voltage<<";\n";
+        writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
+        printf("%d; ", voltage);
+        
+    }
+    
     
     int ArduinoSerial::writeToPort(const void *ptr, int len)
     {
+        if(_portOpened)
+        {
 
-        #if defined(__APPLE__) || defined(__linux__)
-        int n, written=0;
-        fd_set wfds;
-        struct timeval tv;
-        while (written < len) {
-            n = write(fd, (const char *)ptr + written, len - written);
-            if (n < 0 && (errno == EAGAIN || errno == EINTR)) n = 0;
-            //printf("Write, n = %d\n", n);
-            if (n < 0) return -1;
-            if (n > 0) {
-                written += n;
-            } else {
-                tv.tv_sec = 10;
-                tv.tv_usec = 0;
-                FD_ZERO(&wfds);
-                FD_SET(fd, &wfds);
-                n = select(fd+1, NULL, &wfds, NULL, &tv);
-                if (n < 0 && errno == EINTR) n = 1;
-                if (n <= 0) return -1;
+            #if defined(__APPLE__) || defined(__linux__)
+            int n, written=0;
+            fd_set wfds;
+            struct timeval tv;
+            while (written < len) {
+                n = write(fd, (const char *)ptr + written, len - written);
+                if (n < 0 && (errno == EAGAIN || errno == EINTR)) n = 0;
+                //printf("Write, n = %d\n", n);
+                if (n < 0) return -1;
+                if (n > 0) {
+                    written += n;
+                } else {
+                    tv.tv_sec = 10;
+                    tv.tv_usec = 0;
+                    FD_ZERO(&wfds);
+                    FD_SET(fd, &wfds);
+                    n = select(fd+1, NULL, &wfds, NULL, &tv);
+                    if (n < 0 && errno == EINTR) n = 1;
+                    if (n <= 0) return -1;
+                }
             }
-        }
-        return written;
+            return written;
 
 
 
-        #elif defined(_WIN32)
-            DWORD num_written;
-            OVERLAPPED ov;
-            int r;
-            ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-            if (ov.hEvent == NULL) return -1;
-            ov.Internal = ov.InternalHigh = 0;
-            ov.Offset = ov.OffsetHigh = 0;
-            if (WriteFile(port_handle, ptr, len, &num_written, &ov)) {
-                //printf("Write, immediate complete, num_written=%lu\n", num_written);
-                r = num_written;
-            } else {
-                if (GetLastError() == ERROR_IO_PENDING) {
-                    if (GetOverlappedResult(port_handle, &ov, &num_written, TRUE)) {
-                        //printf("Write, delayed, num_written=%lu\n", num_written);
-                        r = num_written;
+            #elif defined(_WIN32)
+                DWORD num_written;
+                OVERLAPPED ov;
+                int r;
+                ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+                if (ov.hEvent == NULL) return -1;
+                ov.Internal = ov.InternalHigh = 0;
+                ov.Offset = ov.OffsetHigh = 0;
+                if (WriteFile(port_handle, ptr, len, &num_written, &ov)) {
+                    //printf("Write, immediate complete, num_written=%lu\n", num_written);
+                    r = num_written;
+                } else {
+                    if (GetLastError() == ERROR_IO_PENDING) {
+                        if (GetOverlappedResult(port_handle, &ov, &num_written, TRUE)) {
+                            //printf("Write, delayed, num_written=%lu\n", num_written);
+                            r = num_written;
+                        } else {
+                            //printf("Write, delayed error\n");
+                            r = -1;
+                        }
                     } else {
-                        //printf("Write, delayed error\n");
+                        //printf("Write, error\n");
                         r = -1;
                     }
-                } else {
-                    //printf("Write, error\n");
-                    r = -1;
-                }
-            };
-            CloseHandle(ov.hEvent);
-            return r;
-        #endif
+                };
+                CloseHandle(ov.hEvent);
+                return r;
+            #endif
+        }
+        return 0;
     }
 
 

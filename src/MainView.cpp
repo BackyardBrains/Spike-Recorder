@@ -287,7 +287,7 @@ void MainView::fftPressed() {
 	} else {
 		_fftView->setActive(true);
 	}
-
+    _fftView->alphaWaveStrength = 0;
 	Widgets::Application::getInstance()->updateLayout();
 }
 
@@ -387,14 +387,17 @@ void MainView::usbPressed()
 
 void MainView::paintEvent()
 {
-   /* clock_t end = clock();
-    double elapsed_secs = double(end - timerUSB) / CLOCKS_PER_SEC;
-    if(elapsed_secs>1.0)
+    clock_t end = clock();
+    double elapsed_milsec = double(end - timerUSB) / (CLOCKS_PER_SEC/1000);
+    if(elapsed_milsec>500.0)
     {
         timerUSB = end;
-        _manager.scanForHIDDevices();
+        if(_fftView->active())
+        {
+            _manager.sendVoltageToSerial(_fftView->alphaWaveStrength);
+        }
     }
-    */
+    
     
     if(_manager.hidDevicePresent())
     {

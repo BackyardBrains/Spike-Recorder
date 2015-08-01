@@ -20,6 +20,7 @@ public:
 	bool active() const;
 	void setActive(bool);
 	void update(int force);
+    int alphaWaveStrength;//from 0-1000
 private:
 	static const int FFTTRES = 256; // time axis resolution
 	static const int FFTFRES = 32; // frequency axis resolution
@@ -53,7 +54,7 @@ private:
 
 	GLuint _ffttex;
 
-	void addWindow(uint32_t *result, int pos, int device, int len, int samplerate);
+	float addWindow(uint32_t *result, int pos, int device, int len, int samplerate);
 	void drawDataRect() const;
 	void drawTooShortMsg() const;
 	void drawScale() const;

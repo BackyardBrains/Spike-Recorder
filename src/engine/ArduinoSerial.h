@@ -54,6 +54,7 @@ namespace BackyardBrains {
         std::string errorString;
         bool portOpened();
         void sendEventMessage(int eventType);
+        void sendVoltageToArduino(int voltage);
     private:
         char circularBuffer[SIZE_OF_CIRC_BUFFER];
         int cBufHead;

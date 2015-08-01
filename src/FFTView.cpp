@@ -172,9 +172,9 @@ void FFTView::paintEvent() {
 	drawScale();
 }
 
-void FFTView::addWindow(uint32_t *result, int pos, int device, int len, int samplerate) {
+float FFTView::addWindow(uint32_t *result, int pos, int device, int len, int samplerate) {
 	_manager.getData(device, pos, len, _samplebuf);
-
+    
 	const int ds = 4; // simple downsampling because only low frequencies are required
 	_fftbuf.resize(len/ds);
 	for(int i = 0; i < len/ds; i++)
@@ -183,10 +183,12 @@ void FFTView::addWindow(uint32_t *result, int pos, int device, int len, int samp
 	float windowt = len/(float)samplerate;
 	float binsize = windowt*FFTMAXF/(float)FFTFRES;
 
+    float alphaPower =0;
+    
 	FFTBackend::transform(_fftbuf);
 	for(int i = 0; i < FFTFRES; i++) {
 		float f = i*FFTMAXF/(float)FFTFRES;
-
+        
 		int lower = f*windowt;
 		int upper = std::min((int)(f*windowt+binsize+1), len/ds-1);
 
@@ -196,8 +198,12 @@ void FFTView::addWindow(uint32_t *result, int pos, int device, int len, int samp
 				max = std::abs(_fftbuf[j]);
 			}
 		}
-
 		double val = tanh(2e-5*max); // TODO: replace this with something smarter
+        if(f>9.1f && f<11.0f)
+        {
+            alphaPower = val;
+        }
+        
 		val2hue((uint8_t *)&result[FFTFRES-1-i],val);
 	}
 
@@ -209,7 +215,7 @@ void FFTView::addWindow(uint32_t *result, int pos, int device, int len, int samp
 			p[j] = (pm[j]+2*p[j]+pp[j])/4.;
 		}
 	}
-
+    return alphaPower;
 }
 
 void FFTView::update(int force) {
@@ -244,20 +250,23 @@ void FFTView::update(int force) {
 
 	_offset += (pos-_lastfirst)/windowdist;
 	_offsetcorrection = (opos-pos)/(float)windowdist;
-
+    
+    float alphaPower = 0;
 	for(int i = 0; i < _viewwidth+OFFSCREENWINS; i++) {
 		int spos = pos+i*windowdist;
 		if(spos >= _lastfirst && spos < _lastlast) { // already computed
 			continue;
 		}
-		addWindow(resultbuf, pos+i*windowdist, _av.channelVirtualDevice(_av.selectedChannel()),
+		alphaPower = addWindow(resultbuf, pos+i*windowdist, _av.channelVirtualDevice(_av.selectedChannel()),
 				SWINDOW, _manager.sampleRate());
 		for(int j = 0; j < FFTFRES; j++) {
 			int idx = (((i+(int)_offset)%FFTTRES)+FFTTRES)%FFTTRES;
 			_fftviewbuffer[j][idx] = resultbuf[j];
 		}
 	}
-
+    //calculate alpha power
+    alphaWaveStrength = (int)fmin(alphaPower*1000,1000);
+    
 	_lastfirst = pos;
 	_lastlast = pos+(_viewwidth-1)*windowdist;
 }
