@@ -178,7 +178,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 
         //HID device connect
 
-         Widgets::BoxLayout *hidHbox = new Widgets::BoxLayout(Widgets::Horizontal);
+      /*   Widgets::BoxLayout *hidHbox = new Widgets::BoxLayout(Widgets::Horizontal);
         //USB  label
         Widgets::Label *nameUSB = new Widgets::Label(group);
         nameUSB->setText("Connect to USB device ");
@@ -208,6 +208,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
         hidHbox->update();
         gvbox->addSpacing(20);
         gvbox->addLayout(hidHbox);
+       */
 
 
     }

@@ -245,7 +245,7 @@ bool RecordingManager::hidDevicePresent()
 
 void RecordingManager::scanForHIDDevices()
 {
-    _hidUsbManager.getAllDevicesList();
+   // _hidUsbManager.getAllDevicesList();
 }
 
 
