@@ -17,6 +17,7 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
 	if(!BASS_Init(-1, _sampleRate, 0, 0, NULL)) {
 		Log::fatal("Bass initialization failed: %s", GetBassStrError());
 	}
+	_hidMode = false;
     _numOfSerialChannels = 1;
     _numOfHidChannels = 2;
 	_player.start(_sampleRate);
@@ -144,7 +145,7 @@ void RecordingManager::sendEKGImpuls()
 bool RecordingManager::initHIDUSB()
 {
     std::cout<<"Init HID\n";
-    if(!_hidUsbManager.deviceOpened())
+  /*  if(!_hidUsbManager.deviceOpened())
     {
         if(_hidUsbManager.openDevice(this) == -1)
         {
@@ -205,7 +206,7 @@ bool RecordingManager::initHIDUSB()
    // _player.start(_hidUsbManager.maxSamplingRate())
     _player.setVolume(0);
 
-
+*/
     return true;
 }
 
@@ -218,17 +219,17 @@ void RecordingManager::disconnectFromHID()
 
 void RecordingManager::closeHid()
 {
-    _numOfHidChannels = 2;
+   /* _numOfHidChannels = 2;
     _hidUsbManager.closeDevice();
-    _hidMode = false;
+    _hidMode = false;*/
 }
 
 void RecordingManager::setHIDNumberOfChannels(int numberOfChannels)
 {
     std::cout<<"Number of channels on HID USB: "<<numberOfChannels<<"\n";
-    _numOfHidChannels = numberOfChannels;
+   /* _numOfHidChannels = numberOfChannels;
     _hidUsbManager.setNumberOfChannelsAndSamplingRate(numberOfChannels, _hidUsbManager.maxSamplingRate());
-    initHIDUSB();
+    initHIDUSB();*/
 }
 
 int RecordingManager::numberOfHIDChannels()
@@ -252,14 +253,14 @@ void RecordingManager::scanForHIDDevices()
 void RecordingManager::scanUSBDevices()
 {
 
-    clock_t end = clock();
+   /* clock_t end = clock();
     double elapsed_secs = double(end - timerUSB) / CLOCKS_PER_SEC;
     if(elapsed_secs>0.5)
     {
         timerUSB = end;
 //        scanForHIDDevices();
     }
-    _hidDevicePresent = _hidUsbManager.list.size()>0;
+    _hidDevicePresent = _hidUsbManager.list.size()>0;*/
 }
 
 //--------------- Serial port functions ---------------------
@@ -809,7 +810,7 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 void RecordingManager::advanceHidMode(uint32_t samples)
 {
 
-    if(!_hidUsbManager.deviceOpened())
+   /* if(!_hidUsbManager.deviceOpened())
     {
         _hidDevicePresent = false;
         disconnectFromHID();
@@ -923,13 +924,14 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 
         //====================================================================
 
-    }
+  /*  }
     else
     {
         //No new samples
         delete[] channels;
         delete[] buffer;
     }
+    */
 }
 
 void RecordingManager::advance(uint32_t samples) {

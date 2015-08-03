@@ -11,7 +11,8 @@
 #include <stdint.h>
 #include "Player.h"
 #include "ArduinoSerial.h"
-#include "HIDUsbManager.h"
+//#include "HIDUsbManager.h"
+#include <sys/time.h>
 
 namespace BackyardBrains {
 
@@ -90,7 +91,7 @@ public:
 	sigslot::signal0<> deviceReload;
 	sigslot::signal0<> pauseChanged;
 	sigslot::signal0<> thresholdChanged;
-	
+
 	sigslot::signal0<> triggered;
 
 	void advance(uint32_t milliseconds);
@@ -115,7 +116,7 @@ public:
     bool hidDevicePresent();
     void scanForHIDDevices();
     void sendEKGImpuls();
-    
+
     std::string hidError;
 private:
 	struct Device
@@ -152,7 +153,7 @@ private:
 	bool _threshMode;
 
     int64_t currentPositionOfWaveform;
-    
+
 	bool _fileMode;
     bool _serialMode;
     bool _hidMode;
@@ -172,7 +173,7 @@ private:
     ArduinoSerial _arduinoSerial;
     int _numOfSerialChannels;
 
-    HIDUsbManager _hidUsbManager;
+   // HIDUsbManager _hidUsbManager;
     int _numOfHidChannels;
     clock_t timerUSB;
     bool _hidDevicePresent;

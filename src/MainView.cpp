@@ -47,7 +47,7 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	threshButton->setNormalTex(Widgets::TextureGL::get("data/thresh.png"));
 	threshButton->setHoverTex(Widgets::TextureGL::get("data/threshhigh.png"));
 	threshButton->clicked.connect(this, &MainView::threshPressed);
-	
+
 
 	_analysisButton = new Widgets::PushButton(this);
 	_analysisButton->setNormalTex(Widgets::TextureGL::get("data/analysis.png"));
@@ -55,12 +55,12 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	_analysisButton->clicked.connect(this, &MainView::analysisPressed);
 	_analysisButton->setSizeHint(Widgets::Size(0,0));
 	_analysisButton->setVisible(false);
-    
-    _usbButton = new Widgets::PushButton(this);
-    _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.png"));
-    _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.png"));
-    _usbButton->clicked.connect(this, &MainView::usbPressed);
-    _usbButton->setVisible(false);
+
+   // _usbButton = new Widgets::PushButton(this);
+   // _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.png"));
+   // _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.png"));
+   // _usbButton->clicked.connect(this, &MainView::usbPressed);
+   // _usbButton->setVisible(false);
 
 	_recordButton = new Widgets::PushButton(this);
 	_recordButton->setNormalTex(Widgets::TextureGL::get("data/rec.png"));
@@ -108,7 +108,7 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	_threshavgGroup->setVisible(false);
 
 	_recBar = new RecordingBar(_fileRec, this);
-	
+
 	_fftView = new FFTView(*_audioView, _manager, this);
 
 	Widgets::BoxLayout *topBar = new Widgets::BoxLayout(Widgets::Horizontal);
@@ -120,8 +120,8 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	topBar->addWidget(_fftButton);
 	topBar->addSpacing(5);
 	topBar->addWidget(_analysisButton);
-    topBar->addSpacing(5);
-    topBar->addWidget(_usbButton);
+   // topBar->addSpacing(5);
+   // topBar->addWidget(_usbButton);
 	topBar->addSpacing(10);
 	topBar->addWidget(_threshavgGroup, Widgets::AlignVCenter);
 	topBar->addStretch();
@@ -173,8 +173,8 @@ void MainView::triggerEvent()
     }
 
 }
-    
-    
+
+
 void MainView::pausePressed() {
 	if(_manager.paused()) {
 		_manager.setPaused(false);
@@ -293,7 +293,7 @@ void MainView::fftPressed() {
 
 void MainView::filePressed() {
 	Widgets::FileDialog d(Widgets::FileDialog::OpenFile);
-	
+
 	d.open();
 	while(d.isOpen())
 		SDL_Delay(16);
@@ -346,7 +346,7 @@ void MainView::configPressed() {
 void MainView::analysisPressed() {
 	if(_anaView == NULL)
 		_anaView = new AnalysisView(_manager);
-	
+
 	_anaView->setDeleteOnClose(false);
 	_anaView->setGeometry(rect());
 	Widgets::Application::getInstance()->addWindow(_anaView);
@@ -354,32 +354,32 @@ void MainView::analysisPressed() {
 	if(!_manager.paused())
 		pausePressed();
 }
-    
+
 void MainView::usbPressed()
 {
     //connect/diconnect
-    
+
     if(_manager.hidMode())
     {
         // _manager.setSerialNumberOfChannels(1);
         _manager.disconnectFromHID();
-        _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.png"));
-        _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.png"));
-       
+       // _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.png"));
+       // _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.png"));
+
     }
     else
     {
         if(!_manager.initHIDUSB())
         {
             std::cout<<"Can't open HID device. \n";
-            
-            
+
+
             Widgets::ErrorBox *box = new Widgets::ErrorBox(_manager.hidError.c_str());
             box->setGeometry(Widgets::Rect(this->width()/2-250, this->height()/2-40, 500, 80));
             Widgets::Application::getInstance()->addPopup(box);
         }
-        _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.png"));
-        _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbdisconhigh.png"));
+       // _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.png"));
+       // _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbdisconhigh.png"));
 
     }
 
@@ -395,31 +395,31 @@ void MainView::paintEvent()
         _manager.scanForHIDDevices();
     }
     */
-    
+
     if(_manager.hidDevicePresent())
     {
-        _usbButton->setVisible(true);
+       // _usbButton->setVisible(true);
     }
     else
     {
-        _usbButton->setVisible(false);
+      //  _usbButton->setVisible(false);
     }
     if(_manager.hidMode())
     {
-        _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.png"));
-        _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbdisconhigh.png"));
+      //  _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.png"));
+      //  _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbdisconhigh.png"));
     }
     else
     {
-        _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.png"));
-        _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.png"));
+    //    _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.png"));
+    //    _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.png"));
     }
 
-    
+
 }
-    
-    
-    
+
+
+
 void MainView::keyPressEvent(Widgets::KeyboardEvent *e) {
 	if(e->key() >= Widgets::Key0 && e->key() <= Widgets::Key9) {
 		int mnum = e->key()-Widgets::Key0;
