@@ -8,14 +8,14 @@
 #define SIZE_OF_MAIN_CIRCULAR_BUFFER 10000
 
 namespace BackyardBrains {
-    
-    
+
+
     //
     // Constructor of HID USB manager
     //
     HIDUsbManager::HIDUsbManager()
     {
-        
+
         _deviceConnected = false;
 
         escapeSequence[0] = 255;
@@ -24,23 +24,23 @@ namespace BackyardBrains {
         escapeSequence[3] = 1;
         escapeSequence[4] = 128;
         escapeSequence[5] = 255;
-        
+
         endOfescapeSequence[0] = 255;
         endOfescapeSequence[1] = 255;
         endOfescapeSequence[2] = 1;
         endOfescapeSequence[3] = 1;
         endOfescapeSequence[4] = 129;
         endOfescapeSequence[5] = 255;
-        
+
         firmwareVersion = "";
         hardwareVersion = "";
         hardwareType = "";
-        
+
     }
 
-    
-    
-    
+
+
+
     //
     // Open USB connection to BYB device based on PID and VID
     //
@@ -68,20 +68,20 @@ namespace BackyardBrains {
         messageBufferIndex =0;
         _deviceConnected = true;
 
-        //start thread that will periodicaly read HID
-        t1 = std::thread(&HIDUsbManager::readThread, this, this);
-        t1.detach();
-        
-        
+
+
+
         askForCapabilities();//ask for firmware version etc.
         askForMaximumRatings(); //ask for sample rate and number of channels
-        
+
         //set number of channels and sampling rate on micro (this will not work with firmware V0.1)
         setNumberOfChannelsAndSamplingRate(2, maxSamplingRate());
         //send start command to micro
         startDevice();
-        
-        
+
+        //start thread that will periodicaly read HID
+        t1 = std::thread(&HIDUsbManager::readThread, this, this);
+        t1.detach();
 
         return 0;
     }
@@ -109,7 +109,7 @@ namespace BackyardBrains {
             {
                 escapeSequenceDetectorIndex = 0;
             }
-            
+
         }
         else
         {
@@ -125,7 +125,7 @@ namespace BackyardBrains {
                     }
                     messageBufferIndex = 0;//prepare for receiving message
                     escapeSequenceDetectorIndex = 0;//prepare for detecting end of esc. sequence
-                    
+
                     //rewind writing head and effectively delete escape sequence from data
                     for(int i=0;i<ESCAPE_SEQUENCE_LENGTH;i++)
                     {
@@ -142,9 +142,9 @@ namespace BackyardBrains {
                 escapeSequenceDetectorIndex = 0;
             }
         }
-        
+
     }
-    
+
     //
     // Parse and check what we need to do with message that we received
     // from microcontroller
@@ -158,10 +158,10 @@ namespace BackyardBrains {
         int startOfMessage = 0;
 
 
-        
+
         while(stillProcessing)
         {
-            
+
             if(messagesBuffer[currentPositionInString]==';')
             {
                //we have message, parse it
@@ -178,27 +178,27 @@ namespace BackyardBrains {
                 startOfMessage = endOfMessage+1;
                 currentPositionInString++;
                 endOfMessage++;
-            
+
             }
             else
             {
                 message[currentPositionInString-startOfMessage] = messagesBuffer[currentPositionInString];
                 currentPositionInString++;
                 endOfMessage++;
-                
+
             }
-            
+
             if(currentPositionInString>=SIZE_OF_MESSAGES_BUFFER)
             {
                 stillProcessing = false;
             }
         }
-        
+
         //free(message);
-     
+
     }
-    
-    
+
+
     void HIDUsbManager::executeOneMessage(std::string typeOfMessage, std::string valueOfMessage, int offsetin)
     {
         std::cout<<"\nMESSAGE: "<<typeOfMessage<<" - "<<valueOfMessage<<"\n";
@@ -210,19 +210,19 @@ namespace BackyardBrains {
         {
             hardwareType = valueOfMessage;
         }
-    
+
         if(typeOfMessage == "HWV")
         {
             hardwareVersion = valueOfMessage;
         }
-        
+
         if(typeOfMessage == "EVNT")
         {
             int mnum = (int)((unsigned int)valueOfMessage[0]-48);
             int64_t offset = 0;
            /* if(!_manager.fileMode())
             {
-                
+
                 offset = _audioView->offset();
             }*/
             _manager->addMarker(std::string(1, mnum+'0'), offset+offsetin);
@@ -235,7 +235,7 @@ namespace BackyardBrains {
         {
             //TODO: implement maximum number of channels
         }
-        
+
     }
 
     //
@@ -250,10 +250,10 @@ namespace BackyardBrains {
         ref->mainTail = 0;
         ref->mainCircularBuffer = new int32_t[ref->numberOfChannels()*SIZE_OF_MAIN_CIRCULAR_BUFFER];
         int maxSamples = ref->numberOfChannels()*SIZE_OF_MAIN_CIRCULAR_BUFFER;
-        int32_t *buffer = new int32_t[256];
+        int32_t *buffer = new int32_t[2256];
         int numberOfFrames;
        // int k = 0;
-        
+
         tempHeadAndTailDifference-=SIZE_OF_MAIN_CIRCULAR_BUFFER;
         while (ref->_deviceConnected) {
             numberOfFrames = ref->readOneBatch(buffer);
@@ -267,11 +267,11 @@ namespace BackyardBrains {
                 //we copy here head position since we dont want to cut the frame
                 //in half in reading thread. (thread race problem)
                 int indexOfHead=ref->mainHead;
-                
+
                 for(int j=0;j<ref->numberOfChannels();j++)
                 {
                     ref->mainCircularBuffer[indexOfHead++] = buffer[i*ref->numberOfChannels()+j];
-                    
+
                     if(indexOfHead>=maxSamples)
                     {
                         indexOfHead = 0;
@@ -332,11 +332,11 @@ namespace BackyardBrains {
         }
         //get number of bytes
         unsigned int sizeOfPackage =((unsigned int)buffer[1]& 0xFF);
-        
-        
+
+
         for(int i=2;i<sizeOfPackage+2;i++)
         {
-            
+
             if(weAreInsideEscapeSequence)
             {
                 messagesBuffer[messageBufferIndex] = buffer[i];
@@ -364,7 +364,7 @@ namespace BackyardBrains {
             MSB  = ((unsigned int)(circularBuffer[cBufTail])) & 0xFF;
             if(MSB > 127)//if we are at the begining of frame
             {
-                if(checkIfHaveWholeFrame())
+                if(checkIfHaveWholeFrame() && obufferIndex<1000)
                 {
                     // std::cout<<"Number of frames: "<< numberOfFrames<<"\n";
                     numberOfFrames++;
@@ -396,8 +396,8 @@ namespace BackyardBrains {
 
                         //write decoded integer to buffer
                         obuffer[obufferIndex++] = (writeInteger-512)*62;
-                        
-                        if(areWeAtTheEndOfFrame())
+
+                        if(areWeAtTheEndOfFrame() || obufferIndex>1000)
                         {
                             break;
                         }
@@ -485,9 +485,9 @@ namespace BackyardBrains {
             {
                 list.push_back(nameOfHID);
                  std::cout<<"HID device: "<<cur_dev->vendor_id<<", "<<cur_dev->product_string<<"\n";
-                
+
             }
-           
+
            /* printf("Device Found\n  type: %04hx %04hx\n  path: %s\n  serial_number: %ls", cur_dev->vendor_id, cur_dev->product_id, cur_dev->path, cur_dev->serial_number);
             printf("\n");
             printf("  Manufacturer: %ls\n", cur_dev->manufacturer_string);
@@ -528,7 +528,7 @@ namespace BackyardBrains {
         sstm << "start:"<<";\n";
         writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
     }
-    
+
     //
     // Send stop command to microcontroller "h:;"
     //
@@ -538,7 +538,7 @@ namespace BackyardBrains {
         sstm << "h:"<<";\n";
         writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
     }
-    
+
     //
     // Ask microcontroller for it's capabilities
     // (sampling rate, number of channels, firmware version)
@@ -549,7 +549,7 @@ namespace BackyardBrains {
         sstm << "?:"<<";\n";
         writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
     }
-    
+
     void HIDUsbManager::askForMaximumRatings()
     {
         std::stringstream sstm;
@@ -557,8 +557,23 @@ namespace BackyardBrains {
         writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
     }
 
+
     //
-    // Sends command for seting number of channels and sampling rate on micro.
+    // Put microcontroller in update firmware mode.
+    // This works only on windows
+    //
+    void HIDUsbManager::putInFirmwareUpdateMode()
+    {
+        #if defined(_WIN32)
+            std::cout<<"Put MSP into firmware update\n";
+             std::stringstream sstm;
+            sstm << "update:;\n";
+            writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
+        #endif
+    }
+
+    //
+    // Sends command to set number of channels and sampling rate on micro.
     //
     void HIDUsbManager::setNumberOfChannelsAndSamplingRate(int numberOfChannels, int samplingRate)
     {
@@ -678,7 +693,7 @@ namespace BackyardBrains {
         }
         return false;
     }
-    
+
     //
     //Check if newxt byte contains start-of-frame flag (8th bit set to 1)
     //

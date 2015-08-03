@@ -4,6 +4,9 @@
 #include "widgets/BoxLayout.h"
 #include "widgets/TextureGL.h"
 #include "widgets/ScrollBar.h"
+#include "widgets/Painter.h"
+#include "widgets/Application.h"
+#include "widgets/BitmapFontGL.h"
 #include "widgets/FileDialog.h"
 #include "widgets/Label.h"
 #include "widgets/ErrorBox.h"
@@ -47,7 +50,7 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	threshButton->setNormalTex(Widgets::TextureGL::get("data/thresh.png"));
 	threshButton->setHoverTex(Widgets::TextureGL::get("data/threshhigh.png"));
 	threshButton->clicked.connect(this, &MainView::threshPressed);
-	
+
 
 	_analysisButton = new Widgets::PushButton(this);
 	_analysisButton->setNormalTex(Widgets::TextureGL::get("data/analysis.png"));
@@ -55,7 +58,7 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	_analysisButton->clicked.connect(this, &MainView::analysisPressed);
 	_analysisButton->setSizeHint(Widgets::Size(0,0));
 	_analysisButton->setVisible(false);
-    
+
     _usbButton = new Widgets::PushButton(this);
     _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.png"));
     _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.png"));
@@ -108,7 +111,7 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	_threshavgGroup->setVisible(false);
 
 	_recBar = new RecordingBar(_fileRec, this);
-	
+
 	_fftView = new FFTView(*_audioView, _manager, this);
 
 	Widgets::BoxLayout *topBar = new Widgets::BoxLayout(Widgets::Horizontal);
@@ -173,8 +176,8 @@ void MainView::triggerEvent()
     }
 
 }
-    
-    
+
+
 void MainView::pausePressed() {
 	if(_manager.paused()) {
 		_manager.setPaused(false);
@@ -293,7 +296,7 @@ void MainView::fftPressed() {
 
 void MainView::filePressed() {
 	Widgets::FileDialog d(Widgets::FileDialog::OpenFile);
-	
+
 	d.open();
 	while(d.isOpen())
 		SDL_Delay(16);
@@ -346,7 +349,7 @@ void MainView::configPressed() {
 void MainView::analysisPressed() {
 	if(_anaView == NULL)
 		_anaView = new AnalysisView(_manager);
-	
+
 	_anaView->setDeleteOnClose(false);
 	_anaView->setGeometry(rect());
 	Widgets::Application::getInstance()->addWindow(_anaView);
@@ -354,26 +357,26 @@ void MainView::analysisPressed() {
 	if(!_manager.paused())
 		pausePressed();
 }
-    
+
 void MainView::usbPressed()
 {
     //connect/diconnect
-    
+
     if(_manager.hidMode())
     {
         // _manager.setSerialNumberOfChannels(1);
         _manager.disconnectFromHID();
         _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.png"));
         _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.png"));
-       
+
     }
     else
     {
         if(!_manager.initHIDUSB())
         {
             std::cout<<"Can't open HID device. \n";
-            
-            
+
+
             Widgets::ErrorBox *box = new Widgets::ErrorBox(_manager.hidError.c_str());
             box->setGeometry(Widgets::Rect(this->width()/2-250, this->height()/2-40, 500, 80));
             Widgets::Application::getInstance()->addPopup(box);
@@ -395,7 +398,18 @@ void MainView::paintEvent()
         _manager.scanForHIDDevices();
     }
     */
-    
+
+    if(_manager.getUSBFirmwareUpdateStage()>0)
+    {
+        Widgets::Painter::setColor(Widgets::Color(50,50,50,255));
+        Widgets::Painter::drawRect(Widgets::Rect(this->width()/2-200, this->height()/2-40, 400, 80));
+
+        std::stringstream o;
+        o << "Updating firmware in progress (do not unplug device)\n Init stage";
+        Widgets::Painter::setColor(Widgets::Colors::white);
+        Widgets::Application::font()->draw(o.str().c_str(), this->width()/2-180, this->height()/2-20, Widgets::AlignBottom);
+    }
+
     if(_manager.hidDevicePresent())
     {
         _usbButton->setVisible(true);
@@ -415,11 +429,11 @@ void MainView::paintEvent()
         _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.png"));
     }
 
-    
+
 }
-    
-    
-    
+
+
+
 void MainView::keyPressEvent(Widgets::KeyboardEvent *e) {
 	if(e->key() >= Widgets::Key0 && e->key() <= Widgets::Key9) {
 		int mnum = e->key()-Widgets::Key0;

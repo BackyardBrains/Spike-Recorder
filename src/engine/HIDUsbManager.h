@@ -48,8 +48,8 @@ class HIDUsbManager
         int readOneBatch(int32_t * obuffer);
         int32_t *mainCircularBuffer;
         void stopDevice();
+        void putInFirmwareUpdateMode();
 
-    
         std::string firmwareVersion;
         std::string hardwareVersion;
         std::string hardwareType;
@@ -72,7 +72,7 @@ class HIDUsbManager
         bool checkIfHaveWholeFrame();
         void readThread(HIDUsbManager * ref);
         bool _deviceConnected;
-    
+
         void testEscapeSequence(unsigned int newByte, int offset);
         void executeOneMessage(std::string typeOfMessage, std::string valueOfMessage, int offsetin);
         void executeContentOfMessageBuffer(int offset);
@@ -84,7 +84,7 @@ class HIDUsbManager
         unsigned int escapeSequence[ESCAPE_SEQUENCE_LENGTH];
         unsigned int endOfescapeSequence[ESCAPE_SEQUENCE_LENGTH];
         unsigned int tempHeadAndTailDifference;//used for precise events reference
-    
+
     private:
 }; //class end
 

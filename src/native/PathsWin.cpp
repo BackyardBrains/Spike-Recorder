@@ -16,7 +16,7 @@ std::string getRecordingPath() {
 }
 
 std::string getLoggingPath() {
-	return "%APPDATA%/BackyardBrains/SpikeRecorder/byb.log";
+	return "%APPDATA%\\BackyardBrains\\SpikeRecorder\\byb.log";
 }
 
 }

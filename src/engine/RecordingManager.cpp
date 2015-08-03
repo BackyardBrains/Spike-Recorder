@@ -19,6 +19,7 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
 	}
     _numOfSerialChannels = 1;
     _numOfHidChannels = 2;
+    _firmwareUpdateStage = 0;
 	_player.start(_sampleRate);
 
     _arduinoSerial.getAllPortsList();
@@ -171,7 +172,7 @@ bool RecordingManager::initHIDUSB()
 
     int bytespersample = info.origres/8;
 
-    bytespersample = 4; // bass converts everything it doesnâ€™t support.
+    bytespersample = 4; // bass converts everything it doesn’t support.
     setSampleRate(info.freq);
     _devices[0].create(_pos, _numOfHidChannels);
     _devices[0].bytespersample = bytespersample;
@@ -262,6 +263,33 @@ void RecordingManager::scanUSBDevices()
     _hidDevicePresent = _hidUsbManager.list.size()>0;
 }
 
+//
+// If greater than zero we are in firmware update procedure
+// Integer value represent stage of update
+//
+int RecordingManager::getUSBFirmwareUpdateStage()
+{
+    //if we are in preparation stage
+    if(_firmwareUpdateStage<2)
+    {
+        return _firmwareUpdateStage;
+    }
+
+    //if we started BSL procedure
+
+    //TODO: return state from BSL class
+    return 3;
+}
+
+//
+// Initialize update of firmware
+//
+void RecordingManager::prepareForHIDFirmwareUpdate()
+{
+    _firmwareUpdateStage = 1;
+
+}
+
 //--------------- Serial port functions ---------------------
 
 bool RecordingManager::initSerial(const char *portName)
@@ -302,7 +330,7 @@ bool RecordingManager::initSerial(const char *portName)
         return false;
     }*/
 
-    bytespersample = 4; // bass converts everything it doesnâ€™t support.
+    bytespersample = 4; // bass converts everything it doesn’t support.
     setSampleRate(info.freq);
     _devices[0].create(_pos, _numOfSerialChannels);
     _devices[0].bytespersample = bytespersample;
@@ -402,7 +430,7 @@ bool RecordingManager::loadFile(const char *filename) {
     if(bytespersample == 0)
         return false;
     if(bytespersample >= 3)
-        bytespersample = 4; // bass converts everything it doesnâ€™t support.
+        bytespersample = 4; // bass converts everything it doesn’t support.
 
     setSampleRate(info.freq);
     _devices[0].create(_pos, info.chans);
@@ -1099,7 +1127,7 @@ bool RecordingManager::incRef(int virtualDeviceIndex) {
     {
         _recordingDevices[virtualDeviceIndex].bound = 1;
     }
-	assert(_recordingDevices[virtualDeviceIndex].bound < 2); // this shouldnâ€™t happen at the moment
+	assert(_recordingDevices[virtualDeviceIndex].bound < 2); // this shouldn’t happen at the moment
     //----- end of patch
 
 	if (!_fileMode && _devices[device].handle == 0) {

@@ -90,7 +90,7 @@ public:
 	sigslot::signal0<> deviceReload;
 	sigslot::signal0<> pauseChanged;
 	sigslot::signal0<> thresholdChanged;
-	
+
 	sigslot::signal0<> triggered;
 
 	void advance(uint32_t milliseconds);
@@ -115,7 +115,10 @@ public:
     bool hidDevicePresent();
     void scanForHIDDevices();
     void sendEKGImpuls();
-    
+
+    void prepareForHIDFirmwareUpdate();
+    int getUSBFirmwareUpdateStage();
+
     std::string hidError;
 private:
 	struct Device
@@ -152,7 +155,7 @@ private:
 	bool _threshMode;
 
     int64_t currentPositionOfWaveform;
-    
+
 	bool _fileMode;
     bool _serialMode;
     bool _hidMode;
@@ -177,6 +180,7 @@ private:
     clock_t timerUSB;
     bool _hidDevicePresent;
     void scanUSBDevices();
+    int _firmwareUpdateStage;
 
 
 };

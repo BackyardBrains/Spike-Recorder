@@ -187,9 +187,6 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
         hidHbox->addWidget(nameUSB, Widgets::AlignLeft);
         hidHbox->addSpacing(5);
 
-
-
-
         //Button for connect to HID device
         _hidButton = new Widgets::PushButton(group);
         _hidButton->clicked.connect(this, &ConfigView::hidConnectPressed);
@@ -210,9 +207,37 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
         gvbox->addLayout(hidHbox);
 
 
-    }
+        //--------------   Update firmware code (works only under Windows)
 
+        //#if defined(_WIN32)
+        //TODO:add decision based on available update and current version of firmware
+        if(_manager.hidMode())
+        {
+             Widgets::BoxLayout *updateHbox = new Widgets::BoxLayout(Widgets::Horizontal);
+            //USB  label
+            Widgets::Label *updateLabel = new Widgets::Label(group);
+            updateLabel->setText("Update firmware on Backyard Brains' device ");
+            updateLabel->updateSize();
+            updateHbox->addSpacing(0);
+            updateHbox->addWidget(updateLabel, Widgets::AlignLeft);
+            updateHbox->addSpacing(5);
 
+            //Button for connect to HID device
+            _updateButton = new Widgets::PushButton(group);
+            _updateButton->clicked.connect(this, &ConfigView::firmwareUpdatePressed);
+
+            _updateButton->setNormalTex(Widgets::TextureGL::get("data/disconnected.png"));
+            _updateButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.png"));
+            _updateButton->setSizeHint(Widgets::Size(26,26));
+            updateHbox->addWidget(_updateButton);
+            updateHbox->update();
+            gvbox->addSpacing(20);
+            gvbox->addLayout(updateHbox);
+
+        }
+        //#endif
+
+    }//end if not file mode
 
 	gvbox->update();
 
@@ -269,6 +294,22 @@ void ConfigView::hidConnectPressed()
     }
 }
 
+
+//#if defined(_WIN32)
+//
+// Start firmware update procedure
+//
+void ConfigView::firmwareUpdatePressed()
+{
+    if(_manager.getUSBFirmwareUpdateStage() == 0)//avoid starting it twice
+    {
+    //send message to MSP to prepare for update
+        _manager.prepareForHIDFirmwareUpdate();
+        close();
+    }
+}
+//#endif
+
 //
 // Connect/dsconnect from serial port
 //
@@ -288,7 +329,7 @@ void ConfigView::connectPressed()
 	    const char *error = _manager.serialError.c_str();
 	    if(strlen(error) == 0) {
 		    error = "Error: Cannot init serial port.";
-	    }            
+	    }
 
             Widgets::ErrorBox *box = new Widgets::ErrorBox(error);
             box->setGeometry(Widgets::Rect(this->width()/2-250, this->height()/2-40, 500, 80));
