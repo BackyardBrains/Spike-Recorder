@@ -284,7 +284,7 @@ bool RecordingManager::initSerial(const char *portName)
 
 
 
-    DWORD frequency = _arduinoSerial.maxSamplingRate()/_numOfSerialChannels;
+    DWORD frequency = _arduinoSerial.samplingFrequency();
     std::cout<<"Frequency: "<<frequency<<" Chan: "<<_numOfSerialChannels<<" Samp: "<<_arduinoSerial.maxSamplingRate()<<"\n";
     HSTREAM stream = BASS_StreamCreate(frequency, _numOfSerialChannels, BASS_STREAM_DECODE, STREAMPROC_PUSH, NULL);
     if(stream == 0) {
@@ -346,6 +346,21 @@ void RecordingManager::changeSerialPort(int portIndex)
 	_serialPortIndex = portIndex;
 }
 
+
+//
+// Set sampling frequency
+//
+void RecordingManager::setSerialSamplingFrequency(int samplingFrequency)
+{
+    std::cout<<"Sampling frequency on serial: "<<samplingFrequency<<"\n";
+    _arduinoSerial.setSamplingFrequency(samplingFrequency/_arduinoSerial.numberOfChannels());
+    if(serialMode())
+    {
+        initSerial(_arduinoSerial.currentPortName());
+    }
+}
+    
+    
 //
 // Change number of channels we are sampling through serial port
 // set sampling rate to 10000Hz/(number of channels)
@@ -799,6 +814,7 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 	    delete[] channels;
 	    delete[] buffer;
 	    _pos+=samplesRead;
+       // printf("%d\n", _pos);
 
 	}
 	else

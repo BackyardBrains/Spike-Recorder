@@ -58,6 +58,8 @@ typedef unsigned int uint;
 namespace BackyardBrains {
 
     ArduinoSerial::ArduinoSerial() : _portOpened(false) {
+        _samplingRate = 10000;
+        _numberOfChannels = 1;
     }
 
     int ArduinoSerial::openPort(const char *portName)
@@ -307,7 +309,7 @@ namespace BackyardBrains {
         _portOpened = true;
 
 
-        setNumberOfChannelsAndSamplingRate(1, maxSamplingRate());
+        setNumberOfChannelsAndSamplingRate(1, _samplingRate);
 
 
         return fd;
@@ -596,6 +598,10 @@ namespace BackyardBrains {
         return _numberOfChannels;
     }
 
+    int ArduinoSerial::samplingFrequency()
+    {
+        return _samplingRate;
+    }
 
     bool ArduinoSerial::portOpened()
     {
@@ -607,8 +613,26 @@ namespace BackyardBrains {
         _numberOfChannels = numberOfChannels;
         _samplingRate = samplingRate;
         //"conf s:%d;c:%d;"
+        int timerValue = ((16000000) / (_samplingRate*8)) - 1;
         std::stringstream sstm;
-        sstm << "conf s:" << samplingRate<<";c:"<<numberOfChannels<<";\n";
+        sstm << "conf s:" << timerValue<<";c:"<<numberOfChannels<<";\n";
+        writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
+        setSamplingFrequency(_samplingRate);
+    }
+    
+    void ArduinoSerial::setSamplingFrequency(int samplingRate)
+    {
+        if(samplingRate>this->maxSamplingRate())
+        {
+            samplingRate = this->maxSamplingRate();
+        }
+        _samplingRate = samplingRate;
+        //"conf s:%d;c:%d;"
+        
+        int timerValue = ((16000000) / (_samplingRate*8)) - 1;
+        printf("\n\nTimer value: %d\n\n",timerValue);
+        std::stringstream sstm;
+        sstm << "s:" << timerValue<<";\n";
         writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
     }
 
@@ -623,7 +647,10 @@ namespace BackyardBrains {
     
     void ArduinoSerial::sendVoltageToArduino(int voltage)
     {
-       
+       if(voltage>255)
+       {
+           voltage = 255;
+       }
         std::stringstream sstm;
         sstm << "v:" << voltage<<";\n";
         writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));

@@ -102,6 +102,7 @@ public:
     void disconnectFromSerial();
     int serialPortIndex();
     void setSerialNumberOfChannels(int numberOfChannels);
+    void setSerialSamplingFrequency(int samplingFrequency);
     int numberOfSerialChannels();
     std::string serialError;
     void refreshSerialPorts();

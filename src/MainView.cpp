@@ -216,6 +216,10 @@ void MainView::forwardPressed() {
 void MainView::threshPressed() {
 	if(!_manager.threshMode()) {
 		_fftView->setActive(false);
+        //if(_manager.serialMode())
+        //{
+            _manager.setSerialSamplingFrequency(10000);
+        //}
 		_manager.setThreshMode(true);
 		_threshavgGroup->setVisible(true);
 		_threshavgGroup->setSizeHint(Widgets::Size(400,32));
@@ -283,9 +287,19 @@ void MainView::recordPressed() {
 
 void MainView::fftPressed() {
 	if(_fftView->active()) {
+        //if(_manager.serialMode())
+        //{
+            _manager.setSerialSamplingFrequency(10000);
+        //}
 		_fftView->setActive(false);
+        
 	} else {
+       // if(_manager.serialMode())
+        //{
+            _manager.setSerialSamplingFrequency(1000);
+        //}
 		_fftView->setActive(true);
+        
 	}
     _fftView->alphaWaveStrength = 0;
 	Widgets::Application::getInstance()->updateLayout();
@@ -327,6 +341,7 @@ void MainView::filePressed() {
 	_analysisButton->setVisible(true);
 	_analysisButton->setSizeHint(Widgets::Size(48,48));
 	_fftView->setActive(false);
+    _manager.setSerialSamplingFrequency(10000);
 
 	Widgets::ToolTip *tip = new Widgets::ToolTip("Click to return to live mode \x1f", 2000);
 	tip->setGeometry(Widgets::Rect(width()/2-190, height()-150, 280, 40));
@@ -389,12 +404,12 @@ void MainView::paintEvent()
 {
     clock_t end = clock();
     double elapsed_milsec = double(end - timerUSB) / (CLOCKS_PER_SEC/1000);
-    if(elapsed_milsec>500.0)
+    if(elapsed_milsec>100.0)
     {
         timerUSB = end;
         if(_fftView->active())
         {
-            _manager.sendVoltageToSerial(_fftView->alphaWaveStrength);
+            _manager.sendVoltageToSerial(_fftView->alphaWaveStrength/4);
         }
     }
     

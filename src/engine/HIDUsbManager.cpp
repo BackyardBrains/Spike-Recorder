@@ -477,7 +477,7 @@ namespace BackyardBrains {
         list.clear();
         struct hid_device_info *devs, *cur_dev;
         std::cout<<"Scan for HID devices... \n";
-        devs = hid_enumerate(0x0, 0x0);
+      //  devs = hid_enumerate(0x0, 0x0);
         cur_dev = devs;
         while (cur_dev) {
                 std::string nameOfHID((char *) cur_dev->product_string);

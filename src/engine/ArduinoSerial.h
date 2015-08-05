@@ -46,6 +46,7 @@ namespace BackyardBrains {
         void getAllPortsList();
         void closeSerial(void);
         void setNumberOfChannelsAndSamplingRate(int numberOfChannels, int samplingRate);
+        void setSamplingFrequency(int samplingRate);
         int writeToPort(const void *ptr, int len);
         int maxSamplingRate();
         int maxNumberOfChannels();
@@ -55,6 +56,7 @@ namespace BackyardBrains {
         bool portOpened();
         void sendEventMessage(int eventType);
         void sendVoltageToArduino(int voltage);
+        int samplingFrequency();
     private:
         char circularBuffer[SIZE_OF_CIRC_BUFFER];
         int cBufHead;

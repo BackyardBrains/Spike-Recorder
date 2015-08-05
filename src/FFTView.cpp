@@ -174,7 +174,7 @@ void FFTView::paintEvent() {
 
 float FFTView::addWindow(uint32_t *result, int pos, int device, int len, int samplerate) {
 	_manager.getData(device, pos, len, _samplebuf);
-    
+   // printf("%d - %d\n", pos, len);
 	const int ds = 4; // simple downsampling because only low frequencies are required
 	_fftbuf.resize(len/ds);
 	for(int i = 0; i < len/ds; i++)
@@ -201,7 +201,10 @@ float FFTView::addWindow(uint32_t *result, int pos, int device, int len, int sam
 		double val = tanh(2e-5*max); // TODO: replace this with something smarter
         if(f>9.1f && f<11.0f)
         {
-            alphaPower = val;
+            if(val>alphaPower)
+            {
+                alphaPower = val;
+            }
         }
         
 		val2hue((uint8_t *)&result[FFTFRES-1-i],val);
@@ -222,8 +225,9 @@ void FFTView::update(int force) {
 	int len = _av.sampleCount(_av.screenWidth(), _av.scaleWidth());
 	int opos = _manager.pos()+_av.channelOffset()-len+_manager.fileMode()*len/2;
 	uint32_t resultbuf[FFTFRES];
-	int windowdist = SWINDOW;
+	int windowdist = SWINDOW;//window length in samples
 
+    //if we don't have audio clear graph
 	if(_av.selectedChannel() == -1) {
 		memset(_fftviewbuffer,0,FFTTRES*FFTFRES*sizeof(int32_t));
 		return;
@@ -240,7 +244,7 @@ void FFTView::update(int force) {
 		_viewwidth = FFTTRES;
 	}
 
-	int pos = opos/windowdist*windowdist;
+	int pos = opos/windowdist*windowdist;//rounding position
 
 	if(force) { // overwrite all ffts
 		_lastfirst = -1;
@@ -251,21 +255,39 @@ void FFTView::update(int force) {
 	_offset += (pos-_lastfirst)/windowdist;
 	_offsetcorrection = (opos-pos)/(float)windowdist;
     
-    float alphaPower = 0;
+
+    bool firstTaken = false;
+    float maxAlphaPower = 0;
 	for(int i = 0; i < _viewwidth+OFFSCREENWINS; i++) {
 		int spos = pos+i*windowdist;
+        if(i==_viewwidth+OFFSCREENWINS-2)
+        {
+            maxAlphaPower = addWindow(resultbuf, pos+i*windowdist, _av.channelVirtualDevice(_av.selectedChannel()),
+                                   SWINDOW, _manager.sampleRate());
+        }
+        //printf("%f\n", maxAlphaPower);
 		if(spos >= _lastfirst && spos < _lastlast) { // already computed
 			continue;
 		}
-		alphaPower = addWindow(resultbuf, pos+i*windowdist, _av.channelVirtualDevice(_av.selectedChannel()),
+       // maxAlphaPower = 0;
+        addWindow(resultbuf, pos+i*windowdist, _av.channelVirtualDevice(_av.selectedChannel()),
 				SWINDOW, _manager.sampleRate());
+        //calculate alpha power
+       // printf("%d\n",spos);
+        /*if((alphaPower>maxAlphaPower) && !force && !firstTaken)
+        {
+            firstTaken = true;
+            maxAlphaPower = alphaPower;
+            
+        }*/
+        
 		for(int j = 0; j < FFTFRES; j++) {
 			int idx = (((i+(int)_offset)%FFTTRES)+FFTTRES)%FFTTRES;
 			_fftviewbuffer[j][idx] = resultbuf[j];
 		}
 	}
-    //calculate alpha power
-    alphaWaveStrength = (int)fmin(alphaPower*1000,1000);
+    alphaWaveStrength = (int)fmin(maxAlphaPower*1000,1020);
+   // printf(" - \n");
     
 	_lastfirst = pos;
 	_lastlast = pos+(_viewwidth-1)*windowdist;
