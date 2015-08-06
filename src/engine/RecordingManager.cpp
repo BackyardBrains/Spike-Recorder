@@ -258,7 +258,7 @@ void RecordingManager::scanUSBDevices()
     if(elapsed_secs>0.5)
     {
         timerUSB = end;
-//        scanForHIDDevices();
+        scanForHIDDevices();
     }
     _hidDevicePresent = _hidUsbManager.list.size()>0;
 }

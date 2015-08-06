@@ -47,10 +47,10 @@ private:
     Widgets::PushButton *_connectButton;
     Widgets::PushButton *_hidButton;
 
-    //#if defined(_WIN32)
+    #if defined(_WIN32)
     Widgets::PushButton *_updateButton;
     void firmwareUpdatePressed();
-    //#endif
+    #endif
 
 	void paintEvent();
     void connectPressed();

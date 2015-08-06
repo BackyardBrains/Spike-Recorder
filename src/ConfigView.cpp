@@ -209,7 +209,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 
         //--------------   Update firmware code (works only under Windows)
 
-        //#if defined(_WIN32)
+        #if defined(_WIN32)
         //TODO:add decision based on available update and current version of firmware
         if(_manager.hidMode())
         {
@@ -235,7 +235,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
             gvbox->addLayout(updateHbox);
 
         }
-        //#endif
+        #endif
 
     }//end if not file mode
 
@@ -295,7 +295,7 @@ void ConfigView::hidConnectPressed()
 }
 
 
-//#if defined(_WIN32)
+#if defined(_WIN32)
 //
 // Start firmware update procedure
 //
@@ -308,7 +308,7 @@ void ConfigView::firmwareUpdatePressed()
         close();
     }
 }
-//#endif
+#endif
 
 //
 // Connect/dsconnect from serial port
