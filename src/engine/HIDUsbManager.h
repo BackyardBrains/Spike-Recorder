@@ -37,6 +37,8 @@ class HIDUsbManager
         void closeDevice();
         void askForCapabilities();
         void askForMaximumRatings();
+        void askForBoard();
+        void askForRTRepeat();
         void setNumberOfChannelsAndSamplingRate(int numberOfChannels, int samplingRate);
         int writeToDevice(const unsigned char *ptr, size_t len);
         int maxSamplingRate();
@@ -49,6 +51,9 @@ class HIDUsbManager
         int32_t *mainCircularBuffer;
         void stopDevice();
         void putInFirmwareUpdateMode();
+        int addOnBoardPressent();
+        bool isRTRepeating();
+        void swapRTRepeat();
 
         std::string firmwareVersion;
         std::string hardwareVersion;
@@ -72,6 +77,8 @@ class HIDUsbManager
         bool checkIfHaveWholeFrame();
         void readThread(HIDUsbManager * ref);
         bool _deviceConnected;
+        int currentAddOnBoard;
+        bool _rtReapeating;
 
         void testEscapeSequence(unsigned int newByte, int offset);
         void executeOneMessage(std::string typeOfMessage, std::string valueOfMessage, int offsetin);

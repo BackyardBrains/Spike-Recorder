@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		240139B11B7CEE3E0063D6E5 /* RTConfigView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 240139AF1B7CEE3E0063D6E5 /* RTConfigView.cpp */; };
 		24079F321AB0CBE700820291 /* icon_128x128.png in Resources */ = {isa = PBXBuildFile; fileRef = 24079F281AB0CBE700820291 /* icon_128x128.png */; };
 		24079F331AB0CBE700820291 /* icon_128x128@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 24079F291AB0CBE700820291 /* icon_128x128@2x.png */; };
 		24079F341AB0CBE700820291 /* icon_16x16.png in Resources */ = {isa = PBXBuildFile; fileRef = 24079F2A1AB0CBE700820291 /* icon_16x16.png */; };
@@ -109,6 +110,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		240139AF1B7CEE3E0063D6E5 /* RTConfigView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RTConfigView.cpp; path = src/RTConfigView.cpp; sourceTree = SOURCE_ROOT; };
+		240139B01B7CEE3E0063D6E5 /* RTConfigView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RTConfigView.h; path = src/RTConfigView.h; sourceTree = SOURCE_ROOT; };
 		24079F281AB0CBE700820291 /* icon_128x128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_128x128.png; sourceTree = "<group>"; };
 		24079F291AB0CBE700820291 /* icon_128x128@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_128x128@2x.png"; sourceTree = "<group>"; };
 		24079F2A1AB0CBE700820291 /* icon_16x16.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_16x16.png; sourceTree = "<group>"; };
@@ -350,6 +353,8 @@
 				24079FAB1AB1D1F500820291 /* DropDownList.h */,
 				248E58981AAE19570011707F /* ConfigView.cpp */,
 				248E58991AAE19570011707F /* ConfigView.h */,
+				240139AF1B7CEE3E0063D6E5 /* RTConfigView.cpp */,
+				240139B01B7CEE3E0063D6E5 /* RTConfigView.h */,
 				248E589A1AAE19570011707F /* engine */,
 				248E58A61AAE19570011707F /* FFTView.cpp */,
 				248E594C1AAEF7320011707F /* FFTView.h */,
@@ -678,6 +683,7 @@
 				2421F0901ACFDDBD00927F19 /* SpikeAnalysis.cpp in Sources */,
 				248E58FF1AAE19570011707F /* FileDialogMac.mm in Sources */,
 				248E59051AAE19570011707F /* ToolTip.cpp in Sources */,
+				240139B11B7CEE3E0063D6E5 /* RTConfigView.cpp in Sources */,
 				248E58EA1AAE19570011707F /* RecordingManager.cpp in Sources */,
 				248E59011AAE19570011707F /* Painter.cpp in Sources */,
 				248E58EF1AAE19570011707F /* MainView.cpp in Sources */,

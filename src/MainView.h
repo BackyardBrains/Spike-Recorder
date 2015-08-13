@@ -33,6 +33,7 @@ private:
 	Widgets::PushButton *_fftButton;
 	Widgets::PushButton *_analysisButton;
     Widgets::PushButton *_usbButton;
+    Widgets::PushButton *_addOnBoardButton;
 
 	Widgets::ScrollBar *_seekBar;
 	Widgets::Widget *_threshavgGroup;
@@ -57,6 +58,7 @@ private:
 	void analysisPressed();
     
     void usbPressed();
+    void addonBoardPressed();
 
 	void fftPressed();
     

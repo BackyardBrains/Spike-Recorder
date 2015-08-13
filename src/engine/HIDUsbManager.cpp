@@ -66,14 +66,13 @@ namespace BackyardBrains {
         escapeSequenceDetectorIndex = 0;
         weAreInsideEscapeSequence = false;
         messageBufferIndex =0;
+        currentAddOnBoard = 0;
         _deviceConnected = true;
-
-
-
 
         askForCapabilities();//ask for firmware version etc.
         askForMaximumRatings(); //ask for sample rate and number of channels
-
+        askForBoard();//ask if any board is connected
+        askForRTRepeat();//ask if RT board is repeating stimmulation
         //set number of channels and sampling rate on micro (this will not work with firmware V0.1)
         setNumberOfChannelsAndSamplingRate(2, maxSamplingRate());
         //send start command to micro
@@ -227,6 +226,22 @@ namespace BackyardBrains {
             }*/
             _manager->addMarker(std::string(1, mnum+'0'), offset+offsetin);
         }
+        if(typeOfMessage == "BRD")
+        {
+            currentAddOnBoard = (int)((unsigned int)valueOfMessage[0]-48);
+           
+        }
+        if(typeOfMessage == "RTR")
+        {
+            if(((int)((unsigned int)valueOfMessage[0]-48)) == 1)
+            {
+                _rtReapeating = true;
+            }
+            else
+            {
+                _rtReapeating = false;
+            }
+        }
         if(typeOfMessage == "MSF")
         {
            //TODO: implement maximum sample rate
@@ -238,6 +253,12 @@ namespace BackyardBrains {
 
     }
 
+    
+    int HIDUsbManager::addOnBoardPressent()
+    {
+        return currentAddOnBoard;
+    }
+    
     //
     //Thread that periodicaly read new data from microcontroller
     //read must be executed at least 1000 times per second.
@@ -297,6 +318,7 @@ namespace BackyardBrains {
             ref->stopDevice();
             hid_close(ref->handle);
             ref->handle = NULL;
+            currentAddOnBoard = 0;
         }
         numberOfFrames = 0;
     }
@@ -557,7 +579,44 @@ namespace BackyardBrains {
         writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
     }
 
+    //
+    // Ask if we have some add on board connected
+    //
+    void HIDUsbManager::askForBoard()
+    {
+        std::stringstream sstm;
+        sstm << "board:"<<";\n";
+        writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
+    }
+    
+    //
+    // Ask if Reaction timer is repeating
+    //
+    void HIDUsbManager::askForRTRepeat()
+    {
+        std::stringstream sstm;
+        sstm << "rtrepeat:"<<";\n";
+        writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
+    }
 
+    
+    void HIDUsbManager::swapRTRepeat()
+    {
+        _rtReapeating = !_rtReapeating;
+        std::stringstream sstm;
+        sstm << "srtrepeat:"<<";\n";
+        writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
+    }
+    
+    //
+    // Reaction timer repeating
+    //
+    bool HIDUsbManager::isRTRepeating()
+    {
+        return _rtReapeating;
+    }
+    
+    
     //
     // Put microcontroller in update firmware mode.
     // This works only on windows

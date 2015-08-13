@@ -17,6 +17,7 @@
 #include "MainView.h"
 #include "AudioView.h"
 #include "ConfigView.h"
+#include "RTConfigView.h"
 #include "AnalysisView.h"
 #include "RecordingBar.h"
 #include "ThresholdPanel.h"
@@ -64,6 +65,12 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
     _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.png"));
     _usbButton->clicked.connect(this, &MainView::usbPressed);
     _usbButton->setVisible(false);
+    
+    _addOnBoardButton = new Widgets::PushButton(this);
+    _addOnBoardButton->setNormalTex(Widgets::TextureGL::get("data/rtimer.png"));
+    _addOnBoardButton->setHoverTex(Widgets::TextureGL::get("data/rtimerhigh.png"));
+    _addOnBoardButton->clicked.connect(this, &MainView::addonBoardPressed);
+    _addOnBoardButton->setVisible(false);
 
 	_recordButton = new Widgets::PushButton(this);
 	_recordButton->setNormalTex(Widgets::TextureGL::get("data/rec.png"));
@@ -126,6 +133,8 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
     topBar->addSpacing(5);
     topBar->addWidget(_usbButton);
 	topBar->addSpacing(10);
+    topBar->addWidget(_addOnBoardButton);
+    topBar->addSpacing(10);
 	topBar->addWidget(_threshavgGroup, Widgets::AlignVCenter);
 	topBar->addStretch();
 	topBar->addWidget(_recordButton);
@@ -387,29 +396,43 @@ void MainView::usbPressed()
     }
 
 }
+    
+    
+void MainView::addonBoardPressed()
+{
+
+    if(_manager.currentAddOnBoard() == 2)
+    {
+        RTConfigView *c = new RTConfigView(_manager, *_audioView);
+        c->setDeleteOnClose(true);
+        c->setGeometry(rect());
+        Widgets::Application::getInstance()->addWindow(c);
+    }
+
+}
 
 void MainView::paintEvent()
 {
-   /* clock_t end = clock();
-    double elapsed_secs = double(end - timerUSB) / CLOCKS_PER_SEC;
-    if(elapsed_secs>1.0)
-    {
-        timerUSB = end;
-        _manager.scanForHIDDevices();
-    }
-    */
-
+    /* clock_t end = clock();
+     double elapsed_secs = double(end - timerUSB) / CLOCKS_PER_SEC;
+     if(elapsed_secs>1.0)
+     {
+     timerUSB = end;
+     _manager.scanForHIDDevices();
+     }
+     */
+    
     if(_manager.getUSBFirmwareUpdateStage()>0)
     {
         Widgets::Painter::setColor(Widgets::Color(50,50,50,255));
         Widgets::Painter::drawRect(Widgets::Rect(this->width()/2-200, this->height()/2-40, 400, 80));
-
+        
         std::stringstream o;
         o << "Updating firmware in progress (do not unplug device)\n Init stage";
         Widgets::Painter::setColor(Widgets::Colors::white);
         Widgets::Application::font()->draw(o.str().c_str(), this->width()/2-180, this->height()/2-20, Widgets::AlignBottom);
     }
-
+    
     if(_manager.hidDevicePresent())
     {
         _usbButton->setVisible(true);
@@ -422,16 +445,40 @@ void MainView::paintEvent()
     {
         _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.png"));
         _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbdisconhigh.png"));
+        
+        int boardType = _manager.currentAddOnBoard();
+        if(boardType>0)
+        {
+            _addOnBoardButton->setVisible(true);
+            switch (boardType) {
+                case 1:
+                    _addOnBoardButton->setNormalTex(Widgets::TextureGL::get("data/bncconn.png"));
+                    _addOnBoardButton->setHoverTex(Widgets::TextureGL::get("data/bncconnhigh.png"));
+                    break;
+                case 2:
+                    _addOnBoardButton->setNormalTex(Widgets::TextureGL::get("data/rtimer.png"));
+                    _addOnBoardButton->setHoverTex(Widgets::TextureGL::get("data/rtimerhigh.png"));
+                    break;
+                default:
+                    break;
+            }
+        }
+        else
+        {
+            _addOnBoardButton->setVisible(false);
+        }
+        
+        
     }
     else
     {
         _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.png"));
         _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.png"));
+        _addOnBoardButton->setVisible(false);
     }
-
-
+    
+    
 }
-
 
 
 void MainView::keyPressEvent(Widgets::KeyboardEvent *e) {

@@ -289,6 +289,21 @@ void RecordingManager::prepareForHIDFirmwareUpdate()
     _firmwareUpdateStage = 1;
 
 }
+    
+int RecordingManager::currentAddOnBoard()
+{
+    return _hidUsbManager.addOnBoardPressent();
+}
+    
+bool RecordingManager::isRTRepeating()
+{
+    return _hidUsbManager.isRTRepeating();
+}
+
+void RecordingManager::swapRTRepeating()
+{
+    _hidUsbManager.swapRTRepeat();
+}
 
 //--------------- Serial port functions ---------------------
 

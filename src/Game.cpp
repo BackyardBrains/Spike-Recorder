@@ -75,6 +75,10 @@ void Game::loadResources() {
 	Widgets::TextureGL::load("data/heart.png");
 	Widgets::TextureGL::load("data/speaker.png");
 	Widgets::TextureGL::load("data/speakeroff.png");
+	Widgets::TextureGL::load("data/bncconn.png");
+	Widgets::TextureGL::load("data/bncconnhigh.png");
+	Widgets::TextureGL::load("data/rtimer.png");
+	Widgets::TextureGL::load("data/rtimerhigh.png");
 }
 
 void Game::advance() {

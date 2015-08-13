@@ -115,6 +115,9 @@ public:
     bool hidDevicePresent();
     void scanForHIDDevices();
     void sendEKGImpuls();
+    int currentAddOnBoard();
+    bool isRTRepeating();
+    void swapRTRepeating();
 
     void prepareForHIDFirmwareUpdate();
     int getUSBFirmwareUpdateStage();
