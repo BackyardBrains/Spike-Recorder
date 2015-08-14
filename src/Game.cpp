@@ -79,6 +79,8 @@ void Game::loadResources() {
 	Widgets::TextureGL::load("data/bncconnhigh.png");
 	Widgets::TextureGL::load("data/rtimer.png");
 	Widgets::TextureGL::load("data/rtimerhigh.png");
+    Widgets::TextureGL::load("data/devbrd.png");
+    Widgets::TextureGL::load("data/devbrdhigh.png");
 }
 
 void Game::advance() {

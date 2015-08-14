@@ -459,6 +459,11 @@ void MainView::paintEvent()
                     _addOnBoardButton->setNormalTex(Widgets::TextureGL::get("data/rtimer.png"));
                     _addOnBoardButton->setHoverTex(Widgets::TextureGL::get("data/rtimerhigh.png"));
                     break;
+                case 3:
+                    _addOnBoardButton->setNormalTex(Widgets::TextureGL::get("data/devbrd.png"));
+                    _addOnBoardButton->setHoverTex(Widgets::TextureGL::get("data/devbrdhigh.png"));
+                    break;
+                    
                 default:
                     break;
             }
