@@ -259,6 +259,7 @@ void RecordingManager::scanUSBDevices()
     {
         timerUSB = end;
         scanForHIDDevices();
+        std::cout<<"Elapsed: "<<timerUSB<<"\n";
     }
     _hidDevicePresent = _hidUsbManager.list.size()>0;
 }
@@ -289,12 +290,12 @@ void RecordingManager::prepareForHIDFirmwareUpdate()
     _firmwareUpdateStage = 1;
 
 }
-    
+
 int RecordingManager::currentAddOnBoard()
 {
     return _hidUsbManager.addOnBoardPressent();
 }
-    
+
 bool RecordingManager::isRTRepeating()
 {
     return _hidUsbManager.isRTRepeating();

@@ -114,6 +114,7 @@ public:
     int numberOfHIDChannels();
     bool hidDevicePresent();
     void scanForHIDDevices();
+    void scanUSBDevices();
     void sendEKGImpuls();
     int currentAddOnBoard();
     bool isRTRepeating();
@@ -182,7 +183,7 @@ private:
     int _numOfHidChannels;
     clock_t timerUSB;
     bool _hidDevicePresent;
-    void scanUSBDevices();
+
     int _firmwareUpdateStage;
 
 

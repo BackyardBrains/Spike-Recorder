@@ -22,7 +22,7 @@ Application::Application() : _running(false), _mouseGrabber(0), _keyboardGrabber
 	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
 		Log::fatal("SDL failed to initialize: %s", SDL_GetError());
 	}
-	
+
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1);
 	// SDL_GL_SetAttribute(SDL_GL_DEPTH_TEST, 1);
@@ -354,7 +354,7 @@ void Application::createWindow(int w, int h) {
 
 	for(WidgetList::iterator it = _windowStack.begin(); it != _windowStack.end(); it++)
 		(*it)->setSize(Size(std::max(MIN_WINDOW_W,w), std::max(MIN_WINDOW_H,h)));
-	
+
 }
 
 void Application::_SetHoverWidget(Widget *widget) {

@@ -65,7 +65,7 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
     _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.png"));
     _usbButton->clicked.connect(this, &MainView::usbPressed);
     _usbButton->setVisible(false);
-    
+
     _addOnBoardButton = new Widgets::PushButton(this);
     _addOnBoardButton->setNormalTex(Widgets::TextureGL::get("data/rtimer.png"));
     _addOnBoardButton->setHoverTex(Widgets::TextureGL::get("data/rtimerhigh.png"));
@@ -377,7 +377,9 @@ void MainView::usbPressed()
         _manager.disconnectFromHID();
         _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.png"));
         _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.png"));
-
+         #if defined(_WIN32)
+            _usbButton->setVisible(false);
+         #endif // defined
     }
     else
     {
@@ -396,8 +398,8 @@ void MainView::usbPressed()
     }
 
 }
-    
-    
+
+
 void MainView::addonBoardPressed()
 {
 
@@ -421,21 +423,24 @@ void MainView::paintEvent()
      _manager.scanForHIDDevices();
      }
      */
-    
+
     if(_manager.getUSBFirmwareUpdateStage()>0)
     {
         Widgets::Painter::setColor(Widgets::Color(50,50,50,255));
         Widgets::Painter::drawRect(Widgets::Rect(this->width()/2-200, this->height()/2-40, 400, 80));
-        
+
         std::stringstream o;
         o << "Updating firmware in progress (do not unplug device)\n Init stage";
         Widgets::Painter::setColor(Widgets::Colors::white);
         Widgets::Application::font()->draw(o.str().c_str(), this->width()/2-180, this->height()/2-20, Widgets::AlignBottom);
     }
-    
+
     if(_manager.hidDevicePresent())
     {
         _usbButton->setVisible(true);
+        #if defined(_WIN32)
+            _usbButton->setVisible(false);
+         #endif // defined
     }
     else
     {
@@ -445,7 +450,7 @@ void MainView::paintEvent()
     {
         _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.png"));
         _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbdisconhigh.png"));
-        
+        _usbButton->setVisible(true);
         int boardType = _manager.currentAddOnBoard();
         if(boardType>0)
         {
@@ -463,7 +468,7 @@ void MainView::paintEvent()
                     _addOnBoardButton->setNormalTex(Widgets::TextureGL::get("data/devbrd.png"));
                     _addOnBoardButton->setHoverTex(Widgets::TextureGL::get("data/devbrdhigh.png"));
                     break;
-                    
+
                 default:
                     break;
             }
@@ -472,8 +477,8 @@ void MainView::paintEvent()
         {
             _addOnBoardButton->setVisible(false);
         }
-        
-        
+
+
     }
     else
     {
@@ -481,8 +486,8 @@ void MainView::paintEvent()
         _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.png"));
         _addOnBoardButton->setVisible(false);
     }
-    
-    
+
+
 }
 
 

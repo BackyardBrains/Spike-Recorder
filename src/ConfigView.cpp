@@ -189,6 +189,9 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 
         //Button for connect to HID device
         _hidButton = new Widgets::PushButton(group);
+        #if defined(_WIN32)
+
+
         _hidButton->clicked.connect(this, &ConfigView::hidConnectPressed);
         if(_manager.hidMode())
         {
@@ -205,7 +208,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
         hidHbox->update();
         gvbox->addSpacing(20);
         gvbox->addLayout(hidHbox);
-
+        #endif // defined
 
         //--------------   Update firmware code (works only under Windows)
 
