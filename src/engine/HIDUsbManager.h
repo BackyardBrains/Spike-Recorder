@@ -79,6 +79,8 @@ class HIDUsbManager
         bool _deviceConnected;
         int currentAddOnBoard;
         bool _rtReapeating;
+        bool restartDevice;
+        int maxSamples;
 
         void testEscapeSequence(unsigned int newByte, int offset);
         void executeOneMessage(std::string typeOfMessage, std::string valueOfMessage, int offsetin);

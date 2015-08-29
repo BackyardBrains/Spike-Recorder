@@ -119,6 +119,8 @@ public:
     int currentAddOnBoard();
     bool isRTRepeating();
     void swapRTRepeating();
+    void reloadHID();
+    bool _HIDShouldBeReloaded;
 
     void prepareForHIDFirmwareUpdate();
     int getUSBFirmwareUpdateStage();

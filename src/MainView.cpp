@@ -17,7 +17,6 @@
 #include "MainView.h"
 #include "AudioView.h"
 #include "ConfigView.h"
-#include "RTConfigView.h"
 #include "AnalysisView.h"
 #include "RecordingBar.h"
 #include "ThresholdPanel.h"
@@ -65,12 +64,6 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
     _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.png"));
     _usbButton->clicked.connect(this, &MainView::usbPressed);
     _usbButton->setVisible(false);
-
-    _addOnBoardButton = new Widgets::PushButton(this);
-    _addOnBoardButton->setNormalTex(Widgets::TextureGL::get("data/rtimer.png"));
-    _addOnBoardButton->setHoverTex(Widgets::TextureGL::get("data/rtimerhigh.png"));
-    _addOnBoardButton->clicked.connect(this, &MainView::addonBoardPressed);
-    _addOnBoardButton->setVisible(false);
 
 	_recordButton = new Widgets::PushButton(this);
 	_recordButton->setNormalTex(Widgets::TextureGL::get("data/rec.png"));
@@ -132,8 +125,6 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	topBar->addWidget(_analysisButton);
     topBar->addSpacing(5);
     topBar->addWidget(_usbButton);
-	topBar->addSpacing(10);
-    topBar->addWidget(_addOnBoardButton);
     topBar->addSpacing(10);
 	topBar->addWidget(_threshavgGroup, Widgets::AlignVCenter);
 	topBar->addStretch();
@@ -400,19 +391,6 @@ void MainView::usbPressed()
 }
 
 
-void MainView::addonBoardPressed()
-{
-
-    if(_manager.currentAddOnBoard() == 2)
-    {
-        RTConfigView *c = new RTConfigView(_manager, *_audioView);
-        c->setDeleteOnClose(true);
-        c->setGeometry(rect());
-        Widgets::Application::getInstance()->addWindow(c);
-    }
-
-}
-
 void MainView::paintEvent()
 {
     /* clock_t end = clock();
@@ -451,40 +429,12 @@ void MainView::paintEvent()
         _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.png"));
         _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbdisconhigh.png"));
         _usbButton->setVisible(true);
-        int boardType = _manager.currentAddOnBoard();
-        if(boardType>0)
-        {
-            _addOnBoardButton->setVisible(true);
-            switch (boardType) {
-                case 1:
-                    _addOnBoardButton->setNormalTex(Widgets::TextureGL::get("data/bncconn.png"));
-                    _addOnBoardButton->setHoverTex(Widgets::TextureGL::get("data/bncconnhigh.png"));
-                    break;
-                case 2:
-                    _addOnBoardButton->setNormalTex(Widgets::TextureGL::get("data/rtimer.png"));
-                    _addOnBoardButton->setHoverTex(Widgets::TextureGL::get("data/rtimerhigh.png"));
-                    break;
-                case 3:
-                    _addOnBoardButton->setNormalTex(Widgets::TextureGL::get("data/devbrd.png"));
-                    _addOnBoardButton->setHoverTex(Widgets::TextureGL::get("data/devbrdhigh.png"));
-                    break;
-
-                default:
-                    break;
-            }
-        }
-        else
-        {
-            _addOnBoardButton->setVisible(false);
-        }
-
 
     }
     else
     {
         _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.png"));
         _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.png"));
-        _addOnBoardButton->setVisible(false);
     }
 
 

@@ -21,6 +21,7 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
     _numOfHidChannels = 2;
     _firmwareUpdateStage = 0;
 	_player.start(_sampleRate);
+    _HIDShouldBeReloaded = false;
 
     _arduinoSerial.getAllPortsList();
 
@@ -141,10 +142,17 @@ void RecordingManager::sendEKGImpuls()
 
 
 //--------------- HID USB functions -------------------------
+    
+void RecordingManager::reloadHID()
+{
+    _HIDShouldBeReloaded = true;
+}
 
 bool RecordingManager::initHIDUSB()
 {
+    
     std::cout<<"Init HID\n";
+    clear();
     if(!_hidUsbManager.deviceOpened())
     {
         if(_hidUsbManager.openDevice(this) == -1)
@@ -156,15 +164,16 @@ bool RecordingManager::initHIDUSB()
     }
 
     DWORD frequency = _hidUsbManager.maxSamplingRate();
-    std::cout<<"HID Frequency: "<<frequency<<" Chan: "<<_numOfHidChannels<<" Samp: "<<_hidUsbManager.maxSamplingRate()<<"\n";
-    HSTREAM stream = BASS_StreamCreate(frequency, _numOfHidChannels, BASS_STREAM_DECODE, STREAMPROC_PUSH, NULL);
+    _numOfHidChannels = _hidUsbManager.numberOfChannels();
+    std::cout<<"HID Frequency: "<<frequency<<" Chan: "<<_hidUsbManager.numberOfChannels()<<" Samp: "<<_hidUsbManager.maxSamplingRate()<<"\n";
+    HSTREAM stream = BASS_StreamCreate(frequency, _hidUsbManager.numberOfChannels(), BASS_STREAM_DECODE, STREAMPROC_PUSH, NULL);
     if(stream == 0) {
         std::cerr << "Bass Error: Failed to open hid stream. \n";
         hidError = "Bass Error: Failed to open hid stream. \n";
         return false;
     }
 
-    clear();
+    
     BASS_CHANNELINFO info;
     BASS_ChannelGetInfo(stream, &info);
 
@@ -259,7 +268,7 @@ void RecordingManager::scanUSBDevices()
     {
         timerUSB = end;
         scanForHIDDevices();
-        std::cout<<"Elapsed: "<<timerUSB<<"\n";
+       // std::cout<<"Elapsed: "<<timerUSB<<"\n";
     }
     _hidDevicePresent = _hidUsbManager.list.size()>0;
 }
@@ -860,10 +869,10 @@ void RecordingManager::advanceHidMode(uint32_t samples)
         scanForHIDDevices();
     }
 
-    uint32_t len = 4024;
+    uint32_t len = 30000;
     //len = std::min(samples, len);
    // std::cout<<len<<"\n";
-    const int channum = _hidUsbManager.numberOfChannels();
+    const int channum = _numOfHidChannels;
     std::vector<int16_t> *channels = new std::vector<int16_t>[channum];//non-interleaved
     int32_t *buffer = new int32_t[channum*len];
 
@@ -994,7 +1003,15 @@ void RecordingManager::advance(uint32_t samples) {
 
 	if(_hidMode)
     {
-        advanceHidMode(samples);
+        if(_HIDShouldBeReloaded)
+        {
+            _HIDShouldBeReloaded = false;
+            initHIDUSB();
+        }
+        else
+        {
+            advanceHidMode(samples);
+        }
         return;
     }
 

@@ -5,7 +5,9 @@
 #define BYB_VID 0x2047
 #define BYB_PID 0x3e0
 
-#define SIZE_OF_MAIN_CIRCULAR_BUFFER 10000
+#define SIZE_OF_MAIN_CIRCULAR_BUFFER 40000
+
+#define BOARD_WITH_ADDITIONAL_INPUTS 1
 
 namespace BackyardBrains {
 
@@ -35,6 +37,9 @@ namespace BackyardBrains {
         firmwareVersion = "";
         hardwareVersion = "";
         hardwareType = "";
+        _samplingRate = 10000;
+        _numberOfChannels = 2;
+        restartDevice = false;
 
     }
 
@@ -71,7 +76,7 @@ namespace BackyardBrains {
 
         askForCapabilities();//ask for firmware version etc.
         askForMaximumRatings(); //ask for sample rate and number of channels
-        askForBoard();//ask if any board is connected
+        
         askForRTRepeat();//ask if RT board is repeating stimmulation
         //set number of channels and sampling rate on micro (this will not work with firmware V0.1)
         setNumberOfChannelsAndSamplingRate(2, maxSamplingRate());
@@ -81,6 +86,8 @@ namespace BackyardBrains {
         //start thread that will periodicaly read HID
         t1 = std::thread(&HIDUsbManager::readThread, this, this);
         t1.detach();
+        
+        askForBoard();//ask if any board is connected
 
         return 0;
     }
@@ -229,6 +236,27 @@ namespace BackyardBrains {
         if(typeOfMessage == "BRD")
         {
             currentAddOnBoard = (int)((unsigned int)valueOfMessage[0]-48);
+            if(currentAddOnBoard == BOARD_WITH_ADDITIONAL_INPUTS)
+            {
+                //if(_samplingRate != 7500)
+                //{
+                    _samplingRate = 7500;
+                    _numberOfChannels  =4;
+                    restartDevice = true;
+                //}
+            }
+            else
+            {
+                if(_samplingRate != 10000)
+                {
+                    _samplingRate = 10000;
+                    _numberOfChannels  =2;
+                    restartDevice = true;
+                }
+            }
+           
+            
+            
 
         }
         if(typeOfMessage == "RTR")
@@ -270,7 +298,7 @@ namespace BackyardBrains {
         ref->mainHead = 0;
         ref->mainTail = 0;
         ref->mainCircularBuffer = new int32_t[ref->numberOfChannels()*SIZE_OF_MAIN_CIRCULAR_BUFFER];
-        int maxSamples = ref->numberOfChannels()*SIZE_OF_MAIN_CIRCULAR_BUFFER;
+        ref->maxSamples = ref->numberOfChannels()*SIZE_OF_MAIN_CIRCULAR_BUFFER;
         int32_t *buffer = new int32_t[2256];
         int numberOfFrames;
        // int k = 0;
@@ -278,6 +306,7 @@ namespace BackyardBrains {
         tempHeadAndTailDifference-=SIZE_OF_MAIN_CIRCULAR_BUFFER;
         while (ref->_deviceConnected) {
             numberOfFrames = ref->readOneBatch(buffer);
+            
             if(numberOfFrames == -1)
             {
                 ref->_deviceConnected = false;
@@ -293,13 +322,13 @@ namespace BackyardBrains {
                 {
                     ref->mainCircularBuffer[indexOfHead++] = buffer[i*ref->numberOfChannels()+j];
 
-                    if(indexOfHead>=maxSamples)
+                    if(indexOfHead>=ref->maxSamples)
                     {
                         indexOfHead = 0;
                     }
                 }
                 //update head position after writting walue
-                //so that we always have shole frame when reading
+                //so that we always have whole frame when reading
                 ref->mainHead = indexOfHead;
                 int tempMainHead = mainHead;
                 if(tempMainHead>mainTail)
@@ -338,6 +367,7 @@ namespace BackyardBrains {
 
 
         size = hid_read(handle, buffer, sizeof(buffer));
+        
         if (size == 0)
         {
             std::cout<<"No HID data\n";
@@ -418,7 +448,7 @@ namespace BackyardBrains {
 
                         //write decoded integer to buffer
                         obuffer[obufferIndex++] = (writeInteger-512)*62;
-
+                        
                         if(areWeAtTheEndOfFrame() || obufferIndex>1000)
                         {
                             break;
@@ -465,14 +495,14 @@ namespace BackyardBrains {
     int HIDUsbManager::readDevice(int32_t * obuffer)
     {
         int frames;
-        int maxNumOfSamples = _numberOfChannels*SIZE_OF_MAIN_CIRCULAR_BUFFER;
+        
         int tempMainHead = mainHead;//keep head position because input thread will move it.
-
+        
        if(mainTail>tempMainHead)
        {
-           memcpy ( obuffer, &mainCircularBuffer[mainTail], sizeof(int32_t)*(maxNumOfSamples-mainTail));
-           memcpy ( &obuffer[maxNumOfSamples-mainTail], mainCircularBuffer, sizeof(int16_t)*(tempMainHead));
-           frames = ((maxNumOfSamples-mainTail)+tempMainHead)/_numberOfChannels;
+           memcpy ( obuffer, &mainCircularBuffer[mainTail], sizeof(int32_t)*(maxSamples-mainTail));
+           memcpy ( &obuffer[maxSamples-mainTail], mainCircularBuffer, sizeof(int16_t)*(tempMainHead));
+           frames = ((maxSamples-mainTail)+tempMainHead)/_numberOfChannels;
 
        }
        else
@@ -483,6 +513,12 @@ namespace BackyardBrains {
 
         mainTail = tempMainHead;
 
+        if(restartDevice)
+        {
+            restartDevice = false;
+            _manager->reloadHID();
+        }
+        
         return frames;
     }
 
@@ -687,7 +723,7 @@ namespace BackyardBrains {
     //
     int HIDUsbManager::maxSamplingRate()
     {
-        return 10000;
+        return _samplingRate;
     }
 
     //
