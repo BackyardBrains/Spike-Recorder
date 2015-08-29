@@ -6,6 +6,10 @@
 #include "Log.h"
 #include <sstream>
 #include <cstdlib>
+#if defined(_WIN32)
+#include <unistd.h>
+#endif
+
 
 namespace BackyardBrains {
 
@@ -20,6 +24,7 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
     _numOfSerialChannels = 1;
     _numOfHidChannels = 2;
     _firmwareUpdateStage = 0;
+    shouldStartFirmwareUpdatePresentation = false;
 	_player.start(_sampleRate);
 
     _arduinoSerial.getAllPortsList();
@@ -270,16 +275,17 @@ void RecordingManager::scanUSBDevices()
 //
 int RecordingManager::getUSBFirmwareUpdateStage()
 {
-    //if we are in preparation stage
-    if(_firmwareUpdateStage<2)
+     #if defined(_WIN32)
+    if(_bslFirmwareUpdater.currentStage>=0)
     {
-        return _firmwareUpdateStage;
+        return _firmwareUpdateStage+_bslFirmwareUpdater.currentStage;
     }
-
-    //if we started BSL procedure
-
-    //TODO: return state from BSL class
-    return 3;
+    else
+    {
+      _firmwareUpdateStage = 0;
+      return -1;
+    }
+    #endif
 }
 
 //
@@ -287,7 +293,14 @@ int RecordingManager::getUSBFirmwareUpdateStage()
 //
 void RecordingManager::prepareForHIDFirmwareUpdate()
 {
-    _firmwareUpdateStage = 1;
+    #if defined(_WIN32)
+        _firmwareUpdateStage = 1;
+        shouldStartFirmwareUpdatePresentation = true;
+        _hidUsbManager.putInFirmwareUpdateMode();
+
+        _bslFirmwareUpdater.customSelectedFirmware("newfirmware.txt");
+    #endif
+
 
 }
 

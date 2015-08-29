@@ -12,6 +12,9 @@
 #include "Player.h"
 #include "ArduinoSerial.h"
 #include "HIDUsbManager.h"
+#if defined(_WIN32)
+#include "BSLFirmwareUpdater.h"
+#endif
 
 namespace BackyardBrains {
 
@@ -122,6 +125,8 @@ public:
 
     void prepareForHIDFirmwareUpdate();
     int getUSBFirmwareUpdateStage();
+    bool shouldStartFirmwareUpdatePresentation;
+
 
     std::string hidError;
 private:
@@ -185,6 +190,10 @@ private:
     bool _hidDevicePresent;
 
     int _firmwareUpdateStage;
+    #if defined(_WIN32)
+        BSLFirmwareUpdater _bslFirmwareUpdater;
+    #endif
+
 
 
 };

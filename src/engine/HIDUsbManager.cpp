@@ -253,7 +253,6 @@ namespace BackyardBrains {
 
     }
 
-
     int HIDUsbManager::addOnBoardPressent()
     {
         return currentAddOnBoard;
@@ -631,7 +630,6 @@ namespace BackyardBrains {
     {
         return _rtReapeating;
     }
-
 
     //
     // Put microcontroller in update firmware mode.

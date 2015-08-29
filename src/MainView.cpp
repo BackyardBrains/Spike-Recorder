@@ -18,6 +18,7 @@
 #include "AudioView.h"
 #include "ConfigView.h"
 #include "RTConfigView.h"
+#include "FirmwareUpdateView.h"
 #include "AnalysisView.h"
 #include "RecordingBar.h"
 #include "ThresholdPanel.h"
@@ -424,15 +425,13 @@ void MainView::paintEvent()
      }
      */
 
-    if(_manager.getUSBFirmwareUpdateStage()>0)
+    if(_manager.shouldStartFirmwareUpdatePresentation)
     {
-        Widgets::Painter::setColor(Widgets::Color(50,50,50,255));
-        Widgets::Painter::drawRect(Widgets::Rect(this->width()/2-200, this->height()/2-40, 400, 80));
-
-        std::stringstream o;
-        o << "Updating firmware in progress (do not unplug device)\n Init stage";
-        Widgets::Painter::setColor(Widgets::Colors::white);
-        Widgets::Application::font()->draw(o.str().c_str(), this->width()/2-180, this->height()/2-20, Widgets::AlignBottom);
+        FirmwareUpdateView *c = new FirmwareUpdateView(_manager, *_audioView);
+        c->setDeleteOnClose(true);
+        c->setGeometry(rect());
+        Widgets::Application::getInstance()->addWindow(c);
+        _manager.shouldStartFirmwareUpdatePresentation = false;
     }
 
     if(_manager.hidDevicePresent())
