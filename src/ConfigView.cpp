@@ -177,7 +177,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 
 
         //HID device connect
-
+        #if defined(_WIN32)
          Widgets::BoxLayout *hidHbox = new Widgets::BoxLayout(Widgets::Horizontal);
         //USB  label
         Widgets::Label *nameUSB = new Widgets::Label(group);
@@ -186,7 +186,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
         hidHbox->addSpacing(0);
         hidHbox->addWidget(nameUSB, Widgets::AlignLeft);
         hidHbox->addSpacing(5);
-
+        #endif
         //Button for connect to HID device
         _hidButton = new Widgets::PushButton(group);
         #if defined(_WIN32)
@@ -204,6 +204,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
             _hidButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.png"));
         }
         _hidButton->setSizeHint(Widgets::Size(26,26));
+       
         hidHbox->addWidget(_hidButton);
         hidHbox->update();
         gvbox->addSpacing(20);

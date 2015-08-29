@@ -56,17 +56,18 @@ private:
 	void configPressed();
 	void recordPressed();
 	void analysisPressed();
-    
+
     void usbPressed();
 
 	void fftPressed();
-    
+
     void paintEvent();
     clock_t timerUSB;
-    
+
     void triggerEvent();
-        
-    
+
+
+
 };
 
 }

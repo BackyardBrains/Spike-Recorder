@@ -20,7 +20,7 @@ Game::Game() : _fileRec(_manager) {
 }
 
 Game::~Game() {
-	
+
 }
 
 
@@ -61,7 +61,7 @@ void Game::loadResources() {
 
 	Widgets::TextureGL::load("data/ckboxon.png");
 	Widgets::TextureGL::load("data/ckboxoff.png");
-	
+
 	Widgets::TextureGL::load("data/plotview.png");
 	Widgets::TextureGL::load("data/plotviewhigh.png");
 	Widgets::TextureGL::load("data/plotviewdown.png");
@@ -71,7 +71,7 @@ void Game::loadResources() {
     Widgets::TextureGL::load("data/usbcon.png");
     Widgets::TextureGL::load("data/usbconhigh.png");
     Widgets::TextureGL::load("data/usbdiscon.png");
-    Widgets::TextureGL::load("data/usbdisconhigh.png");     
+    Widgets::TextureGL::load("data/usbdisconhigh.png");
 	Widgets::TextureGL::load("data/heart.png");
 	Widgets::TextureGL::load("data/speaker.png");
 	Widgets::TextureGL::load("data/speakeroff.png");
@@ -81,6 +81,9 @@ void Game::loadResources() {
 	Widgets::TextureGL::load("data/rtimerhigh.png");
     Widgets::TextureGL::load("data/devbrd.png");
     Widgets::TextureGL::load("data/devbrdhigh.png");
+    Widgets::TextureGL::load("data/okbtn.png");
+    Widgets::TextureGL::load("data/okbtnhigh.png");
+
 }
 
 void Game::advance() {

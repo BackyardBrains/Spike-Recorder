@@ -6,6 +6,10 @@
 #include "Log.h"
 #include <sstream>
 #include <cstdlib>
+#if defined(_WIN32)
+#include <unistd.h>
+#endif
+
 
 namespace BackyardBrains {
 
@@ -20,6 +24,9 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
     _numOfSerialChannels = 1;
     _numOfHidChannels = 2;
     _firmwareUpdateStage = 0;
+    #if defined(_WIN32)
+    shouldStartFirmwareUpdatePresentation = false;
+    #endif
 	_player.start(_sampleRate);
     _HIDShouldBeReloaded = false;
 
@@ -277,18 +284,20 @@ void RecordingManager::scanUSBDevices()
 // If greater than zero we are in firmware update procedure
 // Integer value represent stage of update
 //
+#if defined(_WIN32)
 int RecordingManager::getUSBFirmwareUpdateStage()
 {
-    //if we are in preparation stage
-    if(_firmwareUpdateStage<2)
+    
+    if(_bslFirmwareUpdater.currentStage>=0)
     {
-        return _firmwareUpdateStage;
+        return _firmwareUpdateStage+_bslFirmwareUpdater.currentStage;
     }
-
-    //if we started BSL procedure
-
-    //TODO: return state from BSL class
-    return 3;
+    else
+    {
+      _firmwareUpdateStage = 0;
+      return -1;
+    }
+    
 }
 
 //
@@ -296,10 +305,19 @@ int RecordingManager::getUSBFirmwareUpdateStage()
 //
 void RecordingManager::prepareForHIDFirmwareUpdate()
 {
-    _firmwareUpdateStage = 1;
+    
+        _firmwareUpdateStage = 1;
+        shouldStartFirmwareUpdatePresentation = true;
+        _hidUsbManager.putInFirmwareUpdateMode();
+
+        _bslFirmwareUpdater.customSelectedFirmware("newfirmware.txt");
+   
+
 
 }
-
+#endif
+    
+    
 int RecordingManager::currentAddOnBoard()
 {
     return _hidUsbManager.addOnBoardPressent();
