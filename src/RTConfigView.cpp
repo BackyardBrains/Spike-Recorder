@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 BackyardBrains. All rights reserved.
 //
 
-#include "RTConfigView.h"
+
 #include "ConfigView.h"
 #include "engine/RecordingManager.h"
 #include "engine/BASSErrors.h"

@@ -29,6 +29,10 @@
 
 #include <sstream>
 
+#if defined(_WIN32)
+#include "FirmwareUpdateView.h"
+#endif // defined
+
 namespace BackyardBrains {
 
 
