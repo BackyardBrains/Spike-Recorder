@@ -149,7 +149,7 @@ void RecordingManager::sendEKGImpuls()
 
 
 //--------------- HID USB functions -------------------------
-    
+
 void RecordingManager::reloadHID()
 {
     _HIDShouldBeReloaded = true;
@@ -157,7 +157,7 @@ void RecordingManager::reloadHID()
 
 bool RecordingManager::initHIDUSB()
 {
-    
+
     std::cout<<"Init HID\n";
     clear();
     if(!_hidUsbManager.deviceOpened())
@@ -180,7 +180,7 @@ bool RecordingManager::initHIDUSB()
         return false;
     }
 
-    
+
     BASS_CHANNELINFO info;
     BASS_ChannelGetInfo(stream, &info);
 
@@ -262,7 +262,13 @@ bool RecordingManager::hidDevicePresent()
 
 void RecordingManager::scanForHIDDevices()
 {
-    _hidUsbManager.getAllDevicesList();
+    try{
+        _hidUsbManager.getAllDevicesList();
+    }catch(int e)
+    {
+       std::cout<<"Error while scanning HID devices\n";
+    }
+
 }
 
 
@@ -275,9 +281,14 @@ void RecordingManager::scanUSBDevices()
     {
         timerUSB = end;
         scanForHIDDevices();
+        if(_hidDevicePresent = (_hidUsbManager.list.size()>0))
+        {
+                std::cout<<"Present ...\n";
+        }
        // std::cout<<"Elapsed: "<<timerUSB<<"\n";
     }
-    _hidDevicePresent = _hidUsbManager.list.size()>0;
+
+
 }
 
 //
@@ -287,7 +298,7 @@ void RecordingManager::scanUSBDevices()
 #if defined(_WIN32)
 int RecordingManager::getUSBFirmwareUpdateStage()
 {
-    
+
     if(_bslFirmwareUpdater.currentStage>=0)
     {
         return _firmwareUpdateStage+_bslFirmwareUpdater.currentStage;
@@ -297,7 +308,7 @@ int RecordingManager::getUSBFirmwareUpdateStage()
       _firmwareUpdateStage = 0;
       return -1;
     }
-    
+
 }
 
 //
@@ -305,19 +316,19 @@ int RecordingManager::getUSBFirmwareUpdateStage()
 //
 void RecordingManager::prepareForHIDFirmwareUpdate()
 {
-    
+
         _firmwareUpdateStage = 1;
         shouldStartFirmwareUpdatePresentation = true;
         _hidUsbManager.putInFirmwareUpdateMode();
 
         _bslFirmwareUpdater.customSelectedFirmware("newfirmware.txt");
-   
+
 
 
 }
 #endif
-    
-    
+
+
 int RecordingManager::currentAddOnBoard()
 {
     return _hidUsbManager.addOnBoardPressent();
@@ -1006,8 +1017,14 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 void RecordingManager::advance(uint32_t samples) {
 
 
-    scanUSBDevices();
+    try{
 
+        scanUSBDevices();
+    }
+    catch (int e)
+    {
+        std::cout<<"Error HID scan\n";
+    }
 	if(_serialMode)
     {
         advanceSerialMode(samples);

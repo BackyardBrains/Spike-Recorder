@@ -76,7 +76,7 @@ namespace BackyardBrains {
 
         askForCapabilities();//ask for firmware version etc.
         askForMaximumRatings(); //ask for sample rate and number of channels
-        
+
         askForRTRepeat();//ask if RT board is repeating stimmulation
         //set number of channels and sampling rate on micro (this will not work with firmware V0.1)
         setNumberOfChannelsAndSamplingRate(2, maxSamplingRate());
@@ -86,7 +86,7 @@ namespace BackyardBrains {
         //start thread that will periodicaly read HID
         t1 = std::thread(&HIDUsbManager::readThread, this, this);
         t1.detach();
-        
+
         askForBoard();//ask if any board is connected
 
         return 0;
@@ -254,9 +254,9 @@ namespace BackyardBrains {
                     restartDevice = true;
                 }
             }
-           
-            
-            
+
+
+
 
         }
         if(typeOfMessage == "RTR")
@@ -305,7 +305,7 @@ namespace BackyardBrains {
         tempHeadAndTailDifference-=SIZE_OF_MAIN_CIRCULAR_BUFFER;
         while (ref->_deviceConnected) {
             numberOfFrames = ref->readOneBatch(buffer);
-            
+
             if(numberOfFrames == -1)
             {
                 ref->_deviceConnected = false;
@@ -366,7 +366,7 @@ namespace BackyardBrains {
 
 
         size = hid_read(handle, buffer, sizeof(buffer));
-        
+
         if (size == 0)
         {
             std::cout<<"No HID data\n";
@@ -385,7 +385,7 @@ namespace BackyardBrains {
         unsigned int sizeOfPackage =((unsigned int)buffer[1]& 0xFF);
 
 
-        for(int i=2;i<sizeOfPackage+2;i++)
+        for(unsigned int i=2;i<sizeOfPackage+2;i++)
         {
 
             if(weAreInsideEscapeSequence)
@@ -447,7 +447,7 @@ namespace BackyardBrains {
 
                         //write decoded integer to buffer
                         obuffer[obufferIndex++] = (writeInteger-512)*62;
-                        
+
                         if(areWeAtTheEndOfFrame() || obufferIndex>1000)
                         {
                             break;
@@ -494,9 +494,9 @@ namespace BackyardBrains {
     int HIDUsbManager::readDevice(int32_t * obuffer)
     {
         int frames;
-        
+
         int tempMainHead = mainHead;//keep head position because input thread will move it.
-        
+
        if(mainTail>tempMainHead)
        {
            memcpy ( obuffer, &mainCircularBuffer[mainTail], sizeof(int32_t)*(maxSamples-mainTail));
@@ -517,7 +517,7 @@ namespace BackyardBrains {
             restartDevice = false;
             _manager->reloadHID();
         }
-        
+
         return frames;
     }
 
@@ -535,20 +535,20 @@ namespace BackyardBrains {
             }
             list.clear();
             struct hid_device_info *devs, *cur_dev;
-           // std::cout<<"Scan for HID devices... \n";
+            std::cout<<"Scan for HID devices... \n";
             devs = hid_enumerate(0x0, 0x0);
-           // std::cout<<"HID After scan \n";
+            std::cout<<"HID After scan \n";
             cur_dev = devs;
             while (cur_dev) {
-                     //std::cout<<"HID while \n";
+                     std::cout<<"HID while \n";
                     std::string nameOfHID((char *) cur_dev->product_string);
-               // std::cout<<"Name took \n";
+                std::cout<<"Name took \n";
                 if(cur_dev->vendor_id == BYB_VID)
                 {
-                    // std::cout<<"HID inside if \n";
+                     std::cout<<"HID inside if \n";
                     list.push_back(nameOfHID);
 
-                         //std::cout<<"HID device: "<<cur_dev->vendor_id<<", "<<cur_dev->product_string<<"\n";
+                         std::cout<<"HID device: "<<cur_dev->vendor_id<<", "<<cur_dev->product_string<<"\n";
 
 
 
@@ -561,15 +561,21 @@ namespace BackyardBrains {
                 printf("  Release:      %hx\n", cur_dev->release_number);
                 printf("  Interface:    %d\n",  cur_dev->interface_number);
                 printf("\n");*/
-                 //std::cout<<"Next device \n";
+                 std::cout<<"Next device \n";
                 cur_dev = cur_dev->next;
             }
-             //std::cout<<"Free enumeration \n";
+             std::cout<<"Free enumeration \n";
             hid_free_enumeration(devs);
-            }
-        catch(int e)
+        }
+        catch(std::exception &e)
+        {
+            std::cout<<"Error while scanning VID/PID of devices 2";
+           // hid_free_enumeration(devs);
+        }
+        catch(...)
         {
             std::cout<<"Error while scanning VID/PID of devices";
+            //hid_free_enumeration(devs);
         }
     }
 

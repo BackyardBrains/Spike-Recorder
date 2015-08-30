@@ -372,9 +372,7 @@ void MainView::usbPressed()
         _manager.disconnectFromHID();
         _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.png"));
         _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.png"));
-         #if defined(_WIN32)
-            _usbButton->setVisible(false);
-         #endif // defined
+
     }
     else
     {
@@ -397,14 +395,7 @@ void MainView::usbPressed()
 
 void MainView::paintEvent()
 {
-    /* clock_t end = clock();
-     double elapsed_secs = double(end - timerUSB) / CLOCKS_PER_SEC;
-     if(elapsed_secs>1.0)
-     {
-     timerUSB = end;
-     _manager.scanForHIDDevices();
-     }
-     */
+
 
     #if defined(_WIN32)
     if(_manager.shouldStartFirmwareUpdatePresentation)
@@ -419,9 +410,6 @@ void MainView::paintEvent()
     if(_manager.hidDevicePresent())
     {
         _usbButton->setVisible(true);
-        #if defined(_WIN32)
-            _usbButton->setVisible(false);
-         #endif // defined
     }
     else
     {
@@ -439,8 +427,6 @@ void MainView::paintEvent()
         _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.png"));
         _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.png"));
     }
-
-
 }
 
 
