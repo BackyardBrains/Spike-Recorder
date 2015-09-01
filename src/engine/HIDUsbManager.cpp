@@ -470,34 +470,56 @@ namespace BackyardBrains {
     //
     void HIDUsbManager::getAllDevicesList()
     {
-        if(!_deviceConnected)
+        try
         {
-            hid_exit();
-        }
-        list.clear();
-        struct hid_device_info *devs, *cur_dev;
-        std::cout<<"Scan for HID devices... \n";
-      //  devs = hid_enumerate(0x0, 0x0);
-        cur_dev = devs;
-        while (cur_dev) {
-                std::string nameOfHID((char *) cur_dev->product_string);
-            if(cur_dev->vendor_id == BYB_VID)
+            if(!_deviceConnected)
             {
-                list.push_back(nameOfHID);
-                 std::cout<<"HID device: "<<cur_dev->vendor_id<<", "<<cur_dev->product_string<<"\n";
-                
+                hid_exit();
             }
-           
-           /* printf("Device Found\n  type: %04hx %04hx\n  path: %s\n  serial_number: %ls", cur_dev->vendor_id, cur_dev->product_id, cur_dev->path, cur_dev->serial_number);
-            printf("\n");
-            printf("  Manufacturer: %ls\n", cur_dev->manufacturer_string);
-            printf("  Product:      %ls\n", cur_dev->product_string);
-            printf("  Release:      %hx\n", cur_dev->release_number);
-            printf("  Interface:    %d\n",  cur_dev->interface_number);
-            printf("\n");*/
-            cur_dev = cur_dev->next;
+            list.clear();
+            struct hid_device_info *devs, *cur_dev;
+            // std::cout<<"Scan for HID devices... \n";
+            devs = hid_enumerate(0x0, 0x0);
+            // std::cout<<"HID After scan \n";
+            cur_dev = devs;
+            while (cur_dev) {
+                // std::cout<<"HID while \n";
+                std::string nameOfHID((char *) cur_dev->product_string);
+                //  std::cout<<"Name took \n";
+                if(cur_dev->vendor_id == BYB_VID)
+                {
+                    // std::cout<<"HID inside if \n";
+                    list.push_back(nameOfHID);
+                    
+                    std::cout<<"HID device: "<<cur_dev->vendor_id<<", "<<cur_dev->product_string<<"\n";
+                    
+                    
+                    
+                }
+                
+                /* printf("Device Found\n  type: %04hx %04hx\n  path: %s\n  serial_number: %ls", cur_dev->vendor_id, cur_dev->product_id, cur_dev->path, cur_dev->serial_number);
+                 printf("\n");
+                 printf("  Manufacturer: %ls\n", cur_dev->manufacturer_string);
+                 printf("  Product:      %ls\n", cur_dev->product_string);
+                 printf("  Release:      %hx\n", cur_dev->release_number);
+                 printf("  Interface:    %d\n",  cur_dev->interface_number);
+                 printf("\n");*/
+                // std::cout<<"Next device \n";
+                cur_dev = cur_dev->next;
+            }
+            // std::cout<<"Free enumeration \n";
+            hid_free_enumeration(devs);
         }
-        hid_free_enumeration(devs);
+        catch(std::exception &e)
+        {
+            std::cout<<"Error while scanning VID/PID of devices 2";
+            // hid_free_enumeration(devs);
+        }
+        catch(...)
+        {
+            std::cout<<"Error while scanning VID/PID of devices";
+            //hid_free_enumeration(devs);
+        }
     }
 
     //
