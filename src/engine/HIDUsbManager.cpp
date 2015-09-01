@@ -535,17 +535,17 @@ namespace BackyardBrains {
             }
             list.clear();
             struct hid_device_info *devs, *cur_dev;
-            std::cout<<"Scan for HID devices... \n";
+           // std::cout<<"Scan for HID devices... \n";
             devs = hid_enumerate(0x0, 0x0);
-            std::cout<<"HID After scan \n";
+           // std::cout<<"HID After scan \n";
             cur_dev = devs;
             while (cur_dev) {
-                     std::cout<<"HID while \n";
+                    // std::cout<<"HID while \n";
                     std::string nameOfHID((char *) cur_dev->product_string);
-                std::cout<<"Name took \n";
+              //  std::cout<<"Name took \n";
                 if(cur_dev->vendor_id == BYB_VID)
                 {
-                     std::cout<<"HID inside if \n";
+                    // std::cout<<"HID inside if \n";
                     list.push_back(nameOfHID);
 
                          std::cout<<"HID device: "<<cur_dev->vendor_id<<", "<<cur_dev->product_string<<"\n";
@@ -561,10 +561,10 @@ namespace BackyardBrains {
                 printf("  Release:      %hx\n", cur_dev->release_number);
                 printf("  Interface:    %d\n",  cur_dev->interface_number);
                 printf("\n");*/
-                 std::cout<<"Next device \n";
+                // std::cout<<"Next device \n";
                 cur_dev = cur_dev->next;
             }
-             std::cout<<"Free enumeration \n";
+            // std::cout<<"Free enumeration \n";
             hid_free_enumeration(devs);
         }
         catch(std::exception &e)
