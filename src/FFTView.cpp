@@ -171,6 +171,12 @@ void FFTView::paintEvent() {
 
 	drawScale();
 }
+    
+void FFTView::resizeEvent(Widgets::ResizeEvent *event) {
+    glDeleteTextures(1, &_ffttex);
+    init_texture(_ffttex);
+    update(1);
+}
 
 float FFTView::addWindow(uint32_t *result, int pos, int device, int len, int samplerate) {
 	_manager.getData(device, pos, len, _samplebuf);
