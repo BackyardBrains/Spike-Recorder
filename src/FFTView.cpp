@@ -93,6 +93,7 @@ static void init_texture(GLuint &tex) {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+
 FFTView::~FFTView() {
 	delete[] _samplebuf;
 	glDeleteTextures(1, &_ffttex);
@@ -167,6 +168,12 @@ void FFTView::paintEvent() {
 	}
 
 	drawScale();
+}
+
+void FFTView::resizeEvent(Widgets::ResizeEvent *event) {
+	glDeleteTextures(1, &_ffttex);
+	init_texture(_ffttex);
+	update(1);
 }
 
 void FFTView::addWindow(uint32_t *result, int pos, int device, int len, int samplerate) {
