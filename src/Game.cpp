@@ -83,6 +83,8 @@ void Game::loadResources() {
     Widgets::TextureGL::load("data/devbrdhigh.png");
     Widgets::TextureGL::load("data/okbtn.png");
     Widgets::TextureGL::load("data/okbtnhigh.png");
+    Widgets::TextureGL::load("data/trigger.png");
+    Widgets::TextureGL::load("data/triggerhigh.png");
 
 }
 

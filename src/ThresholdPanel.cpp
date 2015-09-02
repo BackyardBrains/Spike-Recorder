@@ -16,6 +16,14 @@
 namespace BackyardBrains {
 
 ThresholdPanel::ThresholdPanel(RecordingManager &manager, Widgets::Widget *parent) : Widgets::Widget(parent) {
+    
+
+    _triggerButton = new Widgets::PushButton(this);
+    _triggerButton->setNormalTex(Widgets::TextureGL::get("data/trigger.png"));
+    _triggerButton->setHoverTex(Widgets::TextureGL::get("data/triggerhigh.png"));
+    _triggerButton->setSizeHint(Widgets::Size(32,32));
+    _triggerButton->clicked.connect(this, &ThresholdPanel::triggerPressed);
+    
 	_ekgButton = new Widgets::PushButton(this);
 	_ekgButton->setNormalTex(Widgets::TextureGL::get("data/ekg.png"));
 	_ekgButton->setHoverTex(Widgets::TextureGL::get("data/ekghigh.png"));
@@ -72,6 +80,10 @@ BOOL ThresholdPanel::ekgOn()
     return _switchLayout->selected();
 }
     
+void ThresholdPanel::triggerPressed()
+{
+    
+}
     
 void ThresholdPanel::speakerPressed() {
 	bool state = _ekgWidget->sound();

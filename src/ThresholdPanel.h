@@ -38,6 +38,7 @@ public:
 	ThresholdPanel(RecordingManager &manager, Widget *parent = NULL);
     BOOL ekgOn();
 private:
+    Widgets::PushButton * _triggerButton;
 	Widgets::PushButton *_ekgButton;
 	Widgets::PushButton *_speakerButton;
 	Widgets::ScrollBar *_avg;
@@ -46,6 +47,7 @@ private:
 
 	void ekgPressed();
 	void speakerPressed();
+    void triggerPressed();
 
 };
 }
