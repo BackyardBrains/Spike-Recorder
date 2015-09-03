@@ -38,14 +38,17 @@ public:
 	ThresholdPanel(RecordingManager &manager, Widget *parent = NULL);
     BOOL ekgOn();
 private:
+    RecordingManager* _manager;
     Widgets::PushButton * _triggerButton;
 	Widgets::PushButton *_ekgButton;
 	Widgets::PushButton *_speakerButton;
 	Widgets::ScrollBar *_avg;
 	Widgets::SwitchLayout *_switchLayout;
 	EkgWidget *_ekgWidget;
+    bool triggerOpened = false;
 
 	void ekgPressed();
+    void paintEvent();
 	void speakerPressed();
     void triggerPressed();
 

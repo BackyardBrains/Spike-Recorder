@@ -70,6 +70,7 @@ static const Color button(128,128,128);
 static const Color buttonhigh(150,150,150);
 static const Color widgetbg(80,80,80);
 static const Color widgetbgdark(50,50,50);
+static const Color selectedstate(210,210,210);
 
 } // namespace Colors
 

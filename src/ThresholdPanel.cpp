@@ -17,7 +17,7 @@ namespace BackyardBrains {
 
 ThresholdPanel::ThresholdPanel(RecordingManager &manager, Widgets::Widget *parent) : Widgets::Widget(parent) {
     
-
+    _manager = &manager;
     _triggerButton = new Widgets::PushButton(this);
     _triggerButton->setNormalTex(Widgets::TextureGL::get("data/trigger.png"));
     _triggerButton->setHoverTex(Widgets::TextureGL::get("data/triggerhigh.png"));
@@ -67,6 +67,8 @@ ThresholdPanel::ThresholdPanel(RecordingManager &manager, Widgets::Widget *paren
 	_switchLayout->addLayout(ekgBar);
 
 	Widgets::BoxLayout *layout = new Widgets::BoxLayout(Widgets::Horizontal, this);
+    layout->addWidget(_triggerButton, Widgets::AlignCenter);
+    layout->addSpacing(10);
 	layout->addWidget(_ekgButton, Widgets::AlignVCenter);
 	layout->addSpacing(10);
 	layout->addLayout(_switchLayout);
@@ -82,8 +84,65 @@ BOOL ThresholdPanel::ekgOn()
     
 void ThresholdPanel::triggerPressed()
 {
-    
+    triggerOpened = !triggerOpened;
 }
+    
+void ThresholdPanel::paintEvent() {
+    
+
+    if(triggerOpened)
+    {
+        int widthOfCell = 74;
+        int Xposition = _triggerButton->pos().x-15;
+        
+        
+        //draw background
+        
+        Widgets::Painter::setColor(Widgets::Colors::widgetbg);
+        Widgets::Painter::drawRect(Widgets::Rect(Xposition,_triggerButton->pos().y+40, widthOfCell, 270));
+        Widgets::Painter::setColor(Widgets::Colors::widgetbgdark);
+        Widgets::Painter::drawRect(Widgets::Rect(Xposition+2,_triggerButton->pos().y+42, widthOfCell-4, 266));
+        
+        Widgets::Painter::setColor(Widgets::Colors::white);
+        int YOffset =_triggerButton->pos().y+50;
+
+        //draw Signal label
+        
+        int increment = 26;
+        std::stringstream o;
+        o << "Signal";
+        if(_manager->getThresholdSource()==0)
+        {
+            Widgets::Painter::setColor(Widgets::Colors::selectedstate);
+            Widgets::Painter::drawRect(Widgets::Rect(Xposition+2, YOffset-5, widthOfCell-4, increment));
+            Widgets::Painter::setColor(Widgets::Colors::black);
+        }
+        Widgets::Application::font()->draw(o.str().c_str(), Xposition+10, YOffset, Widgets::AlignLeft);
+        
+        //Draw events labels
+        
+        YOffset += increment;
+        for(int i=1;i<10;i++)
+        {
+            
+            if(_manager->getThresholdSource()==i)
+            {
+                Widgets::Painter::setColor(Widgets::Colors::selectedstate);
+                Widgets::Painter::drawRect(Widgets::Rect(Xposition+2, YOffset-5, widthOfCell-4, increment));
+                Widgets::Painter::setColor(Widgets::Colors::black);
+            }
+            else
+            {
+                Widgets::Painter::setColor(Widgets::Colors::white);
+            }
+            o.str("");
+            o << "Event " << i;            
+            Widgets::Application::font()->draw(o.str().c_str(), Xposition+10, YOffset, Widgets::AlignLeft);
+            YOffset += increment;
+        }
+    }
+}
+    
     
 void ThresholdPanel::speakerPressed() {
 	bool state = _ekgWidget->sound();

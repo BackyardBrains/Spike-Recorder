@@ -602,6 +602,16 @@ void RecordingManager::setThreshMode(bool threshMode) {
 	if(threshMode)
 		_triggers.clear();
 }
+    
+int RecordingManager::getThresholdSource()
+{
+    return _thresholdSource;
+}
+
+void RecordingManager::setThresholdSource(int newThresholdSource)
+{
+    _thresholdSource = newThresholdSource;
+}
 
 void RecordingManager::setThreshAvgCount(int threshAvgCount) {
 	_threshAvgCount = std::max(0,threshAvgCount);
