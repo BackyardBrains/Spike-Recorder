@@ -33,10 +33,25 @@ private:
 	void advance();
 };
 
+    
+class ThresholdWidget : public Widgets::Widget {
+public:
+    ThresholdWidget(RecordingManager &manager, Widget *parent = NULL);
+    sigslot::signal1<int> valueChanged;
+private:
+    RecordingManager* _manager;
+    void paintEvent();
+    void mousePressEvent(Widgets::MouseEvent *event);
+    void mouseMotionEvent(Widgets::MouseEvent *event);
+    int mouseLastPositionY;
+    bool mouseOver = false;
+};
+    
 class ThresholdPanel : public Widgets::Widget {
 public:
 	ThresholdPanel(RecordingManager &manager, Widget *parent = NULL);
     BOOL ekgOn();
+    void triggerChanged(int value);
 private:
     RecordingManager* _manager;
     Widgets::PushButton * _triggerButton;
@@ -48,9 +63,13 @@ private:
     bool triggerOpened = false;
 
 	void ekgPressed();
-    void paintEvent();
 	void speakerPressed();
+
     void triggerPressed();
+    
+
+
+
 
 };
 }

@@ -232,6 +232,7 @@ namespace BackyardBrains {
                 offset = _audioView->offset();
             }*/
             _manager->addMarker(std::string(1, mnum+'0'), offset+offsetin);
+            
         }
         if(typeOfMessage == "BRD")
         {

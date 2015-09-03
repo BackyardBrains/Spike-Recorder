@@ -113,7 +113,7 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 
 	_threshavgGroup = new ThresholdPanel(_manager, this);
 	_threshavgGroup->setVisible(false);
-
+    _threshavgGroup->setMouseTracking(true);
 	_recBar = new RecordingBar(_fileRec, this);
 
 	_fftView = new FFTView(*_audioView, _manager, this);
@@ -437,6 +437,7 @@ void MainView::keyPressEvent(Widgets::KeyboardEvent *e) {
 		if(!_manager.fileMode())
 			offset = _audioView->offset();
 		_manager.addMarker(std::string(1, mnum+'0'), offset);
+        
 	}
 }
 

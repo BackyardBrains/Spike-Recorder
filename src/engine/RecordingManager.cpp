@@ -597,10 +597,16 @@ void RecordingManager::setSampleRate(int sampleRate) {
 	_sampleRate = sampleRate;
 }
 
+void RecordingManager::addTrigger(int64_t position)
+{
+    _triggers.push_front(position);
+    if(_triggers.size() > (unsigned int)_threshAvgCount)
+        _triggers.pop_back();
+}
+    
 void RecordingManager::setThreshMode(bool threshMode) {
 	_threshMode = threshMode;
-	if(threshMode)
-		_triggers.clear();
+    _triggers.clear();
 }
     
 int RecordingManager::getThresholdSource()
@@ -643,6 +649,12 @@ int64_t RecordingManager::fileLength() {
 
 void RecordingManager::addMarker(const std::string &id, int64_t offset) {
 	_markers.push_back(std::make_pair(id, _pos + offset));
+    int i_dec = std::stoi (id);
+   
+    if(getThresholdSource() == i_dec &&  threshMode())
+    {
+         addTrigger(_pos + offset);
+    }
 }
 
 const char *RecordingManager::fileMetadataString() {
@@ -775,18 +787,21 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 			bool triggerd;
 			SampleBuffer &s = *sampleBuffer(_selectedVDevice);
 
-			for(int64_t i = _pos; i < _pos+samples; i++) {
-				const int thresh = _recordingDevices[_selectedVDevice].threshold;
+            if(_thresholdSource == 0)//if we trigger on signal
+            {
+                for(int64_t i = _pos; i < _pos+samples; i++) {
+                    const int thresh = _recordingDevices[_selectedVDevice].threshold;
 
-				if(_triggers.empty() || i - _triggers.front() > _sampleRate/10) {
-					if((thresh > 0 && s.at(i) > thresh) || (thresh <= 0 && s.at(i) < thresh)) {
-						_triggers.push_front(i);
-						triggerd = true;
-						if(_triggers.size() > (unsigned int)_threshAvgCount)
-							_triggers.pop_back();
-					}
-				}
-			}
+                    if(_triggers.empty() || i - _triggers.front() > _sampleRate/10) {
+                        if((thresh > 0 && s.at(i) > thresh) || (thresh <= 0 && s.at(i) < thresh)) {
+                            _triggers.push_front(i);
+                            triggerd = true;
+                            if(_triggers.size() > (unsigned int)_threshAvgCount)
+                                _triggers.pop_back();
+                        }
+                    }
+                }
+            }
 			if(triggerd)
 				triggered.emit();
 		}
@@ -854,26 +869,28 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 	        //calculate DC offset in fist 10 sec for channel
 	        int dcBias = _devices.begin()->second.dcBiasSum[chan]/_devices.begin()->second.dcBiasNum;
 
-	        for(DWORD i = 0; i < samplesRead; i++) {
+            if(_thresholdSource == 0)//if we trigger on signal
+            {
+                for(DWORD i = 0; i < samplesRead; i++) {
 
-	            channels[chan][i] -= dcBias;//substract DC offset from channels data
+                    channels[chan][i] -= dcBias;//substract DC offset from channels data
 
-	            //add position of data samples that are greater than threshold to FIFO list _triggers
-	            if(_threshMode && _devices.begin()->first*channum+chan == _selectedVDevice) {
-	                const int64_t ntrigger = _pos + i;
-	                const int thresh = _recordingDevices[_selectedVDevice].threshold;
+                    //add position of data samples that are greater than threshold to FIFO list _triggers
+                    if(_threshMode && _devices.begin()->first*channum+chan == _selectedVDevice) {
+                        const int64_t ntrigger = _pos + i;
+                        const int thresh = _recordingDevices[_selectedVDevice].threshold;
 
-	                if(_triggers.empty() || ntrigger - _triggers.front() > _sampleRate/10) {
-	                    if((thresh > 0 && channels[chan][i] > thresh) || (thresh <= 0 && channels[chan][i] < thresh)) {
-	                        _triggers.push_front(_pos + i);
-                            triggerd = true;
-	                        if(_triggers.size() > (unsigned int)_threshAvgCount)//_threshAvgCount == 1
-	                            _triggers.pop_back();
-	                    }
-	                }
-	            }
-	        }
-
+                        if(_triggers.empty() || ntrigger - _triggers.front() > _sampleRate/10) {
+                            if((thresh > 0 && channels[chan][i] > thresh) || (thresh <= 0 && channels[chan][i] < thresh)) {
+                                _triggers.push_front(_pos + i);
+                                triggerd = true;
+                                if(_triggers.size() > (unsigned int)_threshAvgCount)//_threshAvgCount == 1
+                                    _triggers.pop_back();
+                            }
+                        }
+                    }
+                }
+            }
 	        if(_devices.begin()->second.sampleBuffers[0]->empty()) {
 	            _devices.begin()->second.sampleBuffers[chan]->setPos(_pos);
 	        }
@@ -952,21 +969,24 @@ void RecordingManager::advanceHidMode(uint32_t samples)
             //calculate DC offset in fist 10 sec for channel
             int dcBias = _devices.begin()->second.dcBiasSum[chan]/_devices.begin()->second.dcBiasNum;
 
-            for(DWORD i = 0; i < (unsigned int)samplesRead; i++) {
+            if(_thresholdSource == 0)//if we trigger on signal
+            {
+                for(DWORD i = 0; i < (unsigned int)samplesRead; i++) {
 
-                channels[chan][i] -= dcBias;//substract DC offset from channels data
+                    channels[chan][i] -= dcBias;//substract DC offset from channels data
 
-                //add position of data samples that are greater than threshold to FIFO list _triggers
-                if(_threshMode && _devices.begin()->first*channum+chan == _selectedVDevice) {
-                    const int64_t ntrigger = _pos + i;
-                    const int thresh = _recordingDevices[_selectedVDevice].threshold;
+                    //add position of data samples that are greater than threshold to FIFO list _triggers
+                    if(_threshMode && _devices.begin()->first*channum+chan == _selectedVDevice) {
+                        const int64_t ntrigger = _pos + i;
+                        const int thresh = _recordingDevices[_selectedVDevice].threshold;
 
-                    if(_triggers.empty() || ntrigger - _triggers.front() > _sampleRate/10) {
-                        if((thresh > 0 && channels[chan][i] > thresh) || (thresh <= 0 && channels[chan][i] < thresh)) {
-                            _triggers.push_front(_pos + i);
-			    triggerd = true;
-                            if(_triggers.size() > (unsigned int)_threshAvgCount)//_threshAvgCount == 1
-                                _triggers.pop_back();
+                        if(_triggers.empty() || ntrigger - _triggers.front() > _sampleRate/10) {
+                            if((thresh > 0 && channels[chan][i] > thresh) || (thresh <= 0 && channels[chan][i] < thresh)) {
+                                _triggers.push_front(_pos + i);
+                    triggerd = true;
+                                if(_triggers.size() > (unsigned int)_threshAvgCount)//_threshAvgCount == 1
+                                    _triggers.pop_back();
+                            }
                         }
                     }
                 }
@@ -1101,36 +1121,41 @@ void RecordingManager::advance(uint32_t samples) {
 			}
 		}
 
-		bool triggerd = false;
-		for(int chan = 0; chan < channum; chan++) {
-			int dcBias = it->second.dcBiasSum[chan]/it->second.dcBiasNum;
+       
+            bool triggerd = false;
+            
+            for(int chan = 0; chan < channum; chan++) {
+                int dcBias = it->second.dcBiasSum[chan]/it->second.dcBiasNum;
 
-			for(DWORD i = 0; i < samplesRead/channum; i++) {
-				channels[chan][i] -= dcBias;
-				if(_threshMode && it->first*channum+chan == _selectedVDevice) {
-					const int64_t ntrigger = oldPos + i;
-					const int thresh = _recordingDevices[_selectedVDevice].threshold;
+                if(_thresholdSource == 0)//if we trigger on signal
+                {
+                    for(DWORD i = 0; i < samplesRead/channum; i++) {
+                        channels[chan][i] -= dcBias;
+                        if(_threshMode && it->first*channum+chan == _selectedVDevice) {
+                            const int64_t ntrigger = oldPos + i;
+                            const int thresh = _recordingDevices[_selectedVDevice].threshold;
+                            
+                                
+                            if(_triggers.empty() || ntrigger - _triggers.front() > _sampleRate/10) {
+                                if((thresh > 0 && channels[chan][i] > thresh) || (thresh <= 0 && channels[chan][i] < thresh)) {
+                                    _triggers.push_front(oldPos + i);
+                                    triggerd = true;
+                                    if(_triggers.size() > (unsigned int)_threshAvgCount)
+                                        _triggers.pop_back();
+                                }
+                            }
+                        }
+                }
+                }
+                if(it->second.sampleBuffers[0]->empty()) {
+                    it->second.sampleBuffers[chan]->setPos(oldPos);
+                }
+                it->second.sampleBuffers[chan]->addData(channels[chan].data(), samplesRead/channum);
+            }
 
-					if(_triggers.empty() || ntrigger - _triggers.front() > _sampleRate/10) {
-						if((thresh > 0 && channels[chan][i] > thresh) || (thresh <= 0 && channels[chan][i] < thresh)) {
-							_triggers.push_front(oldPos + i);
-							triggerd = true;
-							if(_triggers.size() > (unsigned int)_threshAvgCount)
-								_triggers.pop_back();
-						}
-					}
-				}
-			}
-
-			if(it->second.sampleBuffers[0]->empty()) {
-				it->second.sampleBuffers[chan]->setPos(oldPos);
-			}
-			it->second.sampleBuffers[chan]->addData(channels[chan].data(), samplesRead/channum);
-		}
-
-		if(triggerd)
-			triggered.emit();
-
+            if(triggerd)
+                triggered.emit();
+        
 		const int64_t posA = it->second.sampleBuffers[0]->pos();
 		if(!it->second.sampleBuffers[0]->empty() && (firstTime || posA < newPos)) {
 			newPos = posA;

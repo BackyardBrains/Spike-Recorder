@@ -69,6 +69,7 @@ public:
 	std::vector< std::pair<int16_t, int16_t> > getTriggerSamplesEnvelope(int virtualDeviceIndex, int64_t len, int sampleSkip);
 	bool paused() const {return _paused;}
 	bool threshMode() const {return _threshMode;}
+    void addTrigger(int64_t position);
 	bool fileMode() const {return _fileMode;}
     std::list<std::string> serailPortsList() const {return _arduinoSerial.list;}
 	const std::string &fileName() const { return _filename; }

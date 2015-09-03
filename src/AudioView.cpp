@@ -653,9 +653,16 @@ void AudioView::paintEvent() {
 	drawAudio();
 
 	if(_manager.threshMode())
-		drawThreshold(screenWidth());
-	else
+    {
+        if(_manager.getThresholdSource()==0)
+        {
+            drawThreshold(screenWidth());
+        }
+    }
+    else
+    {
 		drawMarkers();
+    }
     
     if(_manager.fileMode())
     {

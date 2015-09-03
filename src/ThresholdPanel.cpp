@@ -30,6 +30,10 @@ ThresholdPanel::ThresholdPanel(RecordingManager &manager, Widgets::Widget *paren
 	_ekgButton->setSizeHint(Widgets::Size(32,32));
 	_ekgButton->clicked.connect(this, &ThresholdPanel::ekgPressed);
 
+    
+   
+    //_thresholdWidget->setVisible(false);
+    
 	_ekgWidget = new EkgWidget(this);
 	manager.triggered.connect(_ekgWidget,&EkgWidget::beat);
 	manager.thresholdChanged.connect(_ekgWidget, &EkgWidget::reset);
@@ -66,8 +70,10 @@ ThresholdPanel::ThresholdPanel(RecordingManager &manager, Widgets::Widget *paren
 	_switchLayout->addLayout(avgBar);
 	_switchLayout->addLayout(ekgBar);
 
+    
 	Widgets::BoxLayout *layout = new Widgets::BoxLayout(Widgets::Horizontal, this);
     layout->addWidget(_triggerButton, Widgets::AlignCenter);
+   // layout->addWidget(_thresholdWidget, Widgets::AlignTop);
     layout->addSpacing(10);
 	layout->addWidget(_ekgButton, Widgets::AlignVCenter);
 	layout->addSpacing(10);
@@ -84,63 +90,27 @@ BOOL ThresholdPanel::ekgOn()
     
 void ThresholdPanel::triggerPressed()
 {
+    
     triggerOpened = !triggerOpened;
-}
-    
-void ThresholdPanel::paintEvent() {
-    
-
     if(triggerOpened)
     {
-        int widthOfCell = 74;
-        int Xposition = _triggerButton->pos().x-15;
-        
-        
-        //draw background
-        
-        Widgets::Painter::setColor(Widgets::Colors::widgetbg);
-        Widgets::Painter::drawRect(Widgets::Rect(Xposition,_triggerButton->pos().y+40, widthOfCell, 270));
-        Widgets::Painter::setColor(Widgets::Colors::widgetbgdark);
-        Widgets::Painter::drawRect(Widgets::Rect(Xposition+2,_triggerButton->pos().y+42, widthOfCell-4, 266));
-        
-        Widgets::Painter::setColor(Widgets::Colors::white);
-        int YOffset =_triggerButton->pos().y+50;
-
-        //draw Signal label
-        
-        int increment = 26;
-        std::stringstream o;
-        o << "Signal";
-        if(_manager->getThresholdSource()==0)
-        {
-            Widgets::Painter::setColor(Widgets::Colors::selectedstate);
-            Widgets::Painter::drawRect(Widgets::Rect(Xposition+2, YOffset-5, widthOfCell-4, increment));
-            Widgets::Painter::setColor(Widgets::Colors::black);
-        }
-        Widgets::Application::font()->draw(o.str().c_str(), Xposition+10, YOffset, Widgets::AlignLeft);
-        
-        //Draw events labels
-        
-        YOffset += increment;
-        for(int i=1;i<10;i++)
-        {
-            
-            if(_manager->getThresholdSource()==i)
-            {
-                Widgets::Painter::setColor(Widgets::Colors::selectedstate);
-                Widgets::Painter::drawRect(Widgets::Rect(Xposition+2, YOffset-5, widthOfCell-4, increment));
-                Widgets::Painter::setColor(Widgets::Colors::black);
-            }
-            else
-            {
-                Widgets::Painter::setColor(Widgets::Colors::white);
-            }
-            o.str("");
-            o << "Event " << i;            
-            Widgets::Application::font()->draw(o.str().c_str(), Xposition+10, YOffset, Widgets::AlignLeft);
-            YOffset += increment;
-        }
+        ThresholdWidget * _thresholdWidget = new ThresholdWidget(*_manager);
+        _thresholdWidget->valueChanged.connect(this, &ThresholdPanel::triggerChanged);
+        _thresholdWidget->setSizeHint(Widgets::Size(74,270));
+        Widgets::Rect positionOfPopup = Widgets::Rect(mapToGlobal(rect().bottomLeft()), Widgets::Size(74, 270));
+        positionOfPopup.x -=18;
+        positionOfPopup.y +=8;
+        _thresholdWidget->setMouseTracking(true);
+        _thresholdWidget->setGeometry(positionOfPopup);
+        Widgets::Application::getInstance()->addPopup(_thresholdWidget);
     }
+    //_thresholdWidget->setVisible(triggerOpened);
+}
+    
+void ThresholdPanel::triggerChanged(int value)
+{
+    _manager->setThresholdSource(value);
+    triggerOpened = false;
 }
     
     
@@ -170,6 +140,9 @@ void ThresholdPanel::ekgPressed() {
 		_ekgWidget->setSound(0);
 	}
 }
+    
+    
+//============================= EKG Widget ========================================
 
 EkgWidget::EkgWidget(Widget *parent) : Widget(parent) {
 	reset();
@@ -224,4 +197,100 @@ void EkgWidget::beat() {
 void EkgWidget::advance() {
 	_beatt += (0.6-_beatt)*0.1;
 }
+    
+    
+//=========================== Threshold widget =====================================
+    
+    ThresholdWidget::ThresholdWidget(RecordingManager &manager, Widget *parent) : Widget(parent) {
+        _manager = &manager;
+        setSizeHint(Widgets::Size(74,270));
+    }
+    
+    void ThresholdWidget::paintEvent() {
+        
+        
+
+            int widthOfCell = 74;
+            int Xposition = 0;
+            
+            
+            //draw background
+            
+            Widgets::Painter::setColor(Widgets::Colors::widgetbg);
+            Widgets::Painter::drawRect(Widgets::Rect(Xposition,0, widthOfCell, 270));
+            Widgets::Painter::setColor(Widgets::Colors::widgetbgdark);
+            Widgets::Painter::drawRect(Widgets::Rect(Xposition+2,2, widthOfCell-4, 266));
+            
+            Widgets::Painter::setColor(Widgets::Colors::white);
+            int YOffset =10;
+            
+            //draw Signal label
+            
+            int increment = 26;
+            std::stringstream o;
+            o << "Signal";
+            if(_manager->getThresholdSource()==0)
+            {
+                Widgets::Painter::setColor(Widgets::Colors::selectedstate);
+                Widgets::Painter::drawRect(Widgets::Rect(Xposition+2, YOffset-5, widthOfCell-4, increment));
+                Widgets::Painter::setColor(Widgets::Colors::black);
+            }
+            else if(mouseLastPositionY>YOffset && (mouseLastPositionY<(YOffset+increment)))
+            {
+                Widgets::Painter::setColor(Widgets::Colors::buttonhigh);
+                Widgets::Painter::drawRect(Widgets::Rect(Xposition+2, YOffset-5, widthOfCell-4, increment));
+                Widgets::Painter::setColor(Widgets::Colors::white);
+            }
+            Widgets::Application::font()->draw(o.str().c_str(), Xposition+10, YOffset, Widgets::AlignLeft);
+            
+            //Draw events labels
+            
+            YOffset += increment;
+            for(int i=1;i<10;i++)
+            {
+                
+                if(_manager->getThresholdSource()==i)
+                {
+                    Widgets::Painter::setColor(Widgets::Colors::selectedstate);
+                    Widgets::Painter::drawRect(Widgets::Rect(Xposition+2, YOffset-5, widthOfCell-4, increment));
+                    Widgets::Painter::setColor(Widgets::Colors::black);
+                }
+                else
+                {
+                    if(mouseLastPositionY>YOffset && (mouseLastPositionY<(YOffset+increment)))
+                    {
+                        Widgets::Painter::setColor(Widgets::Colors::buttonhigh);
+                        Widgets::Painter::drawRect(Widgets::Rect(Xposition+2, YOffset-5, widthOfCell-4, increment));
+                       
+                    }
+                     Widgets::Painter::setColor(Widgets::Colors::white);
+                }
+                o.str("");
+                o << "Event " << i;
+                Widgets::Application::font()->draw(o.str().c_str(), Xposition+10, YOffset, Widgets::AlignLeft);
+                YOffset += increment;
+            }
+        mouseOver = false;
+        
+    }
+    
+    void ThresholdWidget::mousePressEvent(Widgets::MouseEvent *event) {
+
+        int y = event->pos().y;
+        
+        int indexNumber = ((y-10)/26);
+        valueChanged.emit(indexNumber);
+        close();
+    }
+    
+    void ThresholdWidget::mouseMotionEvent(Widgets::MouseEvent *event)
+    {
+        mouseLastPositionY = event->pos().y;
+        mouseOver = true;
+    }
+   
+    
+    
+    
+    
 }
