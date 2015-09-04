@@ -617,6 +617,7 @@ int RecordingManager::getThresholdSource()
 void RecordingManager::setThresholdSource(int newThresholdSource)
 {
     _thresholdSource = newThresholdSource;
+   
 }
 
 void RecordingManager::setThreshAvgCount(int threshAvgCount) {
@@ -712,32 +713,7 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 		return;
 	}
 
-   /* samples = 0;
-
-    int temp = 0;
-    //determine true number of samples
-    for(std::map<int, Device>::const_iterator it = _devices.begin(); it != _devices.end(); ++it) {
-
-        temp++;
-            if(temp==2)
-            {
-                int64_t positionInAudioFile = BASS_ChannelGetPosition(it->second.handle, BASS_POS_BYTE);
-               // std::cout<<positionInAudioFile<<"\n";
-                double seconds = BASS_ChannelBytes2Seconds(it->second.handle, positionInAudioFile);
-                std::cout<<seconds<<"\n";
-                //seconds = seconds - 60;
-                if(seconds<0)
-                {
-                    seconds = 0;
-                }
-                positionInAudioFile = seconds * sampleRate();
-
-               // samples = positionInAudioFile - currentPositionOfWaveform;
-                currentPositionOfWaveform = currentPositionOfWaveform+samples;
-                break;
-            }
-    }
-    */
+   
 
 
 
@@ -784,26 +760,57 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 
 	if(!_paused) {
 		if(_threshMode) {
-			bool triggerd;
-			SampleBuffer &s = *sampleBuffer(_selectedVDevice);
-
-            if(_thresholdSource == 0)//if we trigger on signal
+            
+            if(_thresholdSource==0)
             {
-                for(int64_t i = _pos; i < _pos+samples; i++) {
-                    const int thresh = _recordingDevices[_selectedVDevice].threshold;
+                bool triggerd;
+                SampleBuffer &s = *sampleBuffer(_selectedVDevice);
 
-                    if(_triggers.empty() || i - _triggers.front() > _sampleRate/10) {
-                        if((thresh > 0 && s.at(i) > thresh) || (thresh <= 0 && s.at(i) < thresh)) {
-                            _triggers.push_front(i);
-                            triggerd = true;
-                            if(_triggers.size() > (unsigned int)_threshAvgCount)
-                                _triggers.pop_back();
+                if(_thresholdSource == 0)//if we trigger on signal
+                {
+                    for(int64_t i = _pos; i < _pos+samples; i++) {
+                        const int thresh = _recordingDevices[_selectedVDevice].threshold;
+
+                        if(_triggers.empty() || i - _triggers.front() > _sampleRate/10) {
+                            if((thresh > 0 && s.at(i) > thresh) || (thresh <= 0 && s.at(i) < thresh)) {
+                                _triggers.push_front(i);
+                                triggerd = true;
+                                if(_triggers.size() > (unsigned int)_threshAvgCount)
+                                    _triggers.pop_back();
+                            }
                         }
                     }
                 }
+                if(triggerd)
+                    triggered.emit();
             }
-			if(triggerd)
-				triggered.emit();
+            else
+            {
+              
+                    for(std::list<std::pair<std::string, int64_t> >::const_iterator it = markers().begin(); it != markers().end(); it++) {
+                        try
+                        {
+                            if(it->second >_pos && (it->second<(_pos+samples)))
+                            {
+                            
+                                int i_dec = std::stoi (it->first);
+                                if(getThresholdSource() == i_dec)
+                                {
+                                    addTrigger(it->second);
+                                }
+                            }
+                            
+                        }
+                        catch (std::invalid_argument&)
+                        {
+                            continue;
+                        }
+                        catch (std::out_of_range&)
+                        {
+                            continue;
+                        }
+                    }
+            }
 		}
 
 		SampleBuffer &s = *sampleBuffer(_selectedVDevice);
