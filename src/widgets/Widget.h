@@ -74,6 +74,7 @@ public:
 
 	virtual void advance();
 	virtual void resizeEvent(ResizeEvent *event);
+	virtual void glResetEvent(); // happens when the GL context is reset. textures have to be reloaded in that case.
 	virtual void paintEvent();
 	virtual void enterEvent();
 	virtual void leaveEvent();
@@ -84,6 +85,7 @@ public:
 	virtual void mouseMotionEvent(MouseEvent *event);
 
 	void _DoPaintEvents(const Point &offset, const Rect &clipRect);
+	void _DoGlResetEvents();
 	void _CallAdvance();
 private:
 	Widget *_parentWidget;

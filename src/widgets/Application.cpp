@@ -352,8 +352,10 @@ void Application::createWindow(int w, int h) {
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	for(WidgetList::iterator it = _windowStack.begin(); it != _windowStack.end(); it++)
+	for(WidgetList::iterator it = _windowStack.begin(); it != _windowStack.end(); it++) {
 		(*it)->setSize(Size(std::max(MIN_WINDOW_W,w), std::max(MIN_WINDOW_H,h)));
+		(*it)->_DoGlResetEvents();
+	}
 	
 }
 
