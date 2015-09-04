@@ -66,6 +66,7 @@ private:
 	void speakerPressed();
 
     void triggerPressed();
+    void setTriggerButtonImage();
     
 
 

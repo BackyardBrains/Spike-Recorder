@@ -19,8 +19,7 @@ ThresholdPanel::ThresholdPanel(RecordingManager &manager, Widgets::Widget *paren
     
     _manager = &manager;
     _triggerButton = new Widgets::PushButton(this);
-    _triggerButton->setNormalTex(Widgets::TextureGL::get("data/trigger.png"));
-    _triggerButton->setHoverTex(Widgets::TextureGL::get("data/triggerhigh.png"));
+    setTriggerButtonImage();
     _triggerButton->setSizeHint(Widgets::Size(32,32));
     _triggerButton->clicked.connect(this, &ThresholdPanel::triggerPressed);
     
@@ -83,6 +82,23 @@ ThresholdPanel::ThresholdPanel(RecordingManager &manager, Widgets::Widget *paren
 }
 
     
+void ThresholdPanel::setTriggerButtonImage()
+{
+    if(_manager->getThresholdSource()==0)
+    {
+        _triggerButton->setNormalTex(Widgets::TextureGL::get("data/trigger.png"));
+        _triggerButton->setHoverTex(Widgets::TextureGL::get("data/triggerhigh.png"));
+    }
+    else
+    {
+        std::stringstream s;
+        s << "data/e"<<_manager->getThresholdSource()<<".png";
+        _triggerButton->setNormalTex(Widgets::TextureGL::get(s.str().c_str()));
+        _triggerButton->setHoverTex(Widgets::TextureGL::get(s.str().c_str()));
+    }
+
+}
+    
 BOOL ThresholdPanel::ekgOn()
 {
     return _switchLayout->selected();
@@ -110,6 +126,7 @@ void ThresholdPanel::triggerPressed()
 void ThresholdPanel::triggerChanged(int value)
 {
     _manager->setThresholdSource(value);
+    setTriggerButtonImage();
     triggerOpened = false;
 }
     

@@ -7,6 +7,7 @@
 #include "widgets/TextureGL.h"
 #include "widgets/BitmapFontGL.h"
 #include <cmath>
+#include "Log.h"
 #include <iostream>
 #include <sstream>
 #include <cassert>
@@ -60,7 +61,7 @@ static void val2hue(uint8_t *p, double val) {
 }
 
 FFTView::FFTView(AudioView &av, RecordingManager &manager, Widget *parent) : Widget(parent), _active(0),
-	_startTime(-2000), _manager(manager), _av(av)
+	_startTime(-2000), _manager(manager), _av(av),_ffttex(0)
 	 {
 	setSizeHint(Widgets::Size());
 	setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Expanding, Widgets::SizePolicy::Fixed));
@@ -172,8 +173,9 @@ void FFTView::paintEvent() {
 	drawScale();
 }
 
-void FFTView::resizeEvent(Widgets::ResizeEvent *event) {
-    glDeleteTextures(1, &_ffttex);
+void FFTView::glResetEvent() {
+    if(_ffttex != 0)
+            glDeleteTextures(1, &_ffttex);
     init_texture(_ffttex);
     update(1);
 }

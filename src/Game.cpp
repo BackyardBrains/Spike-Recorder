@@ -85,7 +85,15 @@ void Game::loadResources() {
     Widgets::TextureGL::load("data/okbtnhigh.png");
     Widgets::TextureGL::load("data/trigger.png");
     Widgets::TextureGL::load("data/triggerhigh.png");
-
+    Widgets::TextureGL::load("data/e1.png");
+    Widgets::TextureGL::load("data/e2.png");
+    Widgets::TextureGL::load("data/e3.png");
+    Widgets::TextureGL::load("data/e4.png");
+    Widgets::TextureGL::load("data/e5.png");
+    Widgets::TextureGL::load("data/e6.png");
+    Widgets::TextureGL::load("data/e7.png");
+    Widgets::TextureGL::load("data/e8.png");
+    Widgets::TextureGL::load("data/e9.png");
 }
 
 void Game::advance() {

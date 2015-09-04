@@ -166,6 +166,15 @@ void Widget::_DoPaintEvents(const Point &offset, const Rect &clipRect) {
 
 }
 
+    
+void Widget::_DoGlResetEvents() {
+        glResetEvent();
+        for(WidgetVector::iterator it = _children.begin(); it != _children.end(); ++it)
+                (*it)->_DoGlResetEvents();
+}
+
+    
+    
 Point Widget::mapToParent(const Point &point) const {
 	Point result = point;
 	if (parentWidget())
@@ -231,6 +240,10 @@ void Widget::advance() {
 void Widget::resizeEvent(ResizeEvent *event) {
 }
 
+void Widget::glResetEvent() {
+
+}
+    
 void Widget::paintEvent() {
 }
 
