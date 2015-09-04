@@ -75,6 +75,7 @@ public:
 	virtual void advance();
 	virtual void resizeEvent(ResizeEvent *event);
 	virtual void paintEvent();
+    virtual void glResetEvent();
 	virtual void enterEvent();
 	virtual void leaveEvent();
 	virtual void keyPressEvent(KeyboardEvent *event);
@@ -85,6 +86,7 @@ public:
 
 	void _DoPaintEvents(const Point &offset, const Rect &clipRect);
 	void _CallAdvance();
+    void _DoGlResetEvents();
 private:
 	Widget *_parentWidget;
 	Layout * _layout;

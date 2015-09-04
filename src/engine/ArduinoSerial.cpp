@@ -647,6 +647,7 @@ namespace BackyardBrains {
     
     void ArduinoSerial::sendVoltageToArduino(int voltage)
     {
+    
        if(voltage>255)
        {
            voltage = 255;

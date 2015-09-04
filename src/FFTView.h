@@ -60,7 +60,7 @@ private:
 	void drawScale() const;
 	void initTextures();	
 	void paintEvent();
-    void resizeEvent(Widgets::ResizeEvent *event);    
+    void glResetEvent();   
 	void advance();
 };
 
