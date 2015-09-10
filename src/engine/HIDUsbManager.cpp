@@ -241,7 +241,7 @@ namespace BackyardBrains {
             {
                 //if(_samplingRate != 7500)
                 //{
-                    _samplingRate = 7500;
+                    _samplingRate = 5000;
                     _numberOfChannels  =4;
                     restartDevice = true;
                 //}

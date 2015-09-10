@@ -1373,6 +1373,9 @@ SampleBuffer *RecordingManager::sampleBuffer(int virtualDeviceIndex) {
 	assert(virtualDeviceIndex >= 0 && virtualDeviceIndex < (int) _recordingDevices.size());
 	const int device = _recordingDevices[virtualDeviceIndex].device;
 	const int channel = _recordingDevices[virtualDeviceIndex].channel;
+    unsigned int devicescount = _devices.count(device);
+    unsigned int sampbuffsize = _devices[device].sampleBuffers.size();
+    
 	assert(_devices.count(device) != 0 && (unsigned int)channel < _devices[device].sampleBuffers.size());
 	SampleBuffer *result = _devices[device].sampleBuffers[channel];
 	return result;

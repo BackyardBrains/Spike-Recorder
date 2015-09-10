@@ -66,6 +66,9 @@ int AudioView::addChannel(int virtualDevice) {
 
 	if(_channels.size() != 1)
 		_channels.back().pos = rand()/(float)RAND_MAX;
+    
+    _manager.setSelectedVDevice(virtualDevice);
+    
 	return _channels.size()-1;
 }
 

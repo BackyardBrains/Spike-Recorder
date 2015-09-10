@@ -485,7 +485,7 @@ namespace BackyardBrains {
                             writeInteger = LSB | MSB;
 
                             //std::cout<< obufferIndex<<" - "<<MSB<<":"<<LSB<<"\n";
-                            obuffer[obufferIndex++] = writeInteger;
+                            obuffer[obufferIndex++] = writeInteger*30;
                             if(areWeAtTheEndOfFrame())
                             {
                                 break;
