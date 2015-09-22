@@ -40,6 +40,7 @@ namespace BackyardBrains {
         _samplingRate = 10000;
         _numberOfChannels = 2;
         restartDevice = false;
+        handle = NULL;
 
     }
 
@@ -99,9 +100,19 @@ namespace BackyardBrains {
     //
     void HIDUsbManager::testEscapeSequence(unsigned int newByte, int offset)
     {
+        
+       
+        
         if(weAreInsideEscapeSequence)
         {
-            if(endOfescapeSequence[escapeSequenceDetectorIndex] == newByte)
+            
+            if(messageBufferIndex>=SIZE_OF_MESSAGES_BUFFER)
+            {
+                weAreInsideEscapeSequence = false; //end of escape sequence
+                executeContentOfMessageBuffer(offset+tempHeadAndTailDifference);
+                escapeSequenceDetectorIndex = 0;//prepare for detecting begining of sequence
+            }
+            else if(endOfescapeSequence[escapeSequenceDetectorIndex] == newByte)
             {
                 escapeSequenceDetectorIndex++;
                 if(escapeSequenceDetectorIndex ==  ESCAPE_SEQUENCE_LENGTH)
@@ -305,7 +316,22 @@ namespace BackyardBrains {
 
         tempHeadAndTailDifference-=SIZE_OF_MAIN_CIRCULAR_BUFFER;
         while (ref->_deviceConnected) {
-            numberOfFrames = ref->readOneBatch(buffer);
+            
+            try{
+                numberOfFrames = ref->readOneBatch(buffer);
+            }
+            catch(std::exception &e)
+            {
+                numberOfFrames = -1;
+                std::cout<<"Error on read 1";
+                
+            }
+            catch(...)
+            {
+                numberOfFrames = -1;
+                std::cout<<"Error on read 2";
+            }
+            
 
             if(numberOfFrames == -1)
             {
@@ -345,7 +371,20 @@ namespace BackyardBrains {
         if(!_deviceConnected)
         {
             ref->stopDevice();
-            hid_close(ref->handle);
+            try {
+                hid_close(ref->handle);
+            }
+            catch(std::exception &e)
+            {
+                std::cout<<"Error while closing device";
+                // hid_free_enumeration(devs);
+            }
+            catch(...)
+            {
+                std::cout<<"Error while closing devices";
+                //hid_free_enumeration(devs);
+            }
+            
             ref->handle = NULL;
             currentAddOnBoard = 0;
         }
@@ -366,7 +405,21 @@ namespace BackyardBrains {
         int size = -1;
 
 
-        size = hid_read(handle, buffer, sizeof(buffer));
+        try {
+            size = hid_read(handle, buffer, sizeof(buffer));
+        }
+        catch(std::exception &e)
+        {
+            size = -1;
+            std::cout<<"Error on read 3";
+            
+        }
+        catch(...)
+        {
+            size = -1;
+            std::cout<<"Error on read 4";
+        }
+        
 
         if (size == 0)
         {
@@ -530,7 +583,7 @@ namespace BackyardBrains {
     {
         try
         {
-            if(!_deviceConnected)
+            if((!_deviceConnected) )
             {
                 hid_exit();
             }
