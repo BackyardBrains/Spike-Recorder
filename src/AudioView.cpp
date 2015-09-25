@@ -66,6 +66,9 @@ int AudioView::addChannel(int virtualDevice) {
 
 	if(_channels.size() != 1)
 		_channels.back().pos = rand()/(float)RAND_MAX;
+    
+    _manager.setSelectedVDevice(virtualDevice);
+    
 	return _channels.size()-1;
 }
 
@@ -580,8 +583,9 @@ void AudioView::drawAudio() {
 				int endsample = std::max(_rulerStart, _rulerEnd)*(data.size()-1);
 				float rms = calculateRMS(data, startsample, endsample);
 
-				std::stringstream s;
-				s << "RMS:" << rms;
+                std::stringstream s;
+                s.precision(3);
+                s <<"RMS:"<< std::fixed << rms/2000.0 ;
 
 				Widgets::Painter::setColor(bg);
 				drawtextbgbox(s.str(), width()-20, _channels[i].pos*height()+30, Widgets::AlignRight);
