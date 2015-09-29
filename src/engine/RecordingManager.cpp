@@ -605,12 +605,12 @@ void RecordingManager::addTrigger(int64_t position)
     if(_triggers.size() > (unsigned int)_threshAvgCount)
         _triggers.pop_back();
 }
-    
+
 void RecordingManager::setThreshMode(bool threshMode) {
 	_threshMode = threshMode;
     _triggers.clear();
 }
-    
+
 int RecordingManager::getThresholdSource()
 {
     return _thresholdSource;
@@ -619,7 +619,7 @@ int RecordingManager::getThresholdSource()
 void RecordingManager::setThresholdSource(int newThresholdSource)
 {
     _thresholdSource = newThresholdSource;
-   
+
 }
 
 void RecordingManager::setThreshAvgCount(int threshAvgCount) {
@@ -652,8 +652,9 @@ int64_t RecordingManager::fileLength() {
 
 void RecordingManager::addMarker(const std::string &id, int64_t offset) {
 	_markers.push_back(std::make_pair(id, _pos + offset));
-    int i_dec = std::stoi (id);
-   
+	char tempChar = id.at(0);
+    int i_dec = tempChar -48;//std::stoi (id);
+
     if(getThresholdSource() == i_dec &&  threshMode())
     {
          addTrigger(_pos + offset);
@@ -715,7 +716,7 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 		return;
 	}
 
-   
+
 
 
 
@@ -762,7 +763,7 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 
 	if(!_paused) {
 		if(_threshMode) {
-            
+
             if(_thresholdSource==0)
             {
                 bool triggerd;
@@ -788,20 +789,22 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
             }
             else
             {
-              
+
                     for(std::list<std::pair<std::string, int64_t> >::const_iterator it = markers().begin(); it != markers().end(); it++) {
                         try
                         {
                             if(it->second >_pos && (it->second<(_pos+samples)))
                             {
-                            
-                                int i_dec = std::stoi (it->first);
+
+                                //int i_dec = std::stoi (it->first);
+                                char tempChar = it->first.at(0);
+                                int i_dec = tempChar -48;
                                 if(getThresholdSource() == i_dec)
                                 {
                                     addTrigger(it->second);
                                 }
                             }
-                            
+
                         }
                         catch (std::invalid_argument&)
                         {
@@ -1160,9 +1163,9 @@ void RecordingManager::advance(uint32_t samples) {
 			}
 		}
 
-       
+
             bool triggerd = false;
-            
+
             for(int chan = 0; chan < channum; chan++) {
                 int dcBias = it->second.dcBiasSum[chan]/it->second.dcBiasNum;
 
@@ -1173,8 +1176,8 @@ void RecordingManager::advance(uint32_t samples) {
                         if(_threshMode && it->first*channum+chan == _selectedVDevice) {
                             const int64_t ntrigger = oldPos + i;
                             const int thresh = _recordingDevices[_selectedVDevice].threshold;
-                            
-                                
+
+
                             if(_triggers.empty() || ntrigger - _triggers.front() > _sampleRate/10) {
                                 if((thresh > 0 && channels[chan][i] > thresh) || (thresh <= 0 && channels[chan][i] < thresh)) {
                                     _triggers.push_front(oldPos + i);
@@ -1194,7 +1197,7 @@ void RecordingManager::advance(uint32_t samples) {
 
             if(triggerd)
                 triggered.emit();
-        
+
 		const int64_t posA = it->second.sampleBuffers[0]->pos();
 		if(!it->second.sampleBuffers[0]->empty() && (firstTime || posA < newPos)) {
 			newPos = posA;
@@ -1407,7 +1410,7 @@ SampleBuffer *RecordingManager::sampleBuffer(int virtualDeviceIndex) {
 	const int channel = _recordingDevices[virtualDeviceIndex].channel;
     unsigned int devicescount = _devices.count(device);
     unsigned int sampbuffsize = _devices[device].sampleBuffers.size();
-    
+
 	assert(_devices.count(device) != 0 && (unsigned int)channel < _devices[device].sampleBuffers.size());
 	SampleBuffer *result = _devices[device].sampleBuffers[channel];
 	return result;

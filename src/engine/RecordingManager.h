@@ -79,7 +79,7 @@ public:
 	int selectedVDevice() const {return _selectedVDevice;}
     int getThresholdSource();
     void setThresholdSource(int newThresholdSource);
-    
+
 
 	std::vector<SpikeTrain> &spikeTrains() { return _spikeTrains; }
 	const std::list<std::pair<std::string, int64_t> > &markers() const {return _markers;}
@@ -129,7 +129,7 @@ public:
     void reloadHID();
     bool _HIDShouldBeReloaded;
 
-    
+
     #if defined(_WIN32)
     void prepareForHIDFirmwareUpdate();
     int getUSBFirmwareUpdateStage();
@@ -188,7 +188,7 @@ private:
 	std::vector<SpikeTrain> _spikeTrains;
 
 	Player _player;
-    
+
     int _thresholdSource = 0;//signal is the default one (1,2,3,4 ... are events)
 
 	int _serialPortIndex;
@@ -197,7 +197,7 @@ private:
 
     HIDUsbManager _hidUsbManager;
     int _numOfHidChannels;
-    clock_t timerUSB;
+    clock_t timerUSB = 0;
     bool _hidDevicePresent;
 
     int _firmwareUpdateStage;
