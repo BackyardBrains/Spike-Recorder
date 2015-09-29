@@ -204,7 +204,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
             _hidButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.png"));
         }
         _hidButton->setSizeHint(Widgets::Size(26,26));
-       
+
         hidHbox->addWidget(_hidButton);
         hidHbox->update();
         gvbox->addSpacing(20);
@@ -215,7 +215,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 
         #if defined(_WIN32)
         //TODO:add decision based on available update and current version of firmware
-        if(_manager.hidMode())
+        if(_manager.hidMode() && false)//TODO:enable this when we find solution for firmware
         {
              Widgets::BoxLayout *updateHbox = new Widgets::BoxLayout(Widgets::Horizontal);
             //USB  label
