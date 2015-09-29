@@ -218,8 +218,8 @@ bool RecordingManager::initHIDUSB()
     _hidMode = true;
 
     deviceReload.emit();
-   // _player.stop();
-   // _player.start(_hidUsbManager.maxSamplingRate())
+    //_player.stop();
+    //_player.start(_hidUsbManager.maxSamplingRate());
     _player.setVolume(0);
 
 
@@ -407,6 +407,8 @@ bool RecordingManager::initSerial(const char *portName)
     _hidMode = false;
     _serialMode = true;
     deviceReload.emit();
+  //  _player.stop();
+  //  _player.start(_arduinoSerial.maxSamplingRate()/_numOfSerialChannels);
     _player.setVolume(0);
 
 
@@ -910,8 +912,34 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 
 	    delete[] channels;
 	    delete[] buffer;
-	    _pos+=samplesRead;
-
+        
+        
+        //Push data to speaker
+       
+        //const int nchan = _devices.begin()->second.channels;
+        int bytesPerSample = _devices.begin()->second.bytespersample;
+        int16_t *buf = new int16_t[samplesRead];
+        
+        if(_player.volume() > 0) {
+           
+            
+            SampleBuffer *s = sampleBuffer(_selectedVDevice);
+            if(s != NULL) {
+                s->getData(buf, _pos, samplesRead);
+            } else {
+                memset(buf, 0, samplesRead*sizeof(int16_t));
+            }
+            
+            _player.push(buf, samplesRead*sizeof(int16_t));
+            
+            delete[] buf;
+        } else {
+            _player.setPos(_pos, bytesPerSample, 1);
+            std::cout<<"\nSet position: "<<_pos;
+        }
+        
+        
+         _pos+=samplesRead;
 	}
 	else
 	{
@@ -1011,36 +1039,40 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 
         delete[] channels;
         delete[] buffer;
+        
+        
+        
+        
+        
+        //const int nchan = _devices.begin()->second.channels;
+        int bytesPerSample = _devices.begin()->second.bytespersample;
+        int16_t *buf = new int16_t[samplesRead];
+        
+        if(_player.volume() > 0) {
+            
+            
+            SampleBuffer *s = sampleBuffer(_selectedVDevice);
+            if(s != NULL) {
+                s->getData(buf, _pos, samplesRead);
+            } else {
+                memset(buf, 0, samplesRead*sizeof(int16_t));
+            }
+            
+            _player.push(buf, samplesRead*sizeof(int16_t));
+            
+            delete[] buf;
+        } else {
+            _player.setPos(_pos, bytesPerSample, 1);
+            std::cout<<"\nSet position: "<<_pos;
+        }
+        
+        
+        
+        
+        
         _pos+=samplesRead;
 
 
-        //====================== push USB data to speaker =================
-
-
-     /*   if(_pos-_sampleRate/2 > _player.pos()) {
-            const uint32_t bsamples = _pos-_player.pos();
-
-            if(_player.volume() > 0) {
-                int16_t *buf = new int16_t[bsamples];
-
-                SampleBuffer *s = sampleBuffer(_selectedVDevice);
-                if(s != NULL) {
-                    s->getData(buf, _player.pos(), bsamples);
-                } else {
-                    memset(buf, 0, bsamples*sizeof(int16_t));
-                }
-
-                _player.push(buf, bsamples*sizeof(int16_t));
-
-                delete[] buf;
-            } else {
-                _player.setPos(_pos);
-            }
-        }*/
-
-
-
-        //====================================================================
 
     }
     else

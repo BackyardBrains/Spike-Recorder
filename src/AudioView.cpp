@@ -583,9 +583,14 @@ void AudioView::drawAudio() {
 				int endsample = std::max(_rulerStart, _rulerEnd)*(data.size()-1);
 				float rms = calculateRMS(data, startsample, endsample);
 
-				std::stringstream s;
+                
+                std::stringstream s;
+                s.precision(3);
+                s <<"RMS:"<< std::fixed << rms/2000.0 ;
+                
+				/*std::stringstream s;
 				s << "RMS:" << rms;
-
+*/
 				Widgets::Painter::setColor(bg);
 				drawtextbgbox(s.str(), width()-20, _channels[i].pos*height()+30, Widgets::AlignRight);
 				Widgets::Painter::setColor(Widgets::Colors::white);

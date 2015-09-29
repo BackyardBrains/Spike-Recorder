@@ -17,6 +17,17 @@ void Player::start(int sampleRate) {
 	setPaused(false);
 }
 
+uint64_t Player::pos(uint16_t bytesPerSample, uint16_t numOfChannels)
+{
+
+    return (BASS_ChannelGetPosition(_output, BASS_POS_BYTE)/(bytesPerSample*numOfChannels));
+}
+    
+void Player::setPos(uint64_t npos, uint16_t bytesPerSample, uint16_t numOfChannels)
+{
+    BASS_ChannelSetPosition(_output, bytesPerSample*npos*numOfChannels, BASS_POS_BYTE);
+}
+    
 int Player::volume() const {
 	float val;
 	BASS_ChannelGetAttribute(_output, BASS_ATTRIB_VOL, &val);
