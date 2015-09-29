@@ -5,7 +5,13 @@
 #include <list>
 #include <cstring>
 #include <string>
+
+
+#ifdef __APPLE__
+#include "sigslot.h"
+#else
 #include <sigslot.h>
+#endif
 
 #include "Rect.h"
 #include "Size.h"

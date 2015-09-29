@@ -938,7 +938,7 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
             delete[] buf;
         } else {
             _player.setPos(_pos, bytesPerSample, 1);
-            std::cout<<"\nSet position: "<<_pos;
+            //std::cout<<"\nSet position: "<<_pos;
         }
 
 
@@ -1066,7 +1066,7 @@ void RecordingManager::advanceHidMode(uint32_t samples)
             delete[] buf;
         } else {
             _player.setPos(_pos, bytesPerSample, 1);
-            std::cout<<"\nSet position: "<<_pos;
+            //std::cout<<"\nSet position: "<<_pos;
         }
 
 

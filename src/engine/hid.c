@@ -296,8 +296,14 @@ static int get_string_property_utf8(IOHIDDeviceRef device, CFStringRef prop, cha
 
 	if (str) {
 		CFRange range;
-		range.location = 0;
-		range.length = len;
+		/*range.location = 0;
+        if(len>str)
+		range.length = len;*/
+        range = CFRangeMake(0, CFStringGetLength(str));
+        if(range.length>len)
+        {
+            range.length = len;
+        }
 		CFIndex used_buf_len;
 		CFStringGetBytes(str,
 			range,
