@@ -50,17 +50,19 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	_configButton->setNormalTex(Widgets::TextureGL::get("data/config.png"));
 	_configButton->setHoverTex(Widgets::TextureGL::get("data/confighigh.png"));
 	_configButton->clicked.connect(this, &MainView::configPressed);
-	Widgets::PushButton *threshButton = new Widgets::PushButton(this);
+	threshButton = new Widgets::PushButton(this);
 	threshButton->setNormalTex(Widgets::TextureGL::get("data/thresh.png"));
 	threshButton->setHoverTex(Widgets::TextureGL::get("data/threshhigh.png"));
 	threshButton->clicked.connect(this, &MainView::threshPressed);
-
+    threshButton->setRightPadding(5);
+    threshButton->setSizeHint(Widgets::Size(53,48));
 
 	_analysisButton = new Widgets::PushButton(this);
 	_analysisButton->setNormalTex(Widgets::TextureGL::get("data/analysis.png"));
 	_analysisButton->setHoverTex(Widgets::TextureGL::get("data/analysishigh.png"));
 	_analysisButton->clicked.connect(this, &MainView::analysisPressed);
-	_analysisButton->setSizeHint(Widgets::Size(0,0));
+	
+    
 	_analysisButton->setVisible(false);
 
     _usbButton = new Widgets::PushButton(this);
@@ -68,6 +70,8 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
     _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.png"));
     _usbButton->clicked.connect(this, &MainView::usbPressed);
     _usbButton->setVisible(false);
+    _usbButton->setRightPadding(5);
+    _usbButton->setSizeHint(Widgets::Size(0,0));
 
 	_recordButton = new Widgets::PushButton(this);
 	_recordButton->setNormalTex(Widgets::TextureGL::get("data/rec.png"));
@@ -78,7 +82,10 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	_fftButton->setNormalTex(Widgets::TextureGL::get("data/fft.png"));
 	_fftButton->setHoverTex(Widgets::TextureGL::get("data/ffthigh.png"));
 	_fftButton->clicked.connect(this, &MainView::fftPressed);
-
+    _fftButton->setRightPadding(5);
+    _fftButton->setSizeHint(Widgets::Size(53,48));
+    
+    
 	_fileButton = new Widgets::PushButton(this);
 	_fileButton->setNormalTex(Widgets::TextureGL::get("data/file.png"));
 	_fileButton->setHoverTex(Widgets::TextureGL::get("data/filehigh.png"));
@@ -123,13 +130,13 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	topBar->addWidget(_configButton);
 	topBar->addSpacing(5);
 	topBar->addWidget(threshButton);
-	topBar->addSpacing(5);
+	//topBar->addSpacing(5);
 	topBar->addWidget(_fftButton);
-	topBar->addSpacing(5);
+    //topBar->addSpacing(5);
+    topBar->addWidget(_usbButton);
+	//topBar->addSpacing(5);
 	topBar->addWidget(_analysisButton);
     topBar->addSpacing(5);
-    topBar->addWidget(_usbButton);
-    topBar->addSpacing(10);
 	topBar->addWidget(_threshavgGroup, Widgets::AlignVCenter);
 	topBar->addStretch();
 	topBar->addWidget(_recordButton);
@@ -162,7 +169,8 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	vbox->addSpacing(10);
 
 	vbox->update();
-// 	Widgets::Application::getInstance()->updateLayout();
+    topBar->update();
+ 	Widgets::Application::getInstance()->updateLayout();
 
 	_audioView->standardSettings();
 
@@ -222,16 +230,20 @@ void MainView::forwardPressed() {
 
 void MainView::threshPressed() {
 	if(!_manager.threshMode()) {
+        threshButton->setNormalTex(Widgets::TextureGL::get("data/threshcrossed.png"));
+        threshButton->setHoverTex(Widgets::TextureGL::get("data/threshcrossed.png"));
 		_fftView->setActive(false);
 		_manager.setThreshMode(true);
 		_threshavgGroup->setVisible(true);
 		_threshavgGroup->setSizeHint(Widgets::Size(400,32));
-		_fftButton->setSizeHint(Widgets::Size());
+		_fftButton->setSizeHint(Widgets::Size(0,0));
 		_fftButton->setVisible(false);
 	} else {
+        threshButton->setNormalTex(Widgets::TextureGL::get("data/thresh.png"));
+        threshButton->setHoverTex(Widgets::TextureGL::get("data/threshhigh.png"));
 		_manager.setThreshMode(false);
 		_fftButton->setVisible(true);
-		_fftButton->setSizeHint(Widgets::Size(48,48));
+		_fftButton->setSizeHint(Widgets::Size(53,48));
 		_threshavgGroup->setSizeHint(Widgets::Size());
 		_threshavgGroup->setVisible(false);
 	}
@@ -291,8 +303,12 @@ void MainView::recordPressed() {
 void MainView::fftPressed() {
 	if(_fftView->active()) {
 		_fftView->setActive(false);
+        _fftButton->setNormalTex(Widgets::TextureGL::get("data/fft.png"));
+        _fftButton->setHoverTex(Widgets::TextureGL::get("data/ffthigh.png"));
 	} else {
 		_fftView->setActive(true);
+        _fftButton->setNormalTex(Widgets::TextureGL::get("data/fftcrossed.png"));
+        _fftButton->setHoverTex(Widgets::TextureGL::get("data/fftcrossed.png"));
 	}
 
 	Widgets::Application::getInstance()->updateLayout();
@@ -332,7 +348,7 @@ void MainView::filePressed() {
 
 	_recordButton->setVisible(false);
 	_analysisButton->setVisible(true);
-	_analysisButton->setSizeHint(Widgets::Size(48,48));
+	//_analysisButton->setSizeHint(Widgets::Size(48,48));
 	_fftView->setActive(false);
 
 	Widgets::ToolTip *tip = new Widgets::ToolTip("Click to return to live mode \x1f", 2000);
@@ -409,17 +425,25 @@ void MainView::paintEvent()
     #endif
     if(_manager.hidDevicePresent())
     {
+        //_usbButton->setSizeHint(Widgets::Size(48,48));
+        _usbButton->setSizeHint(Widgets::Size(53,48));
         _usbButton->setVisible(true);
+        Widgets::Application::getInstance()->updateLayout();
+        
     }
     else
     {
         _usbButton->setVisible(false);
+        _usbButton->setSizeHint(Widgets::Size(0,0));
     }
     if(_manager.hidMode())
     {
         _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.png"));
         _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbdisconhigh.png"));
+        _usbButton->setSizeHint(Widgets::Size(53,48));
+        //_usbButton->setSizeHint(Widgets::Size(48,48));
         _usbButton->setVisible(true);
+        Widgets::Application::getInstance()->updateLayout();
 
     }
     else

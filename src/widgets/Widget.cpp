@@ -163,6 +163,12 @@ void Widget::_DoPaintEvents(const Point &offset, const Rect &clipRect) {
 			(*it)->_DoPaintEvents(off, (*it)->geometry().translated(off).intersected(clipRect));
 		}
 	}
+  /*  else
+    {
+        _rect.w = 0;
+        _rect.h = 0;
+        _sizeHint = Size(0,0);
+    }*/
 
 }
 

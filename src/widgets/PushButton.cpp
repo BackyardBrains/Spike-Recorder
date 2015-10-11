@@ -20,7 +20,14 @@ void PushButton::paintEvent()
 			_normaltex->bind();
 
 		Painter::setColor(Colors::white);
-		Painter::drawTexRect(rect());
+        if(_rightPadding>0)
+        {
+            Painter::drawTexRect(Rect(0, 0, width()-_rightPadding, height()));
+        }
+        else
+        {
+            Painter::drawTexRect(rect());
+        }
 		glBindTexture(GL_TEXTURE_2D, 0);
 	} else {
 		Painter::setColor(_hover ? Colors::buttonhigh : Colors::button);
@@ -30,6 +37,11 @@ void PushButton::paintEvent()
 
 void PushButton::setNormalTex(const TextureGL *tex) {
 	_normaltex = tex;
+}
+    
+void PushButton::setRightPadding(int padding)
+{
+    _rightPadding = padding;
 }
 
 void PushButton::setHoverTex(const TextureGL *tex) {

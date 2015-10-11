@@ -43,8 +43,8 @@ AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Wi
 
 	Widgets::PushButton *closeButton = new Widgets::PushButton(this);
 	closeButton->clicked.connect(this, &AnalysisView::closePressed);
-	closeButton->setNormalTex(Widgets::TextureGL::get("data/analysis.png"));
-	closeButton->setHoverTex(Widgets::TextureGL::get("data/analysishigh.png"));
+	closeButton->setNormalTex(Widgets::TextureGL::get("data/analysiscrossed.png"));
+	closeButton->setHoverTex(Widgets::TextureGL::get("data/analysiscrossed.png"));
 
 	Widgets::Label *label = new Widgets::Label(this);
 	label->setText("Spike Analysis");

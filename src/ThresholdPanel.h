@@ -54,6 +54,7 @@ public:
     void triggerChanged(int value);
 private:
     RecordingManager* _manager;
+
     Widgets::PushButton * _triggerButton;
 	Widgets::PushButton *_ekgButton;
 	Widgets::PushButton *_speakerButton;
@@ -62,6 +63,7 @@ private:
 	EkgWidget *_ekgWidget;
     bool triggerOpened = false;
 
+    void paintEvent();
 	void ekgPressed();
 	void speakerPressed();
 

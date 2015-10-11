@@ -20,18 +20,21 @@ ThresholdPanel::ThresholdPanel(RecordingManager &manager, Widgets::Widget *paren
     _manager = &manager;
     _triggerButton = new Widgets::PushButton(this);
     setTriggerButtonImage();
-    _triggerButton->setSizeHint(Widgets::Size(32,32));
+    _triggerButton->setSizeHint(Widgets::Size(42,32));
+    _triggerButton->setRightPadding(10);
     _triggerButton->clicked.connect(this, &ThresholdPanel::triggerPressed);
     
 	_ekgButton = new Widgets::PushButton(this);
 	_ekgButton->setNormalTex(Widgets::TextureGL::get("data/ekg.png"));
 	_ekgButton->setHoverTex(Widgets::TextureGL::get("data/ekghigh.png"));
-	_ekgButton->setSizeHint(Widgets::Size(32,32));
+	_ekgButton->setSizeHint(Widgets::Size(42,32));
+    _ekgButton->setRightPadding(10);
 	_ekgButton->clicked.connect(this, &ThresholdPanel::ekgPressed);
+    if(!(_manager->serialMode() || _manager->hidMode()))
+    {
+        _ekgButton->setVisible(false);
+    }
 
-    
-   
-    //_thresholdWidget->setVisible(false);
     
 	_ekgWidget = new EkgWidget(this);
 	manager.triggered.connect(_ekgWidget,&EkgWidget::beat);
@@ -71,11 +74,14 @@ ThresholdPanel::ThresholdPanel(RecordingManager &manager, Widgets::Widget *paren
 
     
 	Widgets::BoxLayout *layout = new Widgets::BoxLayout(Widgets::Horizontal, this);
-    layout->addWidget(_triggerButton, Widgets::AlignCenter);
+    layout->addWidget(_ekgButton);
+    layout->addWidget(_triggerButton);
+
+
    // layout->addWidget(_thresholdWidget, Widgets::AlignTop);
-    layout->addSpacing(10);
-	layout->addWidget(_ekgButton, Widgets::AlignVCenter);
-	layout->addSpacing(10);
+    //layout->addSpacing(10);
+	
+	//layout->addSpacing(10);
 	layout->addLayout(_switchLayout);
 	layout->update();
 
@@ -99,6 +105,29 @@ void ThresholdPanel::setTriggerButtonImage()
 
 }
     
+void ThresholdPanel::paintEvent()
+{
+    if(_manager->serialMode() || _manager->hidMode())
+    {
+        _ekgButton->setVisible(true);
+        _ekgButton->setSizeHint(Widgets::Size(43,32));
+    }
+    else
+    {
+        int state = _switchLayout->selected();
+       
+        if(state) {
+            _ekgButton->setNormalTex(Widgets::TextureGL::get("data/ekg.png"));
+            _ekgButton->setHoverTex(Widgets::TextureGL::get("data/ekghigh.png"));
+            _ekgWidget->setSound(0);
+            _switchLayout->setSelected(!state);
+        }
+        _ekgButton->setVisible(false);
+        _ekgButton->setSizeHint(Widgets::Size(0,0));
+    }
+}
+    
+    
 BOOL ThresholdPanel::ekgOn()
 {
     return _switchLayout->selected();
@@ -113,8 +142,13 @@ void ThresholdPanel::triggerPressed()
         ThresholdWidget * _thresholdWidget = new ThresholdWidget(*_manager);
         _thresholdWidget->valueChanged.connect(this, &ThresholdPanel::triggerChanged);
         _thresholdWidget->setSizeHint(Widgets::Size(74,270));
-        Widgets::Rect positionOfPopup = Widgets::Rect(mapToGlobal(rect().bottomLeft()), Widgets::Size(74, 270));
+        Widgets::Rect positionOfPopup = Widgets::Rect(_triggerButton->mapToGlobal(_triggerButton->rect().bottomLeft()), Widgets::Size(74, 270));
+         std::cout<<"Position: "<<positionOfPopup.x<<"\n";
         positionOfPopup.x -=18;
+        /*if(_manager->serialMode() || _manager->hidMode())
+        {
+            positionOfPopup.x +=43;
+        }*/
         positionOfPopup.y +=8;
         _thresholdWidget->setMouseTracking(true);
         _thresholdWidget->setGeometry(positionOfPopup);
@@ -151,10 +185,12 @@ void ThresholdPanel::ekgPressed() {
 		_ekgButton->setHoverTex(Widgets::TextureGL::get("data/threshhigh.png"));
 
 		_avg->setValue(1);
+        _triggerButton->setVisible(false);
 	} else {
 		_ekgButton->setNormalTex(Widgets::TextureGL::get("data/ekg.png"));
 		_ekgButton->setHoverTex(Widgets::TextureGL::get("data/ekghigh.png"));
 		_ekgWidget->setSound(0);
+        _triggerButton->setVisible(true);
 	}
 }
     

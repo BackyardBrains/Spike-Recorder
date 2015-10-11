@@ -198,6 +198,7 @@ private:
     HIDUsbManager _hidUsbManager;
     int _numOfHidChannels;
     clock_t timerUSB = 0;
+    clock_t timerEKG = 0;
     bool _hidDevicePresent;
 
     int _firmwareUpdateStage;

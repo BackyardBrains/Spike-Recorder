@@ -129,6 +129,8 @@ void BoxLayout::update()
 	{
 		if ((*it)->layout())
 			(*it)->layout()->update();
+    
+        
 		expdir |= (*it)->expandingDirections();
 		const Size minS = (*it)->minimumSize();
 		const Size maxS = (*it)->maximumSize();

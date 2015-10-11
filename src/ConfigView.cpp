@@ -23,8 +23,8 @@ namespace BackyardBrains {
 ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *parent) : Widget(parent), _manager(mngr), _audioView(audioView) {
 	Widgets::PushButton *closeButton = new Widgets::PushButton(this);
 	closeButton->clicked.connect(this, &ConfigView::closePressed);
-	closeButton->setNormalTex(Widgets::TextureGL::get("data/config.png"));
-	closeButton->setHoverTex(Widgets::TextureGL::get("data/confighigh.png"));
+	closeButton->setNormalTex(Widgets::TextureGL::get("data/configcrossed.png"));
+	closeButton->setHoverTex(Widgets::TextureGL::get("data/configcrossed.png"));
 
 	Widgets::Label *topLabel = new Widgets::Label(this);
 	topLabel->setText("Config");

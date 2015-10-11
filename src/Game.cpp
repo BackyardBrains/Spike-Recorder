@@ -94,6 +94,12 @@ void Game::loadResources() {
     Widgets::TextureGL::load("data/e7.png");
     Widgets::TextureGL::load("data/e8.png");
     Widgets::TextureGL::load("data/e9.png");
+    
+    Widgets::TextureGL::load("data/analysiscrossed.png");
+    Widgets::TextureGL::load("data/fftcrossed.png");
+    Widgets::TextureGL::load("data/threshcrossed.png");
+    Widgets::TextureGL::load("data/configcrossed.png");
+    
 }
 
 void Game::advance() {

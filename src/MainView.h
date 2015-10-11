@@ -33,6 +33,7 @@ private:
 	Widgets::PushButton *_fftButton;
 	Widgets::PushButton *_analysisButton;
     Widgets::PushButton *_usbButton;
+    Widgets::PushButton *threshButton;
 
 
 	Widgets::ScrollBar *_seekBar;

@@ -291,20 +291,23 @@ static const char *get_unit_str(int unit) {
     
 void AudioView::drawCenter()
 {
-    if(!_manager.paused())
+   
+    //
+    //Draw vertical dotted line during playback
+    //
+    /*if(!_manager.paused())
     {
-    int yBegining = -68;
-  //  int sizeOfTriangle = 8;
-        Widgets::Painter::setColor(Widgets::Colors::yellow);
-   // Widgets::Painter::drawTriangle(width()/2+20-sizeOfTriangle, yBegining, width()/2+20, yBegining+sizeOfTriangle, width()/2+20+sizeOfTriangle, yBegining,true);
-    
-    int position = yBegining;
-    int step = 10;
-    while (position<height()) {
-        Widgets::Painter::drawRect(Widgets::Rect(width()/2+19,position, 1, step));
-        position = position +2*step;
-    }
-    }
+        int yBegining = -68;
+     
+        
+        int position = yBegining;
+        int step = 10;
+        while (position<height())
+        {
+           // Widgets::Painter::drawRect(Widgets::Rect(width()/2+19,position, 1, step));
+            position = position +2*step;
+        }
+    }*/
     
     
     int64_t fullTime = _manager.fileLength();
@@ -399,21 +402,7 @@ void AudioView::drawCenter()
         o<<miliseconds;
     }
     
-    
-
-    
-   // Widgets::Painter::drawRect(Widgets::Rect(width()-shownscalew-20,height()-50, shownscalew, 1));
     Widgets::Application::font()->draw(o.str().c_str(), 15, height()+40, Widgets::AlignLeft);
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    //Widgets::Painter::drawRect(Widgets::Rect(width()/2+19,yBegining, 1, 2*height()+10));
     
 }
     

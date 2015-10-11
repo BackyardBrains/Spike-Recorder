@@ -65,7 +65,7 @@ Rect WidgetItem::geometry() const
 
 Size WidgetItem::minimumSize() const
 {
-	return Size();//_widget->minimumSize(); // TODO qSmartMaxSize stuff?
+	return Size(0,0);//_widget->minimumSize(); // TODO qSmartMaxSize stuff?
 }
 
 Size WidgetItem::maximumSize() const

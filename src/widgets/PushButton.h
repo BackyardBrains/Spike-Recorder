@@ -17,7 +17,7 @@ public:
 	void setNormalTex(const TextureGL *tex);
 	void setHoverTex(const TextureGL *tex);
 // 	Size sizeHint() const;
-
+    void setRightPadding(int padding);
 	sigslot::signal0<> clicked;
 private:
 	void paintEvent();
@@ -29,6 +29,7 @@ private:
 	
 	const TextureGL *_normaltex;
 	const TextureGL *_hovertex;
+    int _rightPadding = 0;
 
 	bool _hover;
 };
