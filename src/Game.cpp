@@ -99,6 +99,7 @@ void Game::loadResources() {
     Widgets::TextureGL::load("data/fftcrossed.png");
     Widgets::TextureGL::load("data/threshcrossed.png");
     Widgets::TextureGL::load("data/configcrossed.png");
+    //Widgets::TextureGL::load("data/usbconglow.png");
     
 }
 
