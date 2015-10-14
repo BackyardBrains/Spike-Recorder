@@ -402,7 +402,9 @@ void MainView::usbPressed()
             Widgets::Application::getInstance()->addPopup(box);
         }
         _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.png"));
-        _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbdisconhigh.png"));
+        _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbdiscon.png"));
+        //_usbButton->setNormalTex(Widgets::TextureGL::get("data/usbconglow.png"));
+        //_usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconglow.png"));
 
     }
 
@@ -439,7 +441,10 @@ void MainView::paintEvent()
     if(_manager.hidMode())
     {
         _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.png"));
-        _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbdisconhigh.png"));
+        _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbdiscon.png"));
+        //_usbButton->setNormalTex(Widgets::TextureGL::get("data/usbconglow.png"));
+        //_usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconglow.png"));
+        
         _usbButton->setSizeHint(Widgets::Size(53,48));
         //_usbButton->setSizeHint(Widgets::Size(48,48));
         _usbButton->setVisible(true);
