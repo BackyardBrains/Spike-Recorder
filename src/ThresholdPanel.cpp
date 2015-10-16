@@ -314,7 +314,7 @@ void EkgWidget::advance() {
                     {
                         Widgets::Painter::setColor(Widgets::Colors::buttonhigh);
                         Widgets::Painter::drawRect(Widgets::Rect(Xposition+2, YOffset-5, widthOfCell-4, increment));
-                       
+                
                     }
                      Widgets::Painter::setColor(Widgets::Colors::white);
                 }

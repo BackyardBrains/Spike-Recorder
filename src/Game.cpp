@@ -47,7 +47,7 @@ void Game::loadResources() {
 	Widgets::TextureGL::load("data/filehigh.png");
 	Widgets::TextureGL::load("data/analysis.png");
 	Widgets::TextureGL::load("data/analysishigh.png");
-	Widgets::TextureGL::load("data/fft.png");
+	Widgets::TextureGL::load("data/fft.bmp");
 	Widgets::TextureGL::load("data/ffthigh.png");
 
 	Widgets::TextureGL::load("data/save.png");
@@ -99,7 +99,6 @@ void Game::loadResources() {
     Widgets::TextureGL::load("data/fftcrossed.png");
     Widgets::TextureGL::load("data/threshcrossed.png");
     Widgets::TextureGL::load("data/configcrossed.png");
-    //Widgets::TextureGL::load("data/usbconglow.png");
     
 }
 

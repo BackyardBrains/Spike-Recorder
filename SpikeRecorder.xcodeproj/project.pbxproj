@@ -30,12 +30,12 @@
 		2421F0991ACFDE0300927F19 /* AnalysisTrainList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2421F0971ACFDE0300927F19 /* AnalysisTrainList.cpp */; };
 		2421F09C1ACFDF5100927F19 /* Plot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2421F09A1ACFDF5100927F19 /* Plot.cpp */; };
 		2421F09F1ACFDF7B00927F19 /* TabBar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2421F09D1ACFDF7B00927F19 /* TabBar.cpp */; };
-		2421F0A21ACFE2B300927F19 /* SDL_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2421F0A01ACFE2B300927F19 /* SDL_image.framework */; };
 		2421F0A31ACFE2B300927F19 /* SDL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2421F0A11ACFE2B300927F19 /* SDL.framework */; };
-		2421F0A41ACFE2BB00927F19 /* SDL_image.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2421F0A01ACFE2B300927F19 /* SDL_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		2421F0A51ACFE2BB00927F19 /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2421F0A11ACFE2B300927F19 /* SDL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		2421F0A61ACFE2C400927F19 /* SDL_image.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2421F0A01ACFE2B300927F19 /* SDL_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		2421F0A71ACFE2C400927F19 /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2421F0A11ACFE2B300927F19 /* SDL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		244E176C1BD052C2007C9475 /* SDL_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 244E176B1BD052C2007C9475 /* SDL_image.framework */; settings = {ASSET_TAGS = (); }; };
+		244E176D1BD052D8007C9475 /* SDL_image.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 244E176B1BD052C2007C9475 /* SDL_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		244E176E1BD052E1007C9475 /* SDL_image.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 244E176B1BD052C2007C9475 /* SDL_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		248646421AB1FBAD003852AA /* Log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248646401AB1FBAD003852AA /* Log.cpp */; };
 		248BA1F51B3E42AD00EEB5E4 /* ThresholdPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248BA1F31B3E42AD00EEB5E4 /* ThresholdPanel.cpp */; };
 		248BA1F81B3E42D500EEB5E4 /* SwitchLayout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248BA1F61B3E42D500EEB5E4 /* SwitchLayout.cpp */; };
@@ -88,8 +88,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				244E176D1BD052D8007C9475 /* SDL_image.framework in CopyFiles */,
 				24079F3F1AB0CCDF00820291 /* libbass.dylib in CopyFiles */,
-				2421F0A41ACFE2BB00927F19 /* SDL_image.framework in CopyFiles */,
 				2421F0A51ACFE2BB00927F19 /* SDL.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -100,8 +100,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 6;
 			files = (
+				244E176E1BD052E1007C9475 /* SDL_image.framework in CopyFiles */,
 				24079F431AB0CCFC00820291 /* libbass.dylib in CopyFiles */,
-				2421F0A61ACFE2C400927F19 /* SDL_image.framework in CopyFiles */,
 				2421F0A71ACFE2C400927F19 /* SDL.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -140,8 +140,8 @@
 		2421F09B1ACFDF5100927F19 /* Plot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Plot.h; sourceTree = "<group>"; };
 		2421F09D1ACFDF7B00927F19 /* TabBar.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TabBar.cpp; path = src/widgets/TabBar.cpp; sourceTree = SOURCE_ROOT; };
 		2421F09E1ACFDF7B00927F19 /* TabBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TabBar.h; path = src/widgets/TabBar.h; sourceTree = SOURCE_ROOT; };
-		2421F0A01ACFE2B300927F19 /* SDL_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL_image.framework; sourceTree = "<group>"; };
 		2421F0A11ACFE2B300927F19 /* SDL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL.framework; sourceTree = "<group>"; };
+		244E176B1BD052C2007C9475 /* SDL_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL_image.framework; sourceTree = "<group>"; };
 		248646401AB1FBAD003852AA /* Log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Log.cpp; path = src/Log.cpp; sourceTree = SOURCE_ROOT; };
 		248646411AB1FBAD003852AA /* Log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Log.h; path = src/Log.h; sourceTree = SOURCE_ROOT; };
 		248BA1F31B3E42AD00EEB5E4 /* ThresholdPanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ThresholdPanel.cpp; path = src/ThresholdPanel.cpp; sourceTree = SOURCE_ROOT; };
@@ -284,7 +284,7 @@
 				2421F0A31ACFE2B300927F19 /* SDL.framework in Frameworks */,
 				248E591F1AAE1B7C0011707F /* IOKit.framework in Frameworks */,
 				248E59201AAE1B820011707F /* libbass.dylib in Frameworks */,
-				2421F0A21ACFE2B300927F19 /* SDL_image.framework in Frameworks */,
+				244E176C1BD052C2007C9475 /* SDL_image.framework in Frameworks */,
 				248E59231AAE1B820011707F /* Cocoa.framework in Frameworks */,
 				248E59241AAE1B820011707F /* OpenGL.framework in Frameworks */,
 			);
@@ -500,7 +500,7 @@
 		248E591E1AAE1B450011707F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				2421F0A01ACFE2B300927F19 /* SDL_image.framework */,
+				244E176B1BD052C2007C9475 /* SDL_image.framework */,
 				2421F0A11ACFE2B300927F19 /* SDL.framework */,
 				248E59251AAE1C290011707F /* SDL */,
 				248E591C1AAE1ADE0011707F /* IOKit.framework */,
@@ -799,6 +799,7 @@
 					/Library/Frameworks/SDL_image.framework/Headers,
 					/Library/Frameworks/SDL.framework/Headers,
 					"src/**",
+					support,
 				);
 				INFOPLIST_FILE = src/xcode/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path @loader_path/../Frameworks @loader_path/../Resources .";
@@ -812,7 +813,7 @@
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
@@ -841,6 +842,7 @@
 					/Library/Frameworks/SDL_image.framework/Headers,
 					/Library/Frameworks/SDL.framework/Headers,
 					"src/**",
+					support,
 				);
 				INFOPLIST_FILE = src/xcode/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path @loader_path/../Frameworks @loader_path/../Resources .";
@@ -854,7 +856,7 @@
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};

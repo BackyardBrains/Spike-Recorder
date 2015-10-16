@@ -40,12 +40,14 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	_audioView = new AudioView(this, _manager);
 
     //setup timer that will periodicaly check for USB HID devices
+    
     timerUSB = clock();
     _manager.scanForHIDDevices();
     _manager.triggered.connect(this,&MainView::triggerEvent);
 	_audioView->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Expanding, Widgets::SizePolicy::Expanding));
 	_manager.deviceReload.connect(_audioView, &AudioView::standardSettings);
-
+    
+    
 	_configButton = new Widgets::PushButton(this);
 	_configButton->setNormalTex(Widgets::TextureGL::get("data/config.png"));
 	_configButton->setHoverTex(Widgets::TextureGL::get("data/confighigh.png"));
@@ -79,11 +81,12 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	_recordButton->clicked.connect(this, &MainView::recordPressed);
 
 	_fftButton = new Widgets::PushButton(this);
-	_fftButton->setNormalTex(Widgets::TextureGL::get("data/fft.png"));
+	_fftButton->setNormalTex(Widgets::TextureGL::get("data/fft.bmp"));
 	_fftButton->setHoverTex(Widgets::TextureGL::get("data/ffthigh.png"));
 	_fftButton->clicked.connect(this, &MainView::fftPressed);
     _fftButton->setRightPadding(5);
     _fftButton->setSizeHint(Widgets::Size(53,48));
+    //_fftButton->setSizeHint(Widgets::Size(164,164));
     
     
 	_fileButton = new Widgets::PushButton(this);
@@ -230,6 +233,7 @@ void MainView::forwardPressed() {
 
 void MainView::threshPressed() {
 	if(!_manager.threshMode()) {
+        
         threshButton->setNormalTex(Widgets::TextureGL::get("data/threshcrossed.png"));
         threshButton->setHoverTex(Widgets::TextureGL::get("data/threshcrossed.png"));
 		_fftView->setActive(false);
@@ -303,7 +307,7 @@ void MainView::recordPressed() {
 void MainView::fftPressed() {
 	if(_fftView->active()) {
 		_fftView->setActive(false);
-        _fftButton->setNormalTex(Widgets::TextureGL::get("data/fft.png"));
+        _fftButton->setNormalTex(Widgets::TextureGL::get("data/fft.bmp"));
         _fftButton->setHoverTex(Widgets::TextureGL::get("data/ffthigh.png"));
 	} else {
 		_fftView->setActive(true);
@@ -381,7 +385,7 @@ void MainView::analysisPressed() {
 void MainView::usbPressed()
 {
     //connect/diconnect
-
+    
     if(_manager.hidMode())
     {
         // _manager.setSerialNumberOfChannels(1);
@@ -392,6 +396,21 @@ void MainView::usbPressed()
     }
     else
     {
+        if(_manager.fileMode()) { // end file mode when in file mode
+            delete _anaView;
+            _manager.initRecordingDevices();
+            _recordButton->setVisible(true);
+            _analysisButton->setVisible(false);
+            _anaView = NULL;
+        } else {
+            _audioView->setOffset(0);
+        }
+
+        if(_manager.paused())
+        {
+            _manager.setPaused(false);
+        }
+        
         if(!_manager.initHIDUSB())
         {
             std::cout<<"Can't open HID device. \n";
@@ -403,8 +422,6 @@ void MainView::usbPressed()
         }
         _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.png"));
         _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbdiscon.png"));
-        //_usbButton->setNormalTex(Widgets::TextureGL::get("data/usbconglow.png"));
-        //_usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconglow.png"));
 
     }
 
@@ -442,8 +459,6 @@ void MainView::paintEvent()
     {
         _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.png"));
         _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbdiscon.png"));
-        //_usbButton->setNormalTex(Widgets::TextureGL::get("data/usbconglow.png"));
-        //_usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconglow.png"));
         
         _usbButton->setSizeHint(Widgets::Size(53,48));
         //_usbButton->setSizeHint(Widgets::Size(48,48));

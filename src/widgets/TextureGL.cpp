@@ -54,6 +54,7 @@ void TextureGL::reload() {
 
 void TextureGL::bind() const
 {
+    
 	glBindTexture(GL_TEXTURE_2D, id);
 }
 
