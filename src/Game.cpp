@@ -25,80 +25,80 @@ Game::~Game() {
 
 
 void Game::loadResources() {
-	Widgets::TextureGL::load("data/pause.png");
-	Widgets::TextureGL::load("data/pausehigh.png");
-	Widgets::TextureGL::load("data/play.png");
-	Widgets::TextureGL::load("data/playhigh.png");
+	Widgets::TextureGL::load("data/pause.bmp");
+	Widgets::TextureGL::load("data/pausehigh.bmp");
+	Widgets::TextureGL::load("data/play.bmp");
+	Widgets::TextureGL::load("data/playhigh.bmp");
 
-	Widgets::TextureGL::load("data/forward.png");
-	Widgets::TextureGL::load("data/forwardhigh.png");
-	Widgets::TextureGL::load("data/backward.png");
-	Widgets::TextureGL::load("data/backwardhigh.png");
+	Widgets::TextureGL::load("data/forward.bmp");
+	Widgets::TextureGL::load("data/forwardhigh.bmp");
+	Widgets::TextureGL::load("data/backward.bmp");
+	Widgets::TextureGL::load("data/backwardhigh.bmp");
 
-	Widgets::TextureGL::load("data/config.png");
-	Widgets::TextureGL::load("data/confighigh.png");
-	Widgets::TextureGL::load("data/thresh.png");
-	Widgets::TextureGL::load("data/threshhigh.png");
-	Widgets::TextureGL::load("data/ekg.png");
-	Widgets::TextureGL::load("data/ekghigh.png");
-	Widgets::TextureGL::load("data/rec.png");
-	Widgets::TextureGL::load("data/rechigh.png");
-	Widgets::TextureGL::load("data/file.png");
-	Widgets::TextureGL::load("data/filehigh.png");
-	Widgets::TextureGL::load("data/analysis.png");
-	Widgets::TextureGL::load("data/analysishigh.png");
+	Widgets::TextureGL::load("data/config.bmp");
+	Widgets::TextureGL::load("data/confighigh.bmp");
+	Widgets::TextureGL::load("data/thresh.bmp");
+	Widgets::TextureGL::load("data/threshhigh.bmp");
+	Widgets::TextureGL::load("data/ekg.bmp");
+	Widgets::TextureGL::load("data/ekghigh.bmp");
+	Widgets::TextureGL::load("data/rec.bmp");
+	Widgets::TextureGL::load("data/rechigh.bmp");
+	Widgets::TextureGL::load("data/file.bmp");
+	Widgets::TextureGL::load("data/filehigh.bmp");
+	Widgets::TextureGL::load("data/analysis.bmp");
+	Widgets::TextureGL::load("data/analysishigh.bmp");
 	Widgets::TextureGL::load("data/fft.bmp");
-	Widgets::TextureGL::load("data/ffthigh.png");
+	Widgets::TextureGL::load("data/ffthigh.bmp");
 
-	Widgets::TextureGL::load("data/save.png");
-	Widgets::TextureGL::load("data/savehigh.png");
+	Widgets::TextureGL::load("data/save.bmp");
+	Widgets::TextureGL::load("data/savehigh.bmp");
 
-	Widgets::TextureGL::load("data/pin.png");
-	Widgets::TextureGL::load("data/threshpin.png");
-	Widgets::TextureGL::load("data/dropdown.png");
-	Widgets::TextureGL::load("data/gainup.png");
-	Widgets::TextureGL::load("data/gaindown.png");
+	Widgets::TextureGL::load("data/pin.bmp");
+	Widgets::TextureGL::load("data/threshpin.bmp");
+	Widgets::TextureGL::load("data/dropdown.bmp");
+	Widgets::TextureGL::load("data/gainup.bmp");
+	Widgets::TextureGL::load("data/gaindown.bmp");
 
-	Widgets::TextureGL::load("data/ckboxon.png");
-	Widgets::TextureGL::load("data/ckboxoff.png");
+	Widgets::TextureGL::load("data/ckboxon.bmp");
+	Widgets::TextureGL::load("data/ckboxoff.bmp");
 
-	Widgets::TextureGL::load("data/plotview.png");
-	Widgets::TextureGL::load("data/plotviewhigh.png");
-	Widgets::TextureGL::load("data/plotviewdown.png");
-	Widgets::TextureGL::load("data/plotviewdownhigh.png");
-	Widgets::TextureGL::load("data/disconnected.png");
-	Widgets::TextureGL::load("data/connected.png");
-    Widgets::TextureGL::load("data/usbcon.png");
-    Widgets::TextureGL::load("data/usbconhigh.png");
-    Widgets::TextureGL::load("data/usbdiscon.png");
-    Widgets::TextureGL::load("data/usbdisconhigh.png");
-	Widgets::TextureGL::load("data/heart.png");
-	Widgets::TextureGL::load("data/speaker.png");
-	Widgets::TextureGL::load("data/speakeroff.png");
-	Widgets::TextureGL::load("data/bncconn.png");
-	Widgets::TextureGL::load("data/bncconnhigh.png");
-	Widgets::TextureGL::load("data/rtimer.png");
-	Widgets::TextureGL::load("data/rtimerhigh.png");
-    Widgets::TextureGL::load("data/devbrd.png");
-    Widgets::TextureGL::load("data/devbrdhigh.png");
-    Widgets::TextureGL::load("data/okbtn.png");
-    Widgets::TextureGL::load("data/okbtnhigh.png");
-    Widgets::TextureGL::load("data/trigger.png");
-    Widgets::TextureGL::load("data/triggerhigh.png");
-    Widgets::TextureGL::load("data/e1.png");
-    Widgets::TextureGL::load("data/e2.png");
-    Widgets::TextureGL::load("data/e3.png");
-    Widgets::TextureGL::load("data/e4.png");
-    Widgets::TextureGL::load("data/e5.png");
-    Widgets::TextureGL::load("data/e6.png");
-    Widgets::TextureGL::load("data/e7.png");
-    Widgets::TextureGL::load("data/e8.png");
-    Widgets::TextureGL::load("data/e9.png");
+	Widgets::TextureGL::load("data/plotview.bmp");
+	Widgets::TextureGL::load("data/plotviewhigh.bmp");
+	Widgets::TextureGL::load("data/plotviewdown.bmp");
+	Widgets::TextureGL::load("data/plotviewdownhigh.bmp");
+	Widgets::TextureGL::load("data/disconnected.bmp");
+	Widgets::TextureGL::load("data/connected.bmp");
+    Widgets::TextureGL::load("data/usbcon.bmp");
+    Widgets::TextureGL::load("data/usbconhigh.bmp");
+    Widgets::TextureGL::load("data/usbdiscon.bmp");
+    Widgets::TextureGL::load("data/usbdisconhigh.bmp");
+	Widgets::TextureGL::load("data/heart.bmp");
+	Widgets::TextureGL::load("data/speaker.bmp");
+	Widgets::TextureGL::load("data/speakeroff.bmp");
+	Widgets::TextureGL::load("data/bncconn.bmp");
+	Widgets::TextureGL::load("data/bncconnhigh.bmp");
+	Widgets::TextureGL::load("data/rtimer.bmp");
+	Widgets::TextureGL::load("data/rtimerhigh.bmp");
+    Widgets::TextureGL::load("data/devbrd.bmp");
+    Widgets::TextureGL::load("data/devbrdhigh.bmp");
+    Widgets::TextureGL::load("data/okbtn.bmp");
+    Widgets::TextureGL::load("data/okbtnhigh.bmp");
+    Widgets::TextureGL::load("data/trigger.bmp");
+    Widgets::TextureGL::load("data/triggerhigh.bmp");
+    Widgets::TextureGL::load("data/e1.bmp");
+    Widgets::TextureGL::load("data/e2.bmp");
+    Widgets::TextureGL::load("data/e3.bmp");
+    Widgets::TextureGL::load("data/e4.bmp");
+    Widgets::TextureGL::load("data/e5.bmp");
+    Widgets::TextureGL::load("data/e6.bmp");
+    Widgets::TextureGL::load("data/e7.bmp");
+    Widgets::TextureGL::load("data/e8.bmp");
+    Widgets::TextureGL::load("data/e9.bmp");
     
-    Widgets::TextureGL::load("data/analysiscrossed.png");
-    Widgets::TextureGL::load("data/fftcrossed.png");
-    Widgets::TextureGL::load("data/threshcrossed.png");
-    Widgets::TextureGL::load("data/configcrossed.png");
+    Widgets::TextureGL::load("data/analysiscrossed.bmp");
+    Widgets::TextureGL::load("data/fftcrossed.bmp");
+    Widgets::TextureGL::load("data/threshcrossed.bmp");
+    Widgets::TextureGL::load("data/configcrossed.bmp");
     
 }
 

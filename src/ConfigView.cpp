@@ -23,8 +23,8 @@ namespace BackyardBrains {
 ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *parent) : Widget(parent), _manager(mngr), _audioView(audioView) {
 	Widgets::PushButton *closeButton = new Widgets::PushButton(this);
 	closeButton->clicked.connect(this, &ConfigView::closePressed);
-	closeButton->setNormalTex(Widgets::TextureGL::get("data/configcrossed.png"));
-	closeButton->setHoverTex(Widgets::TextureGL::get("data/configcrossed.png"));
+	closeButton->setNormalTex(Widgets::TextureGL::get("data/configcrossed.bmp"));
+	closeButton->setHoverTex(Widgets::TextureGL::get("data/configcrossed.bmp"));
 
 	Widgets::Label *topLabel = new Widgets::Label(this);
 	topLabel->setText("Config");
@@ -46,9 +46,9 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 
 		_muteCKBox = new Widgets::PushButton(group);
 		if(_manager.player().volume() == 0)
-			_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxon.png"));
+			_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
 		else
-			_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.png"));
+			_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
 		_muteCKBox->setSizeHint(Widgets::Size(16,16));
 		_muteCKBox->clicked.connect(this, &ConfigView::mutePressed);
 
@@ -124,13 +124,13 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
         _connectButton->clicked.connect(this, &ConfigView::connectPressed);
         if(_manager.serialMode())
         {
-            _connectButton->setNormalTex(Widgets::TextureGL::get("data/connected.png"));
-            _connectButton->setHoverTex(Widgets::TextureGL::get("data/connected.png"));
+            _connectButton->setNormalTex(Widgets::TextureGL::get("data/connected.bmp"));
+            _connectButton->setHoverTex(Widgets::TextureGL::get("data/connected.bmp"));
         }
         else
         {
-            _connectButton->setNormalTex(Widgets::TextureGL::get("data/disconnected.png"));
-            _connectButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.png"));
+            _connectButton->setNormalTex(Widgets::TextureGL::get("data/disconnected.bmp"));
+            _connectButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.bmp"));
         }
         _connectButton->setSizeHint(Widgets::Size(26,26));
         serialHbox->addWidget(_connectButton);
@@ -195,13 +195,13 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
         _hidButton->clicked.connect(this, &ConfigView::hidConnectPressed);
         if(_manager.hidMode())
         {
-            _hidButton->setNormalTex(Widgets::TextureGL::get("data/connected.png"));
-            _hidButton->setHoverTex(Widgets::TextureGL::get("data/connected.png"));
+            _hidButton->setNormalTex(Widgets::TextureGL::get("data/connected.bmp"));
+            _hidButton->setHoverTex(Widgets::TextureGL::get("data/connected.bmp"));
         }
         else
         {
-            _hidButton->setNormalTex(Widgets::TextureGL::get("data/disconnected.png"));
-            _hidButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.png"));
+            _hidButton->setNormalTex(Widgets::TextureGL::get("data/disconnected.bmp"));
+            _hidButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.bmp"));
         }
         _hidButton->setSizeHint(Widgets::Size(26,26));
 
@@ -230,8 +230,8 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
             _updateButton = new Widgets::PushButton(group);
             _updateButton->clicked.connect(this, &ConfigView::firmwareUpdatePressed);
 
-            _updateButton->setNormalTex(Widgets::TextureGL::get("data/disconnected.png"));
-            _updateButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.png"));
+            _updateButton->setNormalTex(Widgets::TextureGL::get("data/disconnected.bmp"));
+            _updateButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.bmp"));
             _updateButton->setSizeHint(Widgets::Size(26,26));
             updateHbox->addWidget(_updateButton);
             updateHbox->update();
@@ -277,8 +277,8 @@ void ConfigView::hidConnectPressed()
        // _manager.setSerialNumberOfChannels(1);
         _manager.disconnectFromHID();
 
-        _hidButton->setNormalTex(Widgets::TextureGL::get("data/connected.png"));
-        _hidButton->setHoverTex(Widgets::TextureGL::get("data/connected.png"));
+        _hidButton->setNormalTex(Widgets::TextureGL::get("data/connected.bmp"));
+        _hidButton->setHoverTex(Widgets::TextureGL::get("data/connected.bmp"));
         close();
     }
     else
@@ -292,8 +292,8 @@ void ConfigView::hidConnectPressed()
             box->setGeometry(Widgets::Rect(this->width()/2-250, this->height()/2-40, 500, 80));
             Widgets::Application::getInstance()->addPopup(box);
         }
-        _hidButton->setNormalTex(Widgets::TextureGL::get("data/disconnected.png"));
-        _hidButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.png"));
+        _hidButton->setNormalTex(Widgets::TextureGL::get("data/disconnected.bmp"));
+        _hidButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.bmp"));
         close();
     }
 }
@@ -342,14 +342,14 @@ void ConfigView::connectPressed()
     }
     if(_manager.serialMode())
     {
-        _connectButton->setNormalTex(Widgets::TextureGL::get("data/connected.png"));
-        _connectButton->setHoverTex(Widgets::TextureGL::get("data/connected.png"));
+        _connectButton->setNormalTex(Widgets::TextureGL::get("data/connected.bmp"));
+        _connectButton->setHoverTex(Widgets::TextureGL::get("data/connected.bmp"));
         close();
     }
     else
     {
-        _connectButton->setNormalTex(Widgets::TextureGL::get("data/disconnected.png"));
-        _connectButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.png"));
+        _connectButton->setNormalTex(Widgets::TextureGL::get("data/disconnected.bmp"));
+        _connectButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.bmp"));
         close();
 
     }
@@ -363,10 +363,10 @@ void ConfigView::closePressed() {
 
 void ConfigView::mutePressed() {
 	if(_manager.player().volume() == 0) {
-		_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.png"));
+		_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
 		_manager.player().setVolume(100);
 	} else {
-		_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxon.png"));
+		_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
 		_manager.player().setVolume(0);
 	}
 }

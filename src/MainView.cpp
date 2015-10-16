@@ -49,40 +49,40 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
     
     
 	_configButton = new Widgets::PushButton(this);
-	_configButton->setNormalTex(Widgets::TextureGL::get("data/config.png"));
-	_configButton->setHoverTex(Widgets::TextureGL::get("data/confighigh.png"));
+	_configButton->setNormalTex(Widgets::TextureGL::get("data/config.bmp"));
+	_configButton->setHoverTex(Widgets::TextureGL::get("data/confighigh.bmp"));
 	_configButton->clicked.connect(this, &MainView::configPressed);
 	threshButton = new Widgets::PushButton(this);
-	threshButton->setNormalTex(Widgets::TextureGL::get("data/thresh.png"));
-	threshButton->setHoverTex(Widgets::TextureGL::get("data/threshhigh.png"));
+	threshButton->setNormalTex(Widgets::TextureGL::get("data/thresh.bmp"));
+	threshButton->setHoverTex(Widgets::TextureGL::get("data/threshhigh.bmp"));
 	threshButton->clicked.connect(this, &MainView::threshPressed);
     threshButton->setRightPadding(5);
     threshButton->setSizeHint(Widgets::Size(53,48));
 
 	_analysisButton = new Widgets::PushButton(this);
-	_analysisButton->setNormalTex(Widgets::TextureGL::get("data/analysis.png"));
-	_analysisButton->setHoverTex(Widgets::TextureGL::get("data/analysishigh.png"));
+	_analysisButton->setNormalTex(Widgets::TextureGL::get("data/analysis.bmp"));
+	_analysisButton->setHoverTex(Widgets::TextureGL::get("data/analysishigh.bmp"));
 	_analysisButton->clicked.connect(this, &MainView::analysisPressed);
 	
     
 	_analysisButton->setVisible(false);
 
     _usbButton = new Widgets::PushButton(this);
-    _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.png"));
-    _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.png"));
+    _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.bmp"));
+    _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.bmp"));
     _usbButton->clicked.connect(this, &MainView::usbPressed);
     _usbButton->setVisible(false);
     _usbButton->setRightPadding(5);
     _usbButton->setSizeHint(Widgets::Size(0,0));
 
 	_recordButton = new Widgets::PushButton(this);
-	_recordButton->setNormalTex(Widgets::TextureGL::get("data/rec.png"));
-	_recordButton->setHoverTex(Widgets::TextureGL::get("data/rechigh.png"));
+	_recordButton->setNormalTex(Widgets::TextureGL::get("data/rec.bmp"));
+	_recordButton->setHoverTex(Widgets::TextureGL::get("data/rechigh.bmp"));
 	_recordButton->clicked.connect(this, &MainView::recordPressed);
 
 	_fftButton = new Widgets::PushButton(this);
 	_fftButton->setNormalTex(Widgets::TextureGL::get("data/fft.bmp"));
-	_fftButton->setHoverTex(Widgets::TextureGL::get("data/ffthigh.png"));
+	_fftButton->setHoverTex(Widgets::TextureGL::get("data/ffthigh.bmp"));
 	_fftButton->clicked.connect(this, &MainView::fftPressed);
     _fftButton->setRightPadding(5);
     _fftButton->setSizeHint(Widgets::Size(53,48));
@@ -90,26 +90,26 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
     
     
 	_fileButton = new Widgets::PushButton(this);
-	_fileButton->setNormalTex(Widgets::TextureGL::get("data/file.png"));
-	_fileButton->setHoverTex(Widgets::TextureGL::get("data/filehigh.png"));
+	_fileButton->setNormalTex(Widgets::TextureGL::get("data/file.bmp"));
+	_fileButton->setHoverTex(Widgets::TextureGL::get("data/filehigh.bmp"));
 	_fileButton->clicked.connect(this, &MainView::filePressed);
 
 	_pauseButton = new Widgets::PushButton(this);
 	_pauseButton->clicked.connect(this, &MainView::pausePressed);
 	_manager.pauseChanged.connect(this, &MainView::pausePressed);
-	_pauseButton->setNormalTex(Widgets::TextureGL::get("data/pause.png"));
-	_pauseButton->setHoverTex(Widgets::TextureGL::get("data/pausehigh.png"));
+	_pauseButton->setNormalTex(Widgets::TextureGL::get("data/pause.bmp"));
+	_pauseButton->setHoverTex(Widgets::TextureGL::get("data/pausehigh.bmp"));
 	_pauseButton->setSizeHint(Widgets::Size(64,64));
 
 	Widgets::PushButton * const backwardButton = new Widgets::PushButton(this);
-	backwardButton->setNormalTex(Widgets::TextureGL::get("data/backward.png"));
-	backwardButton->setHoverTex(Widgets::TextureGL::get("data/backwardhigh.png"));
+	backwardButton->setNormalTex(Widgets::TextureGL::get("data/backward.bmp"));
+	backwardButton->setHoverTex(Widgets::TextureGL::get("data/backwardhigh.bmp"));
 	backwardButton->setSizeHint(Widgets::Size(32,32));
 	backwardButton->clicked.connect(this, &MainView::backwardPressed);
 
 	_forwardButton = new Widgets::PushButton(this);
-	_forwardButton->setNormalTex(Widgets::TextureGL::get("data/forward.png"));
-	_forwardButton->setHoverTex(Widgets::TextureGL::get("data/forwardhigh.png"));
+	_forwardButton->setNormalTex(Widgets::TextureGL::get("data/forward.bmp"));
+	_forwardButton->setHoverTex(Widgets::TextureGL::get("data/forwardhigh.bmp"));
 	_forwardButton->setSizeHint(Widgets::Size(32,32));
 	_forwardButton->clicked.connect(this, &MainView::forwardPressed);
 
@@ -196,13 +196,13 @@ void MainView::triggerEvent()
 void MainView::pausePressed() {
 	if(_manager.paused()) {
 		_manager.setPaused(false);
-		_pauseButton->setNormalTex(Widgets::TextureGL::get("data/pause.png"));
-		_pauseButton->setHoverTex(Widgets::TextureGL::get("data/pausehigh.png"));
+		_pauseButton->setNormalTex(Widgets::TextureGL::get("data/pause.bmp"));
+		_pauseButton->setHoverTex(Widgets::TextureGL::get("data/pausehigh.bmp"));
 		_seekBar->setVisible(false);
 	} else {
 		_manager.setPaused(true);
-		_pauseButton->setNormalTex(Widgets::TextureGL::get("data/play.png"));
-		_pauseButton->setHoverTex(Widgets::TextureGL::get("data/playhigh.png"));
+		_pauseButton->setNormalTex(Widgets::TextureGL::get("data/play.bmp"));
+		_pauseButton->setHoverTex(Widgets::TextureGL::get("data/playhigh.bmp"));
 		_seekBar->setVisible(true);
 	}
 }
@@ -234,8 +234,8 @@ void MainView::forwardPressed() {
 void MainView::threshPressed() {
 	if(!_manager.threshMode()) {
         
-        threshButton->setNormalTex(Widgets::TextureGL::get("data/threshcrossed.png"));
-        threshButton->setHoverTex(Widgets::TextureGL::get("data/threshcrossed.png"));
+        threshButton->setNormalTex(Widgets::TextureGL::get("data/threshcrossed.bmp"));
+        threshButton->setHoverTex(Widgets::TextureGL::get("data/threshcrossed.bmp"));
 		_fftView->setActive(false);
 		_manager.setThreshMode(true);
 		_threshavgGroup->setVisible(true);
@@ -243,8 +243,8 @@ void MainView::threshPressed() {
 		_fftButton->setSizeHint(Widgets::Size(0,0));
 		_fftButton->setVisible(false);
 	} else {
-        threshButton->setNormalTex(Widgets::TextureGL::get("data/thresh.png"));
-        threshButton->setHoverTex(Widgets::TextureGL::get("data/threshhigh.png"));
+        threshButton->setNormalTex(Widgets::TextureGL::get("data/thresh.bmp"));
+        threshButton->setHoverTex(Widgets::TextureGL::get("data/threshhigh.bmp"));
 		_manager.setThreshMode(false);
 		_fftButton->setVisible(true);
 		_fftButton->setSizeHint(Widgets::Size(53,48));
@@ -308,11 +308,11 @@ void MainView::fftPressed() {
 	if(_fftView->active()) {
 		_fftView->setActive(false);
         _fftButton->setNormalTex(Widgets::TextureGL::get("data/fft.bmp"));
-        _fftButton->setHoverTex(Widgets::TextureGL::get("data/ffthigh.png"));
+        _fftButton->setHoverTex(Widgets::TextureGL::get("data/ffthigh.bmp"));
 	} else {
 		_fftView->setActive(true);
-        _fftButton->setNormalTex(Widgets::TextureGL::get("data/fftcrossed.png"));
-        _fftButton->setHoverTex(Widgets::TextureGL::get("data/fftcrossed.png"));
+        _fftButton->setNormalTex(Widgets::TextureGL::get("data/fftcrossed.bmp"));
+        _fftButton->setHoverTex(Widgets::TextureGL::get("data/fftcrossed.bmp"));
 	}
 
 	Widgets::Application::getInstance()->updateLayout();
@@ -390,8 +390,8 @@ void MainView::usbPressed()
     {
         // _manager.setSerialNumberOfChannels(1);
         _manager.disconnectFromHID();
-        _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.png"));
-        _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.png"));
+        _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.bmp"));
+        _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.bmp"));
 
     }
     else
@@ -420,8 +420,8 @@ void MainView::usbPressed()
             box->setGeometry(Widgets::Rect(this->width()/2-250, this->height()/2-40, 500, 80));
             Widgets::Application::getInstance()->addPopup(box);
         }
-        _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.png"));
-        _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbdiscon.png"));
+        _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.bmp"));
+        _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbdiscon.bmp"));
 
     }
 
@@ -457,8 +457,8 @@ void MainView::paintEvent()
     }
     if(_manager.hidMode())
     {
-        _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.png"));
-        _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbdiscon.png"));
+        _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.bmp"));
+        _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbdiscon.bmp"));
         
         _usbButton->setSizeHint(Widgets::Size(53,48));
         //_usbButton->setSizeHint(Widgets::Size(48,48));
@@ -468,8 +468,8 @@ void MainView::paintEvent()
     }
     else
     {
-        _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.png"));
-        _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.png"));
+        _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.bmp"));
+        _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.bmp"));
     }
 }
 

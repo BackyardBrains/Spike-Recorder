@@ -46,7 +46,7 @@ void ColorDropDownList::paintEvent() {
 
 	Widgets::Painter::drawRect(Widgets::Rect(2,2,SLICE_W-4, height()-4));
 
-	Widgets::TextureGL::get("data/dropdown.png")->bind();
+	Widgets::TextureGL::get("data/dropdown.bmp")->bind();
 	Widgets::Painter::setColor(Widgets::Colors::button);
 	Widgets::Painter::drawTexRect(Widgets::Rect(SLICE_W+2,height()/2-3,width()-SLICE_W-6, 6));
 	glBindTexture(GL_TEXTURE_2D, 0);

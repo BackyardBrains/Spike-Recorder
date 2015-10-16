@@ -25,8 +25,8 @@ ThresholdPanel::ThresholdPanel(RecordingManager &manager, Widgets::Widget *paren
     _triggerButton->clicked.connect(this, &ThresholdPanel::triggerPressed);
     
 	_ekgButton = new Widgets::PushButton(this);
-	_ekgButton->setNormalTex(Widgets::TextureGL::get("data/ekg.png"));
-	_ekgButton->setHoverTex(Widgets::TextureGL::get("data/ekghigh.png"));
+	_ekgButton->setNormalTex(Widgets::TextureGL::get("data/ekg.bmp"));
+	_ekgButton->setHoverTex(Widgets::TextureGL::get("data/ekghigh.bmp"));
 	_ekgButton->setSizeHint(Widgets::Size(42,32));
     _ekgButton->setRightPadding(10);
 	_ekgButton->clicked.connect(this, &ThresholdPanel::ekgPressed);
@@ -40,7 +40,7 @@ ThresholdPanel::ThresholdPanel(RecordingManager &manager, Widgets::Widget *paren
 	manager.triggered.connect(_ekgWidget,&EkgWidget::beat);
 	manager.thresholdChanged.connect(_ekgWidget, &EkgWidget::reset);
 	_speakerButton = new Widgets::PushButton(this);
-	_speakerButton->setNormalTex(Widgets::TextureGL::get("data/speakeroff.png"));
+	_speakerButton->setNormalTex(Widgets::TextureGL::get("data/speakeroff.bmp"));
 	_speakerButton->setSizeHint(Widgets::Size(20,20));
 	_speakerButton->clicked.connect(this, &ThresholdPanel::speakerPressed);
 
@@ -92,13 +92,13 @@ void ThresholdPanel::setTriggerButtonImage()
 {
     if(_manager->getThresholdSource()==0)
     {
-        _triggerButton->setNormalTex(Widgets::TextureGL::get("data/trigger.png"));
-        _triggerButton->setHoverTex(Widgets::TextureGL::get("data/triggerhigh.png"));
+        _triggerButton->setNormalTex(Widgets::TextureGL::get("data/trigger.bmp"));
+        _triggerButton->setHoverTex(Widgets::TextureGL::get("data/triggerhigh.bmp"));
     }
     else
     {
         std::stringstream s;
-        s << "data/e"<<_manager->getThresholdSource()<<".png";
+        s << "data/e"<<_manager->getThresholdSource()<<".bmp";
         _triggerButton->setNormalTex(Widgets::TextureGL::get(s.str().c_str()));
         _triggerButton->setHoverTex(Widgets::TextureGL::get(s.str().c_str()));
     }
@@ -117,8 +117,8 @@ void ThresholdPanel::paintEvent()
         int state = _switchLayout->selected();
        
         if(state) {
-            _ekgButton->setNormalTex(Widgets::TextureGL::get("data/ekg.png"));
-            _ekgButton->setHoverTex(Widgets::TextureGL::get("data/ekghigh.png"));
+            _ekgButton->setNormalTex(Widgets::TextureGL::get("data/ekg.bmp"));
+            _ekgButton->setHoverTex(Widgets::TextureGL::get("data/ekghigh.bmp"));
             _ekgWidget->setSound(0);
             _switchLayout->setSelected(!state);
         }
@@ -170,9 +170,9 @@ void ThresholdPanel::speakerPressed() {
 	_ekgWidget->setSound(!state);
 
 	if(state) {
-		_speakerButton->setNormalTex(Widgets::TextureGL::get("data/speakeroff.png"));
+		_speakerButton->setNormalTex(Widgets::TextureGL::get("data/speakeroff.bmp"));
 	} else {
-		_speakerButton->setNormalTex(Widgets::TextureGL::get("data/speaker.png"));
+		_speakerButton->setNormalTex(Widgets::TextureGL::get("data/speaker.bmp"));
 	}
 }
 
@@ -181,14 +181,14 @@ void ThresholdPanel::ekgPressed() {
 	_switchLayout->setSelected(!state);
 
 	if(state == 0) {
-		_ekgButton->setNormalTex(Widgets::TextureGL::get("data/thresh.png"));
-		_ekgButton->setHoverTex(Widgets::TextureGL::get("data/threshhigh.png"));
+		_ekgButton->setNormalTex(Widgets::TextureGL::get("data/thresh.bmp"));
+		_ekgButton->setHoverTex(Widgets::TextureGL::get("data/threshhigh.bmp"));
 
 		_avg->setValue(1);
         _triggerButton->setVisible(false);
 	} else {
-		_ekgButton->setNormalTex(Widgets::TextureGL::get("data/ekg.png"));
-		_ekgButton->setHoverTex(Widgets::TextureGL::get("data/ekghigh.png"));
+		_ekgButton->setNormalTex(Widgets::TextureGL::get("data/ekg.bmp"));
+		_ekgButton->setHoverTex(Widgets::TextureGL::get("data/ekghigh.bmp"));
 		_ekgWidget->setSound(0);
         _triggerButton->setVisible(true);
 	}
@@ -223,7 +223,7 @@ void EkgWidget::paintEvent() {
 	std::stringstream s;
 	s << "f = " << (int)(_frequency*60+0.5) <<"/min  \x7ft = " << 1/_frequency << " s";
 	Widgets::Application::font()->draw(s.str().c_str(), 0, height()/2, Widgets::AlignVCenter);
-	Widgets::TextureGL::get("data/heart.png")->bind();
+	Widgets::TextureGL::get("data/heart.bmp")->bind();
 	glPushMatrix();
 	glTranslatef(width()-height()/2-10,height()/2,0);
 	glScalef(_beatt*1.2, _beatt*1.2, 1);

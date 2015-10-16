@@ -11,7 +11,7 @@ AnalysisAudioView::AnalysisAudioView(RecordingManager &manager, SpikeSorter &spi
 
 void AnalysisAudioView::drawTargetMarkers() {
 	Widgets::Painter::setColor(MARKER_COLORS[_colorIdx % MARKER_COLOR_NUM]);
-	Widgets::TextureGL::get("data/threshpin.png")->bind();
+	Widgets::TextureGL::get("data/threshpin.bmp")->bind();
 
 	for(int i = 0; i < 2; i++) {
 		float y = ampToRelPos(_threshPos[i])*height();
@@ -104,7 +104,7 @@ void AnalysisAudioView::paintEvent() {
 		}
 	}
 
-	Widgets::TextureGL::get("data/pin.png")->bind();
+	Widgets::TextureGL::get("data/pin.bmp")->bind();
 	Widgets::Painter::drawTexRect(Widgets::Rect(MOVEPIN_SIZE/2, _channels[0].pos*height()-MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
 	glBindTexture(GL_TEXTURE_2D, 0);
 

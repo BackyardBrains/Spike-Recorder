@@ -11,8 +11,8 @@ GLuint LoadTexture(const char *filename)
 {
 	GLuint texture = 0;
 
-	SDL_Surface * const surface = IMG_Load(filename);
-    //SDL_Surface * const surface = SDL_LoadBMP(filename);
+	//SDL_Surface * const surface = IMG_Load(filename);
+    SDL_Surface * const surface = SDL_LoadBMP(filename);
     
 	if (surface)
 	{

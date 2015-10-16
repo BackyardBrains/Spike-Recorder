@@ -43,8 +43,8 @@ AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Wi
 
 	Widgets::PushButton *closeButton = new Widgets::PushButton(this);
 	closeButton->clicked.connect(this, &AnalysisView::closePressed);
-	closeButton->setNormalTex(Widgets::TextureGL::get("data/analysiscrossed.png"));
-	closeButton->setHoverTex(Widgets::TextureGL::get("data/analysiscrossed.png"));
+	closeButton->setNormalTex(Widgets::TextureGL::get("data/analysiscrossed.bmp"));
+	closeButton->setHoverTex(Widgets::TextureGL::get("data/analysiscrossed.bmp"));
 
 	Widgets::Label *label = new Widgets::Label(this);
 	label->setText("Spike Analysis");
@@ -60,13 +60,13 @@ AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Wi
 	Widgets::BoxLayout *addBox = new Widgets::BoxLayout(Widgets::Horizontal);
 
 	Widgets::PushButton *saveButton = new Widgets::PushButton(this);
-	saveButton->setNormalTex(Widgets::TextureGL::get("data/save.png"));
-	saveButton->setHoverTex(Widgets::TextureGL::get("data/savehigh.png"));
+	saveButton->setNormalTex(Widgets::TextureGL::get("data/save.bmp"));
+	saveButton->setHoverTex(Widgets::TextureGL::get("data/savehigh.bmp"));
 	saveButton->clicked.connect(this, &AnalysisView::savePressed);
 
 	_plotButton = new Widgets::PushButton(this);
-	_plotButton->setNormalTex(Widgets::TextureGL::get("data/plotview.png"));
-	_plotButton->setHoverTex(Widgets::TextureGL::get("data/plotviewhigh.png"));
+	_plotButton->setNormalTex(Widgets::TextureGL::get("data/plotview.bmp"));
+	_plotButton->setHoverTex(Widgets::TextureGL::get("data/plotviewhigh.bmp"));
 	_plotButton->setSizeHint(Widgets::Size(64,32));
 	_plotButton->clicked.connect(this, &AnalysisView::plotsPressed);
 
@@ -201,12 +201,12 @@ void AnalysisView::savePressed() {
 void AnalysisView::plotsPressed() {
 	if(_plots->active()) {
 		_plots->setActive(false);
-		_plotButton->setNormalTex(Widgets::TextureGL::get("data/plotview.png"));
-		_plotButton->setHoverTex(Widgets::TextureGL::get("data/plotviewhigh.png"));
+		_plotButton->setNormalTex(Widgets::TextureGL::get("data/plotview.bmp"));
+		_plotButton->setHoverTex(Widgets::TextureGL::get("data/plotviewhigh.bmp"));
 
 	} else {
-		_plotButton->setNormalTex(Widgets::TextureGL::get("data/plotviewdown.png"));
-		_plotButton->setHoverTex(Widgets::TextureGL::get("data/plotviewdownhigh.png"));
+		_plotButton->setNormalTex(Widgets::TextureGL::get("data/plotviewdown.bmp"));
+		_plotButton->setHoverTex(Widgets::TextureGL::get("data/plotviewdownhigh.bmp"));
 		_plots->setActive(true);
 	}
 }

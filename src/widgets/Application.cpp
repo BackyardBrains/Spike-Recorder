@@ -37,7 +37,7 @@ Application::Application() : _running(false), _mouseGrabber(0), _keyboardGrabber
 #endif
 
 	if (!_font) {
-		Widgets::TextureGL::load("data/ascii.png");
+		Widgets::TextureGL::load("data/ascii.bmp");
 		_font = new BitmapFontGL;
 	}
 

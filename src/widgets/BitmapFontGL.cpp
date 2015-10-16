@@ -13,7 +13,7 @@ static const int strideY = 16;
 
 BitmapFontGL::BitmapFontGL() {
 	Log::msg("Initializing font...");
-	characters = TextureGL::get("data/ascii.png");
+	characters = TextureGL::get("data/ascii.bmp");
 }
 
 int BitmapFontGL::characterWidth() const

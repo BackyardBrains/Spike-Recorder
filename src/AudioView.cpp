@@ -512,9 +512,9 @@ void AudioView::drawGainControls() {
 	if(_channels.size() == 0)
 		return;
 	int y = _channels[selectedChannel()].pos*height();
-	Widgets::TextureGL::get("data/gaindown.png")->bind();
+	Widgets::TextureGL::get("data/gaindown.bmp")->bind();
 	Widgets::Painter::drawTexRect(Widgets::Rect(GAINCONTROL_XOFF-GAINCONTROL_RAD,y+GAINCONTROL_YOFF-GAINCONTROL_RAD,2*GAINCONTROL_RAD,2*GAINCONTROL_RAD));
-	Widgets::TextureGL::get("data/gainup.png")->bind();
+	Widgets::TextureGL::get("data/gainup.bmp")->bind();
 	Widgets::Painter::drawTexRect(Widgets::Rect(GAINCONTROL_XOFF-GAINCONTROL_RAD,y-GAINCONTROL_YOFF-GAINCONTROL_RAD,2*GAINCONTROL_RAD,2*GAINCONTROL_RAD));
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
@@ -563,7 +563,7 @@ void AudioView::drawAudio() {
 
 			drawData(data, i, samples, xoff, yoff, screenw);
 
-			Widgets::TextureGL::get("data/pin.png")->bind();
+			Widgets::TextureGL::get("data/pin.bmp")->bind();
 			Widgets::Painter::drawTexRect(Widgets::Rect(MOVEPIN_SIZE/2, _channels[i].pos*height()-MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
 			glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -680,7 +680,7 @@ void AudioView::drawThreshold(int screenw) {
 	Widgets::Painter::setColor(COLORS[_channels[selectedChannel()].colorIdx]);
 
 	if(thresholdPos() > MOVEPIN_SIZE/2 && thresholdPos() < height() - MOVEPIN_SIZE/2) {
-		Widgets::TextureGL::get("data/threshpin.png")->bind();
+		Widgets::TextureGL::get("data/threshpin.bmp")->bind();
 		Widgets::Painter::drawTexRect(Widgets::Rect(width()-DATA_XOFF, thresholdPos()-MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
 		glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -697,7 +697,7 @@ void AudioView::drawThreshold(int screenw) {
 		}
 		drawScale();
 	} else {
-		Widgets::TextureGL::get("data/threshpin.png")->bind();
+		Widgets::TextureGL::get("data/threshpin.bmp")->bind();
 		glPushMatrix();
 
 		bool bottom = thresholdPos() > MOVEPIN_SIZE/2;

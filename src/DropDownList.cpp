@@ -104,7 +104,7 @@ void DropDownList::paintEvent()
  
 
         //Draw drop down arrow
-        Widgets::TextureGL::get("data/dropdown.png")->bind();
+        Widgets::TextureGL::get("data/dropdown.bmp")->bind();
         Widgets::Painter::setColor(Widgets::Colors::button);
         Widgets::Painter::drawTexRect(Widgets::Rect(width()-SLICE_W+2,height()/2-3,8, 6));
         glBindTexture(GL_TEXTURE_2D, 0);
