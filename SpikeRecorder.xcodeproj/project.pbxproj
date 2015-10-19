@@ -33,7 +33,7 @@
 		2421F0A31ACFE2B300927F19 /* SDL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2421F0A11ACFE2B300927F19 /* SDL.framework */; };
 		2421F0A51ACFE2BB00927F19 /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2421F0A11ACFE2B300927F19 /* SDL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		2421F0A71ACFE2C400927F19 /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2421F0A11ACFE2B300927F19 /* SDL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		244E176C1BD052C2007C9475 /* SDL_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 244E176B1BD052C2007C9475 /* SDL_image.framework */; settings = {ASSET_TAGS = (); }; };
+		244E176C1BD052C2007C9475 /* SDL_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 244E176B1BD052C2007C9475 /* SDL_image.framework */; };
 		244E176D1BD052D8007C9475 /* SDL_image.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 244E176B1BD052C2007C9475 /* SDL_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		244E176E1BD052E1007C9475 /* SDL_image.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 244E176B1BD052C2007C9475 /* SDL_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		248646421AB1FBAD003852AA /* Log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248646401AB1FBAD003852AA /* Log.cpp */; };
@@ -813,7 +813,7 @@
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				SDKROOT = macosx;
+				SDKROOT = macosx10.7;
 			};
 			name = Debug;
 		};
@@ -856,7 +856,7 @@
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				SDKROOT = macosx;
+				SDKROOT = macosx10.7;
 			};
 			name = Release;
 		};
