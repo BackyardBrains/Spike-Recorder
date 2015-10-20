@@ -12,6 +12,7 @@
 #include "Player.h"
 #include "ArduinoSerial.h"
 #include "HIDUsbManager.h"
+#include "FirmwareUpdater.h"
 #if defined(_WIN32)
 #include "BSLFirmwareUpdater.h"
 #endif
@@ -203,6 +204,7 @@ private:
 
     int _firmwareUpdateStage;
     #if defined(_WIN32)
+        FirmwareUpdater _xmlFirmwareUpdater;
         BSLFirmwareUpdater _bslFirmwareUpdater;
     #endif
 

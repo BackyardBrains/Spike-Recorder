@@ -100,12 +100,12 @@ namespace BackyardBrains {
     //
     void HIDUsbManager::testEscapeSequence(unsigned int newByte, int offset)
     {
-        
-       
-        
+
+
+
         if(weAreInsideEscapeSequence)
         {
-            
+
             if(messageBufferIndex>=SIZE_OF_MESSAGES_BUFFER)
             {
                 weAreInsideEscapeSequence = false; //end of escape sequence
@@ -243,7 +243,7 @@ namespace BackyardBrains {
                 offset = _audioView->offset();
             }*/
             _manager->addMarker(std::string(1, mnum+'0'), offset+offsetin);
-            
+
         }
         if(typeOfMessage == "BRD")
         {
@@ -316,7 +316,7 @@ namespace BackyardBrains {
 
         tempHeadAndTailDifference-=SIZE_OF_MAIN_CIRCULAR_BUFFER;
         while (ref->_deviceConnected) {
-            
+
             try{
                 numberOfFrames = ref->readOneBatch(buffer);
             }
@@ -324,14 +324,14 @@ namespace BackyardBrains {
             {
                 numberOfFrames = -1;
                 std::cout<<"Error on read 1";
-                
+
             }
             catch(...)
             {
                 numberOfFrames = -1;
                 std::cout<<"Error on read 2";
             }
-            
+
 
             if(numberOfFrames == -1)
             {
@@ -384,7 +384,7 @@ namespace BackyardBrains {
                 std::cout<<"Error while closing devices";
                 //hid_free_enumeration(devs);
             }
-            
+
             ref->handle = NULL;
             currentAddOnBoard = 0;
         }
@@ -412,14 +412,14 @@ namespace BackyardBrains {
         {
             size = -1;
             std::cout<<"Error on read 3";
-            
+
         }
         catch(...)
         {
             size = -1;
             std::cout<<"Error on read 4";
         }
-        
+
 
         if (size == 0)
         {
@@ -623,7 +623,7 @@ namespace BackyardBrains {
         }
         catch(std::exception &e)
         {
-            std::cout<<"Error while scanning VID/PID of devices 2";
+            std::cout<<"Error while scanning VID/PID of devices 2: "<<e.what();
            // hid_free_enumeration(devs);
         }
         catch(...)
