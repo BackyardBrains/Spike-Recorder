@@ -13,6 +13,7 @@
 #include "ArduinoSerial.h"
 #include "HIDUsbManager.h"
 #include "FirmwareUpdater.h"
+#include "BYBFirmwareVO.h"
 #if defined(_WIN32)
 #include "BSLFirmwareUpdater.h"
 #endif
@@ -135,6 +136,8 @@ public:
     void prepareForHIDFirmwareUpdate();
     int getUSBFirmwareUpdateStage();
     bool shouldStartFirmwareUpdatePresentation;
+    bool firmwareAvailable();
+    std::list<BYBFirmwareVO> firmwareList() const {return _xmlFirmwareUpdater.firmwares;}
     #endif
 
 
@@ -203,7 +206,7 @@ private:
     bool _hidDevicePresent;
 
     int _firmwareUpdateStage;
-  
+
         FirmwareUpdater _xmlFirmwareUpdater;
       #if defined(_WIN32)
         BSLFirmwareUpdater _bslFirmwareUpdater;

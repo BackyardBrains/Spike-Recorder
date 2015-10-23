@@ -4,6 +4,7 @@
 #include "widgets/Widget.h"
 #include "widgets/PushButton.h"
 #include "DropDownList.h"
+#include "BYBFirmwareVO.h"
 
 namespace BackyardBrains {
 
@@ -24,6 +25,9 @@ private:
 		void catchPort(int portidx) {
             _parent->serialPortChanged(_virtualDevice, portidx);
         }
+        void catchFirmwareSelection(int firmwareid) {
+            _parent->firmwareSelectionChanged(firmwareid);
+        }
         void setNumOfChannelsHandler(int selectionNum) {
             _parent->setSerialNumberOfChannels(selectionNum+1);
         }
@@ -40,9 +44,11 @@ private:
 	void colorChanged(int virtualDevice, int coloridx);
     void serialPortChanged(int virtualDevice, int portidx);
     void setSerialNumberOfChannels(int numberOfChannels);
+    void firmwareSelectionChanged(int firmwareid);
 	RecordingManager &_manager;
 	AudioView &_audioView;
     DropDownList *serialPortWidget;
+    DropDownList * firmwaresWidget;
     DropDownList * numberOfChannelsWidget;
     Widgets::PushButton *_connectButton;
     Widgets::PushButton *_hidButton;
@@ -50,13 +56,16 @@ private:
     #if defined(_WIN32)
     Widgets::PushButton *_updateButton;
     void firmwareUpdatePressed();
+
     #endif
+    typedef std::list<BYBFirmwareVO> listBYBFirmwareVO;
 
 	void paintEvent();
     void connectPressed();
     void hidConnectPressed();
 	void closePressed();
 	void mutePressed();
+
 
 };
 

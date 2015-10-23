@@ -215,29 +215,54 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 
         #if defined(_WIN32)
         //TODO:add decision based on available update and current version of firmware
-        if(_manager.hidMode() && false)//TODO:enable this when we find solution for firmware
+        if(_manager.hidMode())//TODO:enable this when we find solution for firmware
         {
-             Widgets::BoxLayout *updateHbox = new Widgets::BoxLayout(Widgets::Horizontal);
-            //USB  label
-            Widgets::Label *updateLabel = new Widgets::Label(group);
-            updateLabel->setText("Update firmware on Backyard Brains' device ");
-            updateLabel->updateSize();
-            updateHbox->addSpacing(0);
-            updateHbox->addWidget(updateLabel, Widgets::AlignLeft);
-            updateHbox->addSpacing(5);
 
-            //Button for connect to HID device
-            _updateButton = new Widgets::PushButton(group);
-            _updateButton->clicked.connect(this, &ConfigView::firmwareUpdatePressed);
+            if(_manager.firmwareAvailable())
+            {
+                     Widgets::BoxLayout *updateHbox = new Widgets::BoxLayout(Widgets::Horizontal);
+                    //Add label
+                    Widgets::Label *updateLabel = new Widgets::Label(group);
+                    updateLabel->setText("Update firmware on Backyard Brains' device ");
+                    updateLabel->updateSize();
+                    updateHbox->addSpacing(0);
+                    updateHbox->addWidget(updateLabel, Widgets::AlignLeft);
+                    updateHbox->addSpacing(5);
 
-            _updateButton->setNormalTex(Widgets::TextureGL::get("data/disconnected.bmp"));
-            _updateButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.bmp"));
-            _updateButton->setSizeHint(Widgets::Size(26,26));
-            updateHbox->addWidget(_updateButton);
-            updateHbox->update();
-            gvbox->addSpacing(20);
-            gvbox->addLayout(updateHbox);
+                    //Add dropbox
+                    firmwaresWidget = new DropDownList(group);
+                    firmwaresWidget->clear();
+                    std::list<BYBFirmwareVO> fps =  _manager.firmwareList();
 
+                    for( listBYBFirmwareVO::iterator ti = fps.begin();
+                        ti != fps.end();
+                        ti ++)
+                    {
+                        firmwaresWidget->addItem(((BYBFirmwareVO)(*ti)).version );
+                    }
+
+
+                    firmwaresWidget->setSelection(0);
+                    _catchers.push_back(SignalCatcher(_catchers.size(), this));
+                    firmwaresWidget->indexChanged.connect(&_catchers[_catchers.size()-1], &SignalCatcher::catchFirmwareSelection);
+                    updateHbox->addWidget(firmwaresWidget);
+
+
+
+                    //Button for update HID device
+                   /* _updateButton = new Widgets::PushButton(group);
+                    _updateButton->clicked.connect(this, &ConfigView::firmwareUpdatePressed);
+
+                    _updateButton->setNormalTex(Widgets::TextureGL::get("data/disconnected.bmp"));
+                    _updateButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.bmp"));
+                    _updateButton->setSizeHint(Widgets::Size(26,26));
+                    updateHbox->addWidget(_updateButton);
+
+                    */
+                    updateHbox->update();
+                    gvbox->addSpacing(20);
+                    gvbox->addLayout(updateHbox);
+            }
         }
         #endif
 
@@ -300,6 +325,13 @@ void ConfigView::hidConnectPressed()
 
 
 #if defined(_WIN32)
+
+void ConfigView::firmwareSelectionChanged(int firmwareid)
+{
+
+}
+
+
 //
 // Start firmware update procedure
 //

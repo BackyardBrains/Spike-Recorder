@@ -11,6 +11,10 @@ namespace BackyardBrains
             LoadXMLFile();
         }
 
+
+        //
+        //Parse XML file
+        //
         void FirmwareUpdater::LoadXMLFile()
         {
             XMLDocument doc;
@@ -87,14 +91,14 @@ namespace BackyardBrains
                 return;
             }
 
-            //find our version of software
+        //------- find our version of software
             XMLNode *softwareNode  = findChildWithName(rootnode, "software");
             if(softwareNode==NULL)
             {
                 logError("No softwareNode in XML. Wrong XML format.");
                 return;
             }
-            
+
             XMLNode *buildNode = softwareNode ->FirstChild();
             while(buildNode!=NULL)
             {
@@ -122,8 +126,8 @@ namespace BackyardBrains
                                     if(idElement)
                                     {
                                         int idToAdd = atoi(idElement->GetText());
-                                        
-                                    
+
+
                                         for( listBYBFirmwareVO::iterator ti = allFirmwares.begin();
                                             ti != allFirmwares.end();
                                             ti ++)
@@ -134,7 +138,7 @@ namespace BackyardBrains
                                                 break;
                                             }
                                         }
-                                        
+
                                     }
                                 }
                                 idNode = idNode->NextSibling();
@@ -143,12 +147,9 @@ namespace BackyardBrains
                         }
                     }
                 }
-                
+
                 buildNode = buildNode->NextSibling();
             }
-
-
-
         }
 
 //============================ Utility functions ========================================

@@ -144,7 +144,7 @@ void RecordingManager::clear() {
 //--------------- Periferals ------------------------------
 void RecordingManager::sendEKGImpuls()
 {
-    
+
     clock_t end = clock();
     double elapsed_secs = double(end - timerEKG) / CLOCKS_PER_SEC;
     if(elapsed_secs>0.03)
@@ -152,7 +152,7 @@ void RecordingManager::sendEKGImpuls()
         timerEKG = end;
       //  _arduinoSerial.sendEventMessage(0);
     }
-    
+
 }
 
 
@@ -304,6 +304,13 @@ void RecordingManager::scanUSBDevices()
 // Integer value represent stage of update
 //
 #if defined(_WIN32)
+
+bool  RecordingManager::firmwareAvailable()
+{
+    return _xmlFirmwareUpdater.firmwares.size()>0;
+
+}
+
 int RecordingManager::getUSBFirmwareUpdateStage()
 {
 
