@@ -42,42 +42,42 @@ namespace BackyardBrains
                 {
 
                     //Parse one Firmware node and put into value-object
-                    BYBFirmwareVO newFirmware;
+                    BYBFirmwareVO * newFirmware = new BYBFirmwareVO();
                     //go through all properties of one firmware
                     XMLElement * idNode = findChildWithName(firmwareNode, "id")->ToElement();
                     if(idNode)
                     {
-                        newFirmware.id = atoi(idNode->GetText());
+                        newFirmware->id = atoi(idNode->GetText());
                     }
 
                     XMLElement * versionNode = findChildWithName(firmwareNode, "version")->ToElement();
                     if(versionNode)
                     {
-                        newFirmware.version = versionNode->GetText();
+                        newFirmware->version = std::string( versionNode->GetText());
                     }
 
                     XMLElement * descNode = findChildWithName(firmwareNode, "desc")->ToElement();
                     if(descNode)
                     {
-                        newFirmware.description = descNode->GetText();
+                        newFirmware->description =std::string( descNode->GetText());
                     }
 
                     XMLElement * typeNode = findChildWithName(firmwareNode, "type")->ToElement();
                     if(typeNode)
                     {
-                        newFirmware.type = typeNode->GetText();
+                        newFirmware->type = std::string(typeNode->GetText());
                     }
 
                     XMLElement * urlNode = findChildWithName(firmwareNode, "url")->ToElement();
                     if(urlNode)
                     {
-                        newFirmware.URL = urlNode->GetText();
+                        newFirmware->URL = std::string(urlNode->GetText());
                     }
 
                     //add to list of firmwares
-                    if(newFirmware.id!=0)
+                    if(newFirmware->id!=0)
                     {
-                        allFirmwares.push_back(newFirmware);
+                        allFirmwares.push_back((*newFirmware));
                     }
                 }
 
@@ -134,7 +134,13 @@ namespace BackyardBrains
                                         {
                                             if(ti->id == idToAdd)
                                             {
-                                                firmwares.push_back((*ti));
+                                                BYBFirmwareVO tempBYBFirmware;
+                                                tempBYBFirmware.description = ((BYBFirmwareVO)(*ti)).description;
+                                                tempBYBFirmware.URL =((BYBFirmwareVO)(*ti)).URL;
+                                                tempBYBFirmware.version = ((BYBFirmwareVO)(*ti)).version;
+                                                tempBYBFirmware.type = ((BYBFirmwareVO)(*ti)).type;
+                                                tempBYBFirmware.id = ((BYBFirmwareVO)(*ti)).id;
+                                                firmwares.push_back(tempBYBFirmware);
                                                 break;
                                             }
                                         }

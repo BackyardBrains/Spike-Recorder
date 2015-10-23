@@ -130,6 +130,7 @@ public:
     void swapRTRepeating();
     void reloadHID();
     bool _HIDShouldBeReloaded;
+    std::string currentHIDFirmwareVersion() {return _hidUsbManager.firmwareVersion;}
 
 
     #if defined(_WIN32)

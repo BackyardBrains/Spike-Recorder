@@ -223,14 +223,18 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
                      Widgets::BoxLayout *updateHbox = new Widgets::BoxLayout(Widgets::Horizontal);
                     //Add label
                     Widgets::Label *updateLabel = new Widgets::Label(group);
-                    updateLabel->setText("Update firmware on Backyard Brains' device ");
+
+                    std::stringstream labelTextString;
+                    labelTextString <<"Change firmware (current version V"<< _manager.currentHIDFirmwareVersion()<<"):";
+
+                    updateLabel->setText(labelTextString.str().c_str());
                     updateLabel->updateSize();
                     updateHbox->addSpacing(0);
                     updateHbox->addWidget(updateLabel, Widgets::AlignLeft);
                     updateHbox->addSpacing(5);
 
                     //Add dropbox
-                    firmwaresWidget = new DropDownList(group);
+                    firmwaresWidget = new DropDownList(group,400,30);
                     firmwaresWidget->clear();
                     std::list<BYBFirmwareVO> fps =  _manager.firmwareList();
 
@@ -238,30 +242,38 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
                         ti != fps.end();
                         ti ++)
                     {
-                        firmwaresWidget->addItem(((BYBFirmwareVO)(*ti)).version );
+                        std::stringstream sstm;
+                         sstm <<((BYBFirmwareVO)(*ti)).description << " (V" << ((BYBFirmwareVO)(*ti)).version <<")";
+
+                        firmwaresWidget->addItem(sstm.str().c_str() );
                     }
 
 
                     firmwaresWidget->setSelection(0);
+                    firmwaresWidget->setDisabled(false);
                     _catchers.push_back(SignalCatcher(_catchers.size(), this));
                     firmwaresWidget->indexChanged.connect(&_catchers[_catchers.size()-1], &SignalCatcher::catchFirmwareSelection);
-                    updateHbox->addWidget(firmwaresWidget);
+                     Widgets::BoxLayout *updateSelectionHbox = new Widgets::BoxLayout(Widgets::Horizontal);
+                    updateSelectionHbox->addWidget(firmwaresWidget);
 
 
 
                     //Button for update HID device
-                   /* _updateButton = new Widgets::PushButton(group);
+                    _updateButton = new Widgets::PushButton(group);
                     _updateButton->clicked.connect(this, &ConfigView::firmwareUpdatePressed);
 
                     _updateButton->setNormalTex(Widgets::TextureGL::get("data/disconnected.bmp"));
                     _updateButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.bmp"));
                     _updateButton->setSizeHint(Widgets::Size(26,26));
-                    updateHbox->addWidget(_updateButton);
+                    updateSelectionHbox->addSpacing(5);
+                    updateSelectionHbox->addWidget(_updateButton);
 
-                    */
-                    updateHbox->update();
+
+                    updateSelectionHbox->update();
                     gvbox->addSpacing(20);
                     gvbox->addLayout(updateHbox);
+                    gvbox->addLayout(updateSelectionHbox);
+                    //gvbox->addWidget(firmwaresWidget);
             }
         }
         #endif

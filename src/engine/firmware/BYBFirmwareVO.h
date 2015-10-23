@@ -1,17 +1,17 @@
 #ifndef BYBFIRMWAREVO_H
 #define BYBFIRMWAREVO_H
-
+#include <string>
 namespace BackyardBrains {
 class BYBFirmwareVO
 {
     public:
         BYBFirmwareVO();
         int id;
-        const char * description;
-        const char * version;
-        const char * type;
-        const char * URL;
-        const char * filepath;
+        std::string description;
+        std::string version;
+        std::string type;
+        std::string URL;
+        std::string filepath;
     protected:
     private:
 };
