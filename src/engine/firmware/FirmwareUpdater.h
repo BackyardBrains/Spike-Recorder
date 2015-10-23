@@ -19,6 +19,9 @@ namespace BackyardBrains {
             bool checkNodeName(tinyxml2::XMLNode * node, const char * name);
             tinyxml2::XMLNode * findChildWithName(tinyxml2::XMLNode * parentNode, const char * name);
             void logError(const char * errorMessage);
+        
+            typedef std::list<BYBFirmwareVO> listBYBFirmwareVO;
+
     };
 }
 #endif // FIRMWAREUPDATER_H

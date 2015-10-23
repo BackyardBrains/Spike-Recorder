@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<compatibility>
+	<software>
+		<build>
+			<version>1.4.0</version>
+			<firmwares>
+				<id>1</id>
+				<id>3</id>
+			</firmwares>
+		</build>
+		<build>
+			<version>1.5.0</version>
+			<firmwares>
+				<id>2</id>
+				<id>3</id>
+			</firmwares>
+		</build>
+	</software>
+	<firmwares>
+		<firmware>
+			<id>1</id>
+			<version>0.01</version>
+			<desc>First version</desc>
+			<type>HID</type>
+			<url>http://unit.rs/stanislav/firmware/f0_01.txt</url>
+		</firmware>
+		<firmware>
+			<id>2</id>
+			<version>0.02</version>
+			<desc>Version with update</desc>
+			<type>HID</type>
+			<url>http://unit.rs/stanislav/firmware/f0_02.txt</url>
+		</firmware>
+		<firmware>
+			<id>3</id>
+			<version>0.03</version>
+			<desc>New version</desc>
+			<type>HID</type>
+			<url>http://unit.rs/stanislav/firmware/f0_03.txt</url>
+		</firmware>
+	</firmwares>
+</compatibility>

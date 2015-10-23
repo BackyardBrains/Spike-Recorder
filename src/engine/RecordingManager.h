@@ -203,8 +203,9 @@ private:
     bool _hidDevicePresent;
 
     int _firmwareUpdateStage;
-    #if defined(_WIN32)
+  
         FirmwareUpdater _xmlFirmwareUpdater;
+      #if defined(_WIN32)
         BSLFirmwareUpdater _bslFirmwareUpdater;
     #endif
 

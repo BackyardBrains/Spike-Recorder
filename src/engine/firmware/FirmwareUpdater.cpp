@@ -30,7 +30,7 @@ namespace BackyardBrains
             }
 
             //get list of firmwares
-
+            std::list<BYBFirmwareVO> allFirmwares;
             XMLNode *firmwareNode = firmwaresNode ->FirstChild();
             while(firmwareNode!=NULL)
             {
@@ -73,7 +73,7 @@ namespace BackyardBrains
                     //add to list of firmwares
                     if(newFirmware.id!=0)
                     {
-                        firmwares.push_back(newFirmware);
+                        allFirmwares.push_back(newFirmware);
                     }
                 }
 
@@ -81,12 +81,71 @@ namespace BackyardBrains
             }
 
             //check if we found some firmwares
-            if(firmwares.size()==0)
+            if(allFirmwares.size()==0)
             {
                 logError("No firmwares in XML");
                 return;
             }
 
+            //find our version of software
+            XMLNode *softwareNode  = findChildWithName(rootnode, "software");
+            if(softwareNode==NULL)
+            {
+                logError("No softwareNode in XML. Wrong XML format.");
+                return;
+            }
+            
+            XMLNode *buildNode = softwareNode ->FirstChild();
+            while(buildNode!=NULL)
+            {
+                if( checkNodeName(buildNode, "build"))
+                {
+                    XMLElement * versionElement  = findChildWithName(buildNode, "version")->ToElement();
+                    if(versionElement)
+                    {
+                        if(std::string(versionElement->GetText()).compare(CURRENT_VERSION_STRING)==0)
+                        {
+                            //found our version
+                            XMLNode * tempFirmwaresNode  = findChildWithName(buildNode, "firmwares");
+                            if(tempFirmwaresNode==NULL)
+                            {
+                                logError("No firmwares for our version of software in XML.");
+                                return;
+                            }
+                            //find all the IDs of the firmwares that are compatibile with our version
+                            XMLNode *idNode = tempFirmwaresNode ->FirstChild();
+                            while(idNode!=NULL)
+                            {
+                                if( checkNodeName(idNode, "id"))
+                                {
+                                    XMLElement * idElement = idNode->ToElement();
+                                    if(idElement)
+                                    {
+                                        int idToAdd = atoi(idElement->GetText());
+                                        
+                                    
+                                        for( listBYBFirmwareVO::iterator ti = allFirmwares.begin();
+                                            ti != allFirmwares.end();
+                                            ti ++)
+                                        {
+                                            if(ti->id == idToAdd)
+                                            {
+                                                firmwares.push_back((*ti));
+                                                break;
+                                            }
+                                        }
+                                        
+                                    }
+                                }
+                                idNode = idNode->NextSibling();
+                            }
+                            break;
+                        }
+                    }
+                }
+                
+                buildNode = buildNode->NextSibling();
+            }
 
 
         }
@@ -126,7 +185,7 @@ namespace BackyardBrains
             {
                 return false;
             }
-            if(std::string(node->Value()).compare(name))
+            if((std::string(node->Value()).compare(name))==0)
             {
                 return true;
             }
