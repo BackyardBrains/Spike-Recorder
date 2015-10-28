@@ -134,10 +134,11 @@ public:
 
 
     #if defined(_WIN32)
-    void prepareForHIDFirmwareUpdate();
+    int prepareForHIDFirmwareUpdate(BYBFirmwareVO * firmwareToUpdate);
     int getUSBFirmwareUpdateStage();
     bool shouldStartFirmwareUpdatePresentation;
     bool firmwareAvailable();
+    int finishAndCleanFirmwareUpdate();
     std::list<BYBFirmwareVO> firmwareList() const {return _xmlFirmwareUpdater.firmwares;}
     #endif
 

@@ -271,7 +271,10 @@ bool RecordingManager::hidDevicePresent()
 void RecordingManager::scanForHIDDevices()
 {
     try{
-        _hidUsbManager.getAllDevicesList();
+        if(_firmwareUpdateStage<1)
+        {
+            _hidUsbManager.getAllDevicesList();
+        }
     }catch(int e)
     {
        std::cout<<"Error while scanning HID devices\n";
@@ -307,6 +310,7 @@ void RecordingManager::scanUSBDevices()
 
 bool  RecordingManager::firmwareAvailable()
 {
+
     return _xmlFirmwareUpdater.firmwares.size()>0;
 
 }
@@ -326,20 +330,34 @@ int RecordingManager::getUSBFirmwareUpdateStage()
 
 }
 
+int RecordingManager::finishAndCleanFirmwareUpdate()
+{
+    _firmwareUpdateStage = 0;
+    _bslFirmwareUpdater.currentStage = 0;
+}
+
+
 //
 // Initialize update of firmware
 //
-void RecordingManager::prepareForHIDFirmwareUpdate()
+int RecordingManager::prepareForHIDFirmwareUpdate(BYBFirmwareVO * firmwareToUpdate)
 {
+
+
+         //download selected firmware from BYB server
+        if(_xmlFirmwareUpdater.downloadFirmware(firmwareToUpdate))
+        {
+            //if we have error while downloading the selected firmware
+            return 1;
+        }
 
         _firmwareUpdateStage = 1;
         shouldStartFirmwareUpdatePresentation = true;
         _hidUsbManager.putInFirmwareUpdateMode();
-
         _bslFirmwareUpdater.customSelectedFirmware("newfirmware.txt");
 
 
-
+        return 0;
 }
 #endif
 
@@ -1132,7 +1150,9 @@ void RecordingManager::advance(uint32_t samples) {
         }
         else
         {
+
             advanceHidMode(samples);
+
         }
         return;
     }

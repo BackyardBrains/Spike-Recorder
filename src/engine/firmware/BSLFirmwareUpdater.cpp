@@ -141,6 +141,7 @@ namespace BackyardBrains {
 
  void BSLFirmwareUpdater::updateThread(BSLFirmwareUpdater * ref)
 {
+
       sendNotification("Update starting",1);
 
 

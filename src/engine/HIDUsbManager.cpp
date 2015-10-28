@@ -585,40 +585,35 @@ namespace BackyardBrains {
         {
             if((!_deviceConnected) )
             {
+                std::cout<<"Call HID exit... \n";
                 hid_exit();
             }
             list.clear();
             struct hid_device_info *devs, *cur_dev;
-           // std::cout<<"Scan for HID devices... \n";
+            std::cout<<"Scan for HID devices... \n";
             devs = hid_enumerate(0x0, 0x0);
-           // std::cout<<"HID After scan \n";
+            std::cout<<"HID After scan \n";
             cur_dev = devs;
             while (cur_dev) {
-                    // std::cout<<"HID while \n";
-                    std::string nameOfHID((char *) cur_dev->product_string);
-              //  std::cout<<"Name took \n";
-                if(cur_dev->vendor_id == BYB_VID)
+                //check VID and PID
+                std::cout<<"Check VID, check PID \n";
+                if((cur_dev->vendor_id == BYB_VID) && (cur_dev->product_id == BYB_PID))
                 {
-                    // std::cout<<"HID inside if \n";
-                    list.push_back(nameOfHID);
+                     std::cout<<"HID while \n";
+                     std::string nameOfHID((char *) cur_dev->product_string);
+                     std::cout<<"Name took \n";
 
-                         std::cout<<"HID device: "<<cur_dev->vendor_id<<", "<<cur_dev->product_string<<"\n";
+                     list.push_back(nameOfHID);
+                     std::cout<<"HID name added to list \n";
+                     std::cout<<"HID device: "<<cur_dev->vendor_id<<", "<<cur_dev->product_string<<"\n";
 
 
 
                 }
-
-               /* printf("Device Found\n  type: %04hx %04hx\n  path: %s\n  serial_number: %ls", cur_dev->vendor_id, cur_dev->product_id, cur_dev->path, cur_dev->serial_number);
-                printf("\n");
-                printf("  Manufacturer: %ls\n", cur_dev->manufacturer_string);
-                printf("  Product:      %ls\n", cur_dev->product_string);
-                printf("  Release:      %hx\n", cur_dev->release_number);
-                printf("  Interface:    %d\n",  cur_dev->interface_number);
-                printf("\n");*/
-                // std::cout<<"Next device \n";
+                 std::cout<<"Next device \n";
                 cur_dev = cur_dev->next;
             }
-            // std::cout<<"Free enumeration \n";
+             std::cout<<"Free enumeration \n";
             hid_free_enumeration(devs);
         }
         catch(std::exception &e)

@@ -9,6 +9,7 @@
 	#include "mingw.thread.h"
 	#include "BSL430_dll.h"
     #include "CRC.h"
+    #include "FirmwareUpdater.h"
 #else
 	#include <unistd.h>
 	#include <thread>
@@ -34,6 +35,7 @@ class BSLFirmwareUpdater
     void eraseDataSegment_File( const char * fileName );
     void sendNotification(const char * notificationMessage,int stage);
     void sendErrorNotification(const char * errorMessage);
+    BYBFirmwareVO * newFirmwareObject;
     private:
 }; //class end
 

@@ -46,8 +46,8 @@ namespace BackyardBrains {
 
          closeButton = new Widgets::PushButton(group);
         closeButton->clicked.connect(this, &FirmwareUpdateView::closePressed);
-        closeButton->setNormalTex(Widgets::TextureGL::get("data/okbtn.png"));
-        closeButton->setHoverTex(Widgets::TextureGL::get("data/okbtnhigh.png"));
+        closeButton->setNormalTex(Widgets::TextureGL::get("data/okbtn.bmp"));
+        closeButton->setHoverTex(Widgets::TextureGL::get("data/okbtnhigh.bmp"));
 
         //add label to child horizontal layout
         repeatbox->addSpacing(180);
@@ -115,6 +115,7 @@ namespace BackyardBrains {
 
     //Close view
     void FirmwareUpdateView::closePressed() {
+        _manager.finishAndCleanFirmwareUpdate();
         close();
     }
 

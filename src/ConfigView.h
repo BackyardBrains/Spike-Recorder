@@ -56,7 +56,7 @@ private:
     #if defined(_WIN32)
     Widgets::PushButton *_updateButton;
     void firmwareUpdatePressed();
-
+    BYBFirmwareVO * selectedFirmware;
     #endif
     typedef std::list<BYBFirmwareVO> listBYBFirmwareVO;
 

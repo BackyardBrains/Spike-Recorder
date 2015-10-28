@@ -250,6 +250,12 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 
 
                     firmwaresWidget->setSelection(0);
+
+                    selectedFirmware = new BYBFirmwareVO();
+                    selectedFirmware->URL = std::string((_manager.firmwareList().front()).URL);
+                    selectedFirmware->filepath = std::string((_manager.firmwareList().front()).filepath);
+                    selectedFirmware->id = (_manager.firmwareList().front()).id;
+
                     firmwaresWidget->setDisabled(false);
                     _catchers.push_back(SignalCatcher(_catchers.size(), this));
                     firmwaresWidget->indexChanged.connect(&_catchers[_catchers.size()-1], &SignalCatcher::catchFirmwareSelection);
@@ -340,7 +346,24 @@ void ConfigView::hidConnectPressed()
 
 void ConfigView::firmwareSelectionChanged(int firmwareid)
 {
+     std::list<BYBFirmwareVO> fps =  _manager.firmwareList();
 
+    int i = 0;
+    for( listBYBFirmwareVO::iterator ti = fps.begin();
+        ti != fps.end();
+        ti ++)
+    {
+        if(i==firmwareid)
+        {
+            //selectedFirmware = (BYBFirmwareVO*)&(*ti);
+            selectedFirmware = new BYBFirmwareVO();
+            selectedFirmware->URL = std::string((*ti).URL);
+            selectedFirmware->filepath = std::string((*ti).filepath);
+            selectedFirmware->id = (*ti).id;
+            break;
+        }
+        i++;
+    }
 }
 
 
@@ -351,8 +374,18 @@ void ConfigView::firmwareUpdatePressed()
 {
     if(_manager.getUSBFirmwareUpdateStage() == 0)//avoid starting it twice
     {
-    //send message to MSP to prepare for update
-        _manager.prepareForHIDFirmwareUpdate();
+        //send message to MSP to prepare for update
+        std::cout<<"\n\n\n"<<"Firmware URL: "<<selectedFirmware->URL<<"\n\n\n";
+        if(_manager.prepareForHIDFirmwareUpdate(selectedFirmware))
+        {
+            std::cout<<"Error downloading firmware";
+
+            const char *error = "Error while downloading firmware.\n  Check your Internet connection.";
+            Widgets::ErrorBox *box = new Widgets::ErrorBox(error);
+            box->setGeometry(Widgets::Rect(this->width()/2-150, this->height()/2-40, 300, 80));
+            Widgets::Application::getInstance()->addPopup(box);
+
+        }
         close();
     }
 }

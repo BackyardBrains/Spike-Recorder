@@ -1,6 +1,8 @@
 #include "FirmwareUpdater.h"
 
-#include <iostream>
+#define ADDRESS_TO_COMPAT_XML "http://unit.rs/stanislav/compatibility.xml"
+#define NEW_FIRMWARE_FILENAME "newfirmware.txt"
+#include "curl/curl.h"
 using namespace tinyxml2;
 
 namespace BackyardBrains
@@ -8,8 +10,74 @@ namespace BackyardBrains
 
         FirmwareUpdater::FirmwareUpdater()
         {
-            LoadXMLFile();
+             downloadCompatibilityXML();
+             LoadXMLFile();
+
         }
+
+        void FirmwareUpdater::downloadCompatibilityXML()
+        {
+            CURL *curl;
+            FILE *fp;
+            CURLcode res;
+            char *url = ADDRESS_TO_COMPAT_XML;
+            char outfilename[FILENAME_MAX] = "compatibility.xml";
+            curl = curl_easy_init();
+            if (curl) {
+                fp = fopen(outfilename,"wb");
+                curl_easy_setopt(curl, CURLOPT_URL, url);
+                curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &FirmwareUpdater::write_data);
+                curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+                res = curl_easy_perform(curl);
+                // always cleanup
+                curl_easy_cleanup(curl);
+                fclose(fp);
+            }
+        }
+
+        int FirmwareUpdater::downloadFirmware(BYBFirmwareVO * firmwareInfo)
+        {
+            CURL *curl;
+            FILE *fp;
+            CURLcode res;
+
+
+            char *url = new char[firmwareInfo->URL.length() + 1];
+            strcpy(url, firmwareInfo->URL.c_str());
+            char outfilename[FILENAME_MAX] = NEW_FIRMWARE_FILENAME;
+            curl = curl_easy_init();
+            if (curl) {
+                fp = fopen(outfilename,"wb");
+                curl_easy_setopt(curl, CURLOPT_URL, url);
+                curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &FirmwareUpdater::write_data);
+                curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+                res = curl_easy_perform(curl);
+                // always cleanup
+                curl_easy_cleanup(curl);
+                fclose(fp);
+            }
+            if(res==CURLE_OK)
+            {
+                return 0;//all ok
+            }
+            else
+            {
+                return 1;//error while downloading
+            }
+        }
+
+
+        size_t FirmwareUpdater::write_data(void *ptr, size_t size, size_t nmemb, FILE *stream, void *p)
+        {
+            return static_cast<FirmwareUpdater*>(p)->write_data_impl(ptr, size, nmemb, stream);
+        }
+
+        size_t FirmwareUpdater::write_data_impl(void *ptr, size_t size, size_t nmemb, FILE *stream) {
+            size_t written = fwrite(ptr, size, nmemb, stream);
+            return written;
+        }
+
+
 
 
         //
@@ -21,6 +89,7 @@ namespace BackyardBrains
             if(doc.LoadFile("compatibility.xml")!= XML_NO_ERROR)
             {
                 logError("Can not load XML file");
+                return;
             }
             XMLElement *rootnode = doc.RootElement();
 
@@ -73,6 +142,8 @@ namespace BackyardBrains
                     {
                         newFirmware->URL = std::string(urlNode->GetText());
                     }
+
+                    newFirmware->filepath = std::string(NEW_FIRMWARE_FILENAME);
 
                     //add to list of firmwares
                     if(newFirmware->id!=0)
