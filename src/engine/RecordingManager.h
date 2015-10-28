@@ -12,10 +12,11 @@
 #include "Player.h"
 #include "ArduinoSerial.h"
 #include "HIDUsbManager.h"
-#include "FirmwareUpdater.h"
-#include "BYBFirmwareVO.h"
+
 #if defined(_WIN32)
-#include "BSLFirmwareUpdater.h"
+    #include "FirmwareUpdater.h"
+    #include "BYBFirmwareVO.h"
+    #include "BSLFirmwareUpdater.h"
 #endif
 
 namespace BackyardBrains {
@@ -134,12 +135,12 @@ public:
 
 
     #if defined(_WIN32)
-    int prepareForHIDFirmwareUpdate(BYBFirmwareVO * firmwareToUpdate);
-    int getUSBFirmwareUpdateStage();
-    bool shouldStartFirmwareUpdatePresentation;
-    bool firmwareAvailable();
-    int finishAndCleanFirmwareUpdate();
-    std::list<BYBFirmwareVO> firmwareList() const {return _xmlFirmwareUpdater.firmwares;}
+        int prepareForHIDFirmwareUpdate(BYBFirmwareVO * firmwareToUpdate);
+        int getUSBFirmwareUpdateStage();
+        bool shouldStartFirmwareUpdatePresentation;
+        bool firmwareAvailable();
+        int finishAndCleanFirmwareUpdate();
+        std::list<BYBFirmwareVO> firmwareList() const {return _xmlFirmwareUpdater.firmwares;}
     #endif
 
 
@@ -206,11 +207,11 @@ private:
     clock_t timerUSB = 0;
     clock_t timerEKG = 0;
     bool _hidDevicePresent;
+    
+    int _firmwareUpdateStage;//this needs to be outside exclusive win block
 
-    int _firmwareUpdateStage;
-
+    #if defined(_WIN32)
         FirmwareUpdater _xmlFirmwareUpdater;
-      #if defined(_WIN32)
         BSLFirmwareUpdater _bslFirmwareUpdater;
     #endif
 

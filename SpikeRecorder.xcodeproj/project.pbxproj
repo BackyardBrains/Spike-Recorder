@@ -77,10 +77,7 @@
 		248E59201AAE1B820011707F /* libbass.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 248E591A1AAE1AD50011707F /* libbass.dylib */; };
 		248E59231AAE1B820011707F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 248E59141AAE1A970011707F /* Cocoa.framework */; };
 		248E59241AAE1B820011707F /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 248E59121AAE1A910011707F /* OpenGL.framework */; };
-		24BD05881BD9438A00A39273 /* BYBFirmwareVO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24BD05831BD9438A00A39273 /* BYBFirmwareVO.cpp */; };
-		24BD05891BD9438A00A39273 /* FirmwareUpdater.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24BD05851BD9438A00A39273 /* FirmwareUpdater.cpp */; };
 		24E8E6EB1BD95DD9003386A6 /* tinyxml2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24E8E6E91BD95DD9003386A6 /* tinyxml2.cpp */; };
-		24E8E6ED1BD9843E003386A6 /* compatibility.xml in Resources */ = {isa = PBXBuildFile; fileRef = 24E8E6EC1BD9843E003386A6 /* compatibility.xml */; };
 		24F40AB31ACEA94700B3CCE1 /* HIDUsbManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24F40AB11ACEA94700B3CCE1 /* HIDUsbManager.cpp */; };
 		24F40AB81ACEAD1600B3CCE1 /* hid.c in Sources */ = {isa = PBXBuildFile; fileRef = 24F40AB71ACEAD1600B3CCE1 /* hid.c */; };
 /* End PBXBuildFile section */
@@ -274,13 +271,8 @@
 		248E594A1AAE1C290011707F /* SDL_version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDL_version.h; sourceTree = "<group>"; };
 		248E594B1AAE1C290011707F /* SDL_video.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDL_video.h; sourceTree = "<group>"; };
 		248E594C1AAEF7320011707F /* FFTView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FFTView.h; path = src/FFTView.h; sourceTree = SOURCE_ROOT; };
-		24BD05831BD9438A00A39273 /* BYBFirmwareVO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BYBFirmwareVO.cpp; sourceTree = "<group>"; };
-		24BD05841BD9438A00A39273 /* BYBFirmwareVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BYBFirmwareVO.h; sourceTree = "<group>"; };
-		24BD05851BD9438A00A39273 /* FirmwareUpdater.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FirmwareUpdater.cpp; sourceTree = "<group>"; };
-		24BD05861BD9438A00A39273 /* FirmwareUpdater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FirmwareUpdater.h; sourceTree = "<group>"; };
 		24E8E6E91BD95DD9003386A6 /* tinyxml2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxml2.cpp; sourceTree = "<group>"; };
 		24E8E6EA1BD95DD9003386A6 /* tinyxml2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tinyxml2.h; sourceTree = "<group>"; };
-		24E8E6EC1BD9843E003386A6 /* compatibility.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = compatibility.xml; sourceTree = "<group>"; };
 		24E8E6EE1BD98864003386A6 /* constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = constants.h; path = src/constants.h; sourceTree = SOURCE_ROOT; };
 		24E9DAB21BBAB23C0055B454 /* hidapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hidapi.h; sourceTree = "<group>"; };
 		24F40AB11ACEA94700B3CCE1 /* HIDUsbManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HIDUsbManager.cpp; sourceTree = "<group>"; };
@@ -399,7 +391,6 @@
 		248E589A1AAE19570011707F /* engine */ = {
 			isa = PBXGroup;
 			children = (
-				24BD05801BD9438A00A39273 /* firmware */,
 				24F40AB71ACEAD1600B3CCE1 /* hid.c */,
 				24F40AB11ACEA94700B3CCE1 /* HIDUsbManager.cpp */,
 				24F40AB21ACEA94700B3CCE1 /* HIDUsbManager.h */,
@@ -572,18 +563,6 @@
 			path = src/xcode/SDL;
 			sourceTree = "<group>";
 		};
-		24BD05801BD9438A00A39273 /* firmware */ = {
-			isa = PBXGroup;
-			children = (
-				24E8E6EC1BD9843E003386A6 /* compatibility.xml */,
-				24BD05831BD9438A00A39273 /* BYBFirmwareVO.cpp */,
-				24BD05841BD9438A00A39273 /* BYBFirmwareVO.h */,
-				24BD05851BD9438A00A39273 /* FirmwareUpdater.cpp */,
-				24BD05861BD9438A00A39273 /* FirmwareUpdater.h */,
-			);
-			path = firmware;
-			sourceTree = "<group>";
-		};
 		24E8E6E81BD95DD9003386A6 /* libraries */ = {
 			isa = PBXGroup;
 			children = (
@@ -667,7 +646,6 @@
 				24079F341AB0CBE700820291 /* icon_16x16.png in Resources */,
 				24079F371AB0CBE700820291 /* icon_256x256@2x.png in Resources */,
 				24079F331AB0CBE700820291 /* icon_128x128@2x.png in Resources */,
-				24E8E6ED1BD9843E003386A6 /* compatibility.xml in Resources */,
 				24079F321AB0CBE700820291 /* icon_128x128.png in Resources */,
 				24079F381AB0CBE700820291 /* icon_32x32.png in Resources */,
 				24079FA91AB1C90E00820291 /* data in Resources */,
@@ -700,7 +678,6 @@
 				248E58F71AAE19570011707F /* DropDownList.cpp in Sources */,
 				248E58E51AAE19570011707F /* ColorDropDownList.cpp in Sources */,
 				248E58F31AAE19570011707F /* RecordingBar.cpp in Sources */,
-				24BD05891BD9438A00A39273 /* FirmwareUpdater.cpp in Sources */,
 				248E59041AAE19570011707F /* TextureGL.cpp in Sources */,
 				248E58EE1AAE19570011707F /* main.cpp in Sources */,
 				24E8E6EB1BD95DD9003386A6 /* tinyxml2.cpp in Sources */,
@@ -728,7 +705,6 @@
 				24F40AB81ACEAD1600B3CCE1 /* hid.c in Sources */,
 				2421F08F1ACFDDBD00927F19 /* FileReadUtil.cpp in Sources */,
 				248E58ED1AAE19570011707F /* Game.cpp in Sources */,
-				24BD05881BD9438A00A39273 /* BYBFirmwareVO.cpp in Sources */,
 				2421F0931ACFDDDA00927F19 /* BASSErrors.cpp in Sources */,
 				24079FAC1AB1D1F500820291 /* DropDownList.cpp in Sources */,
 				248646421AB1FBAD003852AA /* Log.cpp in Sources */,

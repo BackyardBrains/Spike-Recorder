@@ -176,48 +176,45 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
         }
 
 
-        //HID device connect
+        //HID device connect (only for windows)
         #if defined(_WIN32)
-         Widgets::BoxLayout *hidHbox = new Widgets::BoxLayout(Widgets::Horizontal);
-        //USB  label
-        Widgets::Label *nameUSB = new Widgets::Label(group);
-        nameUSB->setText("Connect to USB device ");
-        nameUSB->updateSize();
-        hidHbox->addSpacing(0);
-        hidHbox->addWidget(nameUSB, Widgets::AlignLeft);
-        hidHbox->addSpacing(5);
-        #endif
-        //Button for connect to HID device
-        _hidButton = new Widgets::PushButton(group);
-        #if defined(_WIN32)
+             Widgets::BoxLayout *hidHbox = new Widgets::BoxLayout(Widgets::Horizontal);
+            //USB  label
+            Widgets::Label *nameUSB = new Widgets::Label(group);
+            nameUSB->setText("Connect to USB device ");
+            nameUSB->updateSize();
+            hidHbox->addSpacing(0);
+            hidHbox->addWidget(nameUSB, Widgets::AlignLeft);
+            hidHbox->addSpacing(5);
 
+            //Button for connect to HID device
+            _hidButton = new Widgets::PushButton(group);
 
-        _hidButton->clicked.connect(this, &ConfigView::hidConnectPressed);
-        if(_manager.hidMode())
-        {
-            _hidButton->setNormalTex(Widgets::TextureGL::get("data/connected.bmp"));
-            _hidButton->setHoverTex(Widgets::TextureGL::get("data/connected.bmp"));
-        }
-        else
-        {
-            _hidButton->setNormalTex(Widgets::TextureGL::get("data/disconnected.bmp"));
-            _hidButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.bmp"));
-        }
-        _hidButton->setSizeHint(Widgets::Size(26,26));
+            _hidButton->clicked.connect(this, &ConfigView::hidConnectPressed);
+            if(_manager.hidMode())
+            {
+                _hidButton->setNormalTex(Widgets::TextureGL::get("data/connected.bmp"));
+                _hidButton->setHoverTex(Widgets::TextureGL::get("data/connected.bmp"));
+            }
+            else
+            {
+                _hidButton->setNormalTex(Widgets::TextureGL::get("data/disconnected.bmp"));
+                _hidButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.bmp"));
+            }
+            _hidButton->setSizeHint(Widgets::Size(26,26));
 
-        hidHbox->addWidget(_hidButton);
-        hidHbox->update();
-        gvbox->addSpacing(20);
-        gvbox->addLayout(hidHbox);
-        #endif // defined
+            hidHbox->addWidget(_hidButton);
+            hidHbox->update();
+            gvbox->addSpacing(20);
+            gvbox->addLayout(hidHbox);
+
 
         //--------------   Update firmware code (works only under Windows)
 
-        #if defined(_WIN32)
-        //TODO:add decision based on available update and current version of firmware
-        if(_manager.hidMode())//TODO:enable this when we find solution for firmware
-        {
 
+       
+        if(_manager.hidMode())
+        {
             if(_manager.firmwareAvailable())
             {
                      Widgets::BoxLayout *updateHbox = new Widgets::BoxLayout(Widgets::Horizontal);
@@ -311,84 +308,89 @@ void ConfigView::paintEvent() {
 
 }
 
-void ConfigView::hidConnectPressed()
-{
-    //connect/diconnect
 
-    if(_manager.hidMode())
-    {
-       // _manager.setSerialNumberOfChannels(1);
-        _manager.disconnectFromHID();
-
-        _hidButton->setNormalTex(Widgets::TextureGL::get("data/connected.bmp"));
-        _hidButton->setHoverTex(Widgets::TextureGL::get("data/connected.bmp"));
-        close();
-    }
-    else
-    {
-        if(!_manager.initHIDUSB())
-        {
-            std::cout<<"Can't open HID device. \n";
-
-
-            Widgets::ErrorBox *box = new Widgets::ErrorBox(_manager.hidError.c_str());
-            box->setGeometry(Widgets::Rect(this->width()/2-250, this->height()/2-40, 500, 80));
-            Widgets::Application::getInstance()->addPopup(box);
-        }
-        _hidButton->setNormalTex(Widgets::TextureGL::get("data/disconnected.bmp"));
-        _hidButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.bmp"));
-        close();
-    }
-}
 
 
 #if defined(_WIN32)
 
-void ConfigView::firmwareSelectionChanged(int firmwareid)
-{
-     std::list<BYBFirmwareVO> fps =  _manager.firmwareList();
-
-    int i = 0;
-    for( listBYBFirmwareVO::iterator ti = fps.begin();
-        ti != fps.end();
-        ti ++)
-    {
-        if(i==firmwareid)
+        void ConfigView::hidConnectPressed()
         {
-            //selectedFirmware = (BYBFirmwareVO*)&(*ti);
-            selectedFirmware = new BYBFirmwareVO();
-            selectedFirmware->URL = std::string((*ti).URL);
-            selectedFirmware->filepath = std::string((*ti).filepath);
-            selectedFirmware->id = (*ti).id;
-            break;
+            //connect/diconnect
+            
+            if(_manager.hidMode())
+            {
+                // _manager.setSerialNumberOfChannels(1);
+                _manager.disconnectFromHID();
+                
+                _hidButton->setNormalTex(Widgets::TextureGL::get("data/connected.bmp"));
+                _hidButton->setHoverTex(Widgets::TextureGL::get("data/connected.bmp"));
+                close();
+            }
+            else
+            {
+                if(!_manager.initHIDUSB())
+                {
+                    std::cout<<"Can't open HID device. \n";
+                    
+                    
+                    Widgets::ErrorBox *box = new Widgets::ErrorBox(_manager.hidError.c_str());
+                    box->setGeometry(Widgets::Rect(this->width()/2-250, this->height()/2-40, 500, 80));
+                    Widgets::Application::getInstance()->addPopup(box);
+                }
+                _hidButton->setNormalTex(Widgets::TextureGL::get("data/disconnected.bmp"));
+                _hidButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.bmp"));
+                close();
+            }
         }
-        i++;
-    }
-}
-
-
-//
-// Start firmware update procedure
-//
-void ConfigView::firmwareUpdatePressed()
-{
-    if(_manager.getUSBFirmwareUpdateStage() == 0)//avoid starting it twice
-    {
-        //send message to MSP to prepare for update
-        std::cout<<"\n\n\n"<<"Firmware URL: "<<selectedFirmware->URL<<"\n\n\n";
-        if(_manager.prepareForHIDFirmwareUpdate(selectedFirmware))
+    
+        //
+        //Firmware selection drop-down selection changed
+        //
+        void ConfigView::firmwareSelectionChanged(int firmwareid)
         {
-            std::cout<<"Error downloading firmware";
+             std::list<BYBFirmwareVO> fps =  _manager.firmwareList();
 
-            const char *error = "Error while downloading firmware.\n  Check your Internet connection.";
-            Widgets::ErrorBox *box = new Widgets::ErrorBox(error);
-            box->setGeometry(Widgets::Rect(this->width()/2-150, this->height()/2-40, 300, 80));
-            Widgets::Application::getInstance()->addPopup(box);
-
+            int i = 0;
+            for( listBYBFirmwareVO::iterator ti = fps.begin();
+                ti != fps.end();
+                ti ++)
+            {
+                if(i==firmwareid)
+                {
+                    //selectedFirmware = (BYBFirmwareVO*)&(*ti);
+                    selectedFirmware = new BYBFirmwareVO();
+                    selectedFirmware->URL = std::string((*ti).URL);
+                    selectedFirmware->filepath = std::string((*ti).filepath);
+                    selectedFirmware->id = (*ti).id;
+                    break;
+                }
+                i++;
+            }
         }
-        close();
-    }
-}
+
+
+        //
+        // Start firmware update procedure
+        //
+        void ConfigView::firmwareUpdatePressed()
+        {
+            if(_manager.getUSBFirmwareUpdateStage() == 0)//avoid starting it twice
+            {
+                //send message to MSP to prepare for update
+                std::cout<<"\n\n\n"<<"Firmware URL: "<<selectedFirmware->URL<<"\n\n\n";
+                if(_manager.prepareForHIDFirmwareUpdate(selectedFirmware))
+                {
+                    std::cout<<"Error downloading firmware";
+
+                    const char *error = "Error while downloading firmware.\n  Check your Internet connection.";
+                    Widgets::ErrorBox *box = new Widgets::ErrorBox(error);
+                    box->setGeometry(Widgets::Rect(this->width()/2-150, this->height()/2-40, 300, 80));
+                    Widgets::Application::getInstance()->addPopup(box);
+
+                }
+                close();
+            }
+        }
 #endif
 
 //

@@ -4,7 +4,9 @@
 #include "widgets/Widget.h"
 #include "widgets/PushButton.h"
 #include "DropDownList.h"
-#include "BYBFirmwareVO.h"
+#if defined(_WIN32)
+    #include "BYBFirmwareVO.h"
+#endif
 
 namespace BackyardBrains {
 
@@ -25,9 +27,11 @@ private:
 		void catchPort(int portidx) {
             _parent->serialPortChanged(_virtualDevice, portidx);
         }
-        void catchFirmwareSelection(int firmwareid) {
-            _parent->firmwareSelectionChanged(firmwareid);
-        }
+        #if defined(_WIN32)
+            void catchFirmwareSelection(int firmwareid) {
+                _parent->firmwareSelectionChanged(firmwareid);
+            }
+        #endif
         void setNumOfChannelsHandler(int selectionNum) {
             _parent->setSerialNumberOfChannels(selectionNum+1);
         }
@@ -44,25 +48,31 @@ private:
 	void colorChanged(int virtualDevice, int coloridx);
     void serialPortChanged(int virtualDevice, int portidx);
     void setSerialNumberOfChannels(int numberOfChannels);
-    void firmwareSelectionChanged(int firmwareid);
+
 	RecordingManager &_manager;
 	AudioView &_audioView;
     DropDownList *serialPortWidget;
-    DropDownList * firmwaresWidget;
     DropDownList * numberOfChannelsWidget;
     Widgets::PushButton *_connectButton;
-    Widgets::PushButton *_hidButton;
 
+
+    //HID usb connection and firmware update
+    //Works only on Windows
     #if defined(_WIN32)
-    Widgets::PushButton *_updateButton;
-    void firmwareUpdatePressed();
-    BYBFirmwareVO * selectedFirmware;
+        Widgets::PushButton *_hidButton;
+        DropDownList * firmwaresWidget;
+        void firmwareSelectionChanged(int firmwareid);
+        Widgets::PushButton *_updateButton;
+        void firmwareUpdatePressed();
+        BYBFirmwareVO * selectedFirmware;
+        typedef std::list<BYBFirmwareVO> listBYBFirmwareVO;
+        void hidConnectPressed();
     #endif
-    typedef std::list<BYBFirmwareVO> listBYBFirmwareVO;
+
 
 	void paintEvent();
     void connectPressed();
-    void hidConnectPressed();
+
 	void closePressed();
 	void mutePressed();
 

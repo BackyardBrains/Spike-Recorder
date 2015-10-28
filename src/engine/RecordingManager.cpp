@@ -6,8 +6,9 @@
 #include "Log.h"
 #include <sstream>
 #include <cstdlib>
+
 #if defined(_WIN32)
-#include <unistd.h>
+    #include <unistd.h>
 #endif
 
 
@@ -308,57 +309,70 @@ void RecordingManager::scanUSBDevices()
 //
 #if defined(_WIN32)
 
-bool  RecordingManager::firmwareAvailable()
-{
-
-    return _xmlFirmwareUpdater.firmwares.size()>0;
-
-}
-
-int RecordingManager::getUSBFirmwareUpdateStage()
-{
-
-    if(_bslFirmwareUpdater.currentStage>=0)
-    {
-        return _firmwareUpdateStage+_bslFirmwareUpdater.currentStage;
-    }
-    else
-    {
-      _firmwareUpdateStage = 0;
-      return -1;
-    }
-
-}
-
-int RecordingManager::finishAndCleanFirmwareUpdate()
-{
-    _firmwareUpdateStage = 0;
-    _bslFirmwareUpdater.currentStage = 0;
-}
-
-
-//
-// Initialize update of firmware
-//
-int RecordingManager::prepareForHIDFirmwareUpdate(BYBFirmwareVO * firmwareToUpdate)
-{
-
-
-         //download selected firmware from BYB server
-        if(_xmlFirmwareUpdater.downloadFirmware(firmwareToUpdate))
+        //
+        // Check if we downloaded list of firmwares from server
+        // And if there are some firmwares that work with current version of software
+        //
+        bool  RecordingManager::firmwareAvailable()
         {
-            //if we have error while downloading the selected firmware
-            return 1;
+            return _xmlFirmwareUpdater.firmwares.size()>0;
+        }
+    
+        //
+        // Update stage of firmware. Integer composed based on update stage of BSLFirmwareUpdater
+        // and state of the RecordingManager and Config view
+        // -1 - error
+        // 0 - update not active
+        // getUSBFirmwareUpdateStage >0 update in progress
+        //
+        int RecordingManager::getUSBFirmwareUpdateStage()
+        {
+
+            if(_bslFirmwareUpdater.currentStage>=0)
+            {
+                return _firmwareUpdateStage+_bslFirmwareUpdater.currentStage;
+            }
+            else
+            {
+              _firmwareUpdateStage = 0;
+              return -1;
+            }
+
+        }
+    
+        //
+        // Called after firmware update to enable periodic scan for USB device etc.
+        // resets update stage flages
+        //
+        int RecordingManager::finishAndCleanFirmwareUpdate()
+        {
+            _firmwareUpdateStage = 0;
+            _bslFirmwareUpdater.currentStage = 0;
         }
 
-        _firmwareUpdateStage = 1;
-        shouldStartFirmwareUpdatePresentation = true;
-        _hidUsbManager.putInFirmwareUpdateMode();
-        _bslFirmwareUpdater.customSelectedFirmware("newfirmware.txt");
 
+        //
+        // Initialize update of firmware
+        //
+        int RecordingManager::prepareForHIDFirmwareUpdate(BYBFirmwareVO * firmwareToUpdate)
+        {
+                 //download selected firmware from BYB server
+                if(_xmlFirmwareUpdater.downloadFirmware(firmwareToUpdate))
+                {
+                    //if we have error while downloading the selected firmware
+                    return 1;
+                }
 
-        return 0;
-}
+                _firmwareUpdateStage = 1;
+                shouldStartFirmwareUpdatePresentation = true;//this will open the firmware update view
+                //send command to HID device to prepare for update
+                // this will disconnect HID device and it will enumerate with different VID/PID (TI's update VID/PID)
+                _hidUsbManager.putInFirmwareUpdateMode();
+                //Start procedure of programming firmware
+                _bslFirmwareUpdater.customSelectedFirmware("newfirmware.txt");
+
+                return 0;
+        }
 #endif
 
 
