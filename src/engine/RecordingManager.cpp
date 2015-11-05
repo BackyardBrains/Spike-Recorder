@@ -317,7 +317,7 @@ void RecordingManager::scanUSBDevices()
         {
             return _xmlFirmwareUpdater.firmwares.size()>0;
         }
-    
+
         //
         // Update stage of firmware. Integer composed based on update stage of BSLFirmwareUpdater
         // and state of the RecordingManager and Config view
@@ -339,7 +339,7 @@ void RecordingManager::scanUSBDevices()
             }
 
         }
-    
+
         //
         // Called after firmware update to enable periodic scan for USB device etc.
         // resets update stage flages
@@ -898,6 +898,8 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 	int samplesRead = _arduinoSerial.readPort(buffer);
     if(_paused)
     {
+        delete[] channels;
+	    delete[] buffer;
         return;
     }
 	if(samplesRead != -1) {
@@ -982,12 +984,12 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 
             _player.push(buf, samplesRead*sizeof(int16_t));
 
-            delete[] buf;
+
         } else {
             _player.setPos(_pos, bytesPerSample, 1);
             //std::cout<<"\nSet position: "<<_pos;
         }
-
+         delete[] buf;
 
          _pos+=samplesRead;
 	}
@@ -1024,6 +1026,8 @@ void RecordingManager::advanceHidMode(uint32_t samples)
     int samplesRead = _hidUsbManager.readDevice(buffer);
     if(_paused || samplesRead==0)
     {
+        delete[] channels;
+        delete[] buffer;
         return;
     }
     if(samplesRead != -1) {
@@ -1110,12 +1114,12 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 
             _player.push(buf, samplesRead*sizeof(int16_t));
 
-            delete[] buf;
+
         } else {
             _player.setPos(_pos, bytesPerSample, 1);
             //std::cout<<"\nSet position: "<<_pos;
         }
-
+        delete[] buf;
 
 
 
