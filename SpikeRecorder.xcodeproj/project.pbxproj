@@ -23,6 +23,9 @@
 		24079FA71AB1C73600820291 /* ArduinoSerial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24079FA51AB1C73600820291 /* ArduinoSerial.cpp */; };
 		24079FA91AB1C90E00820291 /* data in Resources */ = {isa = PBXBuildFile; fileRef = 24079FA81AB1C90E00820291 /* data */; };
 		24079FAC1AB1D1F500820291 /* DropDownList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24079FAA1AB1D1F500820291 /* DropDownList.cpp */; };
+		241D61531BE3BFF70050D5E3 /* SDL_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 241D61521BE3BFF70050D5E3 /* SDL_image.framework */; };
+		241D61541BE3C0000050D5E3 /* SDL_image.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 241D61521BE3BFF70050D5E3 /* SDL_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		241D61551BE3C0040050D5E3 /* SDL_image.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 241D61521BE3BFF70050D5E3 /* SDL_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		2421F08F1ACFDDBD00927F19 /* FileReadUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2421F08B1ACFDDBD00927F19 /* FileReadUtil.cpp */; };
 		2421F0901ACFDDBD00927F19 /* SpikeAnalysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2421F08D1ACFDDBD00927F19 /* SpikeAnalysis.cpp */; };
 		2421F0931ACFDDDA00927F19 /* BASSErrors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2421F0911ACFDDDA00927F19 /* BASSErrors.cpp */; };
@@ -33,9 +36,6 @@
 		2421F0A31ACFE2B300927F19 /* SDL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2421F0A11ACFE2B300927F19 /* SDL.framework */; };
 		2421F0A51ACFE2BB00927F19 /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2421F0A11ACFE2B300927F19 /* SDL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		2421F0A71ACFE2C400927F19 /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2421F0A11ACFE2B300927F19 /* SDL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		244E176C1BD052C2007C9475 /* SDL_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 244E176B1BD052C2007C9475 /* SDL_image.framework */; };
-		244E176D1BD052D8007C9475 /* SDL_image.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 244E176B1BD052C2007C9475 /* SDL_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		244E176E1BD052E1007C9475 /* SDL_image.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 244E176B1BD052C2007C9475 /* SDL_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		248646421AB1FBAD003852AA /* Log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248646401AB1FBAD003852AA /* Log.cpp */; };
 		248BA1F51B3E42AD00EEB5E4 /* ThresholdPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248BA1F31B3E42AD00EEB5E4 /* ThresholdPanel.cpp */; };
 		248BA1F81B3E42D500EEB5E4 /* SwitchLayout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248BA1F61B3E42D500EEB5E4 /* SwitchLayout.cpp */; };
@@ -89,7 +89,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				244E176D1BD052D8007C9475 /* SDL_image.framework in CopyFiles */,
+				241D61541BE3C0000050D5E3 /* SDL_image.framework in CopyFiles */,
 				24079F3F1AB0CCDF00820291 /* libbass.dylib in CopyFiles */,
 				2421F0A51ACFE2BB00927F19 /* SDL.framework in CopyFiles */,
 			);
@@ -101,7 +101,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 6;
 			files = (
-				244E176E1BD052E1007C9475 /* SDL_image.framework in CopyFiles */,
+				241D61551BE3C0040050D5E3 /* SDL_image.framework in CopyFiles */,
 				24079F431AB0CCFC00820291 /* libbass.dylib in CopyFiles */,
 				2421F0A71ACFE2C400927F19 /* SDL.framework in CopyFiles */,
 			);
@@ -127,6 +127,7 @@
 		24079FAA1AB1D1F500820291 /* DropDownList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DropDownList.cpp; path = src/DropDownList.cpp; sourceTree = SOURCE_ROOT; };
 		24079FAB1AB1D1F500820291 /* DropDownList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DropDownList.h; path = src/DropDownList.h; sourceTree = SOURCE_ROOT; };
 		24079FAE1AB1DE7E00820291 /* SpikeRecorder.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = SpikeRecorder.entitlements; sourceTree = "<group>"; };
+		241D61521BE3BFF70050D5E3 /* SDL_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL_image.framework; sourceTree = "<group>"; };
 		2421F08B1ACFDDBD00927F19 /* FileReadUtil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileReadUtil.cpp; sourceTree = "<group>"; };
 		2421F08C1ACFDDBD00927F19 /* FileReadUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileReadUtil.h; sourceTree = "<group>"; };
 		2421F08D1ACFDDBD00927F19 /* SpikeAnalysis.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpikeAnalysis.cpp; sourceTree = "<group>"; };
@@ -142,7 +143,6 @@
 		2421F09D1ACFDF7B00927F19 /* TabBar.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TabBar.cpp; path = src/widgets/TabBar.cpp; sourceTree = SOURCE_ROOT; };
 		2421F09E1ACFDF7B00927F19 /* TabBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TabBar.h; path = src/widgets/TabBar.h; sourceTree = SOURCE_ROOT; };
 		2421F0A11ACFE2B300927F19 /* SDL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL.framework; sourceTree = "<group>"; };
-		244E176B1BD052C2007C9475 /* SDL_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL_image.framework; sourceTree = "<group>"; };
 		248646401AB1FBAD003852AA /* Log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Log.cpp; path = src/Log.cpp; sourceTree = SOURCE_ROOT; };
 		248646411AB1FBAD003852AA /* Log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Log.h; path = src/Log.h; sourceTree = SOURCE_ROOT; };
 		248BA1F31B3E42AD00EEB5E4 /* ThresholdPanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ThresholdPanel.cpp; path = src/ThresholdPanel.cpp; sourceTree = SOURCE_ROOT; };
@@ -285,10 +285,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				241D61531BE3BFF70050D5E3 /* SDL_image.framework in Frameworks */,
 				2421F0A31ACFE2B300927F19 /* SDL.framework in Frameworks */,
 				248E591F1AAE1B7C0011707F /* IOKit.framework in Frameworks */,
 				248E59201AAE1B820011707F /* libbass.dylib in Frameworks */,
-				244E176C1BD052C2007C9475 /* SDL_image.framework in Frameworks */,
 				248E59231AAE1B820011707F /* Cocoa.framework in Frameworks */,
 				248E59241AAE1B820011707F /* OpenGL.framework in Frameworks */,
 			);
@@ -506,7 +506,7 @@
 		248E591E1AAE1B450011707F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				244E176B1BD052C2007C9475 /* SDL_image.framework */,
+				241D61521BE3BFF70050D5E3 /* SDL_image.framework */,
 				2421F0A11ACFE2B300927F19 /* SDL.framework */,
 				248E59251AAE1C290011707F /* SDL */,
 				248E591C1AAE1ADE0011707F /* IOKit.framework */,
@@ -799,7 +799,7 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_LINK_OBJC_RUNTIME = YES;
 				CODE_SIGN_ENTITLEMENTS = SpikeRecorder/SpikeRecorder.entitlements;
-				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_IDENTITY = "3rd Party Mac Developer Application";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -842,7 +842,7 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_LINK_OBJC_RUNTIME = YES;
 				CODE_SIGN_ENTITLEMENTS = SpikeRecorder/SpikeRecorder.entitlements;
-				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_IDENTITY = "3rd Party Mac Developer Application";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (

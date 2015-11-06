@@ -531,7 +531,11 @@ bool RecordingManager::loadFile(const char *filename) {
 
     int bytespersample = info.origres/8;
     if(bytespersample == 0)
-        return false;
+    {
+        bytespersample = 2;
+        //return false;
+    }
+    
     if(bytespersample >= 3)
         bytespersample = 4; // bass converts everything it doesn’t support.
 
