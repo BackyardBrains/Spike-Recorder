@@ -157,7 +157,10 @@ void SpikeSorter::findSpikes(const std::string &filename, int channel, int holdo
 	BASS_CHANNELINFO info;
 	BASS_ChannelGetInfo(handle, &info);
 	int bytespersample = info.origres/8;
-
+    if(bytespersample == 0)
+    {
+        bytespersample = 2;
+    }
 	_spikes.reserve(256);
 
 	int threshold = findThreshold(handle, channel, info.chans, bytespersample);
