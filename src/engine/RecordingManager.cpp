@@ -151,7 +151,7 @@ void RecordingManager::sendEKGImpuls()
     if(elapsed_secs>0.03)
     {
         timerEKG = end;
-      //  _arduinoSerial.sendEventMessage(0);
+        _arduinoSerial.sendEventMessage(0);
     }
 
 }
@@ -231,15 +231,16 @@ bool RecordingManager::initHIDUSB()
     //_player.start(_hidUsbManager.maxSamplingRate());
     _player.setVolume(0);
 
-
+    
     return true;
 }
 
 void RecordingManager::disconnectFromHID()
 {
 
-    initRecordingDevices();
-    closeHid();
+    _hidUsbManager.putInFirmwareUpdateMode();
+   // initRecordingDevices();
+   // closeHid();
 }
 
 void RecordingManager::closeHid()
@@ -303,10 +304,7 @@ void RecordingManager::scanUSBDevices()
 
 }
 
-//
-// If greater than zero we are in firmware update procedure
-// Integer value represent stage of update
-//
+
 #if defined(_WIN32)
 
         //
