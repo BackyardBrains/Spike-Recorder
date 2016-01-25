@@ -46,7 +46,7 @@ const float AudioView::ampScale = .0005f;
 AudioView::AudioView(Widgets::Widget *parent, RecordingManager &mngr)
 	: Widgets::Widget(parent), _manager(mngr), _clickedGain(-1), _clickedSlider(-1), _clickedPixelOffset(0),
 	_clickedThresh(false), _rulerClicked(false), _rulerStart(-1.f), _rulerEnd(-1.f), _channelOffset(0), _timeScale(0.1f)  {
-	
+
 	_gainCtrlHoldTime = 0;
 }
 
@@ -66,9 +66,9 @@ int AudioView::addChannel(int virtualDevice) {
 
 	if(_channels.size() != 1)
 		_channels.back().pos = rand()/(float)RAND_MAX;
-    
+
     _manager.setSelectedVDevice(virtualDevice);
-    
+
 	return _channels.size()-1;
 }
 
@@ -192,7 +192,7 @@ void AudioView::standardSettings() {
             setChannelColor(nchan, (i%COLOR_NUM)+1);
             _channels.at(nchan).gain = 0.02;
         }
-    
+
     }
     else
     {
@@ -226,6 +226,9 @@ int AudioView::screenWidth() const {
 	return std::max(0,screenw);
 }
 
+//
+// Number of samples that are displayed on the screen at once
+//
 int AudioView::sampleCount(int screenw, float scalew)  const {
 	if(screenw == 0)
 		return 0;
@@ -275,6 +278,29 @@ void AudioView::setRelOffset(int reloffset) {
 
 }
 
+void AudioView::navigateFilePosition(bool navigateForward)
+{
+        int samplesOnScreen = sampleCount(screenWidth(), scaleWidth());
+        int deltaMove = samplesOnScreen/20;
+        if(deltaMove<1)
+        {
+            deltaMove = 1;
+        }
+        int64_t currentSample = _manager.pos();
+        if(navigateForward)
+        {
+            currentSample = currentSample+deltaMove;
+        }
+        else
+        {
+            currentSample = currentSample-deltaMove;
+        }
+
+        _manager.setPos(currentSample);//update waveform
+
+        relOffsetChanged.emit(round(1000.f*_manager.pos()/(float)(_manager.fileLength()-1)));//update slider at the bottom of the scree
+}
+
 static const char *get_unit_str(int unit) {
 	switch(unit) {
 		case 1:
@@ -288,18 +314,18 @@ static const char *get_unit_str(int unit) {
 	}
 }
 
-    
+
 void AudioView::drawCenter()
 {
-   
+
     //
     //Draw vertical dotted line during playback
     //
     /*if(!_manager.paused())
     {
         int yBegining = -68;
-     
-        
+
+
         int position = yBegining;
         int step = 10;
         while (position<height())
@@ -308,8 +334,8 @@ void AudioView::drawCenter()
             position = position +2*step;
         }
     }*/
-    
-    
+
+
     int64_t fullTime = _manager.fileLength();
     int64_t fullMiliseconds = fullTime/(_manager.sampleRate()/1000);
     fullMiliseconds = fullMiliseconds%1000;
@@ -329,7 +355,7 @@ void AudioView::drawCenter()
     {
         fullS<<fullMinutes<<":";
     }
-    
+
     if(fullSeconds<10)
     {
         fullS<<"0"<<fullSeconds<<" ";
@@ -338,7 +364,7 @@ void AudioView::drawCenter()
     {
         fullS<<fullSeconds<<" ";
     }
-    
+
     if(fullMiliseconds<10)
     {
         fullS<<"00"<<fullMiliseconds;
@@ -354,11 +380,11 @@ void AudioView::drawCenter()
 
     Widgets::Painter::setColor(Widgets::Colors::white);
     Widgets::Application::font()->draw(fullS.str().c_str(), width()-15, height()+40, Widgets::AlignRight);
-    
-    
-    
-    
-    
+
+
+
+
+
     int64_t time = _manager.pos();
     int64_t miliseconds = time/(_manager.sampleRate()/1000);
     miliseconds = miliseconds%1000;
@@ -366,7 +392,7 @@ void AudioView::drawCenter()
     int64_t minutes = seconds/60;
     seconds = seconds%60;
     std::stringstream o;
-    
+
     if(minutes<1)
     {
         o<<"00:";
@@ -379,7 +405,7 @@ void AudioView::drawCenter()
     {
         o<<minutes<<":";
     }
-    
+
     if(seconds<10)
     {
         o<<"0"<<seconds<<" ";
@@ -388,7 +414,7 @@ void AudioView::drawCenter()
     {
         o<<seconds<<" ";
     }
-    
+
     if(miliseconds<10)
     {
         o<<"00"<<miliseconds;
@@ -401,11 +427,11 @@ void AudioView::drawCenter()
     {
         o<<miliseconds;
     }
-    
+
     Widgets::Application::font()->draw(o.str().c_str(), 15, height()+40, Widgets::AlignLeft);
-    
+
 }
-    
+
 
 void AudioView::drawScale() {
 	int unit = -std::log(_timeScale)/std::log(10);
@@ -572,14 +598,12 @@ void AudioView::drawAudio() {
 				int endsample = std::max(_rulerStart, _rulerEnd)*(data.size()-1);
 				float rms = calculateRMS(data, startsample, endsample);
 
-                
+
                 std::stringstream s;
                 s.precision(3);
                 s <<"RMS:"<< std::fixed << rms/2000.0 ;
-                
-				/*std::stringstream s;
-				s << "RMS:" << rms;
-*/
+
+
 				Widgets::Painter::setColor(bg);
 				drawtextbgbox(s.str(), width()-20, _channels[i].pos*height()+30, Widgets::AlignRight);
 				Widgets::Painter::setColor(Widgets::Colors::white);
@@ -624,10 +648,68 @@ void AudioView::drawRulerTime() {
 	}
 }
 
+
+void AudioView::drawSpikeTrainStatistics()
+{
+    if(_rulerEnd != _rulerStart) {
+
+        //calculate time in seconds
+        int samples = sampleCount(screenWidth(), scaleWidth());
+		float w = fabs(_rulerStart-_rulerEnd);
+		float dtime = w*samples/_manager.sampleRate();
+
+        //calculate sample for beginning and end of interval in absolute sample
+        int64_t startsample = std::min(_rulerStart, _rulerEnd)*samples+_manager.pos()+_channelOffset-samples*0.5;
+        int64_t endsample = std::max(_rulerStart, _rulerEnd)*samples+_manager.pos()+_channelOffset-samples*0.5;
+
+
+        //go through all spike trains
+        int sizespikere = _manager.spikeTrains().size();
+        for(unsigned int i = 0; i < _manager.spikeTrains().size(); i++) {
+                if(_manager.spikeTrains()[i].spikes.size()<1)
+                {
+                    continue;
+                }
+            int numberOfSpikes = 0;
+            int clr = _manager.spikeTrains()[i].color;//get color
+            //go through all spikes in current spike train
+            for(unsigned int j = 0; j < _manager.spikeTrains()[i].spikes.size(); j++) {
+               int64_t t = _manager.spikeTrains()[i].spikes[j];
+               if(t>=startsample && t<=endsample)
+               {
+                    numberOfSpikes++;
+               }
+            }
+
+            //make big color marker
+			float y = height()*(0.1f+0.1f*i);
+			Widgets::Painter::setColor(MARKER_COLORS[clr % MARKER_COLOR_NUM]);
+			Widgets::Painter::drawRect(Widgets::Rect(20,y-18,10,10));
+
+
+            //draw text
+            Widgets::Color bg = Widgets::Colors::background;
+            bg.a = 200;
+            std::stringstream s;
+            s <<""<< numberOfSpikes<<" ("<<numberOfSpikes/dtime<<"Hz)";
+            Widgets::Painter::setColor(bg);
+            drawtextbgbox(s.str(), 35, y-20, Widgets::AlignLeft);
+            Widgets::Painter::setColor(Widgets::Colors::white);
+            Widgets::Application::font()->draw(s.str().c_str(), 35, y-20, Widgets::AlignLeft);
+        }
+    }
+
+}
+
+//
+// Draw spike trains (spike markers) on the top of the waveform
+//
 void AudioView::drawSpikeTrain() {
 	int samples = sampleCount(screenWidth(), scaleWidth());
+	//go through all spike trains
 	for(unsigned int i = 0; i < _manager.spikeTrains().size(); i++) {
-		int clr = _manager.spikeTrains()[i].color;
+		int clr = _manager.spikeTrains()[i].color;//get color
+		//go through all spikes in current spike train
 		for(unsigned int j = 0; j < _manager.spikeTrains()[i].spikes.size(); j++) {
 			int64_t t = _manager.spikeTrains()[i].spikes[j];
 			if(_manager.pos()+_channelOffset-t > samples || _manager.pos()+_channelOffset-t < -samples/2)
@@ -645,8 +727,9 @@ void AudioView::paintEvent() {
 	drawRulerBox();
 
 	if(!_manager.threshMode())
+    {
 		drawSpikeTrain();
-    
+    }
 	drawAudio();
 
 	if(_manager.threshMode())
@@ -659,13 +742,14 @@ void AudioView::paintEvent() {
     else
     {
 		drawMarkers();
+		drawSpikeTrainStatistics();
     }
-    
+
     if(_manager.fileMode())
     {
         drawCenter();
     }
-    
+
 	drawRulerTime();
 	drawScale();
 

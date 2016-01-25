@@ -40,14 +40,14 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	_audioView = new AudioView(this, _manager);
 
     //setup timer that will periodicaly check for USB HID devices
-    
+
     timerUSB = clock();
     _manager.scanForHIDDevices();
     _manager.triggered.connect(this,&MainView::triggerEvent);
 	_audioView->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Expanding, Widgets::SizePolicy::Expanding));
 	_manager.deviceReload.connect(_audioView, &AudioView::standardSettings);
-    
-    
+
+
 	_configButton = new Widgets::PushButton(this);
 	_configButton->setNormalTex(Widgets::TextureGL::get("data/config.bmp"));
 	_configButton->setHoverTex(Widgets::TextureGL::get("data/confighigh.bmp"));
@@ -63,8 +63,8 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	_analysisButton->setNormalTex(Widgets::TextureGL::get("data/analysis.bmp"));
 	_analysisButton->setHoverTex(Widgets::TextureGL::get("data/analysishigh.bmp"));
 	_analysisButton->clicked.connect(this, &MainView::analysisPressed);
-	
-    
+
+
 	_analysisButton->setVisible(false);
 
     _usbButton = new Widgets::PushButton(this);
@@ -87,8 +87,8 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
     _fftButton->setRightPadding(5);
     _fftButton->setSizeHint(Widgets::Size(53,48));
     //_fftButton->setSizeHint(Widgets::Size(164,164));
-    
-    
+
+
 	_fileButton = new Widgets::PushButton(this);
 	_fileButton->setNormalTex(Widgets::TextureGL::get("data/file.bmp"));
 	_fileButton->setHoverTex(Widgets::TextureGL::get("data/filehigh.bmp"));
@@ -233,7 +233,7 @@ void MainView::forwardPressed() {
 
 void MainView::threshPressed() {
 	if(!_manager.threshMode()) {
-        
+
         threshButton->setNormalTex(Widgets::TextureGL::get("data/threshcrossed.bmp"));
         threshButton->setHoverTex(Widgets::TextureGL::get("data/threshcrossed.bmp"));
 		_fftView->setActive(false);
@@ -385,7 +385,7 @@ void MainView::analysisPressed() {
 void MainView::usbPressed()
 {
     //connect/diconnect
-    
+
     if(_manager.hidMode())
     {
         // _manager.setSerialNumberOfChannels(1);
@@ -410,7 +410,7 @@ void MainView::usbPressed()
         {
             _manager.setPaused(false);
         }
-        
+
         if(!_manager.initHIDUSB())
         {
             std::cout<<"Can't open HID device. \n";
@@ -448,7 +448,7 @@ void MainView::paintEvent()
         _usbButton->setSizeHint(Widgets::Size(53,48));
         _usbButton->setVisible(true);
         Widgets::Application::getInstance()->updateLayout();
-        
+
     }
     else
     {
@@ -459,7 +459,7 @@ void MainView::paintEvent()
     {
         _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.bmp"));
         _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbdiscon.bmp"));
-        
+
         _usbButton->setSizeHint(Widgets::Size(53,48));
         //_usbButton->setSizeHint(Widgets::Size(48,48));
         _usbButton->setVisible(true);
@@ -475,14 +475,41 @@ void MainView::paintEvent()
 
 
 void MainView::keyPressEvent(Widgets::KeyboardEvent *e) {
+
 	if(e->key() >= Widgets::Key0 && e->key() <= Widgets::Key9) {
 		int mnum = e->key()-Widgets::Key0;
 		int64_t offset = 0;
 		if(!_manager.fileMode())
 			offset = _audioView->offset();
 		_manager.addMarker(std::string(1, mnum+'0'), offset);
-        
+
 	}
+	if(!_manager.threshMode())
+    {
+        if(e->key()==275)//right 37
+        {
+            if(_manager.fileMode())
+            {
+                _audioView->navigateFilePosition(true);
+            }
+            else
+            {
+                forwardPressed();
+            }
+        }
+        if(e->key()==276)//let 39
+        {
+            if(_manager.fileMode())
+            {
+                _audioView->navigateFilePosition(false);
+            }
+            else
+            {
+                backwardPressed();
+            }
+        }
+    }
+
 }
 
 }

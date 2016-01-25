@@ -58,6 +58,8 @@ public:
 
 	Player &player();
 
+    //position of the current file/recording in samples
+    //(this sample is at the middle of the screen in the audio view)
 	int64_t pos() const {return _pos;}
 	void setPos(int64_t pos, bool artificial = true); // file mode only
 
@@ -175,7 +177,7 @@ private:
 
 	VirtualDevices _recordingDevices;
 	std::map<int, Device> _devices;
-	int64_t _pos;
+	int64_t _pos; //position of the current file/recording in samples
 	bool _paused;
 	bool _threshMode;
 
@@ -207,7 +209,7 @@ private:
     clock_t timerUSB = 0;
     clock_t timerEKG = 0;
     bool _hidDevicePresent;
-    
+
     int _firmwareUpdateStage;//this needs to be outside exclusive win block
 
     #if defined(_WIN32)
