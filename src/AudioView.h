@@ -44,9 +44,9 @@ public:
 	int channelCount() const;
 	int channelVirtualDevice(int channel) const;
 	int virtualDeviceChannel(int virtualDevice) const;
-	
+    void navigateFilePosition(bool navigateForward);
 	int selectedChannel() const;
-	
+
 	float scaleWidth() const; //pixels per second of audio
 	int screenWidth() const;
 	int sampleCount(int screenw, float scalew) const;
@@ -60,7 +60,7 @@ public:
 	int channelOffset() const;
 
 	sigslot::signal1<int> relOffsetChanged;
-	
+
 	static const int MOVEPIN_SIZE = 30;
 	static const int DATA_XOFF = MOVEPIN_SIZE*1.48f;
 protected:
@@ -84,6 +84,7 @@ protected:
 	void drawGainControls();
 	void drawData(std::vector<std::pair<int16_t, int16_t> > &data, int channel, int samples, int x, int y, int width);
 	void paintEvent();
+	void drawSpikeTrainStatistics();
 
 	void mousePressEvent(Widgets::MouseEvent *event);
 	void mouseMotionEvent(Widgets::MouseEvent *event);
@@ -96,7 +97,7 @@ private:
 	float _prevGain;
 	float _prevDragX;
 	int64_t _prevDragOffset;
-	
+
 	int _clickedSlider;
 	int _clickedPixelOffset;
 
@@ -106,9 +107,11 @@ private:
 	int8_t _gainCtrlDir;
 
 	bool _rulerClicked;
-	float _rulerStart;
-	float _rulerEnd;
+	float _rulerStart;//position of ruler [0,1] interval
+	float _rulerEnd;//position of ruler [0,1] interval
 
+    //offset of channel in number of samples (negative value) when
+    //return in time to browse past values of samples
 	int64_t _channelOffset;
 
 	float _timeScale;
