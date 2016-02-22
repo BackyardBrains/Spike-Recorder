@@ -18,6 +18,8 @@ namespace BackyardBrains {
 
 const Widgets::Color AudioView::COLORS[] = {
 	Widgets::Colors::black,
+    Widgets::Color(218,218,218),
+    Widgets::Color(255,0,59),
 	Widgets::Color(225,252,90),
 	Widgets::Color(255,138,91),
 	Widgets::Color(106,233,106),
