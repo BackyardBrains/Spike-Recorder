@@ -22,6 +22,7 @@ OBJECTS = \
 	src/engine/BASSErrors.o \
 	src/engine/FileReadUtil.o \
 	src/engine/FFTBackend.o \
+	src/engine/HIDUsbManager.o \
 	src/widgets/LayoutItem.o \
 	src/widgets/BoxLayout.o \
 	src/widgets/Widget.o \
@@ -80,7 +81,7 @@ ifeq ($(OS),)
 	endif
 endif
 
-CFLAGS = -g -O2 -Isrc -Isupport -I. -Wall -DSIGSLOT_PURE_ISO
+CFLAGS = -g -O2 -Isrc -Isupport -I. -Wall -DSIGSLOT_PURE_ISO --std=c++11 
 
 ifeq ($(OS),MacOSX)
 	OBJECTS += $(OBJECTS_MAC)
@@ -105,7 +106,7 @@ else
 
 	ifeq ($(OS),Linux)
 		OBJECTS += $(OBJECTS_LINUX)
-		LIBS = `sdl-config --libs` -lSDL_image -lGL -lGLU -lbass -lpthread # for Linux
+		LIBS = `sdl-config --libs` -lSDL_image -lGL -lGLU -lbass -lpthread -lhidapi-libusb # for Linux
 	else
 
 
