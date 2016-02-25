@@ -5,6 +5,7 @@
 #include "Size.h"
 #include <list>
 #include <string>
+#include <SDL.h>
 
 namespace BackyardBrains {
 
@@ -41,6 +42,10 @@ private:
 	static Application *app;
 	typedef std::vector<Widget*> WidgetVector;
 	typedef std::list<Widget*> WidgetList;
+
+	SDL_Window *sdlWindow;
+	SDL_Renderer *sdlRenderer;
+	SDL_GLContext sdlGLContext;
 
 	bool _running;
 	Widget *_mouseGrabber;

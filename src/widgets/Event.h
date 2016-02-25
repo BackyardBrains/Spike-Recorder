@@ -2,7 +2,7 @@
 #define BACKYARDBRAINS_WIDGETS_EVENT_H
 
 #include "Point.h"
-#include <SDL_keysym.h>
+#include <SDL_keycode.h>
 
 namespace BackyardBrains {
 
@@ -71,8 +71,8 @@ enum KeyModifier {
 	KModRCtrl = KMOD_RCTRL,
 	KModLAlt = KMOD_LALT,
 	KModRAlt = KMOD_RALT,
-	KModLMeta = KMOD_LMETA,
-	KModRMeta = KMOD_RMETA,
+	KModLMeta = KMOD_LGUI,
+	KModRMeta = KMOD_RGUI,
 	KModNum = KMOD_NUM,
 	KModCaps = KMOD_CAPS,
 	KModMode = KMOD_MODE,
@@ -80,7 +80,7 @@ enum KeyModifier {
 	KModCtrl = KMOD_LCTRL|KMOD_RCTRL,
 	KModShift = KMOD_LSHIFT|KMOD_RSHIFT,
 	KModAlt = KMOD_LALT|KMOD_RALT,
-	KModMeta = KMOD_LMETA|KMOD_RMETA
+	KModMeta = KMOD_LGUI|KMOD_RGUI
 };
 
 typedef int KeyModifiers;

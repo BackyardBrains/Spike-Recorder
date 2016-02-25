@@ -23,11 +23,6 @@ Application::Application() : _running(false), _mouseGrabber(0), _keyboardGrabber
 		Log::fatal("SDL failed to initialize: %s", SDL_GetError());
 	}
 
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1);
-	// SDL_GL_SetAttribute(SDL_GL_DEPTH_TEST, 1);
-	// SDL_putenv("SDL_VIDEO_CENTERED=1");
-
 #if defined(_WIN32) && (_WIN32_WINNT >= 0x0501)
 	// FILE *ctt = fopen("CON", "w" );
 	AttachConsole(ATTACH_PARENT_PROCESS);
@@ -54,7 +49,8 @@ Application *Application::getInstance() {
 }
 
 Application::~Application() {
-	// clean up and exit
+	SDL_GL_DeleteContext(sdlGLContext);
+	SDL_DestroyWindow(sdlWindow);
 	SDL_Quit();
 	Log::msg("GUI closed.");
 }
@@ -64,8 +60,6 @@ static MouseButton ToMouseButtonFromSDL(Uint8 button) {
 		case SDL_BUTTON_LEFT: return LeftButton;
 		case SDL_BUTTON_MIDDLE: return MiddleButton;
 		case SDL_BUTTON_RIGHT: return RightButton;
-		case SDL_BUTTON_WHEELUP: return WheelUpButton;
-		case SDL_BUTTON_WHEELDOWN: return WheelDownButton;
 	}
 	return NoButton;
 }
@@ -121,10 +115,11 @@ void Application::run() {
 			(*it)->_CallAdvance();
 
 		// draw
-		SDL_Surface * const screen = SDL_GetVideoSurface();
+		int w, h;
+		SDL_GetWindowSize(sdlWindow,&w,&h);
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		glOrtho(0, screen->w, screen->h, 0, -100,100);
+		glOrtho(0, w, h, 0, -100,100);
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
@@ -138,7 +133,7 @@ void Application::run() {
 			glLoadIdentity();
 			(*it)->_DoPaintEvents(Point(), (*it)->geometry());
 		}
-		SDL_GL_SwapBuffers();
+		SDL_GL_SwapWindow(sdlWindow);
 
 		// free up the CPU a bit
 		SDL_Delay(4);
@@ -169,34 +164,44 @@ void Application::updateLayout() {
 	}
 }
 
-KeyCode sdl_keysym_to_key(SDLKey key) {
+KeyCode sdl_keysym_to_key(SDL_Keycode key) {
 	return (KeyCode)key;
 }
 
-KeyModifiers sdl_keymod_to_keymod(SDLMod mod) {
+KeyModifiers sdl_keymod_to_keymod(unsigned short mod) {
 	return mod;
 }
 
 void Application::_HandleEvent(const void *eventRaw) {
 	const SDL_Event &event = *reinterpret_cast<const SDL_Event*>(eventRaw);
-	if (event.type == SDL_MOUSEMOTION || event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP) {
+	
+	if (event.type == SDL_MOUSEMOTION || event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP || event.type == SDL_MOUSEWHEEL) {
 		// update our internal button state tracking
 		if (event.type == SDL_MOUSEMOTION)
 			_buttonState = ToMouseButtonsFromSDL(event.motion.state);
 		else if (event.type == SDL_MOUSEBUTTONDOWN)
 			_buttonState |= ToMouseButtonFromSDL(event.button.button);
+		else if (event.type == SDL_MOUSEWHEEL) {
+			/*if(event.wheel.y > 0)
+				_buttonState |= WheelUpButton;
+			if(event.wheel.y < 0)
+				_buttonState |= WheelDownButton;*/
+		}
 		else // if (event.type == SDL_MOUSEBUTTONUP)
 			_buttonState &= ~ToMouseButtonFromSDL(event.button.button);
 
 		// TODO generate events if the event.motion.state magically changed things
 		// TODO keep track of the keyboard modifiers state
+		
+		int x, y;
+		SDL_GetMouseState(&x,&y);
 
-		const Point newPos = (event.type == SDL_MOUSEMOTION) ? Point(event.motion.x, event.motion.y) : Point(event.button.x, event.button.y);
+		const Point newPos = Point(x,y);
 		const Point oldPos = newPos; // TODO implement remembering of the old position
 
 		// determine which window/popup should get the event
 		Widget *windowWidget = NULL;
-		if (event.type != SDL_MOUSEBUTTONDOWN) {
+		if (event.type == SDL_MOUSEMOTION) {
 			for (WidgetList::const_reverse_iterator it = _popupStack.rbegin(); it != _popupStack.rend(); ++it) {
 				if ((*it)->geometry().contains(newPos) && (*it)->hasMouseTracking()) {
 					windowWidget = *it;
@@ -204,13 +209,11 @@ void Application::_HandleEvent(const void *eventRaw) {
 				}
 			}
 		}
-		else { // if (event.type == SDL_MOUSEBUTTONDOWN)
+		else if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEWHEEL) {
 			// NOTE: for the case of a button press, it closes all popups that weren’t hit
 			while (!_popupStack.empty()) {
-				if (_popupStack.back()->geometry().contains(Point(event.button.x, event.button.y))) {
+				if (_popupStack.back()->geometry().contains(newPos)) {
 					windowWidget = _popupStack.back();
-					break;
-				} else if(event.button.button == SDL_BUTTON_WHEELUP || event.button.button == SDL_BUTTON_WHEELDOWN ) {
 					break;
 				} else {
 					_popupStack.back()->close(); // NOTE: when we click outside
@@ -249,15 +252,26 @@ void Application::_HandleEvent(const void *eventRaw) {
 				// origin = geometry().topLeft();
 
 			// create the mouse event and dispatch it
-			MouseEvent mouseEvent((event.type == SDL_MOUSEMOTION) ? NoButton : ToMouseButtonFromSDL(event.button.button), _buttonState, newPos - origin, oldPos - origin);
-			if (event.type == SDL_MOUSEBUTTONDOWN) {
+			MouseButton button = NoButton;
+			if(event.type == SDL_MOUSEBUTTONUP || event.type == SDL_MOUSEBUTTONDOWN)
+				button = ToMouseButtonFromSDL(event.button.button);
+
+			if(event.type == SDL_MOUSEWHEEL) {
+				if(event.wheel.y > 0)
+					button = WheelUpButton;
+				else
+					button = WheelDownButton;
+			}
+			
+			MouseEvent mouseEvent(button, _buttonState, newPos - origin, oldPos - origin);
+
+			if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEWHEEL) {
 				if (_mouseGrabber) {
 					_mouseGrabber->mousePressEvent(&mouseEvent);
 				}
-
 				else if (_hoverWidget) {
 					_hoverWidget->mousePressEvent(&mouseEvent);
-					if (mouseEvent.isAccepted())
+					if (mouseEvent.isAccepted() && event.type != SDL_MOUSEWHEEL)
 						_mouseGrabber = _hoverWidget;
 				}
 			}
@@ -318,35 +332,47 @@ void Application::_HandleEvent(const void *eventRaw) {
 	else if (event.type == SDL_QUIT) {
 		_running = false; // TODO generate an event instead of directly shutting down the event loop
 	}
-	else if (event.type == SDL_SYSWMEVENT) {}
-	else if (event.type == SDL_VIDEORESIZE)	{
-		createWindow(event.resize.w, event.resize.h);
+	else if (event.type == SDL_WINDOWEVENT)	{
+		if(event.window.event == SDL_WINDOWEVENT_RESIZED) {
+			int w, h;
+			SDL_GetWindowSize(sdlWindow,&w,&h);
+			glViewport(0, 0, w, h);
+			
+			for(WidgetList::iterator it = _windowStack.begin(); it != _windowStack.end(); it++) {
+				(*it)->setSize(Size(std::max(MIN_WINDOW_W,w), std::max(MIN_WINDOW_H,h)));
+				(*it)->_DoGlResetEvents();
+			}
+		}
 	}
-	else if (event.type == SDL_VIDEOEXPOSE) {}
 }
 
 void Application::createWindow(int w, int h) {
-	// set up a window
-	SDL_Surface *screen = SDL_GetVideoSurface();
-
 	assert(_windowStack.size() > 0); // cannot create window without content present.
 
-	screen = SDL_SetVideoMode(w, h, 0, SDL_OPENGL|SDL_RESIZABLE);
-	if(!screen) {
-		Log::fatal("SDL failed to set video mode: %d",SDL_GetError());
+	int rc = SDL_CreateWindowAndRenderer(w,h,SDL_WINDOW_RESIZABLE|SDL_WINDOW_OPENGL,&sdlWindow,&sdlRenderer);
+	if(rc < 0) {
+		Log::fatal("SDL failed to create window: %d",SDL_GetError());
 	}
 
-	glViewport(0, 0, screen->w, screen->h);
-	SDL_WM_SetCaption(windowTitle().c_str(), NULL);
+	SDL_GL_SetSwapInterval(1);
+
+	sdlGLContext = SDL_GL_CreateContext(sdlWindow);
+	if(sdlGLContext == 0) {
+		Log::fatal("SDL failed to create GL context: %d",SDL_GetError());
+	}
+	SDL_GetWindowSize(sdlWindow,&w,&h);
+
+	glViewport(0, 0, w, h);
+	SDL_SetWindowTitle(sdlWindow, windowTitle().c_str());
 
 	// initialize OpenGL settings
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
- 
 
-    const Color &bg = Colors::background;
+
+	const Color &bg = Colors::background;
 	glClearColor(bg.redF(), bg.greenF(), bg.blueF(), 0);
 	glEnable(GL_CULL_FACE);
 
@@ -354,11 +380,10 @@ void Application::createWindow(int w, int h) {
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-    for(WidgetList::iterator it = _windowStack.begin(); it != _windowStack.end(); it++)
-    {
-        (*it)->setSize(Size(std::max(MIN_WINDOW_W,w), std::max(MIN_WINDOW_H,h)));
-        (*it)->_DoGlResetEvents();
-    }
+	for(WidgetList::iterator it = _windowStack.begin(); it != _windowStack.end(); it++) {
+		(*it)->setSize(Size(std::max(MIN_WINDOW_W,w), std::max(MIN_WINDOW_H,h)));
+		(*it)->_DoGlResetEvents();
+	}
 
 }
 
@@ -374,7 +399,7 @@ void Application::_SetHoverWidget(Widget *widget) {
 
 void Application::setWindowTitle(const std::string &str) {
 	_windowTitle = str;
-	SDL_WM_SetCaption(windowTitle().c_str(), NULL);
+	SDL_SetWindowTitle(sdlWindow, windowTitle().c_str());
 }
 
 std::string Application::windowTitle() const {
