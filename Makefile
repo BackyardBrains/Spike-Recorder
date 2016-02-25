@@ -54,16 +54,17 @@ OBJECTS_LINUX = \
 
 OBJECTS += $(OBJECTS_LINUX)
 
-CFLAGS = -g -O2 -Isrc -Isupport -I. -Wall -DSIGSLOT_PURE_ISO --std=c++11 `sdl-config --cflags`
-LIBS = `sdl-config --libs` -lSDL_image -lGL -lGLU -lbass -lpthread -lhidapi-libusb
+CFLAGS = -g -O2 -Isrc -Isupport -I. -Wall -DSIGSLOT_PURE_ISO --std=c++11 `sdl2-config --cflags`
+LIBS = `sdl2-config --libs` -lSDL2_image -lGL -lGLU -lbass -lpthread -lhidapi-libusb
 
 %.o: %.c
-	$(ARCH)$(CC) -o $@ -c $< $(CFLAGS)
+	$(CC) -o $@ -c $< $(CFLAGS)
 
 %.o: %.cpp
-	$(ARCH)$(CCX) -o $@ -c $< $(CFLAGS)
+	$(CCX) -o $@ -c $< $(CFLAGS)
 
 $(TARGET): $(OBJECTS)
+	$(CCX) -o $(TARGET) $(OBJECTS) $(CFLAGS) $(LIBS)
 all:
 	$(TARGET)
 
