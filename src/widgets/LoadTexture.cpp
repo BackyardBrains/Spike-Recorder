@@ -2,7 +2,10 @@
 #include <SDL_image.h>
 #include <SDL_opengl.h>
 #include <cstring>
-
+#if defined(_WIN32)
+    #include <stdio.h>
+    #include <cstdlib>
+#endif // defined
 namespace BackyardBrains {
 
 namespace Widgets {
@@ -13,10 +16,10 @@ GLuint LoadTexture(const char *filename)
 
 	//SDL_Surface * const surface = IMG_Load(filename);
     SDL_Surface * const surface = SDL_LoadBMP(filename);
-    
+
 	if (surface)
 	{
-        
+
 		// Check that the image dimensions are a power of 2
 		if (((surface->w & (surface->w - 1)) != 0) ||
 			((surface->h & (surface->h - 1)) != 0))
@@ -24,7 +27,7 @@ GLuint LoadTexture(const char *filename)
 
 
 		GLint bytespp = surface->format->BytesPerPixel;
-       
+
 		GLenum texture_format;
 		if(bytespp == 4) {
 			if(surface->format->Rmask == 0x000000ff)
@@ -42,7 +45,7 @@ GLuint LoadTexture(const char *filename)
 			exit(1);
 		}
 
-        
+
 		glGenTextures(1, &texture);
 
 		glBindTexture(GL_TEXTURE_2D, texture);
