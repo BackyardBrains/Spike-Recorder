@@ -719,15 +719,34 @@ void RecordingManager::getData(int virtualDevice, int64_t offset, int64_t len, i
 	sampleBuffer(virtualDevice)->getData(dst, offset, len);
 }
 
+//
+// Parameters:
+//    virtualDeviceIndex - device from which we want to read
+//    offset - offset in samples from begining of the time
+//    len - number of samples to get
+//    sampleSkip - ??used when we cant show "len" samples on the screen (not enough pixels)
+//                  (for example when we want to display 20 sec of data @ 44kHz on 860px screen)
+//                  get every "sampleSkip" sample (skip "sampleSkip"-1 sample after each sample)
+//
+//     returns roughly (roughly because we use snapTo) len/sampleSkip data samples
+//
 std::vector< std::pair<int16_t, int16_t> > RecordingManager::getSamplesEnvelope(int virtualDeviceIndex, int64_t offset, int64_t len, int sampleSkip) {
-	const int64_t pos2 = snapTo(offset+len, sampleSkip);
-	const int64_t pos1 = snapTo(offset, sampleSkip);
-
+    
+	const int64_t pos2 = snapTo(offset+len, sampleSkip);//end of data
+	const int64_t pos1 = snapTo(offset, sampleSkip);//begining of the data
+    
+    int64_t newLengthOfData = pos2 - pos1;
+    
 	std::vector< std::pair<int16_t, int16_t> > result;
+    
 	if (_devices.count(_recordingDevices[virtualDeviceIndex].device) > 0)
-		result = sampleBuffer(virtualDeviceIndex)->getDataEnvelope(pos1, pos2 - pos1, sampleSkip);
+    {
+		result = sampleBuffer(virtualDeviceIndex)->getDataEnvelope(pos1, newLengthOfData, sampleSkip);
+    }
 	else
-		result.resize((pos2 - pos1)/sampleSkip);
+    {
+		result.resize(newLengthOfData/sampleSkip);
+    }
 
 	return result;
 }

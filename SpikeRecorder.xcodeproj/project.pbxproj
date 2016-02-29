@@ -208,7 +208,7 @@
 		248BA1F61B3E42D500EEB5E4 /* SwitchLayout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SwitchLayout.cpp; sourceTree = "<group>"; };
 		248BA1F71B3E42D500EEB5E4 /* SwitchLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchLayout.h; sourceTree = "<group>"; };
 		248E586D1AAE0CF60011707F /* SpikeRecorder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpikeRecorder.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		248E58711AAE0CF60011707F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../src/xcode/Info.plist; sourceTree = "<group>"; };
+		248E58711AAE0CF60011707F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; name = Info.plist; path = src/xcode/Info.plist; sourceTree = "<group>"; };
 		248E58901AAE19570011707F /* AnalysisAudioView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AnalysisAudioView.cpp; path = src/AnalysisAudioView.cpp; sourceTree = SOURCE_ROOT; };
 		248E58911AAE19570011707F /* AnalysisAudioView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AnalysisAudioView.h; path = src/AnalysisAudioView.h; sourceTree = SOURCE_ROOT; };
 		248E58921AAE19570011707F /* AnalysisView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AnalysisView.cpp; path = src/AnalysisView.cpp; sourceTree = SOURCE_ROOT; };

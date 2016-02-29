@@ -21,8 +21,8 @@ public:
 		int virtualDevice;
 		int colorIdx;
 
-		float gain;
-		float pos;
+		float gain;//channel zoom level (0,1] interval
+		float pos;//vertical position on the screen ([0,1] interval)
 	};
 
 

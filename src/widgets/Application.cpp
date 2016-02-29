@@ -109,6 +109,7 @@ void Application::run() {
 
 		advance();
 		// Call step functions of widgets that actually need them. Are there any?
+        //Answer: Audio view, for example, is using this.
 		for (WidgetList::const_iterator it = _windowStack.begin(); it != _windowStack.end(); ++it)
 			(*it)->_CallAdvance();
 		for (WidgetList::const_iterator it = _popupStack.begin(); it != _popupStack.end(); ++it)

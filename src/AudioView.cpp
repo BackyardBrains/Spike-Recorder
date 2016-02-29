@@ -565,6 +565,10 @@ void AudioView::drawAudio() {
 			if(!_manager.threshMode()) {
 				if(_manager.serialMode())
                 {
+                    // pos = (number of samples from begining of the time)
+                    //       + (offset in samples (negative value) used when returning in time to browse past values)
+                    //       - (number of samples that we need to display)
+                    
                     int pos = _manager.pos()+_channelOffset-samples;
                     int16_t tempData[samples];
                     std::vector< std::pair<int16_t, int16_t> > tempVectorData(samples);
@@ -578,6 +582,9 @@ void AudioView::drawAudio() {
                 }
                 else
                 {
+                    // pos = (number of samples from begining of the time)
+                    //       + (offset in samples (negative value) used when returning in time to browse past values)
+                    //       - (number of samples that we need to display)
                     int pos = _manager.pos()+_channelOffset-samples;
                     if(_manager.fileMode())
                     {
