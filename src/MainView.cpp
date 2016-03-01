@@ -127,7 +127,7 @@ MainView::MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder
     _threshavgGroup->setMouseTracking(true);
 	_recBar = new RecordingBar(_fileRec, this);
 
-	_fftView = new FFTView(*_audioView, _manager, this);
+	_fftView = new FFTView(*_audioView, _manager, _anaman, this);
 
 	Widgets::BoxLayout *topBar = new Widgets::BoxLayout(Widgets::Horizontal);
 	topBar->addSpacing(10);

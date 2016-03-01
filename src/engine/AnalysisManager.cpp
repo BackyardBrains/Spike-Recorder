@@ -3,7 +3,7 @@
 namespace BackyardBrains {
 
 AnalysisManager::AnalysisManager(RecordingManager &recman)
-	: ekg(recman) {
+	: ekg(recman), fft(recman) {
 }
 
 }

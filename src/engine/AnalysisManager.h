@@ -2,6 +2,7 @@
 #define BACKYARDBRAINS_ANALYSISMANAGER_H
 
 #include "EkgBackend.h"
+#include "FFTBackend.h"
 #include <sigslot.h>
 
 namespace BackyardBrains {
@@ -13,7 +14,7 @@ public:
 	AnalysisManager(RecordingManager &recman);
 
 	EkgBackend ekg;	
-	
+	FFTBackend fft;	
 };
 
 }
