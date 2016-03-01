@@ -45,8 +45,8 @@ const int AudioView::MARKER_COLOR_NUM = sizeof(AudioView::MARKER_COLORS)/sizeof(
 
 const float AudioView::ampScale = .0005f;
 
-AudioView::AudioView(Widgets::Widget *parent, RecordingManager &mngr)
-	: Widgets::Widget(parent), _manager(mngr), _clickedGain(-1), _clickedSlider(-1), _clickedPixelOffset(0),
+AudioView::AudioView(Widgets::Widget *parent, RecordingManager &mngr, AnalysisManager &anaman)
+	: Widgets::Widget(parent), _manager(mngr), _anaman(anaman), _clickedGain(-1), _clickedSlider(-1), _clickedPixelOffset(0),
 	_clickedThresh(false), _rulerClicked(false), _rulerStart(-1.f), _rulerEnd(-1.f), _channelOffset(0), _timeScale(0.1f)  {
 
 	_gainCtrlHoldTime = 0;
@@ -519,23 +519,6 @@ static void drawtextbgbox(const std::string &s, int x, int y, Widgets::Alignment
 	Widgets::Painter::drawRect(Widgets::Rect(rx, ry, w+2*pad, h+2*pad-1));
 }
 
-static float calculateRMS(std::vector<std::pair<int16_t, int16_t> > &data, unsigned int startsample, unsigned int endsample) {
-	float sum = 0.f;
-
-	assert(startsample < data.size() && endsample < data.size());
-	for(unsigned int i = startsample; i < endsample; i++) {
-		sum += data[i].first*data[i].first;
-		sum += data[i].second*data[i].second;
-	}
-
-	if(endsample-startsample > 0) {
-		sum /= (endsample-startsample)*2;
-		return std::sqrt(sum);
-	}
-
-	return 0.f;
-}
-
 void AudioView::drawGainControls() {
 	if(_channels.size() == 0)
 		return;
@@ -564,34 +547,34 @@ void AudioView::drawAudio() {
 
 			if(!_manager.threshMode()) {
 				if(_manager.serialMode())
-                {
-                    // pos = (number of samples from begining of the time)
-                    //       + (offset in samples (negative value) used when returning in time to browse past values)
-                    //       - (number of samples that we need to display)
-                    
-                    int pos = _manager.pos()+_channelOffset-samples;
-                    int16_t tempData[samples];
-                    std::vector< std::pair<int16_t, int16_t> > tempVectorData(samples);
-                    _manager.getData(_channels[i].virtualDevice, pos, samples, tempData);
-                    for(int ind = 0;ind<samples;ind++)
-                    {
-                        tempVectorData[ind].first = tempData[ind];
-                        tempVectorData[ind].second = tempData[ind];
-                    }
-                    data = tempVectorData;
-                }
-                else
-                {
-                    // pos = (number of samples from begining of the time)
-                    //       + (offset in samples (negative value) used when returning in time to browse past values)
-                    //       - (number of samples that we need to display)
-                    int pos = _manager.pos()+_channelOffset-samples;
-                    if(_manager.fileMode())
-                    {
-                        pos += samples/2;
-                    }
-                    data = _manager.getSamplesEnvelope(_channels[i].virtualDevice, pos, samples, screenw == 0 ? 1 : std::max(samples/screenw,1));
-                }
+				{
+					// pos = (number of samples from begining of the time)
+					//       + (offset in samples (negative value) used when returning in time to browse past values)
+					//       - (number of samples that we need to display)
+
+					int pos = _manager.pos()+_channelOffset-samples;
+					int16_t tempData[samples];
+					std::vector< std::pair<int16_t, int16_t> > tempVectorData(samples);
+					_manager.getData(_channels[i].virtualDevice, pos, samples, tempData);
+					for(int ind = 0;ind<samples;ind++)
+					{
+						tempVectorData[ind].first = tempData[ind];
+						tempVectorData[ind].second = tempData[ind];
+					}
+					data = tempVectorData;
+				}
+				else
+				{
+					// pos = (number of samples from begining of the time)
+					//       + (offset in samples (negative value) used when returning in time to browse past values)
+					//       - (number of samples that we need to display)
+					int pos = _manager.pos()+_channelOffset-samples;
+					if(_manager.fileMode())
+					{
+						pos += samples/2;
+					}
+					data = _manager.getSamplesEnvelope(_channels[i].virtualDevice, pos, samples, screenw == 0 ? 1 : std::max(samples/screenw,1));
+				}
 			} else {
 				data = _manager.getTriggerSamplesEnvelope(_channels[i].virtualDevice, samples, screenw == 0 ? 1 : std::max(samples/screenw,1));
 			}
@@ -603,14 +586,15 @@ void AudioView::drawAudio() {
 			glBindTexture(GL_TEXTURE_2D, 0);
 
 			if(_rulerEnd != _rulerStart) {
-				int startsample = std::min(_rulerStart, _rulerEnd)*(data.size()-1);
-				int endsample = std::max(_rulerStart, _rulerEnd)*(data.size()-1);
-				float rms = calculateRMS(data, startsample, endsample);
+				int startsample = std::min(_rulerStart, _rulerEnd)*samples;
+				int endsample = std::max(_rulerStart, _rulerEnd)*samples;
+				int pos = _manager.pos()+_channelOffset-samples;
+				float rms = _anaman.calculateRMS(_channels[i].virtualDevice, pos+startsample, endsample-startsample);
 
 
-                std::stringstream s;
-                s.precision(3);
-                s <<"RMS:"<< std::fixed << rms/2000.0 ;
+				std::stringstream s;
+				s.precision(3);
+				s <<"RMS:"<< std::fixed << rms/2000.0 ;
 
 				Widgets::Painter::setColor(bg);
 				drawtextbgbox(s.str(), width()-20, _channels[i].pos*height()+30, Widgets::AlignRight);
@@ -672,7 +656,6 @@ void AudioView::drawSpikeTrainStatistics()
 
 
         //go through all spike trains
-        int sizespikere = _manager.spikeTrains().size();
         for(unsigned int i = 0; i < _manager.spikeTrains().size(); i++) {
                 if(_manager.spikeTrains()[i].spikes.size()<1)
                 {

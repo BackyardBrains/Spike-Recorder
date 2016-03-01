@@ -20,7 +20,7 @@
 
 namespace BackyardBrains {
 
-AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Widgets::Widget(parent), _manager(mngr), _spikeTrains(mngr.spikeTrains()) {
+AnalysisView::AnalysisView(RecordingManager &mngr, AnalysisManager &anaman, Widgets::Widget *parent) : Widgets::Widget(parent), _manager(mngr), _spikeTrains(mngr.spikeTrains()) {
 	_colorCounter = 0;
 	for(unsigned int i = 0; i < _spikeTrains.size(); i++) {
 		if(_spikeTrains[i].color >= _colorCounter)
@@ -30,7 +30,7 @@ AnalysisView::AnalysisView(RecordingManager &mngr, Widgets::Widget *parent) : Wi
 	_spikeTrains.back().color=_colorCounter;
 	_colorCounter++;
 
-	_audioView = new AnalysisAudioView(mngr, _spikeSorter, this);
+	_audioView = new AnalysisAudioView(mngr, anaman, _spikeSorter, this);
 	_audioView->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Expanding, Widgets::SizePolicy::Expanding));
 	_audioView->addChannel(0);
 	_audioView->setThresh(_spikeTrains[0].lowerThresh, _spikeTrains[0].upperThresh);

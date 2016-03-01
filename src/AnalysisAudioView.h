@@ -15,7 +15,7 @@ class SpikeSorter;
 
 class AnalysisAudioView : public AudioView {
 public:
-	AnalysisAudioView(RecordingManager &mngr, SpikeSorter &spikes, Widget *parent = NULL);
+	AnalysisAudioView(RecordingManager &mngr, AnalysisManager &anaman, SpikeSorter &spikes, Widget *parent = NULL);
 
 	int upperThresh() const;
 	int lowerThresh() const;

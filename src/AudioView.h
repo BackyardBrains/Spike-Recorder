@@ -4,6 +4,7 @@
 #include "widgets/Widget.h"
 #include "widgets/ScrollBar.h"
 #include "engine/RecordingManager.h"
+#include "engine/AnalysisManager.h"
 #include "widgets/Color.h"
 
 namespace BackyardBrains {
@@ -34,7 +35,7 @@ public:
 	void constructMetadata(MetadataChunk *mdata) const;
 	void applyMetadata(const MetadataChunk &mdata);
 
-	AudioView(Widgets::Widget *parent, RecordingManager &mngr);
+	AudioView(Widgets::Widget *parent, RecordingManager &mngr, AnalysisManager &anaman);
 	virtual ~AudioView();
 
 	int addChannel(int virtualDeviceIndex); // returns new channel on success and -1 on failure
@@ -71,6 +72,7 @@ protected:
 
 	static const float ampScale; // pixels per amplitude unit
 	RecordingManager &_manager;
+	AnalysisManager &_anaman;
 	std::vector<Channel> _channels;
 
 	void drawAudio();

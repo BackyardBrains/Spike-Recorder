@@ -38,7 +38,7 @@ namespace BackyardBrains {
 
 
 MainView::MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder &fileRec, Widget *parent) : Widget(parent), _manager(mngr), _anaman(anaman), _fileRec(fileRec), _anaView(NULL) {
-	_audioView = new AudioView(this, _manager);
+	_audioView = new AudioView(this, _manager, _anaman);
 
 	    //setup timer that will periodicaly check for USB HID devices
 
@@ -373,7 +373,7 @@ void MainView::configPressed() {
 
 void MainView::analysisPressed() {
 	if(_anaView == NULL)
-		_anaView = new AnalysisView(_manager);
+		_anaView = new AnalysisView(_manager, _anaman);
 
 	_anaView->setDeleteOnClose(false);
 	_anaView->setGeometry(rect());

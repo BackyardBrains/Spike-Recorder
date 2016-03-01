@@ -4,7 +4,7 @@
 #include <SDL_opengl.h>
 namespace BackyardBrains {
 
-AnalysisAudioView::AnalysisAudioView(RecordingManager &manager, SpikeSorter &spikes, Widgets::Widget *parent) : AudioView(parent, manager), _spikes(spikes), _colorIdx(0), _clickedThresh(-1) {
+AnalysisAudioView::AnalysisAudioView(RecordingManager &manager, AnalysisManager &anaman, SpikeSorter &spikes, Widgets::Widget *parent) : AudioView(parent, manager, anaman), _spikes(spikes), _colorIdx(0), _clickedThresh(-1) {
 	_threshPos[0] = -0;
 	_threshPos[1] = 0;
 }

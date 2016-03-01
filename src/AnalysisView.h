@@ -12,13 +12,14 @@ class PushButton;
 class Label;
 }
 class RecordingManager;
+class AnalysisManager;
 class AnalysisAudioView;
 class AnalysisTrainList;
 class AnalysisPlots;
 
 class AnalysisView : public Widgets::Widget {
 public:
-	AnalysisView(RecordingManager &mngr, Widget *parent = NULL);
+	AnalysisView(RecordingManager &mngr, AnalysisManager &anaman, Widget *parent = NULL);
 private:
 	AnalysisAudioView *_audioView;
 	RecordingManager &_manager;
