@@ -1,5 +1,6 @@
 #include "ThresholdPanel.h"
 #include "engine/RecordingManager.h"
+#include "engine/AnalysisManager.h"
 #include "widgets/PushButton.h"
 #include "widgets/Label.h"
 #include "widgets/BoxLayout.h"
@@ -15,30 +16,29 @@
 
 namespace BackyardBrains {
 
-ThresholdPanel::ThresholdPanel(RecordingManager &manager, Widgets::Widget *parent) : Widgets::Widget(parent) {
-    
-    _manager = &manager;
-    _triggerButton = new Widgets::PushButton(this);
-    setTriggerButtonImage();
-    _triggerButton->setSizeHint(Widgets::Size(42,32));
-    _triggerButton->setRightPadding(10);
-    _triggerButton->clicked.connect(this, &ThresholdPanel::triggerPressed);
-    
+ThresholdPanel::ThresholdPanel(RecordingManager &manager, AnalysisManager &anaman, Widgets::Widget *parent) : Widgets::Widget(parent) {
+
+	_manager = &manager;
+	_triggerButton = new Widgets::PushButton(this);
+	setTriggerButtonImage();
+	_triggerButton->setSizeHint(Widgets::Size(42,32));
+	_triggerButton->setRightPadding(10);
+	_triggerButton->clicked.connect(this, &ThresholdPanel::triggerPressed);
+
 	_ekgButton = new Widgets::PushButton(this);
 	_ekgButton->setNormalTex(Widgets::TextureGL::get("data/ekg.bmp"));
 	_ekgButton->setHoverTex(Widgets::TextureGL::get("data/ekghigh.bmp"));
 	_ekgButton->setSizeHint(Widgets::Size(42,32));
-    _ekgButton->setRightPadding(10);
+	_ekgButton->setRightPadding(10);
 	_ekgButton->clicked.connect(this, &ThresholdPanel::ekgPressed);
-    if(!(_manager->serialMode() || _manager->hidMode()))
-    {
-        _ekgButton->setVisible(false);
-    }
+	if(!(_manager->serialMode() || _manager->hidMode()))
+	{
+		_ekgButton->setVisible(false);
+	}
 
-    
-	_ekgWidget = new EkgWidget(this);
+
+	_ekgWidget = new EkgWidget(anaman, this);
 	manager.triggered.connect(_ekgWidget,&EkgWidget::beat);
-	manager.thresholdChanged.connect(_ekgWidget, &EkgWidget::reset);
 	_speakerButton = new Widgets::PushButton(this);
 	_speakerButton->setNormalTex(Widgets::TextureGL::get("data/speakeroff.bmp"));
 	_speakerButton->setSizeHint(Widgets::Size(20,20));
@@ -72,15 +72,15 @@ ThresholdPanel::ThresholdPanel(RecordingManager &manager, Widgets::Widget *paren
 	_switchLayout->addLayout(avgBar);
 	_switchLayout->addLayout(ekgBar);
 
-    
+
 	Widgets::BoxLayout *layout = new Widgets::BoxLayout(Widgets::Horizontal, this);
-    layout->addWidget(_ekgButton);
-    layout->addWidget(_triggerButton);
+	layout->addWidget(_ekgButton);
+	layout->addWidget(_triggerButton);
 
 
-   // layout->addWidget(_thresholdWidget, Widgets::AlignTop);
-    //layout->addSpacing(10);
-	
+	// layout->addWidget(_thresholdWidget, Widgets::AlignTop);
+	//layout->addSpacing(10);
+
 	//layout->addSpacing(10);
 	layout->addLayout(_switchLayout);
 	layout->update();
@@ -197,18 +197,12 @@ void ThresholdPanel::ekgPressed() {
     
 //============================= EKG Widget ========================================
 
-EkgWidget::EkgWidget(Widget *parent) : Widget(parent) {
-	reset();
+EkgWidget::EkgWidget(AnalysisManager &anaman, Widget *parent) : Widget(parent), _anaman(anaman) {
+	_beatt = 1.f;
 	_sound = false;
 	setSizeHint(Widgets::Size(300,32));
 
 	_beepSample = BASS_SampleLoad(false, "data/ekg.wav",0,0,10,0);
-}
-
-void EkgWidget::reset() {
-	_beatt = 1.f;
-	_frequency = 0;
-	_lastTime = 0;
 }
 
 bool EkgWidget::sound() const {
@@ -221,7 +215,7 @@ void EkgWidget::setSound(bool sound) {
 
 void EkgWidget::paintEvent() {
 	std::stringstream s;
-	s << "f = " << (int)(_frequency*60+0.5) <<"/min  \x7ft = " << 1/_frequency << " s";
+	s << "f = " << (int)(_anaman.ekg.frequency()*60+0.5) <<"/min  \x7ft = " << 1/_anaman.ekg.frequency() << " s";
 	Widgets::Application::font()->draw(s.str().c_str(), 0, height()/2, Widgets::AlignVCenter);
 	Widgets::TextureGL::get("data/heart.bmp")->bind();
 	glPushMatrix();
@@ -233,13 +227,7 @@ void EkgWidget::paintEvent() {
 }
 
 void EkgWidget::beat() {
-	unsigned int time = SDL_GetTicks();
-	float nfreq = 1000.f/(time-_lastTime);
-	_frequency += 0.3*(nfreq-_frequency); // exponential moving average. this may need tweaking
-	
 	_beatt = 1.f;
-
-	_lastTime = time;
 
 	if(_beepSample != (DWORD)-1 && _sound) {
 		HCHANNEL chan = BASS_SampleGetChannel(_beepSample, false);

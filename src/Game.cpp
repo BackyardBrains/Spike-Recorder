@@ -6,12 +6,12 @@
 
 namespace BackyardBrains {
 
-Game::Game() : _fileRec(_manager) {
+Game::Game() : _anaman(_manager), _fileRec(_manager) {
 	Log::msg("Loading Resources...");
 	loadResources();
 	Log::msg("Creating Window...");
 
-	addWindow(new MainView(_manager, _fileRec));
+	addWindow(new MainView(_manager, _anaman, _fileRec));
 	createWindow(800,600);
 	setWindowTitle("BYB Spike Recorder");
 

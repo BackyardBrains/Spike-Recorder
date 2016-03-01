@@ -6,6 +6,7 @@ TARGETDIR = SpikeRecorder
 
 OBJECTS = \
 	src/engine/RecordingManager.o \
+	src/engine/AnalysisManager.o \
 	src/engine/FileRecorder.o \
 	src/engine/Player.o \
 	src/engine/ArduinoSerial.o \
@@ -15,6 +16,7 @@ OBJECTS = \
 	src/engine/FileReadUtil.o \
 	src/engine/FFTBackend.o \
 	src/engine/HIDUsbManager.o \
+	src/engine/EkgBackend.o \
 	src/widgets/LayoutItem.o \
 	src/widgets/BoxLayout.o \
 	src/widgets/Widget.o \

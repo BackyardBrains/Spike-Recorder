@@ -7,6 +7,7 @@
 namespace BackyardBrains {
 
 class RecordingManager;
+class AnalysisManager;
 class FileRecorder;
 class AudioView;
 class RecordingBar;
@@ -19,10 +20,11 @@ namespace Widgets {
 
 class MainView : public Widgets::Widget {
 public:
-	MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent = NULL);
+	MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder &fileRec, Widget *parent = NULL);
 	~MainView();
 private:
 	RecordingManager &_manager;
+	AnalysisManager &_anaman;
 	FileRecorder &_fileRec;
 	Widgets::PushButton *_pauseButton;
 	Widgets::PushButton *_ekgButton;
@@ -32,8 +34,8 @@ private:
 	Widgets::PushButton *_recordButton;
 	Widgets::PushButton *_fftButton;
 	Widgets::PushButton *_analysisButton;
-    Widgets::PushButton *_usbButton;
-    Widgets::PushButton *threshButton;
+	Widgets::PushButton *_usbButton;
+	Widgets::PushButton *threshButton;
 
 
 	Widgets::ScrollBar *_seekBar;

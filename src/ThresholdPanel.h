@@ -11,20 +11,18 @@ namespace Widgets {
 	class ScrollBar;
 }
 class RecordingManager;
+class AnalysisManager;
 
 
 class EkgWidget : public Widgets::Widget {
 public:
-	EkgWidget(Widget *parent = NULL);
+	EkgWidget(AnalysisManager &anaman, Widget *parent = NULL);
 	void beat();
-	void reset();
 	bool sound() const;
 	void setSound(bool sound);
 private:
-	float _frequency;
-	unsigned int _lastTime;
-
-	float _beatt;
+	AnalysisManager &_anaman;
+	float _beatt; // used as an animation timer for the heart
 
 	bool _sound;
 	HSAMPLE _beepSample;
@@ -49,30 +47,26 @@ private:
     
 class ThresholdPanel : public Widgets::Widget {
 public:
-	ThresholdPanel(RecordingManager &manager, Widget *parent = NULL);
+	ThresholdPanel(RecordingManager &manager, AnalysisManager &anaman, Widget *parent = NULL);
     BOOL ekgOn();
     void triggerChanged(int value);
 private:
     RecordingManager* _manager;
 
     Widgets::PushButton * _triggerButton;
-	Widgets::PushButton *_ekgButton;
-	Widgets::PushButton *_speakerButton;
-	Widgets::ScrollBar *_avg;
-	Widgets::SwitchLayout *_switchLayout;
-	EkgWidget *_ekgWidget;
+    Widgets::PushButton *_ekgButton;
+    Widgets::PushButton *_speakerButton;
+    Widgets::ScrollBar *_avg;
+    Widgets::SwitchLayout *_switchLayout;
+    EkgWidget *_ekgWidget;
     bool triggerOpened = false;
 
     void paintEvent();
-	void ekgPressed();
-	void speakerPressed();
+    void ekgPressed();
+    void speakerPressed();
 
     void triggerPressed();
     void setTriggerButtonImage();
-    
-
-
-
 
 };
 }

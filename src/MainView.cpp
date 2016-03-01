@@ -13,6 +13,7 @@
 #include "widgets/ToolTip.h"
 #include "engine/SpikeSorter.h"
 #include "engine/FileRecorder.h"
+#include "engine/AnalysisManager.h"
 #include "Paths.h"
 #include "MainView.h"
 #include "AudioView.h"
@@ -36,14 +37,14 @@
 namespace BackyardBrains {
 
 
-MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent) : Widget(parent), _manager(mngr), _fileRec(fileRec), _anaView(NULL) {
+MainView::MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder &fileRec, Widget *parent) : Widget(parent), _manager(mngr), _anaman(anaman), _fileRec(fileRec), _anaView(NULL) {
 	_audioView = new AudioView(this, _manager);
 
-    //setup timer that will periodicaly check for USB HID devices
+	    //setup timer that will periodicaly check for USB HID devices
 
-    timerUSB = clock();
-    _manager.scanForHIDDevices();
-    _manager.triggered.connect(this,&MainView::triggerEvent);
+	timerUSB = clock();
+	_manager.scanForHIDDevices();
+	_manager.triggered.connect(this,&MainView::triggerEvent);
 	_audioView->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Expanding, Widgets::SizePolicy::Expanding));
 	_manager.deviceReload.connect(_audioView, &AudioView::standardSettings);
 
@@ -56,8 +57,8 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	threshButton->setNormalTex(Widgets::TextureGL::get("data/thresh.bmp"));
 	threshButton->setHoverTex(Widgets::TextureGL::get("data/threshhigh.bmp"));
 	threshButton->clicked.connect(this, &MainView::threshPressed);
-    threshButton->setRightPadding(5);
-    threshButton->setSizeHint(Widgets::Size(53,48));
+	threshButton->setRightPadding(5);
+	threshButton->setSizeHint(Widgets::Size(53,48));
 
 	_analysisButton = new Widgets::PushButton(this);
 	_analysisButton->setNormalTex(Widgets::TextureGL::get("data/analysis.bmp"));
@@ -67,13 +68,13 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 
 	_analysisButton->setVisible(false);
 
-    _usbButton = new Widgets::PushButton(this);
-    _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.bmp"));
-    _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.bmp"));
-    _usbButton->clicked.connect(this, &MainView::usbPressed);
-    _usbButton->setVisible(false);
-    _usbButton->setRightPadding(5);
-    _usbButton->setSizeHint(Widgets::Size(0,0));
+	_usbButton = new Widgets::PushButton(this);
+	_usbButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.bmp"));
+	_usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.bmp"));
+	_usbButton->clicked.connect(this, &MainView::usbPressed);
+	_usbButton->setVisible(false);
+	_usbButton->setRightPadding(5);
+	_usbButton->setSizeHint(Widgets::Size(0,0));
 
 	_recordButton = new Widgets::PushButton(this);
 	_recordButton->setNormalTex(Widgets::TextureGL::get("data/rec.bmp"));
@@ -121,7 +122,7 @@ MainView::MainView(RecordingManager &mngr, FileRecorder &fileRec, Widget *parent
 	_seekBar->valueChanged.connect(_audioView, &AudioView::setRelOffset);
  	_audioView->relOffsetChanged.connect(_seekBar, &Widgets::ScrollBar::updateValue);
 
-	_threshavgGroup = new ThresholdPanel(_manager, this);
+	_threshavgGroup = new ThresholdPanel(_manager, _anaman, this);
 	_threshavgGroup->setVisible(false);
     _threshavgGroup->setMouseTracking(true);
 	_recBar = new RecordingBar(_fileRec, this);

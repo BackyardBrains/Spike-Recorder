@@ -3,6 +3,7 @@
 
 #include "widgets/Application.h"
 #include "engine/RecordingManager.h"
+#include "engine/AnalysisManager.h"
 #include "engine/FileRecorder.h"
 
 namespace BackyardBrains {
@@ -15,6 +16,7 @@ public:
 private:
 	void loadResources();
 	RecordingManager _manager;
+	AnalysisManager _anaman;
 	FileRecorder _fileRec;
 	void advance();
 };
