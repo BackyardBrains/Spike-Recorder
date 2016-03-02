@@ -166,7 +166,7 @@ void AnalysisView::addPressed() {
 
 
 void AnalysisView::savePressed() {
-	std::list<std::pair<std::string, int64_t> > markers;
+	std::list<std::pair<std::string, int64_t> > markers(_manager.markers());
 
 	for(unsigned int i = 0; i < _spikeTrains.size()-1; i++) {
 		std::stringstream s;
