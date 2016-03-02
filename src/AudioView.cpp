@@ -588,9 +588,24 @@ void AudioView::drawAudio() {
 			if(_rulerEnd != _rulerStart) {
 				int startsample = std::min(_rulerStart, _rulerEnd)*samples;
 				int endsample = std::max(_rulerStart, _rulerEnd)*samples;
-				int pos = _manager.pos()+_channelOffset-samples;
-				float rms = _anaman.calculateRMS(_channels[i].virtualDevice, pos+startsample, endsample-startsample);
+				int vdevice = _channels[i].virtualDevice;
 
+				int16_t *rmsData;
+				float rms;
+
+				if(_manager.threshMode()) {
+					assert(endsample < samples);
+					rmsData = new int16_t[samples];
+					_manager.getTriggerData(vdevice, samples, rmsData);
+					rms = _anaman.calculateRMS(rmsData+startsample,endsample-startsample);
+				} else {
+					int pos = _manager.pos()+_channelOffset-samples;
+					rmsData = new int16_t[endsample-startsample];
+					_manager.getData(vdevice, pos+startsample, endsample-startsample, rmsData);
+					rms = _anaman.calculateRMS(rmsData, endsample-startsample);
+				}
+
+				delete[] rmsData;
 
 				std::stringstream s;
 				s.precision(3);

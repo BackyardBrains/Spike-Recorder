@@ -719,6 +719,31 @@ void RecordingManager::getData(int virtualDevice, int64_t offset, int64_t len, i
 	sampleBuffer(virtualDevice)->getData(dst, offset, len);
 }
 
+void RecordingManager::getTriggerData(int virtualDevice, int64_t len, int16_t *dst) {
+	int16_t *buf = new int16_t[len];
+	memset(dst,0,sizeof(int16_t)*len);
+
+	for(std::list<int64_t>::iterator it = _triggers.begin(); it != _triggers.end(); it++) {
+		const int64_t pos2 = *it+len/2;
+		const int64_t pos1 = *it-len/2;
+
+		sampleBuffer(virtualDevice)->getData(buf, pos1, pos2-pos1);
+
+		for(unsigned int i = 0; i < len; i++) {
+			dst[i] += buf[i];
+		}
+	}
+
+
+	if(!_triggers.empty()) {
+		for(unsigned int i = 0; i < len; i++) {
+			dst[i] /= (int)_triggers.size();
+		}
+	}
+
+	delete[] buf;
+}
+
 //
 // Parameters:
 //    virtualDeviceIndex - device from which we want to read

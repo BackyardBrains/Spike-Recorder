@@ -16,8 +16,8 @@ public:
 	EkgBackend ekg;	
 	FFTBackend fft;	
 
-	// calculate the root mean square of a range of data from the given virtual Device
-	float calculateRMS(int vdevice, int64_t startsample, int64_t length);
+	// calculate the root mean square of data
+	float calculateRMS(int16_t *data, int length);
 private:
 	RecordingManager &_recman;
 };

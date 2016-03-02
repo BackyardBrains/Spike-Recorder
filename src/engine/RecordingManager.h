@@ -70,6 +70,7 @@ public:
 	void setSampleRate(int sampleRate);
 	VirtualDevices &recordingDevices() {return _recordingDevices;}
 	void getData(int virtualDevice, int64_t offset, int64_t len, int16_t *dest);
+	void getTriggerData(int virtualDevice, int64_t len, int16_t *dest);
 	std::vector< std::pair<int16_t, int16_t> > getSamplesEnvelope(int virtualDeviceIndex, int64_t offset, int64_t len, int sampleSkip);
 	std::vector< std::pair<int16_t, int16_t> > getTriggerSamplesEnvelope(int virtualDeviceIndex, int64_t len, int sampleSkip);
 	bool paused() const {return _paused;}

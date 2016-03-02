@@ -7,15 +7,12 @@ AnalysisManager::AnalysisManager(RecordingManager &recman)
 	: ekg(recman), fft(recman), _recman(recman) {
 }
 
-float AnalysisManager::calculateRMS(int vdevice, int64_t startsample, int64_t length) {
+float AnalysisManager::calculateRMS(int16_t *data, int length) {
+	// mean is 0, so we do not need to substract mean^2
 	float sum = 0.f;
-	int16_t *data = new int16_t[length];
-	_recman.getData(vdevice, startsample, length, data);
-
 	for(int i = 0; i < length; i++) {
 		sum += data[i]*data[i];
 	}
-	delete []data;
 
 	if(length > 0) {
 		sum /= length;
