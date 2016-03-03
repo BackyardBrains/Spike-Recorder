@@ -20,7 +20,7 @@
 // from the begining
 //
 // WHole point is to have minimum and maximum on some interval that is phisicaly one pixel
-// on the screen so that we can draw vertical line to indicate user amplitude span of the signal
+// on the screen so that we can draw vertical line to indicate to user amplitude span of the signal
 //
 //
 //        Look at "AudioView::drawData" it draws vertical lines for each "sample" (subsample)
