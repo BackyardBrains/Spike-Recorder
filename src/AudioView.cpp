@@ -609,7 +609,7 @@ void AudioView::drawAudio() {
 
 				std::stringstream s;
 				s.precision(3);
-				s <<"RMS:"<< std::fixed << rms/2000.0 ;
+				s <<"RMS:"<< std::fixed << rms/200.0 ;
 
 				Widgets::Painter::setColor(bg);
 				drawtextbgbox(s.str(), width()-20, _channels[i].pos*height()+30, Widgets::AlignRight);
