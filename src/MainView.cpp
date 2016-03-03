@@ -46,7 +46,7 @@ MainView::MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder
 	_manager.scanForHIDDevices();
 	_manager.triggered.connect(this,&MainView::triggerEvent);
 	_audioView->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Expanding, Widgets::SizePolicy::Expanding));
-	_manager.deviceReload.connect(_audioView, &AudioView::standardSettings);
+	_manager.devicesChanged.connect(_audioView, &AudioView::updateChannels);
 
 
 	_configButton = new Widgets::PushButton(this);

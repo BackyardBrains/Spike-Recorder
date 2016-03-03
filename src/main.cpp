@@ -37,13 +37,13 @@ int main(int argc, char *argv[]) {
 	if(ret != 0)
 		BackyardBrains::Log::fatal("could not change directory: %s", strerror(errno));
 
-	try {
+//	try {
 	BackyardBrains::Game game;
 
 	game.run();
-	} catch(std::exception &e) {
-		BackyardBrains::Log::fatal("Exception occured: %s\n", e.what());
-	}
+//	} catch(std::exception &e) {
+//		BackyardBrains::Log::fatal("Exception occured: %s\n", e.what());
+//	}
 	BackyardBrains::Log::msg("BYB SpikeRecorder exited normally.");
 	return 0;
 }

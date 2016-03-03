@@ -192,7 +192,7 @@ void FFTView::advance() {
 	int len = _av.sampleCount(_av.screenWidth(), _av.scaleWidth());
 	int opos = _manager.pos()+_av.channelOffset()-len+_manager.fileMode()*len/2;
 
-	_anaman.fft.setDevice(_av.channelVirtualDevice(_av.selectedChannel()));
+	_anaman.fft.setDevice(_manager.selectedVDevice());
 	_anaman.fft.request(opos,len);
 	for(int f = 0; f < FFTBackend::FFTFRES; f++) {
 		for(int t = 0; t < FFTBackend::FFTTRES; t++) {

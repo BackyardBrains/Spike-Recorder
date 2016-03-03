@@ -31,7 +31,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 	topLabel->updateSize();
 
 	std::vector<Widgets::Color> c(AudioView::COLORS, AudioView::COLORS+AudioView::COLOR_NUM);
-	_clrs.resize(_manager.recordingDevices().size());
+	_clrs.resize(_manager.virtualDevices().size());
 	_catchers.reserve(_clrs.size());
 
 	Widgets::Widget *group = new Widgets::Widget(this);
@@ -60,16 +60,14 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 		gvbox->addSpacing(40);
 	}
 
-	for(unsigned int i = 0; i < _manager.recordingDevices().size(); i++) {
-		if(!_manager.recordingDevices()[i].enabled)
-			continue;
+	for(unsigned int i = 0; i < _manager.virtualDevices().size(); i++) {
 		_clrs[i] = new ColorDropDownList(group);
 		_clrs[i]->setContent(c);
 
 		_catchers.push_back(SignalCatcher(i, this));
 		_clrs[i]->selectionChanged.connect(&_catchers[i], &SignalCatcher::catchColor);
 		Widgets::Label *name = new Widgets::Label(group);
-		name->setText(_manager.recordingDevices()[i].name.c_str());
+		name->setText(_manager.virtualDevices()[i].name.c_str());
 		name->updateSize();
 
 		Widgets::BoxLayout *ghbox = new Widgets::BoxLayout(Widgets::Horizontal);
@@ -465,9 +463,9 @@ void ConfigView::setSerialNumberOfChannels(int numberOfChannels)
 void ConfigView::colorChanged(int virtualDevice, int coloridx) {
 	int channel = _audioView.virtualDeviceChannel(virtualDevice);
 	if(channel < 0 && coloridx != 0) {
-		int nchan = _audioView.addChannel(virtualDevice);
-		if(nchan != -1) {
-			_audioView.setChannelColor(nchan, coloridx);
+		bool success = _manager.bindVirtualDevice(virtualDevice);
+		if(success) {
+			_audioView.setChannelColor(_audioView.channelCount()-1, coloridx);
 		} else {
 			_clrs[virtualDevice]->setSelectionSilent(0);
 
@@ -480,7 +478,7 @@ void ConfigView::colorChanged(int virtualDevice, int coloridx) {
 			Widgets::Application::getInstance()->addPopup(box);
 		}
 	} else if(coloridx == 0) {
-		_audioView.removeChannel(virtualDevice);
+		_manager.unbindVirtualDevice(virtualDevice);
 	} else {
 		_audioView.setChannelColor(channel, coloridx);
 	}

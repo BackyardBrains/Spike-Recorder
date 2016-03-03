@@ -16,7 +16,9 @@ class AudioView : public Widgets::Widget
 public:
 	struct Channel
 	{
-		Channel() : virtualDevice(RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX), colorIdx(1), gain(0.5f), pos(0.5f) {}
+		Channel() : virtualDevice(RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX), colorIdx(1), gain(0.5f) {
+			pos = rand()/(float)RAND_MAX;
+		}
 		void setGain(float ngain);
 
 		int virtualDevice;
@@ -38,8 +40,6 @@ public:
 	AudioView(Widgets::Widget *parent, RecordingManager &mngr, AnalysisManager &anaman);
 	virtual ~AudioView();
 
-	int addChannel(int virtualDeviceIndex); // returns new channel on success and -1 on failure
-	void removeChannel(int virtualDeviceIndex);
 	void setChannelColor(int channel, int coloridx);
 	int channelColor(int channel) const;
 	int channelCount() const;
@@ -74,6 +74,8 @@ protected:
 	RecordingManager &_manager;
 	AnalysisManager &_anaman;
 	std::vector<Channel> _channels;
+
+	void updateChannels();
 
 	void drawAudio();
 	void drawScale();
