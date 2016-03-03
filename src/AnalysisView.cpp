@@ -32,7 +32,6 @@ AnalysisView::AnalysisView(RecordingManager &mngr, AnalysisManager &anaman, Widg
 
 	_audioView = new AnalysisAudioView(mngr, anaman, _spikeSorter, this);
 	_audioView->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Expanding, Widgets::SizePolicy::Expanding));
-	_audioView->addChannel(0);
 	_audioView->setThresh(_spikeTrains[0].lowerThresh, _spikeTrains[0].upperThresh);
 	_audioView->threshChanged.connect(this,&AnalysisView::addPressed);
 

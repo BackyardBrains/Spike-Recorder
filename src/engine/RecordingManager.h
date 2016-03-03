@@ -5,7 +5,6 @@
 #include <sigslot.h>
 
 #include <vector>
-// #include <pair>
 #include <string>
 #include <map>
 #include <stdint.h>
@@ -36,19 +35,18 @@ struct SpikeTrain {
 class RecordingManager : public sigslot::has_slots<>
 {
 public:
-
 	struct VirtualDevice
 	{
 		int device;
 		int channel;
 		std::string name;
-		bool enabled;
+
 		int threshold;
-		int bound;
+		bool bound;
+
 	};
 	static const int INVALID_VIRTUAL_DEVICE_INDEX;
 	static const int DEFAULT_SAMPLE_RATE;
-	typedef std::vector<VirtualDevice> VirtualDevices;
 
 	RecordingManager();
 	~RecordingManager();
@@ -68,7 +66,16 @@ public:
 
 	int sampleRate() const;
 	void setSampleRate(int sampleRate);
-	VirtualDevices &recordingDevices() {return _recordingDevices;}
+	std::vector<VirtualDevice> &virtualDevices() {return _virtualDevices;}
+
+	// Bound vdevices will have their sources initialized and be displayed in AudioView
+	// 
+	// Parameters:
+	// vdevice - index in _virtualDevices
+	//
+	bool bindVirtualDevice(int vdevice);
+	bool unbindVirtualDevice(int vdevice);
+
 	void getData(int virtualDevice, int64_t offset, int64_t len, int16_t *dest);
 	void getTriggerData(int virtualDevice, int64_t len, int16_t *dest);
 	std::vector< std::pair<int16_t, int16_t> > getSamplesEnvelope(int virtualDeviceIndex, int64_t offset, int64_t len, int sampleSkip);
@@ -91,16 +98,13 @@ public:
 	const std::list<std::pair<std::string, int64_t> > &markers() const {return _markers;}
 	void addMarker(const std::string &id, int64_t offset);
 
-	bool incRef(int virtualDeviceIndex);
-	void decRef(int virtualDeviceIndex);
-
 	void setPaused(bool pausing);
 	void setThreshMode(bool threshMode);
 	void setThreshAvgCount(int threshAvgCount);
 	void setSelectedVDevice(int virtualDevice);
 	void setVDeviceThreshold(int virtualDevice, int threshold);
 
-	sigslot::signal0<> deviceReload;
+	sigslot::signal0<> devicesChanged;
 	sigslot::signal0<> pauseChanged;
 	sigslot::signal0<> thresholdChanged;
 
@@ -151,42 +155,62 @@ public:
 private:
 	struct Device
 	{
-		Device() : handle(0), refCount(0), dcBiasNum(1), channels(0), bytespersample(2)
-		{
-		}
+		// samplerate is a reference because we can only have one sample rate application wide
+		// i.e. the one in _sampleRate. When it changes, this one needs to change, too.
+		Device(int index, int nchan, int &samplerate);
 		~Device();
-		void create(int64_t pos, int nchan);
-		void destroy();
-		bool needed() const {return refCount;}
+
+		// Initialize device so it is ready for recording.
+		// Returns true on success.
+		bool enable(int64_t pos);
+
+		// Deinitialize device after it is no longer used.
+		// Returns true on success.
+		bool disable();
+	
+		// Type of the device. This will decide what enable()/disable() will do.
+		// We could also use subclassing or something to do this.
+		enum {
+			Audio,
+			File,
+			HID,
+			Serial
+		} type;
+
+		int index;
 		HRECORD handle;
-		std::vector<SampleBuffer *> sampleBuffers;
-		int refCount;
+		
+		bool enabled;
+
+		std::vector<SampleBuffer> sampleBuffers;
 		std::vector<int64_t> dcBiasSum;
 
 		int64_t dcBiasNum;
 		int channels;
+		int &samplerate;
 		int bytespersample;
 	};
 
 	void clear();
-    void advanceSerialMode(uint32_t samples);
+	void advanceSerialMode(uint32_t samples);
 	void advanceFileMode(uint32_t samples);
 	void advanceHidMode(uint32_t samples);
-    void closeSerial();
-    void closeHid();
+	void closeSerial();
+	void closeHid();
 	SampleBuffer *sampleBuffer(int virtualDeviceIndex);
 
-	VirtualDevices _recordingDevices;
-	std::map<int, Device> _devices;
+	std::vector<VirtualDevice> _virtualDevices;
+	std::vector<Device> _devices;
+
 	int64_t _pos; //position of the current file/recording in samples
 	bool _paused;
 	bool _threshMode;
 
-    int64_t currentPositionOfWaveform;
+	int64_t currentPositionOfWaveform;
 
 	bool _fileMode;
-    bool _serialMode;
-    bool _hidMode;
+	bool _serialMode;
+	bool _hidMode;
 	std::string _filename;
 
 	int _sampleRate;
@@ -199,19 +223,19 @@ private:
 
 	Player _player;
 
-    int _thresholdSource = 0;//signal is the default one (1,2,3,4 ... are events)
+	int _thresholdSource = 0;//signal is the default one (1,2,3,4 ... are events)
 
 	int _serialPortIndex;
-    ArduinoSerial _arduinoSerial;
-    int _numOfSerialChannels;
+	ArduinoSerial _arduinoSerial;
+	int _numOfSerialChannels;
 
-    HIDUsbManager _hidUsbManager;
-    int _numOfHidChannels;
-    clock_t timerUSB = 0;
-    clock_t timerEKG = 0;
-    bool _hidDevicePresent;
+	HIDUsbManager _hidUsbManager;
+	int _numOfHidChannels;
+	clock_t timerUSB = 0;
+	clock_t timerEKG = 0;
+	bool _hidDevicePresent;
 
-    int _firmwareUpdateStage;//this needs to be outside exclusive win block
+	int _firmwareUpdateStage;//this needs to be outside exclusive win block
 
     #if defined(_WIN32)
         FirmwareUpdater _xmlFirmwareUpdater;

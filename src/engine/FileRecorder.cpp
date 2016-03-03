@@ -79,8 +79,8 @@ bool FileRecorder::start(const std::string &filename) {
 	put16(1, _file);
 
 	_nchan = 0;
-	for(unsigned int i = 0; i < _manager.recordingDevices().size(); i++) {
-		if(_manager.recordingDevices()[i].bound)
+	for(unsigned int i = 0; i < _manager.virtualDevices().size(); i++) {
+		if(_manager.virtualDevices()[i].bound)
 			_nchan++;
 	}
 
@@ -395,8 +395,8 @@ void FileRecorder::advance() {
 	}
 
 	int chani = 0;
-	for(unsigned int i = 0; i < _manager.recordingDevices().size(); i++) {
-		if(_manager.recordingDevices()[i].bound) {
+	for(unsigned int i = 0; i < _manager.virtualDevices().size(); i++) {
+		if(_manager.virtualDevices()[i].bound) {
 			_manager.getData(i, _oldPos, len, _buf+chani*_bufsize);
 			chani++;
 		}

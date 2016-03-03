@@ -7,6 +7,7 @@
 #include "widgets/Application.h"
 #include "engine/SampleBuffer.h"
 #include "engine/FileRecorder.h"
+#include "Log.h"
 #include <sstream>
 #include <utility>
 #include <algorithm>
@@ -50,50 +51,32 @@ AudioView::AudioView(Widgets::Widget *parent, RecordingManager &mngr, AnalysisMa
 	_clickedThresh(false), _rulerClicked(false), _rulerStart(-1.f), _rulerEnd(-1.f), _channelOffset(0), _timeScale(0.1f)  {
 
 	_gainCtrlHoldTime = 0;
+	updateChannels();
 }
 
 AudioView::~AudioView() {
-	for(unsigned int i = 0; i < _channels.size(); i++) {
-		_manager.decRef(_channels[i].virtualDevice);
-	}
 }
 
-int AudioView::addChannel(int virtualDevice) {
-	bool rt;
-	rt = _manager.incRef(virtualDevice);
-	if(!rt)
-		return -1;
-	_channels.push_back(AudioView::Channel());
-	_channels.back().virtualDevice = virtualDevice;
+void AudioView::updateChannels() {
+	auto vdevices = _manager.virtualDevices();
+	std::map<int, int> vdev2chan; 
+	for(int i = 0; i < (int)_channels.size(); i++)
+		vdev2chan[_channels[i].virtualDevice] = i;
 
-	if(_channels.size() != 1)
-		_channels.back().pos = rand()/(float)RAND_MAX;
-
-    _manager.setSelectedVDevice(virtualDevice);
-
-	return _channels.size()-1;
-}
-
-void AudioView::removeChannel(int virtualDevice) {
-	_manager.decRef(virtualDevice);
-
-	int removed = 0;
-	for(unsigned int i = 0; i < _channels.size()-removed; i++) {
-		if(_channels[i].virtualDevice == virtualDevice) {
-			_channels[i] = *(_channels.end()-1-removed);
-			removed++;
+	for(int i = 0; i < (int) vdevices.size(); i++) {
+		if(vdevices[i].bound) {
+			// if there is no channel for that vdevice, add it.
+			if(vdev2chan.count(i) == 0) {
+				_channels.push_back(Channel());
+				_channels.back().virtualDevice=i;
+			}
+		} else {
+			// if there is a channel, but the vdevice is not bound, remove it.
+			if(vdev2chan.count(i) != 0) {
+				_channels.erase(_channels.begin()+vdev2chan[i]);
+			}
 		}
 	}
-	_channels.resize(_channels.size() - removed);
-	assert(removed > 0);
-}
-
-void AudioView::clearChannels() {
-	// these things have to be cleared up somewhere else.
-	//for(unsigned int i = 0; i < _channels.size(); i++)
-	//	_manager.decRef(_channels[i].virtualDevice);
-
-	_channels.clear();
 }
 
 static bool compare_second(const std::pair<int, int> &a, const std::pair<int, int> &b) {
@@ -127,19 +110,13 @@ void AudioView::constructMetadata(MetadataChunk *m) const {
 void AudioView::applyMetadata(const MetadataChunk &m) {
 	_timeScale = m.timeScale;
 
-	for(unsigned int i = 0; i < _channels.size(); i++)
-		_manager.decRef(_channels[i].virtualDevice);
-	clearChannels();
-
+	assert(m.channels.size() == _channels.size()); // i do not know if this works yet with the new channel stuff
 	for(unsigned int i = 0; i < m.channels.size(); i++) {
-		addChannel(i);
 		_channels[i].gain = m.channels[i].gain;
 		_channels[i].colorIdx = m.channels[i].colorIdx;
 		_channels[i].pos = m.channels[i].pos;
 	}
 
-	if(m.channels.size() == 0 && _manager.recordingDevices().size() != 0)
-		addChannel(0);
 }
 
 void AudioView::setChannelColor(int channel, int colorIdx) {
@@ -172,34 +149,11 @@ void AudioView::standardSettings() {
 
 	_channelOffset = 0;
 
-	clearChannels();
 	if(_manager.fileMode()) {
 		relOffsetChanged.emit(0);
 	} else {
 		relOffsetChanged.emit(1000);
 	}
-    if(_manager.serialMode())
-    {
-        for(int i=0;i<_manager.numberOfSerialChannels();i++)
-        {
-            int nchan = addChannel(i);
-            setChannelColor(nchan, (i%COLOR_NUM)+1);
-        }
-    }
-    else if(_manager.hidMode())
-    {
-        for(int i=0;i<_manager.numberOfHIDChannels();i++)
-        {
-            int nchan = addChannel(i);
-            setChannelColor(nchan, (i%COLOR_NUM)+1);
-            _channels.at(nchan).gain = 0.02;
-        }
-
-    }
-    else
-    {
-        addChannel(0);
-    }
 }
 
 int AudioView::channelCount() const {
@@ -245,7 +199,7 @@ int AudioView::sampleCount(int screenw, float scalew)  const {
 float AudioView::thresholdPos() {
 	if(_channels.size() == 0)
 		return 0;
-	return height()*(_channels[selectedChannel()].pos-_manager.recordingDevices()[_manager.selectedVDevice()].threshold*ampScale*_channels[selectedChannel()].gain);
+	return height()*(_channels[selectedChannel()].pos-_manager.virtualDevices()[_manager.selectedVDevice()].threshold*ampScale*_channels[selectedChannel()].gain);
 }
 
 void AudioView::setOffset(int64_t offset) {
@@ -542,81 +496,82 @@ void AudioView::drawAudio() {
 	for(int i = _channels.size() - 1; i >= 0; i--) {
 		float yoff = _channels[i].pos*height();
 		Widgets::Painter::setColor(COLORS[_channels[i].colorIdx]);
-		if(_channels[i].virtualDevice != RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX) {
-			std::vector<std::pair<int16_t, int16_t> > data;
+		std::vector<std::pair<int16_t, int16_t> > data;
 
-			if(!_manager.threshMode()) {
-				if(_manager.serialMode())
+		if(!_manager.threshMode()) {
+			if(_manager.serialMode())
+			{
+				// pos = (number of samples from begining of the time)
+				//       + (offset in samples (negative value) used when returning in time to browse past values)
+				//       - (number of samples that we need to display)
+
+				int pos = _manager.pos()+_channelOffset-samples;
+				int16_t tempData[samples];
+				std::vector< std::pair<int16_t, int16_t> > tempVectorData(samples);
+				_manager.getData(_channels[i].virtualDevice, pos, samples, tempData);
+				for(int ind = 0;ind<samples;ind++)
 				{
-					// pos = (number of samples from begining of the time)
-					//       + (offset in samples (negative value) used when returning in time to browse past values)
-					//       - (number of samples that we need to display)
-
-					int pos = _manager.pos()+_channelOffset-samples;
-					int16_t tempData[samples];
-					std::vector< std::pair<int16_t, int16_t> > tempVectorData(samples);
-					_manager.getData(_channels[i].virtualDevice, pos, samples, tempData);
-					for(int ind = 0;ind<samples;ind++)
-					{
-						tempVectorData[ind].first = tempData[ind];
-						tempVectorData[ind].second = tempData[ind];
-					}
-					data = tempVectorData;
+					tempVectorData[ind].first = tempData[ind];
+					tempVectorData[ind].second = tempData[ind];
 				}
-				else
+				data = tempVectorData;
+			}
+			else
+			{
+				// pos = (number of samples from begining of the time)
+				//       + (offset in samples (negative value) used when returning in time to browse past values)
+				//       - (number of samples that we need to display)
+				int pos = _manager.pos()+_channelOffset-samples;
+				if(_manager.fileMode())
 				{
-					// pos = (number of samples from begining of the time)
-					//       + (offset in samples (negative value) used when returning in time to browse past values)
-					//       - (number of samples that we need to display)
-					int pos = _manager.pos()+_channelOffset-samples;
-					if(_manager.fileMode())
-					{
-						pos += samples/2;
-					}
-					data = _manager.getSamplesEnvelope(_channels[i].virtualDevice, pos, samples, screenw == 0 ? 1 : std::max(samples/screenw,1));
+					pos += samples/2;
 				}
-			} else {
-				data = _manager.getTriggerSamplesEnvelope(_channels[i].virtualDevice, samples, screenw == 0 ? 1 : std::max(samples/screenw,1));
+				data = _manager.getSamplesEnvelope(_channels[i].virtualDevice, pos, samples, screenw == 0 ? 1 : std::max(samples/screenw,1));
 			}
-
-			drawData(data, i, samples, xoff, yoff, screenw);
-
-			Widgets::TextureGL::get("data/pin.bmp")->bind();
-			Widgets::Painter::drawTexRect(Widgets::Rect(MOVEPIN_SIZE/2, _channels[i].pos*height()-MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
-			glBindTexture(GL_TEXTURE_2D, 0);
-
-			if(_rulerEnd != _rulerStart) {
-				int startsample = std::min(_rulerStart, _rulerEnd)*samples;
-				int endsample = std::max(_rulerStart, _rulerEnd)*samples;
-				int vdevice = _channels[i].virtualDevice;
-
-				int16_t *rmsData;
-				float rms;
-
-				if(_manager.threshMode()) {
-					assert(endsample < samples);
-					rmsData = new int16_t[samples];
-					_manager.getTriggerData(vdevice, samples, rmsData);
-					rms = _anaman.calculateRMS(rmsData+startsample,endsample-startsample);
-				} else {
-					int pos = _manager.pos()+_channelOffset-samples;
-					rmsData = new int16_t[endsample-startsample];
-					_manager.getData(vdevice, pos+startsample, endsample-startsample, rmsData);
-					rms = _anaman.calculateRMS(rmsData, endsample-startsample);
-				}
-
-				delete[] rmsData;
-
-				std::stringstream s;
-				s.precision(3);
-				s <<"RMS:"<< std::fixed << rms/200.0 ;
-
-				Widgets::Painter::setColor(bg);
-				drawtextbgbox(s.str(), width()-20, _channels[i].pos*height()+30, Widgets::AlignRight);
-				Widgets::Painter::setColor(Widgets::Colors::white);
-				Widgets::Application::font()->draw(s.str().c_str(), width()-20, _channels[i].pos*height()+30, Widgets::AlignRight);
-			}
+		} else {
+			data = _manager.getTriggerSamplesEnvelope(_channels[i].virtualDevice, samples, screenw == 0 ? 1 : std::max(samples/screenw,1));
 		}
+
+		drawData(data, i, samples, xoff, yoff, screenw);
+
+		Widgets::TextureGL::get("data/pin.bmp")->bind();
+		Widgets::Painter::drawTexRect(Widgets::Rect(MOVEPIN_SIZE/2, _channels[i].pos*height()-MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		if(_rulerEnd != _rulerStart) {
+			int startsample = std::min(_rulerStart, _rulerEnd)*samples;
+			int endsample = std::max(_rulerStart, _rulerEnd)*samples;
+			int vdevice = _channels[i].virtualDevice;
+
+
+			int16_t *rmsData;
+			float rms;
+
+
+			if(_manager.threshMode()) {
+				assert(endsample < samples);
+				rmsData = new int16_t[samples];
+				_manager.getTriggerData(vdevice, samples, rmsData);
+				rms = _anaman.calculateRMS(rmsData+startsample,endsample-startsample);
+			} else {
+				int pos = _manager.pos()+_channelOffset-samples;
+				rmsData = new int16_t[endsample-startsample];
+				_manager.getData(vdevice, pos+startsample, endsample-startsample, rmsData);
+				rms = _anaman.calculateRMS(rmsData, endsample-startsample);
+			}
+
+			delete[] rmsData;
+
+			std::stringstream s;
+			s.precision(3);
+			s <<"RMS:"<< std::fixed << rms/200.0 ;
+
+			Widgets::Painter::setColor(bg);
+			drawtextbgbox(s.str(), width()-20, _channels[i].pos*height()+30, Widgets::AlignRight);
+			Widgets::Painter::setColor(Widgets::Colors::white);
+			Widgets::Application::font()->draw(s.str().c_str(), width()-20, _channels[i].pos*height()+30, Widgets::AlignRight);
+		}
+		
 	}
 	Widgets::Painter::setColor(Widgets::Colors::white);
 	drawGainControls();
@@ -759,7 +714,7 @@ void AudioView::paintEvent() {
 	drawRulerTime();
 	drawScale();
 
-	if(!_manager.fileMode() && _manager.recordingDevices().size() == 0) {
+	if(!_manager.fileMode() && _manager.virtualDevices().size() == 0) {
 		Widgets::Application::font()->draw("No input device available", width()/2, height()/2, Widgets::AlignCenter);
 	}
 }

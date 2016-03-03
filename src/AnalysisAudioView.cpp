@@ -7,6 +7,7 @@ namespace BackyardBrains {
 AnalysisAudioView::AnalysisAudioView(RecordingManager &manager, AnalysisManager &anaman, SpikeSorter &spikes, Widgets::Widget *parent) : AudioView(parent, manager, anaman), _spikes(spikes), _colorIdx(0), _clickedThresh(-1) {
 	_threshPos[0] = -0;
 	_threshPos[1] = 0;
+	_channels[0].pos = 0.5;
 }
 
 void AnalysisAudioView::drawTargetMarkers() {
