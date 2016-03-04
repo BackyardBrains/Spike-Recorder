@@ -546,17 +546,25 @@ void AudioView::drawAudio() {
 
 			int16_t *rmsData;
 			float rms;
-
-
+            
 			if(_manager.threshMode()) {
 				assert(endsample < samples);
 				rmsData = new int16_t[samples];
 				_manager.getTriggerData(vdevice, samples, rmsData);
 				rms = _anaman.calculateRMS(rmsData+startsample,endsample-startsample);
-			} else {
-				int pos = _manager.pos()+_channelOffset-samples;
+            }
+            else
+            {
+				long pos = _manager.pos()+_channelOffset-samples;
 				rmsData = new int16_t[endsample-startsample];
-				_manager.getData(vdevice, pos+startsample, endsample-startsample, rmsData);
+                
+                //when in file mode playing head is at the middle of the screen
+                //while in normal (realtime view) signal playing head is at right hand side of the screen
+                if(_manager.fileMode())
+                {
+                    pos+=0.5*samples;
+                }
+                _manager.getData(vdevice, pos+startsample, endsample-startsample, rmsData);
 				rms = _anaman.calculateRMS(rmsData, endsample-startsample);
 			}
 

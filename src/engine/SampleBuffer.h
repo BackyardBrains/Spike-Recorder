@@ -201,7 +201,7 @@ public:
 		int64_t j = 0;
 		for (int64_t i = offset - _pos; i < (offset - _pos + len); i++, j++)
 		{
-            //(i < -SIZE) - we already owervrite vales
+            //(i < -SIZE) - we already owervrite values
             //(i >= 0) - asking for future values
 			if (i < -SIZE || (i >= 0))
 				dst[j] = 0;

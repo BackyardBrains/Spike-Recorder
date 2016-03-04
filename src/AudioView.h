@@ -64,6 +64,9 @@ public:
 
 	static const int MOVEPIN_SIZE = 30;
 	static const int DATA_XOFF = MOVEPIN_SIZE*1.48f;
+    
+    void updateChannels();
+    
 protected:
 
 	static const int GAINCONTROL_XOFF = MOVEPIN_SIZE*6/5;
@@ -74,8 +77,6 @@ protected:
 	RecordingManager &_manager;
 	AnalysisManager &_anaman;
 	std::vector<Channel> _channels;
-
-	void updateChannels();
 
 	void drawAudio();
 	void drawScale();
