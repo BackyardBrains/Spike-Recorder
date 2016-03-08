@@ -124,12 +124,18 @@ void RecordingManager::applyMetadata(const MetadataChunk &m) {
 }
 
 void RecordingManager::clear() {
+    
+    
+    for(int i = (int)_virtualDevices.size()-1; i >=0; i--) {
+        unbindVirtualDevice(i);
+    }
+    
 	for(int i = 0; i < (int)_devices.size(); i++)
 		_devices[i].disable();
 	
 	_virtualDevices.clear();
 	_devices.clear();
-
+    
 	_markers.clear();
 	_triggers.clear();
 
@@ -402,8 +408,6 @@ bool RecordingManager::initSerial(const char *portName)
     }
 
 
-
-
     DWORD frequency = _arduinoSerial.maxSamplingRate()/_numOfSerialChannels;
     std::cout<<"Frequency: "<<frequency<<" Chan: "<<_numOfSerialChannels<<" Samp: "<<_arduinoSerial.maxSamplingRate()<<"\n";
     HSTREAM stream = BASS_StreamCreate(frequency, _numOfSerialChannels, BASS_STREAM_DECODE, STREAMPROC_PUSH, NULL);
@@ -429,8 +433,9 @@ bool RecordingManager::initSerial(const char *portName)
     bytespersample = 4; // bass converts everything it doesnt support.
     setSampleRate(info.freq);
     _devices.push_back(Device(0, _numOfSerialChannels,_sampleRate));
+    _devices.back().type = Device::Serial;
     _devices[0].bytespersample = bytespersample;
-    _devices[0].type = Device::Serial;
+
 
     for(unsigned int i = 0; i < (unsigned int)_numOfSerialChannels; i++) {
          VirtualDevice virtualDevice;
@@ -441,6 +446,7 @@ bool RecordingManager::initSerial(const char *portName)
         virtualDevice.threshold = 100;
         virtualDevice.bound = false;
         _virtualDevices.push_back(virtualDevice);
+        
     }
 
 
@@ -448,7 +454,14 @@ bool RecordingManager::initSerial(const char *portName)
     _fileMode = false;
     _hidMode = false;
     _serialMode = true;
-    devicesChanged.emit();
+   // devicesChanged.emit();
+    
+    for(unsigned int i = 0; i < (unsigned int)_numOfSerialChannels;i++)
+    {
+        bindVirtualDevice(i);
+    }
+    
+
   //  _player.stop();
   //  _player.start(_arduinoSerial.maxSamplingRate()/_numOfSerialChannels);
     _player.setVolume(0);

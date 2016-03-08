@@ -68,7 +68,12 @@ void AudioView::updateChannels() {
 			// if there is no channel for that vdevice, add it.
 			if(vdev2chan.count(i) == 0) {
 				_channels.push_back(Channel());
+                if(_channels.size()==1)
+                {
+                    _channels.back().pos = 0.5;
+                }
 				_channels.back().virtualDevice=i;
+                _channels.back().colorIdx=(i+1)%(COLOR_NUM-1);
 			}
 		} else {
 			// if there is a channel, but the vdevice is not bound, remove it.
