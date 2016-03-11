@@ -15,10 +15,10 @@
 		<dict>
 			<key>cdhash</key>
 			<data>
-			5mEe153iZLkh4AfGUUgLR+qmUsk=
+			bRnpi15oexRveOhsOQ4TH0AFrnE=
 			</data>
 			<key>requirement</key>
-			<string>identifier webp and anchor apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = EH385AYQ6F</string>
+			<string>cdhash H"6d19e98b5e687b146f78e86c390e131f4005ae71" or cdhash H"64e37a8e118e95798b9e8eec77f201568e191dd0"</string>
 		</dict>
 		<key>Headers/SDL_image.h</key>
 		<data>

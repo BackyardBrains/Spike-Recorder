@@ -143,6 +143,10 @@ void SpikeAnalysis::averageWaveform(std::vector<float> &average, std::vector<flo
 			spiken++;
 		}
 		pos += channels[chan].size();
+        if(channels[chan].size()==0)
+        {
+            break;
+        }
 	}
 
 	for(int i = 0; i < size; i++) {

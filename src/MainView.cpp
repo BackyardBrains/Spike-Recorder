@@ -219,7 +219,7 @@ void MainView::ekgPressed() {
 
 void MainView::forwardPressed() {
 	if(_manager.fileMode()) { // end file mode when in file mode
-		delete _anaView;
+		//delete _anaView;
 		_manager.initRecordingDevices();
 		_recordButton->setVisible(true);
 		_analysisButton->setVisible(false);
@@ -330,7 +330,7 @@ void MainView::filePressed() {
 	if(s != Widgets::FileDialog::SUCCESS)
 		return;
 
-	delete _anaView;
+	//delete _anaView;
 	_anaView = NULL;
 	bool rc = _manager.loadFile(d.getResultFilename().c_str());
 
@@ -346,15 +346,20 @@ void MainView::filePressed() {
 	MetadataChunk m;
 	const char *mdatastr = _manager.fileMetadataString();
 	if(mdatastr)
+    {
 		FileRecorder::parseMetadataStr(&m, mdatastr);
-	FileRecorder::parseMarkerTextFile(m.markers, FileRecorder::eventTxtFilename(d.getResultFilename().c_str()), _manager.sampleRate());
-	_manager.applyMetadata(m);
-	_audioView->applyMetadata(m);
+    }
+    FileRecorder::parseMarkerTextFile(m.markers, FileRecorder::eventTxtFilename(d.getResultFilename().c_str()), _manager.sampleRate());
+    _manager.applyMetadata(m);
+    _audioView->applyMetadata(m);
+    
 
 	_recordButton->setVisible(false);
 	_analysisButton->setVisible(true);
 	//_analysisButton->setSizeHint(Widgets::Size(48,48));
 	_fftView->setActive(false);
+    _fftButton->setNormalTex(Widgets::TextureGL::get("data/fft.bmp"));
+    _fftButton->setHoverTex(Widgets::TextureGL::get("data/ffthigh.bmp"));
 
 	Widgets::ToolTip *tip = new Widgets::ToolTip("Click to return to live mode \x1f", 2000);
 	tip->setGeometry(Widgets::Rect(width()/2-190, height()-150, 280, 40));
@@ -372,10 +377,12 @@ void MainView::configPressed() {
 }
 
 void MainView::analysisPressed() {
-	if(_anaView == NULL)
-		_anaView = new AnalysisView(_manager, _anaman);
-
-	_anaView->setDeleteOnClose(false);
+    
+	
+    _anaView = new AnalysisView(_manager, _anaman);
+    
+    
+	_anaView->setDeleteOnClose(true);
 	_anaView->setGeometry(rect());
 	Widgets::Application::getInstance()->addWindow(_anaView);
 
@@ -428,6 +435,112 @@ void MainView::usbPressed()
 
 }
 
+//
+// Draws time label (current time and file length) when in file mode
+// must be here and not in audio view since audio view shrinks when FFT is opened
+//
+void MainView::drawTimeLabelsForFile()
+{
+
+    int64_t fullTime = _manager.fileLength();
+    int64_t fullMiliseconds = fullTime/(_manager.sampleRate()/1000);
+    fullMiliseconds = fullMiliseconds%1000;
+    int64_t fullSeconds = fullTime/_manager.sampleRate();
+    int64_t fullMinutes = fullSeconds/60;
+    fullSeconds = fullSeconds%60;
+    std::stringstream fullS;
+    if(fullMinutes<1)
+    {
+        fullS<<"00:";
+    }
+    else if (fullMinutes<10)
+    {
+        fullS<<"0"<<fullMinutes<<":";
+    }
+    else
+    {
+        fullS<<fullMinutes<<":";
+    }
+    
+    if(fullSeconds<10)
+    {
+        fullS<<"0"<<fullSeconds<<" ";
+    }
+    else
+    {
+        fullS<<fullSeconds<<" ";
+    }
+    
+    if(fullMiliseconds<10)
+    {
+        fullS<<"00"<<fullMiliseconds;
+    }
+    else if (fullMiliseconds<100)
+    {
+        fullS<<"0"<<fullMiliseconds;
+    }
+    else
+    {
+        fullS<<fullMiliseconds;
+    }
+    
+    Widgets::Painter::setColor(Widgets::Colors::white);
+    Widgets::Application::font()->draw(fullS.str().c_str(), width()-15, height()-70, Widgets::AlignRight);
+    
+    
+    
+    
+    
+    int64_t time = _manager.pos();
+    int64_t miliseconds = time/(_manager.sampleRate()/1000);
+    miliseconds = miliseconds%1000;
+    int64_t seconds = time/_manager.sampleRate();
+    int64_t minutes = seconds/60;
+    seconds = seconds%60;
+    std::stringstream o;
+    
+    if(minutes<1)
+    {
+        o<<"00:";
+    }
+    else if (minutes<10)
+    {
+        o<<"0"<<minutes<<":";
+    }
+    else
+    {
+        o<<minutes<<":";
+    }
+    
+    if(seconds<10)
+    {
+        o<<"0"<<seconds<<" ";
+    }
+    else
+    {
+        o<<seconds<<" ";
+    }
+    
+    if(miliseconds<10)
+    {
+        o<<"00"<<miliseconds;
+    }
+    else if (miliseconds<100)
+    {
+        o<<"0"<<miliseconds;
+    }
+    else
+    {
+        o<<miliseconds;
+    }
+    
+    Widgets::Application::font()->draw(o.str().c_str(), 15, height()-70, Widgets::AlignLeft);
+    
+}
+
+    
+    
+    
 
 void MainView::paintEvent()
 {
@@ -471,6 +584,11 @@ void MainView::paintEvent()
     {
         _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.bmp"));
         _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.bmp"));
+    }
+    
+    if(_manager.fileMode())
+    {
+        drawTimeLabelsForFile();
     }
 }
 

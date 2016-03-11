@@ -730,12 +730,12 @@ namespace BackyardBrains {
     //
     void HIDUsbManager::putInFirmwareUpdateMode()
     {
-        //#if defined(_WIN32)
+        #if defined(_WIN32)
             std::cout<<"Put MSP into firmware update\n";
              std::stringstream sstm;
             sstm << "update:;\n";
             writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
-        //#endif
+        #endif
     }
 
     //

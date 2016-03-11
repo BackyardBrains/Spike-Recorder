@@ -73,7 +73,7 @@ void RecordingManager::constructMetadata(MetadataChunk *m) const {
 }
 
 void RecordingManager::applyMetadata(const MetadataChunk &m) {
-	assert(_virtualDevices.size() == m.channels.size());
+	//assert(_virtualDevices.size() == m.channels.size());
 	for(unsigned int i = 0; i < m.channels.size(); i++) {
 		_virtualDevices[i].threshold = m.channels[i].threshold;
 		_virtualDevices[i].name = m.channels[i].name;
@@ -153,7 +153,7 @@ void RecordingManager::sendEKGImpuls()
     if(elapsed_secs>0.03)
     {
         timerEKG = end;
-        _arduinoSerial.sendEventMessage(0);
+      //  _arduinoSerial.sendEventMessage(0);
     }
 
 }
@@ -168,7 +168,6 @@ void RecordingManager::reloadHID()
 
 bool RecordingManager::initHIDUSB()
 {
-
     std::cout<<"Init HID\n";
 
     if(!_hidUsbManager.deviceOpened())
@@ -229,7 +228,13 @@ bool RecordingManager::initHIDUSB()
     _serialMode = false;
     _hidMode = true;
 
-    devicesChanged.emit();
+    
+    for(unsigned int i = 0; i < (unsigned int)_numOfHidChannels;i++)
+    {
+        bindVirtualDevice(i);
+    }
+    
+ 
     //_player.stop();
     //_player.start(_hidUsbManager.maxSamplingRate());
     _player.setVolume(0);
@@ -241,9 +246,8 @@ bool RecordingManager::initHIDUSB()
 void RecordingManager::disconnectFromHID()
 {
 
-    _hidUsbManager.putInFirmwareUpdateMode();
-   // initRecordingDevices();
-   // closeHid();
+    initRecordingDevices();
+    closeHid();
 }
 
 void RecordingManager::closeHid()

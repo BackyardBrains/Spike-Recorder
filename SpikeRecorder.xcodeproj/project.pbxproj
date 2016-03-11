@@ -25,9 +25,6 @@
 		2407F7051C7F499800D215B9 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2407F7041C7F499800D215B9 /* SDL2.framework */; };
 		2407F7061C7F49A400D215B9 /* SDL2.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2407F7041C7F499800D215B9 /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		2407F7071C7F49A900D215B9 /* SDL2.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2407F7041C7F499800D215B9 /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		2407F7091C7F4AC600D215B9 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2407F7081C7F4AC600D215B9 /* SDL2_image.framework */; };
-		2407F70A1C7F4ACD00D215B9 /* SDL2_image.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2407F7081C7F4AC600D215B9 /* SDL2_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		2407F70B1C7F4AD000D215B9 /* SDL2_image.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2407F7081C7F4AC600D215B9 /* SDL2_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		2407F7101C7F53FF00D215B9 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2407F70F1C7F53FF00D215B9 /* Media.xcassets */; };
 		2421F08F1ACFDDBD00927F19 /* FileReadUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2421F08B1ACFDDBD00927F19 /* FileReadUtil.cpp */; };
 		2421F0901ACFDDBD00927F19 /* SpikeAnalysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2421F08D1ACFDDBD00927F19 /* SpikeAnalysis.cpp */; };
@@ -36,6 +33,9 @@
 		2421F0991ACFDE0300927F19 /* AnalysisTrainList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2421F0971ACFDE0300927F19 /* AnalysisTrainList.cpp */; };
 		2421F09C1ACFDF5100927F19 /* Plot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2421F09A1ACFDF5100927F19 /* Plot.cpp */; };
 		2421F09F1ACFDF7B00927F19 /* TabBar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2421F09D1ACFDF7B00927F19 /* TabBar.cpp */; };
+		247FF9311C919F12004DF81C /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 247FF9301C919F12004DF81C /* SDL2_image.framework */; };
+		247FF9321C919F21004DF81C /* SDL2_image.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 247FF9301C919F12004DF81C /* SDL2_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		247FF9331C919F24004DF81C /* SDL2_image.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 247FF9301C919F12004DF81C /* SDL2_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		248646421AB1FBAD003852AA /* Log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248646401AB1FBAD003852AA /* Log.cpp */; };
 		248BA1F51B3E42AD00EEB5E4 /* ThresholdPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248BA1F31B3E42AD00EEB5E4 /* ThresholdPanel.cpp */; };
 		248BA1F81B3E42D500EEB5E4 /* SwitchLayout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248BA1F61B3E42D500EEB5E4 /* SwitchLayout.cpp */; };
@@ -92,7 +92,7 @@
 			files = (
 				24079F3F1AB0CCDF00820291 /* libbass.dylib in CopyFiles */,
 				2407F7061C7F49A400D215B9 /* SDL2.framework in CopyFiles */,
-				2407F70A1C7F4ACD00D215B9 /* SDL2_image.framework in CopyFiles */,
+				247FF9321C919F21004DF81C /* SDL2_image.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -103,7 +103,7 @@
 			dstSubfolderSpec = 6;
 			files = (
 				2407F7071C7F49A900D215B9 /* SDL2.framework in CopyFiles */,
-				2407F70B1C7F4AD000D215B9 /* SDL2_image.framework in CopyFiles */,
+				247FF9331C919F24004DF81C /* SDL2_image.framework in CopyFiles */,
 				24079F431AB0CCFC00820291 /* libbass.dylib in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -187,7 +187,6 @@
 		2407F7021C7F497800D215B9 /* SDL_version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDL_version.h; sourceTree = "<group>"; };
 		2407F7031C7F497800D215B9 /* SDL_video.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDL_video.h; sourceTree = "<group>"; };
 		2407F7041C7F499800D215B9 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2.framework; sourceTree = "<group>"; };
-		2407F7081C7F4AC600D215B9 /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2_image.framework; sourceTree = "<group>"; };
 		2407F70F1C7F53FF00D215B9 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		2421F08B1ACFDDBD00927F19 /* FileReadUtil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileReadUtil.cpp; sourceTree = "<group>"; };
 		2421F08C1ACFDDBD00927F19 /* FileReadUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileReadUtil.h; sourceTree = "<group>"; };
@@ -203,6 +202,7 @@
 		2421F09B1ACFDF5100927F19 /* Plot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Plot.h; sourceTree = "<group>"; };
 		2421F09D1ACFDF7B00927F19 /* TabBar.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TabBar.cpp; path = src/widgets/TabBar.cpp; sourceTree = SOURCE_ROOT; };
 		2421F09E1ACFDF7B00927F19 /* TabBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TabBar.h; path = src/widgets/TabBar.h; sourceTree = SOURCE_ROOT; };
+		247FF9301C919F12004DF81C /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2_image.framework; sourceTree = "<group>"; };
 		248646401AB1FBAD003852AA /* Log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Log.cpp; path = src/Log.cpp; sourceTree = SOURCE_ROOT; };
 		248646411AB1FBAD003852AA /* Log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Log.h; path = src/Log.h; sourceTree = SOURCE_ROOT; };
 		248BA1F31B3E42AD00EEB5E4 /* ThresholdPanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ThresholdPanel.cpp; path = src/ThresholdPanel.cpp; sourceTree = SOURCE_ROOT; };
@@ -314,7 +314,7 @@
 				248E591F1AAE1B7C0011707F /* IOKit.framework in Frameworks */,
 				248E59201AAE1B820011707F /* libbass.dylib in Frameworks */,
 				248E59231AAE1B820011707F /* Cocoa.framework in Frameworks */,
-				2407F7091C7F4AC600D215B9 /* SDL2_image.framework in Frameworks */,
+				247FF9311C919F12004DF81C /* SDL2_image.framework in Frameworks */,
 				2407F7051C7F499800D215B9 /* SDL2.framework in Frameworks */,
 				248E59241AAE1B820011707F /* OpenGL.framework in Frameworks */,
 			);
@@ -603,7 +603,7 @@
 		248E591E1AAE1B450011707F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				2407F7081C7F4AC600D215B9 /* SDL2_image.framework */,
+				247FF9301C919F12004DF81C /* SDL2_image.framework */,
 				2407F7041C7F499800D215B9 /* SDL2.framework */,
 				2407F6C81C7F497800D215B9 /* SDL2 */,
 				248E591C1AAE1ADE0011707F /* IOKit.framework */,
@@ -853,7 +853,7 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_LINK_OBJC_RUNTIME = YES;
 				CODE_SIGN_ENTITLEMENTS = SpikeRecorder.entitlements;
-				CODE_SIGN_IDENTITY = "3rd Party Mac Developer Application: Backyard Brains (MLGRKD657P)";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -896,7 +896,7 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_LINK_OBJC_RUNTIME = YES;
 				CODE_SIGN_ENTITLEMENTS = SpikeRecorder.entitlements;
-				CODE_SIGN_IDENTITY = "3rd Party Mac Developer Application: Backyard Brains (MLGRKD657P)";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (

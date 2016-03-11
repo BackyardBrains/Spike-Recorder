@@ -69,6 +69,7 @@ private:
 
     void triggerEvent();
 
+    void drawTimeLabelsForFile();
 
 
 };

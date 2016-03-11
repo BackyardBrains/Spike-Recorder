@@ -83,7 +83,6 @@ protected:
 	void drawSpikeTrain();
 	void drawRulerBox();
 	void drawRulerTime();
-    void drawCenter();
 	void drawMarkers();
 	void drawThreshold(int screenw);
 	void drawGainControls();

@@ -75,8 +75,9 @@ void AnalysisAudioView::paintEvent() {
 
 	std::vector<std::pair<int16_t, int16_t> > data;
 	int pos = _manager.pos()-samples/2;
-	data = _manager.getSamplesEnvelope(_channels[0].virtualDevice, pos, samples, screenWidth() == 0 ? 1 : std::max(samples/screenWidth(),1));
-
+	//data = _manager.getSamplesEnvelope(_channels[0].virtualDevice, pos, samples, screenWidth() == 0 ? 1 : std::max(samples/screenWidth(),1));
+    data = _manager.getSamplesEnvelope(_manager.selectedVDevice(), pos, samples, screenWidth() == 0 ? 1 : std::max(samples/screenWidth(),1));
+    
 	Widgets::Painter::setColor(Widgets::Colors::widgetbgdark);
 	drawData(data, 0, samples, MOVEPIN_SIZE*1.5f, height()/2, screenWidth());
 
@@ -109,7 +110,12 @@ void AnalysisAudioView::paintEvent() {
 	Widgets::Painter::drawTexRect(Widgets::Rect(MOVEPIN_SIZE/2, _channels[0].pos*height()-MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	drawGainControls();
+    int y = _channels[0].pos*height();
+    Widgets::TextureGL::get("data/gaindown.bmp")->bind();
+    Widgets::Painter::drawTexRect(Widgets::Rect(GAINCONTROL_XOFF-GAINCONTROL_RAD,y+GAINCONTROL_YOFF-GAINCONTROL_RAD,2*GAINCONTROL_RAD,2*GAINCONTROL_RAD));
+    Widgets::TextureGL::get("data/gainup.bmp")->bind();
+    Widgets::Painter::drawTexRect(Widgets::Rect(GAINCONTROL_XOFF-GAINCONTROL_RAD,y-GAINCONTROL_YOFF-GAINCONTROL_RAD,2*GAINCONTROL_RAD,2*GAINCONTROL_RAD));
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void AnalysisAudioView::mousePressEvent(Widgets::MouseEvent *event) {
@@ -135,6 +141,8 @@ void AnalysisAudioView::mousePressEvent(Widgets::MouseEvent *event) {
 
 	AudioView::mousePressEvent(event);
 }
+    
+    
 
 void AnalysisAudioView::mouseMotionEvent(Widgets::MouseEvent *event) {
 	if(_clickedThresh != -1) {

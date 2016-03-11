@@ -29,7 +29,8 @@ AnalysisView::AnalysisView(RecordingManager &mngr, AnalysisManager &anaman, Widg
 	_spikeTrains.push_back(SpikeTrain());
 	_spikeTrains.back().color=_colorCounter;
 	_colorCounter++;
-
+    
+    
 	_audioView = new AnalysisAudioView(mngr, anaman, _spikeSorter, this);
 	_audioView->setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Expanding, Widgets::SizePolicy::Expanding));
 	_audioView->setThresh(_spikeTrains[0].lowerThresh, _spikeTrains[0].upperThresh);
@@ -39,7 +40,8 @@ AnalysisView::AnalysisView(RecordingManager &mngr, AnalysisManager &anaman, Widg
 	_trainList->trainDeleted.connect(this, &AnalysisView::trainDeleted);
 	_plots = new AnalysisPlots(_spikeTrains,_manager, this);
 	_plots->modeChanged.connect(this, &AnalysisView::plotModeChanged);
-
+    _plots->setPlotCount(_spikeTrains.size()-1);
+    
 	Widgets::PushButton *closeButton = new Widgets::PushButton(this);
 	closeButton->clicked.connect(this, &AnalysisView::closePressed);
 	closeButton->setNormalTex(Widgets::TextureGL::get("data/analysiscrossed.bmp"));
@@ -131,6 +133,16 @@ void AnalysisView::paintEvent() {
 
 void AnalysisView::closePressed() {
 	_manager.setThreshMode(_wasThreshMode);
+    
+    
+    for(int i = _spikeTrains.size()-1; i >=0 ; i--) {
+        if(_spikeTrains[i].spikes.size()==0)
+        {
+             _spikeTrains.erase(_spikeTrains.begin() + i);
+        }
+    }
+    
+    
 	close();
 }
 
