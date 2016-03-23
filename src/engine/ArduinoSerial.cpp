@@ -612,16 +612,16 @@ namespace BackyardBrains {
         writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
     }
 
-    
+
     void ArduinoSerial::sendEventMessage(int eventType)
     {
         std::stringstream sstm;
         sstm << "p:" << eventType<<";\n";
         writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
-    
+
     }
-    
-    
+
+
     int ArduinoSerial::writeToPort(const void *ptr, int len)
     {
 
@@ -947,6 +947,7 @@ static const char *devnames[] = {
 
         if(_portOpened)
         {
+            setNumberOfChannelsAndSamplingRate(1, maxSamplingRate());
             #if defined(__linux__) || defined(__APPLE__)
                     // does this really work properly (and is it thread safe) on Linux??
                     //tcflush(fd, TCIOFLUSH);

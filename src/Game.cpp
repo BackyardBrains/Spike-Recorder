@@ -16,7 +16,7 @@ Game::Game() : _anaman(_manager), _fileRec(_manager) {
 	setWindowTitle("BYB Spike Recorder");
 
 	Log::msg("Starting GUI...");
-
+    roundingDifference = 0;
 }
 
 Game::~Game() {
@@ -94,20 +94,22 @@ void Game::loadResources() {
     Widgets::TextureGL::load("data/e7.bmp");
     Widgets::TextureGL::load("data/e8.bmp");
     Widgets::TextureGL::load("data/e9.bmp");
-    
+
     Widgets::TextureGL::load("data/analysiscrossed.bmp");
     Widgets::TextureGL::load("data/fftcrossed.bmp");
     Widgets::TextureGL::load("data/threshcrossed.bmp");
     Widgets::TextureGL::load("data/configcrossed.bmp");
-    
+
 }
 
 void Game::advance() {
-	static uint32_t t = 0; // TODO make this cleaner
-	uint32_t newt = SDL_GetTicks();
-    float timediff = (newt-t);
-    float sampleNumber = (float)(_manager.sampleRate())*(timediff/1000.0);
-
+	static uint64_t t = 0; // TODO make this cleaner
+	uint64_t newt = SDL_GetTicks();
+    double timediff = (newt-t);
+   // std::cout<<"Time: "<<timediff<<"\n";
+    double sampleNumber = (double)(_manager.sampleRate())*(timediff/1000.0) + roundingDifference;
+    double trimmedNumber = (double)(int64_t)sampleNumber;
+    roundingDifference = sampleNumber-trimmedNumber;
     _manager.advance((int32_t)sampleNumber); // fetch more samples than necessary to prevent lag
 	_fileRec.advance();
 

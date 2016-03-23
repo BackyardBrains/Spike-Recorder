@@ -11,6 +11,7 @@
 #include "Player.h"
 #include "ArduinoSerial.h"
 #include "HIDUsbManager.h"
+#include "NotchFilter.h"
 
 #if defined(_WIN32)
     #include "FirmwareUpdater.h"
@@ -69,7 +70,7 @@ public:
 	std::vector<VirtualDevice> &virtualDevices() {return _virtualDevices;}
 
 	// Bound vdevices will have their sources initialized and be displayed in AudioView
-	// 
+	//
 	// Parameters:
 	// vdevice - index in _virtualDevices
 	//
@@ -138,6 +139,12 @@ public:
     void swapRTRepeating();
     void reloadHID();
     bool _HIDShouldBeReloaded;
+    void enable50HzFilter(){ _60HzFilterEnabled = false; _50HzFilterEnabled = true;}
+    void disable50HzFilter(){_50HzFilterEnabled = false;}
+    void enable60HzFilter(){_50HzFilterEnabled = false;_60HzFilterEnabled = true;}
+    void disable60HzFilter(){_60HzFilterEnabled = false;}
+    bool fiftyHzFilterEnabled() {return _50HzFilterEnabled;}
+    bool sixtyHzFilterEnabled() {return _60HzFilterEnabled;}
     std::string currentHIDFirmwareVersion() {return _hidUsbManager.firmwareVersion;}
 
 
@@ -167,7 +174,7 @@ private:
 		// Deinitialize device after it is no longer used.
 		// Returns true on success.
 		bool disable();
-	
+
 		// Type of the device. This will decide what enable()/disable() will do.
 		// We could also use subclassing or something to do this.
 		enum {
@@ -179,9 +186,11 @@ private:
 
 		int index;
 		HRECORD handle;
-		
+
 		bool enabled;
 
+        std::vector<NotchFilter> _50HzNotchFilters;
+        std::vector<NotchFilter> _60HzNotchFilters;
 		std::vector<SampleBuffer> sampleBuffers;
 		std::vector<int64_t> dcBiasSum;
 
@@ -205,6 +214,9 @@ private:
 	int64_t _pos; //position of the current file/recording in samples
 	bool _paused;
 	bool _threshMode;
+
+    bool _50HzFilterEnabled;
+    bool _60HzFilterEnabled;
 
 	int64_t currentPositionOfWaveform;
 

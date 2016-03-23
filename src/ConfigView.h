@@ -41,6 +41,8 @@ private:
 	};
 
 	Widgets::PushButton *_muteCKBox;
+	Widgets::PushButton *_50hzFilter;
+    Widgets::PushButton *_60hzFilter;
 
 	std::vector<SignalCatcher> _catchers;
 	std::vector<ColorDropDownList *> _clrs;
@@ -75,6 +77,8 @@ private:
 
 	void closePressed();
 	void mutePressed();
+	void fiftyHzPressed();
+	void sixtyHzPressed();
 
 
 };

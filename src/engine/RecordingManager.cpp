@@ -124,18 +124,18 @@ void RecordingManager::applyMetadata(const MetadataChunk &m) {
 }
 
 void RecordingManager::clear() {
-    
-    
+
+
     for(int i = (int)_virtualDevices.size()-1; i >=0; i--) {
         unbindVirtualDevice(i);
     }
-    
+
 	for(int i = 0; i < (int)_devices.size(); i++)
 		_devices[i].disable();
-	
+
 	_virtualDevices.clear();
 	_devices.clear();
-    
+
 	_markers.clear();
 	_triggers.clear();
 
@@ -228,18 +228,18 @@ bool RecordingManager::initHIDUSB()
     _serialMode = false;
     _hidMode = true;
 
-    
+
     for(unsigned int i = 0; i < (unsigned int)_numOfHidChannels;i++)
     {
         bindVirtualDevice(i);
     }
-    
- 
+
+
     //_player.stop();
     //_player.start(_hidUsbManager.maxSamplingRate());
     _player.setVolume(0);
 
-    
+
     return true;
 }
 
@@ -450,7 +450,7 @@ bool RecordingManager::initSerial(const char *portName)
         virtualDevice.threshold = 100;
         virtualDevice.bound = false;
         _virtualDevices.push_back(virtualDevice);
-        
+
     }
 
 
@@ -459,12 +459,12 @@ bool RecordingManager::initSerial(const char *portName)
     _hidMode = false;
     _serialMode = true;
    // devicesChanged.emit();
-    
+
     for(unsigned int i = 0; i < (unsigned int)_numOfSerialChannels;i++)
     {
         bindVirtualDevice(i);
     }
-    
+
 
   //  _player.stop();
   //  _player.start(_arduinoSerial.maxSamplingRate()/_numOfSerialChannels);
@@ -525,6 +525,8 @@ void RecordingManager::closeSerial()
 
 bool RecordingManager::loadFile(const char *filename) {
 
+
+
 	_spikeTrains.clear();
 	closeSerial();
 	closeHid();
@@ -577,7 +579,12 @@ bool RecordingManager::loadFile(const char *filename) {
 	_fileMode = true;
 	_filename = filename;
 
+
+	_player.stop();
+
+	_player.start(_sampleRate);
 	devicesChanged.emit();
+
 	_player.setVolume(100);
 
 	if(!_paused) {
@@ -603,9 +610,9 @@ void RecordingManager::initRecordingDevices() {
 	for(i = 0; BASS_RecordGetDeviceInfo(i, &info); i++) {
 		_devices.push_back(Device(i,2,_sampleRate));
 		_devices.back().type = Device::Audio;
-		
+
 		// do not add virtualDevices for devices that are not enabled.
-		if(!(info.flags & BASS_DEVICE_ENABLED)) 
+		if(!(info.flags & BASS_DEVICE_ENABLED))
 			continue;
 		for (int j = 0; j < 2; j++)	{
 			virtualDevice.device = i;
@@ -622,6 +629,8 @@ void RecordingManager::initRecordingDevices() {
 	}
 
 	_player.setVolume(0);
+	_player.stop();
+	_player.start(_sampleRate);
 	setSampleRate(DEFAULT_SAMPLE_RATE);
 //	devicesChanged.emit();
 	Log::msg("Found %d recording devices.", _virtualDevices.size());
@@ -782,14 +791,14 @@ void RecordingManager::getTriggerData(int virtualDevice, int64_t len, int16_t *d
 //     returns roughly (roughly because we use snapTo) len/sampleSkip data samples
 //
 std::vector< std::pair<int16_t, int16_t> > RecordingManager::getSamplesEnvelope(int virtualDeviceIndex, int64_t offset, int64_t len, int sampleSkip) {
-    
+
 	const int64_t pos2 = snapTo(offset+len, sampleSkip);//end of data
 	const int64_t pos1 = snapTo(offset, sampleSkip);//begining of the data
-    
+
 	int64_t newLengthOfData = pos2 - pos1;
-    
+
 	std::vector< std::pair<int16_t, int16_t> > result;
-    
+
 	if (_devices[_virtualDevices[virtualDeviceIndex].device].enabled) {
 		result = sampleBuffer(virtualDeviceIndex)->getDataEnvelope(pos1, newLengthOfData, sampleSkip);
 	} else {
@@ -831,6 +840,15 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 		setPaused(true);
 		return;
 	}
+
+	int numOfBytesInAudioBuffer = _player.stateOfBuffer();
+	//if we don't have enough data preloaded
+	//add some more
+    if(numOfBytesInAudioBuffer< _sampleRate/15)
+    {
+        samples +=samples;//double the sample count
+    }
+
 
 	const unsigned int bufsize = 1*sampleRate();
 	for(int idx = 0; idx < (int)_devices.size(); idx++) {
@@ -935,10 +953,8 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 
 		if(_player.volume() > 0) {
 			int16_t *buf = new int16_t[bsamples];
-
 			s.getData(buf, _pos, bsamples);
 			_player.push(buf, bsamples*sizeof(int16_t));
-
 			delete[] buf;
 		}
 
@@ -977,8 +993,26 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 	    for (int i = 0; i < samplesRead; i++) {
 	        for(int chan = 0; chan < channum; chan++) {
 	            channels[chan][i] = buffer[i*channum + chan];//sort data to channels
+	        }
+	    }
 
+	    //filter data
+        if(fiftyHzFilterEnabled())
+        {
+            for(int chan = 0; chan < channum; chan++) {
+	            _devices.begin()->_50HzNotchFilters[chan].filterIntData(channels[chan].data(), samplesRead);
+	        }
+        }
+        else if(sixtyHzFilterEnabled())
+        {
+            for(int chan = 0; chan < channum; chan++) {
+	            _devices.begin()->_60HzNotchFilters[chan].filterIntData(channels[chan].data(), samplesRead);
+	        }
+        }
 
+	    //DC offset elimination
+	     for (int i = 0; i < samplesRead; i++) {
+	        for(int chan = 0; chan < channum; chan++) {
 	            //if we are in first 10 seconds interval
 	            //add current sample to summ used to remove DC component
 	            if(_devices.begin()->dcBiasNum < _sampleRate*10) {
@@ -990,17 +1024,20 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 	            }
 	        }
 	    }
+
+
+
 	    bool triggerd = false;
 	    for(int chan = 0; chan < channum; chan++) {
 	        //calculate DC offset in fist 10 sec for channel
 	        int dcBias = _devices.begin()->dcBiasSum[chan]/_devices.begin()->dcBiasNum;
 
-            if(_thresholdSource == 0)//if we trigger on signal
-            {
-                for(int i = 0; i < samplesRead; i++) {
 
-                    channels[chan][i] -= dcBias;//substract DC offset from channels data
+            for(int i = 0; i < samplesRead; i++) {
 
+                channels[chan][i] -= dcBias;//substract DC offset from channels data
+                if(_thresholdSource == 0)//if we trigger on signal
+                {
                     //add position of data samples that are greater than threshold to FIFO list _triggers
                     if(_threshMode && _devices.begin()->index*channum+chan == _selectedVDevice) {
                         const int64_t ntrigger = _pos + i;
@@ -1017,6 +1054,7 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
                     }
                 }
             }
+
 	        if(_devices.begin()->sampleBuffers[0].empty()) {
 	            _devices.begin()->sampleBuffers[chan].setPos(_pos);
 	        }
@@ -1358,7 +1396,7 @@ bool RecordingManager::bindVirtualDevice(int vdevice) {
 	if(success && _selectedVDevice == INVALID_VIRTUAL_DEVICE_INDEX)
 		_selectedVDevice = vdevice;
 
-	devicesChanged.emit();	
+	devicesChanged.emit();
 	return success;
 }
 
@@ -1367,7 +1405,7 @@ bool RecordingManager::unbindVirtualDevice(int vdevice) {
 	_virtualDevices[vdevice].bound = false;
 
 	bool success = true;
-	
+
 	// if there is no other vdevice bound needing my device, disable it
 	bool otherUser = false;
 	for(int i = 0; i < (int)_virtualDevices.size(); i++) {
@@ -1389,17 +1427,33 @@ bool RecordingManager::unbindVirtualDevice(int vdevice) {
 			}
 		}
 		if(vdevice == _selectedVDevice)
-			_selectedVDevice = INVALID_VIRTUAL_DEVICE_INDEX;		
+			_selectedVDevice = INVALID_VIRTUAL_DEVICE_INDEX;
 	}
-	
-	devicesChanged.emit();	
+
+	devicesChanged.emit();
 	return success;
 }
 
 RecordingManager::Device::Device(int index, int nchan, int &sampleRate)
 	: type(Device::Audio),index(index), handle(0), enabled(false), dcBiasNum(1), channels(nchan), samplerate(sampleRate), bytespersample(2) {
-	
+
 	sampleBuffers.resize(nchan);
+	_50HzNotchFilters.resize(nchan);
+	for(int i=0;i<nchan;i++)
+    {
+            _50HzNotchFilters[i].initWithSamplingRate(sampleRate);
+            _50HzNotchFilters[i].setCenterFrequency(60.0f);
+            _50HzNotchFilters[i].setQ(1.0);
+    }
+
+    _60HzNotchFilters.resize(nchan);
+    for(int i=0;i<nchan;i++)
+    {
+            _60HzNotchFilters[i].initWithSamplingRate(sampleRate);
+            _60HzNotchFilters[i].setCenterFrequency(60.0f);
+            _60HzNotchFilters[i].setQ(1.0);
+    }
+
 	dcBiasSum.resize(nchan);
 }
 
@@ -1409,7 +1463,7 @@ RecordingManager::Device::~Device() {
 bool RecordingManager::Device::enable(int64_t pos) {
 	if(enabled)
 		return true;
-	
+
 	Log::msg("device %d enabled", index);
 
 	// reset dc bias calculation
@@ -1450,7 +1504,7 @@ bool RecordingManager::Device::enable(int64_t pos) {
 			return false;
 		}
 	}
-	
+
 	// if other types of devices need initialization, it should happen here.
 
 	enabled = true;
@@ -1460,17 +1514,17 @@ bool RecordingManager::Device::enable(int64_t pos) {
 bool RecordingManager::Device::disable() {
 	if(!enabled)
 		return true;
-	
+
 	Log::msg("device %d disabled", index);
-	
-	if(type == Device::Audio) {	
+
+	if(type == Device::Audio) {
 		// make sure the device exists
 		BASS_DEVICEINFO info;
 		if (!BASS_RecordGetDeviceInfo(index, &info)) {
 			Log::error("Bass Error: getting record device info failed: %s", GetBassStrError());
 			return false;
 		}
-		
+
 		if (!BASS_ChannelStop(handle)) {
 			Log::error("Bass Error: stopping recording failed: %s", GetBassStrError());
 			return false;

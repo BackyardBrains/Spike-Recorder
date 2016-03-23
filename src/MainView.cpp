@@ -238,6 +238,8 @@ void MainView::threshPressed() {
         threshButton->setNormalTex(Widgets::TextureGL::get("data/threshcrossed.bmp"));
         threshButton->setHoverTex(Widgets::TextureGL::get("data/threshcrossed.bmp"));
 		_fftView->setActive(false);
+        _fftButton->setNormalTex(Widgets::TextureGL::get("data/fft.bmp"));
+        _fftButton->setHoverTex(Widgets::TextureGL::get("data/ffthigh.bmp"));
 		_manager.setThreshMode(true);
 		_threshavgGroup->setVisible(true);
 		_threshavgGroup->setSizeHint(Widgets::Size(400,32));
@@ -352,7 +354,7 @@ void MainView::filePressed() {
     FileRecorder::parseMarkerTextFile(m.markers, FileRecorder::eventTxtFilename(d.getResultFilename().c_str()), _manager.sampleRate());
     _manager.applyMetadata(m);
     _audioView->applyMetadata(m);
-    
+
 
 	_recordButton->setVisible(false);
 	_analysisButton->setVisible(true);
@@ -377,11 +379,11 @@ void MainView::configPressed() {
 }
 
 void MainView::analysisPressed() {
-    
-	
+
+
     _anaView = new AnalysisView(_manager, _anaman);
-    
-    
+
+
 	_anaView->setDeleteOnClose(true);
 	_anaView->setGeometry(rect());
 	Widgets::Application::getInstance()->addWindow(_anaView);
@@ -461,7 +463,7 @@ void MainView::drawTimeLabelsForFile()
     {
         fullS<<fullMinutes<<":";
     }
-    
+
     if(fullSeconds<10)
     {
         fullS<<"0"<<fullSeconds<<" ";
@@ -470,7 +472,7 @@ void MainView::drawTimeLabelsForFile()
     {
         fullS<<fullSeconds<<" ";
     }
-    
+
     if(fullMiliseconds<10)
     {
         fullS<<"00"<<fullMiliseconds;
@@ -483,14 +485,14 @@ void MainView::drawTimeLabelsForFile()
     {
         fullS<<fullMiliseconds;
     }
-    
+
     Widgets::Painter::setColor(Widgets::Colors::white);
     Widgets::Application::font()->draw(fullS.str().c_str(), width()-15, height()-70, Widgets::AlignRight);
-    
-    
-    
-    
-    
+
+
+
+
+
     int64_t time = _manager.pos();
     int64_t miliseconds = time/(_manager.sampleRate()/1000);
     miliseconds = miliseconds%1000;
@@ -498,7 +500,7 @@ void MainView::drawTimeLabelsForFile()
     int64_t minutes = seconds/60;
     seconds = seconds%60;
     std::stringstream o;
-    
+
     if(minutes<1)
     {
         o<<"00:";
@@ -511,7 +513,7 @@ void MainView::drawTimeLabelsForFile()
     {
         o<<minutes<<":";
     }
-    
+
     if(seconds<10)
     {
         o<<"0"<<seconds<<" ";
@@ -520,7 +522,7 @@ void MainView::drawTimeLabelsForFile()
     {
         o<<seconds<<" ";
     }
-    
+
     if(miliseconds<10)
     {
         o<<"00"<<miliseconds;
@@ -533,14 +535,14 @@ void MainView::drawTimeLabelsForFile()
     {
         o<<miliseconds;
     }
-    
+
     Widgets::Application::font()->draw(o.str().c_str(), 15, height()-70, Widgets::AlignLeft);
-    
+
 }
 
-    
-    
-    
+
+
+
 
 void MainView::paintEvent()
 {
@@ -585,7 +587,7 @@ void MainView::paintEvent()
         _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.bmp"));
         _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.bmp"));
     }
-    
+
     if(_manager.fileMode())
     {
         drawTimeLabelsForFile();

@@ -26,6 +26,7 @@ public:
 	void stop();
     uint64_t pos(uint16_t bytesPerSample, uint16_t numOfChannels);
     void setPos(uint64_t npos, uint16_t bytesPerSample, uint16_t numOfChannels);
+    int stateOfBuffer();
 private:
 	HSTREAM _output;
 };

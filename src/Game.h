@@ -19,6 +19,7 @@ private:
 	AnalysisManager _anaman;
 	FileRecorder _fileRec;
 	void advance();
+	float roundingDifference;
 };
 
 } // namespace BackyardBrains

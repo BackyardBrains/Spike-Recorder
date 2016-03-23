@@ -38,6 +38,10 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 	group->setSizeHint(Widgets::Size(500,400));
 	Widgets::BoxLayout *gvbox = new Widgets::BoxLayout(Widgets::Vertical, group);
 
+
+
+    //-------------- Mute check box ----------------------------------------
+
 	if(!_manager.fileMode()) {
 		Widgets::BoxLayout *mutehbox = new Widgets::BoxLayout(Widgets::Horizontal);
 		Widgets::Label *muteLabel = new Widgets::Label(group);
@@ -57,8 +61,60 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 		mutehbox->addWidget(_muteCKBox, Widgets::AlignVCenter);
 		mutehbox->addSpacing(50);
 		gvbox->addLayout(mutehbox);
+		gvbox->addSpacing(30);
+	}
+
+
+    //----------- 50Hz/60Hz noise filter ------------------------------------
+
+
+    if(!_manager.fileMode()) {
+		Widgets::BoxLayout *filterhbox = new Widgets::BoxLayout(Widgets::Horizontal);
+
+		Widgets::Label *filterLabel = new Widgets::Label(group);
+		filterLabel->setText("Enable filter:");
+		filterLabel->updateSize();
+
+		Widgets::Label *fiftyHzLabel = new Widgets::Label(group);
+		fiftyHzLabel->setText("50Hz");
+		fiftyHzLabel->updateSize();
+
+        Widgets::Label *sixtyHzLabel = new Widgets::Label(group);
+		sixtyHzLabel->setText("60Hz");
+		sixtyHzLabel->updateSize();
+
+		_50hzFilter = new Widgets::PushButton(group);
+		if(_manager.fiftyHzFilterEnabled())
+			_50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
+		else
+			_50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
+		_50hzFilter->setSizeHint(Widgets::Size(16,16));
+		_50hzFilter->clicked.connect(this, &ConfigView::fiftyHzPressed);
+
+		_60hzFilter = new Widgets::PushButton(group);
+		if(_manager.sixtyHzFilterEnabled())
+			_60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
+		else
+			_60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
+		_60hzFilter->setSizeHint(Widgets::Size(16,16));
+		_60hzFilter->clicked.connect(this, &ConfigView::sixtyHzPressed);
+
+		filterhbox->addWidget(filterLabel);
+		filterhbox->addSpacing(13);
+		filterhbox->addWidget(fiftyHzLabel);
+		filterhbox->addSpacing(4);
+		filterhbox->addWidget(_50hzFilter, Widgets::AlignVCenter);
+		filterhbox->addSpacing(16);
+		filterhbox->addWidget(sixtyHzLabel);
+		filterhbox->addSpacing(4);
+		filterhbox->addWidget(_60hzFilter, Widgets::AlignVCenter);
+		filterhbox->addSpacing(50);
+		gvbox->addLayout(filterhbox);
 		gvbox->addSpacing(40);
 	}
+
+
+    //----------- Color chooser for channels --------------------------------
 
 	for(unsigned int i = 0; i < _manager.virtualDevices().size(); i++) {
 		_clrs[i] = new ColorDropDownList(group);
@@ -83,7 +139,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 
 
 
-    // -------- Serial configuration
+    // -------- Serial configuration -----------------------------------------
 
     if(!_manager.fileMode())
     {
@@ -137,6 +193,9 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
         gvbox->addLayout(serialHbox);
 
 
+
+        //-------------- Serial Number of channels chooser ----------------------------------------
+
         if(_manager.serialMode())
         {
                 //Number of channels chooser
@@ -174,7 +233,9 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
         }
 
 
-        //HID device connect (only for windows)
+        // -------------------- HID device connect (only for windows)---------------------------------------
+
+
         #if defined(_WIN32)
             /* Widgets::BoxLayout *hidHbox = new Widgets::BoxLayout(Widgets::Horizontal);
             //USB  label
@@ -207,10 +268,10 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
             gvbox->addLayout(hidHbox);*/
 
 
-        //--------------   Update firmware code (works only under Windows)
+        //--------------   Update firmware code (works only under Windows)----------------------
 
 
-       
+
         if(_manager.hidMode())
         {
             if(_manager.firmwareAvailable())
@@ -314,12 +375,12 @@ void ConfigView::paintEvent() {
         void ConfigView::hidConnectPressed()
         {
             //connect/diconnect
-            
+
             if(_manager.hidMode())
             {
                 // _manager.setSerialNumberOfChannels(1);
                 _manager.disconnectFromHID();
-                
+
                 _hidButton->setNormalTex(Widgets::TextureGL::get("data/connected.bmp"));
                 _hidButton->setHoverTex(Widgets::TextureGL::get("data/connected.bmp"));
                 close();
@@ -329,8 +390,8 @@ void ConfigView::paintEvent() {
                 if(!_manager.initHIDUSB())
                 {
                     std::cout<<"Can't open HID device. \n";
-                    
-                    
+
+
                     Widgets::ErrorBox *box = new Widgets::ErrorBox(_manager.hidError.c_str());
                     box->setGeometry(Widgets::Rect(this->width()/2-250, this->height()/2-40, 500, 80));
                     Widgets::Application::getInstance()->addPopup(box);
@@ -340,7 +401,7 @@ void ConfigView::paintEvent() {
                 close();
             }
         }
-    
+
         //
         //Firmware selection drop-down selection changed
         //
@@ -446,6 +507,43 @@ void ConfigView::mutePressed() {
 		_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
 		_manager.player().setVolume(0);
 	}
+}
+
+//
+// Enable/disable 50Hz filter checkbox pressed
+//
+void ConfigView::fiftyHzPressed() {
+    if(_manager.fiftyHzFilterEnabled())
+    {
+        _manager.disable50HzFilter();
+        _60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
+        _50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
+    }
+    else
+    {
+        _manager.enable50HzFilter();
+        _50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
+        _60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
+    }
+}
+
+
+//
+// Enable/disable 60Hz filter checkbox pressed
+//
+void ConfigView::sixtyHzPressed() {
+    if(_manager.sixtyHzFilterEnabled())
+    {
+        _manager.disable60HzFilter();
+        _60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
+        _50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
+    }
+    else
+    {
+        _manager.enable60HzFilter();
+        _60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
+        _50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
+    }
 }
 
 

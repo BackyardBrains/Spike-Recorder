@@ -89,8 +89,8 @@ namespace BackyardBrains {
         t1.detach();
 
         askForBoard();//ask if any board is connected
-        
-       
+
+
 
         return 0;
     }
@@ -594,28 +594,28 @@ namespace BackyardBrains {
             struct hid_device_info *devs, *cur_dev;
             std::cout<<"Scan for HID devices... \n";
             devs = hid_enumerate(0x0, 0x0);
-            std::cout<<"HID After scan \n";
+           // std::cout<<"HID After scan \n";
             cur_dev = devs;
             while (cur_dev) {
                 //check VID and PID
-                std::cout<<"Check VID, check PID \n";
+                //std::cout<<"Check VID, check PID \n";
                 if((cur_dev->vendor_id == BYB_VID) && (cur_dev->product_id == BYB_PID))
                 {
-                     std::cout<<"HID while \n";
+                //     std::cout<<"HID while \n";
                      std::string nameOfHID((char *) cur_dev->product_string);
-                     std::cout<<"Name took \n";
+                   //  std::cout<<"Name took \n";
 
                      list.push_back(nameOfHID);
-                     std::cout<<"HID name added to list \n";
-                     std::cout<<"HID device: "<<cur_dev->vendor_id<<", "<<cur_dev->product_string<<"\n";
+                   //  std::cout<<"HID name added to list \n";
+                  //   std::cout<<"HID device: "<<cur_dev->vendor_id<<", "<<cur_dev->product_string<<"\n";
 
 
 
                 }
-                 std::cout<<"Next device \n";
+               //  std::cout<<"Next device \n";
                 cur_dev = cur_dev->next;
             }
-             std::cout<<"Free enumeration \n";
+           //  std::cout<<"Free enumeration \n";
             hid_free_enumeration(devs);
         }
         catch(std::exception &e)
