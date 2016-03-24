@@ -1139,7 +1139,7 @@ void RecordingManager::advanceHidMode(uint32_t samples)
         for(int chan = 0; chan < channum; chan++)
             channels[chan].resize(len);
 
-        // de-interleave the channels
+       /* // OLD CODE before we implemented filtering
         for (DWORD i = 0; i < (unsigned int)samplesRead; i++) {
             for(int chan = 0; chan < channum; chan++) {
                 channels[chan][i] = buffer[i*channum + chan];//sort data to channels
@@ -1155,8 +1155,49 @@ void RecordingManager::advanceHidMode(uint32_t samples)
                 }
             }
         }
+        */
 
-	bool triggerd = false;
+
+
+
+
+         // de-interleave the channels
+	    for (int i = 0; i < samplesRead; i++) {
+	        for(int chan = 0; chan < channum; chan++) {
+	            channels[chan][i] = buffer[i*channum + chan];//sort data to channels
+	        }
+	    }
+
+	    //filter data
+        if(fiftyHzFilterEnabled())
+        {
+            for(int chan = 0; chan < channum; chan++) {
+	            _devices.begin()->_50HzNotchFilters[chan].filterIntData(channels[chan].data(), samplesRead);
+	        }
+        }
+        else if(sixtyHzFilterEnabled())
+        {
+            for(int chan = 0; chan < channum; chan++) {
+	            _devices.begin()->_60HzNotchFilters[chan].filterIntData(channels[chan].data(), samplesRead);
+	        }
+        }
+
+	    //DC offset elimination
+	     for (int i = 0; i < samplesRead; i++) {
+	        for(int chan = 0; chan < channum; chan++) {
+	            //if we are in first 10 seconds interval
+	            //add current sample to summ used to remove DC component
+	            if(_devices.begin()->dcBiasNum < _sampleRate*10) {
+	                _devices.begin()->dcBiasSum[chan] += 0;
+	                if(chan == 0)
+	                {
+	                    _devices.begin()->dcBiasNum++;
+	                }
+	            }
+	        }
+	    }
+
+        bool triggerd = false;
         for(int chan = 0; chan < channum; chan++) {
             //calculate DC offset in fist 10 sec for channel
             int dcBias = _devices.begin()->dcBiasSum[chan]/_devices.begin()->dcBiasNum;
@@ -1305,7 +1346,7 @@ void RecordingManager::advance(uint32_t samples) {
 		for(int chan = 0; chan < channum; chan++)
 			channels[chan].resize(len);
 
-		// de-interleave the channels
+		/*// OLD code before we implemented filtering
 		for (DWORD i = 0; i < samplesRead/channum; i++) {
 			for(int chan = 0; chan < channum; chan++) {
 				channels[chan][i] = buffer[i*channum + chan];
@@ -1318,6 +1359,44 @@ void RecordingManager::advance(uint32_t samples) {
 				}
 			}
 		}
+        */
+
+
+    // de-interleave the channels
+	    for (int i = 0; i < samplesRead/channum; i++) {
+	        for(int chan = 0; chan < channum; chan++) {
+	            channels[chan][i] = buffer[i*channum + chan];//sort data to channels
+	        }
+	    }
+
+	    //filter data
+        if(fiftyHzFilterEnabled())
+        {
+            for(int chan = 0; chan < channum; chan++) {
+	            _devices.begin()->_50HzNotchFilters[chan].filterIntData(channels[chan].data(), samplesRead/channum);
+	        }
+        }
+        else if(sixtyHzFilterEnabled())
+        {
+            for(int chan = 0; chan < channum; chan++) {
+	            _devices.begin()->_60HzNotchFilters[chan].filterIntData(channels[chan].data(), samplesRead/channum);
+	        }
+        }
+
+	    //DC offset elimination
+	     for (int i = 0; i < samplesRead/channum; i++) {
+	        for(int chan = 0; chan < channum; chan++) {
+	            //if we are in first 10 seconds interval
+	            //add current sample to summ used to remove DC component
+	            if(_devices.begin()->dcBiasNum < _sampleRate*10) {
+	                _devices.begin()->dcBiasSum[chan] += 0;
+	                if(chan == 0)
+	                {
+	                    _devices.begin()->dcBiasNum++;
+	                }
+	            }
+	        }
+	    }
 
 
 		bool triggerd = false;
