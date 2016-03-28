@@ -55,6 +55,7 @@ namespace Colors {
 
 static const Color red(255, 0, 0);
 static const Color green(0, 255, 0);
+static const Color darkgreen(0, 128, 0);
 static const Color blue(0, 0, 255);
 static const Color white(255, 255, 255);
 static const Color black(0, 0, 0);

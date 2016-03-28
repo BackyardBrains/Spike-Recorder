@@ -11,6 +11,7 @@
 #include "widgets/ErrorBox.h"
 #include "widgets/Label.h"
 #include "widgets/ErrorBox.h"
+#include "widgets/RangeSelector.h"
 #include "DropDownList.h"
 #include "AudioView.h"
 #include "ColorDropDownList.h"
@@ -63,6 +64,33 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 		gvbox->addLayout(mutehbox);
 		gvbox->addSpacing(30);
 	}
+
+    //---------- High/Low pass filter --------------------------------------
+    if(!_manager.fileMode()) {
+
+        Widgets::BoxLayout *bandfhbox = new Widgets::BoxLayout(Widgets::Horizontal);
+		Widgets::Label *bandfLabel = new Widgets::Label(group);
+		bandfLabel->setText("Set band-pass filter:");
+		bandfLabel->updateSize();
+
+
+        Widgets::RangeSelector *rangeSelector = new Widgets::RangeSelector(group);
+        rangeSelector->setRange(0,_manager.sampleRate()/2);
+        rangeSelector->lowValueChanged.connect(this, &ConfigView::lowFilterValueChanged);
+        rangeSelector->highValueChanged.connect(this, &ConfigView::highFilterValueChanged);
+        rangeSelector->setHighValue(_manager.lowCornerFrequency());
+        rangeSelector->setLowValue(_manager.highCornerFrequency());
+
+       /* bandfhbox->addWidget(bandfLabel);
+		bandfhbox->addSpacing(10);
+		bandfhbox->addWidget(rangeSelector, Widgets::AlignVCenter);
+		bandfhbox->addSpacing(10);*/
+		gvbox->addWidget(bandfLabel);
+		gvbox->addSpacing(10);
+        gvbox->addWidget(rangeSelector);
+		gvbox->addSpacing(20);
+    }
+
 
 
     //----------- 50Hz/60Hz noise filter ------------------------------------
@@ -368,8 +396,6 @@ void ConfigView::paintEvent() {
 }
 
 
-
-
 #if defined(_WIN32)
 
         void ConfigView::hidConnectPressed()
@@ -508,6 +534,45 @@ void ConfigView::mutePressed() {
 		_manager.player().setVolume(0);
 	}
 }
+
+//
+// Band pass filtering value changed
+//
+void ConfigView::highFilterValueChanged(int hvalue)
+{
+    if(hvalue>=_manager.sampleRate()/2)
+    {
+
+        _manager.enableLowPassFilterWithCornerFreq(_manager.sampleRate()/2);
+        _manager.disableLowPassFilter();
+    }
+    else
+    {
+        _manager.enableLowPassFilterWithCornerFreq(hvalue);
+    }
+}
+
+
+//
+// Band pass filtering value changed
+//
+void ConfigView::lowFilterValueChanged(int lvalue)
+{
+
+     if(lvalue<=0)
+    {
+
+        _manager.enableHighPassFilterWithCornerFreq(0.0);
+         _manager.disableHighPassFilter();
+    }
+    else
+    {
+        _manager.enableHighPassFilterWithCornerFreq(lvalue);
+
+    }
+}
+
+
 
 //
 // Enable/disable 50Hz filter checkbox pressed

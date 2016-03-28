@@ -195,6 +195,10 @@ bool RecordingManager::initHIDUSB()
     BASS_ChannelGetInfo(stream, &info);
 
 
+	_lowPassFilterEnabled = false;
+	_highPassFilterEnabled = false;
+	_lowCornerFreq = frequency/2;
+	_highCornerFreq = 0;
 
     int bytespersample = info.origres/8;
 
@@ -427,6 +431,11 @@ bool RecordingManager::initSerial(const char *portName)
 
 
 
+	_lowPassFilterEnabled = false;
+	_highPassFilterEnabled = false;
+	_lowCornerFreq = frequency/2;
+	_highCornerFreq = 0;
+
     int bytespersample = info.origres/8;
    /* if(bytespersample == 0)
     {
@@ -530,6 +539,8 @@ bool RecordingManager::loadFile(const char *filename) {
 	_spikeTrains.clear();
 	closeSerial();
 	closeHid();
+    _lowPassFilterEnabled = false;
+	_highPassFilterEnabled = false;
 
 	HSTREAM stream = BASS_StreamCreateFile(false, filename, 0, 0, BASS_STREAM_DECODE);
 	if(stream == 0) {
@@ -606,6 +617,9 @@ void RecordingManager::initRecordingDevices() {
 	_serialMode = false;
 	_hidMode = false;
 
+	_lowPassFilterEnabled = false;
+	_highPassFilterEnabled = false;
+	setSampleRate(DEFAULT_SAMPLE_RATE);
 	int i;
 	for(i = 0; BASS_RecordGetDeviceInfo(i, &info); i++) {
 		_devices.push_back(Device(i,2,_sampleRate));
@@ -632,6 +646,9 @@ void RecordingManager::initRecordingDevices() {
 	_player.stop();
 	_player.start(_sampleRate);
 	setSampleRate(DEFAULT_SAMPLE_RATE);
+
+	_lowCornerFreq = _sampleRate/2;
+	_highCornerFreq = 0;
 //	devicesChanged.emit();
 	Log::msg("Found %d recording devices.", _virtualDevices.size());
 }
@@ -1010,6 +1027,20 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 	        }
         }
 
+         if(lowPassFilterEnabled())
+        {
+            for(int chan = 0; chan < channum; chan++) {
+	            _devices.begin()->_lowPassFilters[chan].filterIntData(channels[chan].data(), samplesRead);
+	        }
+        }
+
+         if(highPassFilterEnabled())
+        {
+            for(int chan = 0; chan < channum; chan++) {
+	            _devices.begin()->_highPassFilters[chan].filterIntData(channels[chan].data(), samplesRead);
+	        }
+        }
+
 	    //DC offset elimination
 	     for (int i = 0; i < samplesRead; i++) {
 	        for(int chan = 0; chan < channum; chan++) {
@@ -1179,6 +1210,20 @@ void RecordingManager::advanceHidMode(uint32_t samples)
         {
             for(int chan = 0; chan < channum; chan++) {
 	            _devices.begin()->_60HzNotchFilters[chan].filterIntData(channels[chan].data(), samplesRead);
+	        }
+        }
+
+         if(lowPassFilterEnabled())
+        {
+            for(int chan = 0; chan < channum; chan++) {
+	            _devices.begin()->_lowPassFilters[chan].filterIntData(channels[chan].data(), samplesRead);
+	        }
+        }
+
+         if(highPassFilterEnabled())
+        {
+            for(int chan = 0; chan < channum; chan++) {
+	            _devices.begin()->_highPassFilters[chan].filterIntData(channels[chan].data(), samplesRead);
 	        }
         }
 
@@ -1383,6 +1428,20 @@ void RecordingManager::advance(uint32_t samples) {
 	        }
         }
 
+        if(lowPassFilterEnabled())
+        {
+            for(int chan = 0; chan < channum; chan++) {
+	            _devices.begin()->_lowPassFilters[chan].filterIntData(channels[chan].data(), samplesRead/channum);
+	        }
+        }
+
+         if(highPassFilterEnabled())
+        {
+            for(int chan = 0; chan < channum; chan++) {
+	            _devices.begin()->_highPassFilters[chan].filterIntData(channels[chan].data(), samplesRead/channum);
+	        }
+        }
+
 	    //DC offset elimination
 	     for (int i = 0; i < samplesRead/channum; i++) {
 	        for(int chan = 0; chan < channum; chan++) {
@@ -1465,6 +1524,69 @@ void RecordingManager::advance(uint32_t samples) {
 
 }
 
+int RecordingManager::numberOfChannels()
+{
+    if(hidMode())
+    {
+        return _numOfHidChannels;
+    }
+    else if(serialMode())
+    {
+        return _arduinoSerial.numberOfChannels();
+    }
+    else if(fileMode())
+    {
+        return _devices[0].channels;
+    }
+    else
+    {
+        return _devices[0].channels;
+    }
+
+}
+
+
+void RecordingManager::enableLowPassFilterWithCornerFreq(float cornerFreq)
+{
+
+    if(cornerFreq<0)
+    {
+        cornerFreq = 0.0f;
+    }
+    if(cornerFreq>_sampleRate/2.0)
+    {
+        cornerFreq = _sampleRate/2.0;
+    }
+    _lowCornerFreq = cornerFreq;
+
+    for(int chan = 0; chan < numberOfChannels(); chan++)
+    {
+        _devices.begin()->_lowPassFilters[chan].setCornerFrequency(cornerFreq);
+    }
+
+    _lowPassFilterEnabled = true;
+}
+
+void RecordingManager::enableHighPassFilterWithCornerFreq(float cornerFreq)
+{
+    _highCornerFreq = cornerFreq;
+    if(cornerFreq<0)
+    {
+        cornerFreq = 0.0f;
+    }
+    if(cornerFreq>_sampleRate/2.0)
+    {
+        cornerFreq = _sampleRate/2.0;
+    }
+    _highCornerFreq = cornerFreq;
+
+     for(int chan = 0; chan < numberOfChannels(); chan++)
+    {
+        _devices.begin()->_highPassFilters[chan].setCornerFrequency(cornerFreq);
+    }
+    _highPassFilterEnabled = true;
+}
+
 bool RecordingManager::bindVirtualDevice(int vdevice) {
 	assert(vdevice >= 0 && vdevice < (int)_virtualDevices.size());
 	_virtualDevices[vdevice].bound = true;
@@ -1531,6 +1653,23 @@ RecordingManager::Device::Device(int index, int nchan, int &sampleRate)
             _60HzNotchFilters[i].initWithSamplingRate(sampleRate);
             _60HzNotchFilters[i].setCenterFrequency(60.0f);
             _60HzNotchFilters[i].setQ(1.0);
+    }
+
+
+    _lowPassFilters.resize(nchan);
+    for(int i=0;i<nchan;i++)
+    {
+            _lowPassFilters[i].initWithSamplingRate(sampleRate);
+            _lowPassFilters[i].setCornerFrequency(sampleRate/2.0);
+            _lowPassFilters[i].setQ(0.5f);
+    }
+
+    _highPassFilters.resize(nchan);
+    for(int i=0;i<nchan;i++)
+    {
+            _highPassFilters[i].initWithSamplingRate(sampleRate);
+            _highPassFilters[i].setCornerFrequency(0);
+            _highPassFilters[i].setQ(0.5f);
     }
 
 	dcBiasSum.resize(nchan);

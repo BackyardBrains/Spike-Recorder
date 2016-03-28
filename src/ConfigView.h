@@ -10,6 +10,10 @@
 
 namespace BackyardBrains {
 
+namespace Widgets {
+	class MouseEvent;
+}
+
 class RecordingManager;
 class AudioView;
 class ColorDropDownList;
@@ -73,12 +77,16 @@ private:
 
 
 	void paintEvent();
+
     void connectPressed();
 
 	void closePressed();
 	void mutePressed();
 	void fiftyHzPressed();
 	void sixtyHzPressed();
+    void highFilterValueChanged(int hvalue);
+    void lowFilterValueChanged(int lvalue);
+
 
 
 };

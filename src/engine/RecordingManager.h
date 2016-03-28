@@ -12,6 +12,8 @@
 #include "ArduinoSerial.h"
 #include "HIDUsbManager.h"
 #include "NotchFilter.h"
+#include "LowPassFilter.h"
+#include "HighPassFilter.h"
 
 #if defined(_WIN32)
     #include "FirmwareUpdater.h"
@@ -145,6 +147,17 @@ public:
     void disable60HzFilter(){_60HzFilterEnabled = false;}
     bool fiftyHzFilterEnabled() {return _50HzFilterEnabled;}
     bool sixtyHzFilterEnabled() {return _60HzFilterEnabled;}
+
+    bool lowPassFilterEnabled() {return _lowPassFilterEnabled;}
+    void enableLowPassFilterWithCornerFreq(float cornerFreq);
+    void disableLowPassFilter(){_lowPassFilterEnabled = false;}
+
+    bool highPassFilterEnabled() {return _highPassFilterEnabled;}
+    void enableHighPassFilterWithCornerFreq(float cornerFreq);
+    void disableHighPassFilter(){_highPassFilterEnabled = false;}
+    int highCornerFrequency(){return (int)_highCornerFreq;}
+    int lowCornerFrequency(){return (int)_lowCornerFreq;}
+
     std::string currentHIDFirmwareVersion() {return _hidUsbManager.firmwareVersion;}
 
 
@@ -191,6 +204,8 @@ private:
 
         std::vector<NotchFilter> _50HzNotchFilters;
         std::vector<NotchFilter> _60HzNotchFilters;
+        std::vector<LowPassFilter> _lowPassFilters;
+        std::vector<HighPassFilter> _highPassFilters;
 		std::vector<SampleBuffer> sampleBuffers;
 		std::vector<int64_t> dcBiasSum;
 
@@ -217,7 +232,11 @@ private:
 
     bool _50HzFilterEnabled;
     bool _60HzFilterEnabled;
-
+    bool _lowPassFilterEnabled;
+    bool _highPassFilterEnabled;
+    float _highCornerFreq;
+    float _lowCornerFreq;
+    int numberOfChannels();
 	int64_t currentPositionOfWaveform;
 
 	bool _fileMode;
