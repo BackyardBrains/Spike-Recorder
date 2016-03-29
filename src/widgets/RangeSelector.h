@@ -22,8 +22,8 @@ namespace Widgets  {
                 void setLowValue(int val);
                 int highValue() const;
                 void setHighValue(int val);
-                void updateLowValue(int val); // don't emit a signal
-                void updateHighValue(int val); // don't emit a signal
+                void updateLowLogValue(int val); // don't emit a signal
+                void updateHighLogValue(int val); // don't emit a signal
 
                 sigslot::signal1<int> lowValueChanged;
                 sigslot::signal1<int> highValueChanged;

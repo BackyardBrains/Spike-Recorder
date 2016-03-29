@@ -21,7 +21,7 @@ RangeSelector::RangeSelector(Widget *parent) : Widget(parent)
 
     setSizePolicy(SizePolicy(SizePolicy::Expanding, SizePolicy::Fixed));
 
-    setSizeHint(Size(SLIDER_MIN_SIZE, 3*Y_OFFSET));
+    setSizeHint(Size(SLIDER_MIN_SIZE, 4*Y_OFFSET));
 }
 
 RangeSelector::~RangeSelector()
@@ -101,8 +101,14 @@ void RangeSelector::setLowValue(int val)
         setHighValue(_lowValue);
     }
 
+    int lowLogFreqValue = (int)pow(10,(((double)lowValue())/((double)_maximum)*log10((double)_maximum)));
+	if(_lowValue==0)
+    {
+        lowLogFreqValue = 0;
+    }
+
 	if (_lowValue != oldValue)
-		lowValueChanged.emit(_lowValue);
+		lowValueChanged.emit(lowLogFreqValue);
 }
 
 int RangeSelector::highValue() const
@@ -121,12 +127,20 @@ void RangeSelector::setHighValue(int val)
         setLowValue(_highValue);
     }
 
+
+    int highLogFreqValue = (int)pow(10,(((double)highValue())/((double)_maximum)*log10((double)_maximum)));
+	if(_highValue==0)
+    {
+        highLogFreqValue = 0;
+    }
+
 	if (_highValue != oldValue)
-		highValueChanged.emit(_highValue);
+		highValueChanged.emit(highLogFreqValue);
 }
 
-void RangeSelector::updateLowValue(int val) // don't emit a signal
+void RangeSelector::updateLowLogValue(int val) // don't emit a signal
 {
+    val = _maximum*(log10((double)val)/log10((double)_maximum)) +1;
     _lowValue = std::max(_minimum, std::min(val, _maximum));
 
 	//if we want to move low value over high value push high value
@@ -136,8 +150,11 @@ void RangeSelector::updateLowValue(int val) // don't emit a signal
     }
 }
 
-void RangeSelector::updateHighValue(int val) // don't emit a signal
+void RangeSelector::updateHighLogValue(int val) // don't emit a signal
 {
+
+    val = _maximum*(log10((double)val)/log10((double)_maximum)) +1;
+
     _highValue = std::max(_minimum, std::min(val, _maximum));
 
 	//if we want to move high value below low value push low value
@@ -152,25 +169,75 @@ void RangeSelector::paintEvent()
     if(width() == 0 && height() == 0)
 		return;
 
-	std::stringstream s;
-	 s <<""<< lowValue()<<" Hz";
-    //Widgets::Painter::setColor(bg);
-    // drawtextbgbox(s.str(), 35, y-20, Widgets::AlignLeft);
+    std::stringstream titles;
+	 titles <<"Set band-pass filter cutoff frequencies";
     Widgets::Painter::setColor(Widgets::Colors::white);
-    Widgets::Application::font()->draw(s.str().c_str(),_ValueToSliderOffset(_lowValue), 0, AlignHCenter);
+    Widgets::Application::font()->draw(titles.str().c_str(),width()/2, 0, AlignHCenter);
+
+	std::stringstream s;
+	int lowLogFreqValue = (int)pow(10,(((double)lowValue())/((double)_maximum)*log10((double)_maximum)));
+	if(_lowValue==0)
+    {
+        lowLogFreqValue = 0;
+    }
+	 s <<"Low: "<< lowLogFreqValue<<"Hz";
+    //Widgets::Painter::setColor(bg);
+    //drawtextbgbox(s.str(), 35, y-20, Widgets::AlignLeft);
+    Widgets::Painter::setColor(Widgets::Colors::white);
+    Widgets::Application::font()->draw(s.str().c_str(),width()/2-100, Y_OFFSET, AlignHCenter);
 
     std::stringstream s1;
-    s1 <<""<< highValue()<<" Hz";
+    int highLogFreqValue = (int)pow(10,(((double)highValue())/((double)_maximum)*log10((double)_maximum)));
+	if(_highValue==0)
+    {
+        highLogFreqValue = 0;
+    }
+    s1 <<" High: "<<highLogFreqValue<<"Hz";
     //Widgets::Painter::setColor(bg);
     // drawtextbgbox(s.str(), 35, y-20, Widgets::AlignLeft);
     Widgets::Painter::setColor(Widgets::Colors::white);
-    Widgets::Application::font()->draw(s1.str().c_str(),_ValueToSliderOffset(_highValue), 2*Y_OFFSET+4, AlignHCenter);
+    Widgets::Application::font()->draw(s1.str().c_str(),width()/2+100, Y_OFFSET, AlignHCenter);
+
+    //----- draw log10 scale --------------
+    double maximumOnLogScale = log10((double)_maximum);
+    for(int i=0;i<((int)maximumOnLogScale)+1;i++)
+    {
+        for(int k=1;k<10;k++)
+        {
+            double exponent = 10^i;
+            double frequencyMark = k*pow(10,i);
+
+            int positionInPixels = width()*(log10(frequencyMark)/maximumOnLogScale);
+            if(positionInPixels>width())
+            {
+                break;
+            }
+            if(k==1)
+            {
+                std::stringstream scaleMarkFreq;
+                //scaleMarkFreq <<""<< frequencyMark<<"";
+                if(k==1 && i==0)
+                {
+                    scaleMarkFreq <<""<< 0<<"";
+                }
+                else
+                {
+                    scaleMarkFreq <<""<< frequencyMark<<"";
+                }
+                Widgets::Painter::setColor(Widgets::Colors::white);
+                Widgets::Application::font()->draw(scaleMarkFreq.str().c_str(),positionInPixels, 3*Y_OFFSET+6, AlignHCenter);
+            }
+            const Rect markRect = Rect(positionInPixels,3*Y_OFFSET, 1,4);
+            Painter::setColor(Colors::white);
+            Painter::drawRect(markRect);
+        }
+    }
 
     const Rect gutRect = _GutterRect();
 	Painter::setColor(Colors::widgetbg);
 	Painter::drawRect(gutRect);
 
-	const Rect gutGreenRect = Rect(_ValueToSliderOffset(_lowValue), Y_OFFSET, _ValueToSliderOffset(_highValue)-_ValueToSliderOffset(_lowValue), Y_OFFSET);
+	const Rect gutGreenRect = Rect(_ValueToSliderOffset(_lowValue), 2*Y_OFFSET, _ValueToSliderOffset(_highValue)-_ValueToSliderOffset(_lowValue), Y_OFFSET);
 	Painter::setColor(Colors::darkgreen);
 	Painter::drawRect(gutGreenRect);
 
@@ -213,7 +280,7 @@ if (event->buttons() == LeftButton)
 		{
 			case CLICKED_HIGH_SLIDER:
 			{
-			    //std::cout<<"Coef: "<<(1-(abs(event->pos().y-Y_OFFSET)/400.0))<<"\n";
+			    //std::cout<<"Coef: "<<(1-(abs(event->pos().y-2*Y_OFFSET)/400.0))<<"\n";
 				const int newSliderOffset = (event->pos().x - _highSliderClickedPixelOffset);
 				const int scrollRange = std::max(0, _GutterLength() - _SliderLength()); // TODO is the +1 right?
 				_highDraggingSliderOffset = std::max(0, std::min(scrollRange, newSliderOffset)); // TODO is the -1 right?
@@ -264,7 +331,7 @@ int RangeSelector::_SliderLength() const
 
 Rect RangeSelector::_GutterRect() const
 {
-    return   Rect(0, Y_OFFSET, width(), Y_OFFSET);
+    return   Rect(0, 2*Y_OFFSET, width(), Y_OFFSET);
 }
 
 Rect RangeSelector::_HighSliderRect() const
@@ -272,7 +339,7 @@ Rect RangeSelector::_HighSliderRect() const
     const int sliderLength = _SliderLength();
 	const int sliderOffset = _ValueToSliderOffset(_highValue);
 
-    return Rect(sliderOffset, Y_OFFSET, sliderLength, Y_OFFSET);
+    return Rect(sliderOffset, 2*Y_OFFSET, sliderLength, Y_OFFSET);
 }
 
 Rect RangeSelector::_LowSliderRect() const
@@ -280,7 +347,7 @@ Rect RangeSelector::_LowSliderRect() const
     const int sliderLength = _SliderLength();
 	const int sliderOffset = _ValueToSliderOffset(_lowValue);
 
-    return Rect(sliderOffset, Y_OFFSET, sliderLength, Y_OFFSET);
+    return Rect(sliderOffset, 2*Y_OFFSET, sliderLength, Y_OFFSET);
 }
 
 int RangeSelector::_ValueToSliderOffset(int val) const

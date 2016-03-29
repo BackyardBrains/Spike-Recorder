@@ -68,25 +68,25 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
     //---------- High/Low pass filter --------------------------------------
     if(!_manager.fileMode()) {
 
-        Widgets::BoxLayout *bandfhbox = new Widgets::BoxLayout(Widgets::Horizontal);
+        /*Widgets::BoxLayout *bandfhbox = new Widgets::BoxLayout(Widgets::Horizontal);
 		Widgets::Label *bandfLabel = new Widgets::Label(group);
 		bandfLabel->setText("Set band-pass filter:");
 		bandfLabel->updateSize();
-
+*/
 
         Widgets::RangeSelector *rangeSelector = new Widgets::RangeSelector(group);
         rangeSelector->setRange(0,_manager.sampleRate()/2);
         rangeSelector->lowValueChanged.connect(this, &ConfigView::lowFilterValueChanged);
         rangeSelector->highValueChanged.connect(this, &ConfigView::highFilterValueChanged);
-        rangeSelector->setHighValue(_manager.lowCornerFrequency());
-        rangeSelector->setLowValue(_manager.highCornerFrequency());
+        rangeSelector->updateHighLogValue(_manager.lowCornerFrequency());
+        rangeSelector->updateLowLogValue(_manager.highCornerFrequency());
 
        /* bandfhbox->addWidget(bandfLabel);
 		bandfhbox->addSpacing(10);
 		bandfhbox->addWidget(rangeSelector, Widgets::AlignVCenter);
 		bandfhbox->addSpacing(10);*/
-		gvbox->addWidget(bandfLabel);
-		gvbox->addSpacing(10);
+		//gvbox->addWidget(bandfLabel);
+		//gvbox->addSpacing(10);
         gvbox->addWidget(rangeSelector);
 		gvbox->addSpacing(20);
     }
@@ -100,7 +100,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 		Widgets::BoxLayout *filterhbox = new Widgets::BoxLayout(Widgets::Horizontal);
 
 		Widgets::Label *filterLabel = new Widgets::Label(group);
-		filterLabel->setText("Enable filter:");
+		filterLabel->setText("Enable Notch filter:");
 		filterLabel->updateSize();
 
 		Widgets::Label *fiftyHzLabel = new Widgets::Label(group);
