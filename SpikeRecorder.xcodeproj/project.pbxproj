@@ -33,6 +33,11 @@
 		2421F0991ACFDE0300927F19 /* AnalysisTrainList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2421F0971ACFDE0300927F19 /* AnalysisTrainList.cpp */; };
 		2421F09C1ACFDF5100927F19 /* Plot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2421F09A1ACFDF5100927F19 /* Plot.cpp */; };
 		2421F09F1ACFDF7B00927F19 /* TabBar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2421F09D1ACFDF7B00927F19 /* TabBar.cpp */; };
+		245BF6FA1CAAA024004BEA8C /* FilterBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 245BF6F21CAAA024004BEA8C /* FilterBase.cpp */; };
+		245BF6FB1CAAA024004BEA8C /* HighPassFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 245BF6F41CAAA024004BEA8C /* HighPassFilter.cpp */; };
+		245BF6FC1CAAA024004BEA8C /* LowPassFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 245BF6F61CAAA024004BEA8C /* LowPassFilter.cpp */; };
+		245BF6FD1CAAA024004BEA8C /* NotchFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 245BF6F81CAAA024004BEA8C /* NotchFilter.cpp */; };
+		245BF7001CAAA06E004BEA8C /* RangeSelector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 245BF6FE1CAAA06E004BEA8C /* RangeSelector.cpp */; };
 		247FF9311C919F12004DF81C /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 247FF9301C919F12004DF81C /* SDL2_image.framework */; };
 		247FF9321C919F21004DF81C /* SDL2_image.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 247FF9301C919F12004DF81C /* SDL2_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		247FF9331C919F24004DF81C /* SDL2_image.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 247FF9301C919F12004DF81C /* SDL2_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -202,6 +207,16 @@
 		2421F09B1ACFDF5100927F19 /* Plot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Plot.h; sourceTree = "<group>"; };
 		2421F09D1ACFDF7B00927F19 /* TabBar.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TabBar.cpp; path = src/widgets/TabBar.cpp; sourceTree = SOURCE_ROOT; };
 		2421F09E1ACFDF7B00927F19 /* TabBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TabBar.h; path = src/widgets/TabBar.h; sourceTree = SOURCE_ROOT; };
+		245BF6F21CAAA024004BEA8C /* FilterBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FilterBase.cpp; sourceTree = "<group>"; };
+		245BF6F31CAAA024004BEA8C /* FilterBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FilterBase.h; sourceTree = "<group>"; };
+		245BF6F41CAAA024004BEA8C /* HighPassFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HighPassFilter.cpp; sourceTree = "<group>"; };
+		245BF6F51CAAA024004BEA8C /* HighPassFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HighPassFilter.h; sourceTree = "<group>"; };
+		245BF6F61CAAA024004BEA8C /* LowPassFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LowPassFilter.cpp; sourceTree = "<group>"; };
+		245BF6F71CAAA024004BEA8C /* LowPassFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LowPassFilter.h; sourceTree = "<group>"; };
+		245BF6F81CAAA024004BEA8C /* NotchFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NotchFilter.cpp; sourceTree = "<group>"; };
+		245BF6F91CAAA024004BEA8C /* NotchFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotchFilter.h; sourceTree = "<group>"; };
+		245BF6FE1CAAA06E004BEA8C /* RangeSelector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RangeSelector.cpp; sourceTree = "<group>"; };
+		245BF6FF1CAAA06E004BEA8C /* RangeSelector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RangeSelector.h; sourceTree = "<group>"; };
 		247FF9301C919F12004DF81C /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2_image.framework; sourceTree = "<group>"; };
 		248646401AB1FBAD003852AA /* Log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Log.cpp; path = src/Log.cpp; sourceTree = SOURCE_ROOT; };
 		248646411AB1FBAD003852AA /* Log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Log.h; path = src/Log.h; sourceTree = SOURCE_ROOT; };
@@ -484,6 +499,14 @@
 		248E589A1AAE19570011707F /* engine */ = {
 			isa = PBXGroup;
 			children = (
+				245BF6F21CAAA024004BEA8C /* FilterBase.cpp */,
+				245BF6F31CAAA024004BEA8C /* FilterBase.h */,
+				245BF6F41CAAA024004BEA8C /* HighPassFilter.cpp */,
+				245BF6F51CAAA024004BEA8C /* HighPassFilter.h */,
+				245BF6F61CAAA024004BEA8C /* LowPassFilter.cpp */,
+				245BF6F71CAAA024004BEA8C /* LowPassFilter.h */,
+				245BF6F81CAAA024004BEA8C /* NotchFilter.cpp */,
+				245BF6F91CAAA024004BEA8C /* NotchFilter.h */,
 				24D572A21C8772E5007F4DEB /* EkgBackend.cpp */,
 				24D572A31C8772E5007F4DEB /* EkgBackend.h */,
 				24D5729F1C8772BD007F4DEB /* AnalysisManager.cpp */,
@@ -527,6 +550,8 @@
 		248E58B41AAE19570011707F /* widgets */ = {
 			isa = PBXGroup;
 			children = (
+				245BF6FE1CAAA06E004BEA8C /* RangeSelector.cpp */,
+				245BF6FF1CAAA06E004BEA8C /* RangeSelector.h */,
 				248E58B51AAE19570011707F /* Application.cpp */,
 				248E58B61AAE19570011707F /* Application.h */,
 				248E58B71AAE19570011707F /* BitmapFontGL.cpp */,
@@ -735,8 +760,10 @@
 				248E58FC1AAE19570011707F /* LoadTexture.cpp in Sources */,
 				248E58E61AAE19570011707F /* ConfigView.cpp in Sources */,
 				2421F09C1ACFDF5100927F19 /* Plot.cpp in Sources */,
+				245BF6FB1CAAA024004BEA8C /* HighPassFilter.cpp in Sources */,
 				248BA1F51B3E42AD00EEB5E4 /* ThresholdPanel.cpp in Sources */,
 				248E58FE1AAE19570011707F /* FileDialogMac.cpp in Sources */,
+				245BF6FC1CAAA024004BEA8C /* LowPassFilter.cpp in Sources */,
 				248E58E71AAE19570011707F /* FFTBackend.cpp in Sources */,
 				2421F0991ACFDE0300927F19 /* AnalysisTrainList.cpp in Sources */,
 				24D572A11C8772BD007F4DEB /* AnalysisManager.cpp in Sources */,
@@ -753,14 +780,17 @@
 				248E59011AAE19570011707F /* Painter.cpp in Sources */,
 				248E58EF1AAE19570011707F /* MainView.cpp in Sources */,
 				248E58F91AAE19570011707F /* ErrorBox.cpp in Sources */,
+				245BF7001CAAA06E004BEA8C /* RangeSelector.cpp in Sources */,
 				248E58EB1AAE19570011707F /* SpikeSorter.cpp in Sources */,
 				24F40AB81ACEAD1600B3CCE1 /* hid.c in Sources */,
 				2421F08F1ACFDDBD00927F19 /* FileReadUtil.cpp in Sources */,
 				248E58ED1AAE19570011707F /* Game.cpp in Sources */,
 				2421F0931ACFDDDA00927F19 /* BASSErrors.cpp in Sources */,
 				24079FAC1AB1D1F500820291 /* DropDownList.cpp in Sources */,
+				245BF6FD1CAAA024004BEA8C /* NotchFilter.cpp in Sources */,
 				248646421AB1FBAD003852AA /* Log.cpp in Sources */,
 				248E58F41AAE19570011707F /* Application.cpp in Sources */,
+				245BF6FA1CAAA024004BEA8C /* FilterBase.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
