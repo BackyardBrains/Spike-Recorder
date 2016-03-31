@@ -12,12 +12,14 @@
 #include "widgets/Label.h"
 #include "widgets/ErrorBox.h"
 #include "widgets/RangeSelector.h"
+#include "widgets/TextInput.h"
 #include "DropDownList.h"
 #include "AudioView.h"
 #include "ColorDropDownList.h"
 #include "Log.h"
 #include <bass.h>
 #include <sstream>
+
 
 namespace BackyardBrains {
 
@@ -68,12 +70,8 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
     //---------- High/Low pass filter --------------------------------------
     if(!_manager.fileMode()) {
 
-        /*Widgets::BoxLayout *bandfhbox = new Widgets::BoxLayout(Widgets::Horizontal);
-		Widgets::Label *bandfLabel = new Widgets::Label(group);
-		bandfLabel->setText("Set band-pass filter:");
-		bandfLabel->updateSize();
-*/
-
+        Widgets::TextInput * textInput1 = new Widgets::TextInput(group);
+        Widgets::TextInput * textInput2 = new Widgets::TextInput(group);
         Widgets::RangeSelector *rangeSelector = new Widgets::RangeSelector(group);
         rangeSelector->setRange(0,_manager.sampleRate()/2);
         rangeSelector->lowValueChanged.connect(this, &ConfigView::lowFilterValueChanged);
@@ -85,11 +83,14 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 		bandfhbox->addSpacing(10);
 		bandfhbox->addWidget(rangeSelector, Widgets::AlignVCenter);
 		bandfhbox->addSpacing(10);*/
-		//gvbox->addWidget(bandfLabel);
-		//gvbox->addSpacing(10);
+        gvbox->addWidget(textInput1);
+		gvbox->addSpacing(10);
+		gvbox->addWidget(textInput2);
+		gvbox->addSpacing(10);
         gvbox->addWidget(rangeSelector);
 		gvbox->addSpacing(20);
     }
+
 
 
 

@@ -18,6 +18,8 @@
 #include "Event.h"
 #include "SizePolicy.h"
 
+#include <SDL.h>
+
 
 namespace BackyardBrains {
 
@@ -75,6 +77,11 @@ public:
 	void setMouseTracking(bool enable);
 	bool hasMouseTracking() const;
 
+
+    bool canReceiveFocus();
+    bool hasFocus();
+    void setFocus(bool focusState);
+
 	void setDeleteOnClose(bool d);
 	bool getDeleteOnClose() const;
 
@@ -85,6 +92,9 @@ public:
 	virtual void enterEvent();
 	virtual void leaveEvent();
 	virtual void keyPressEvent(KeyboardEvent *event);
+	virtual void keyDownEvent(const SDL_Event &event);
+	virtual void textInputEvent(const SDL_Event &event);
+	virtual void textEditingEvent(const SDL_Event &event);
 	virtual void keyReleaseEvent(KeyboardEvent *event);
 	virtual void mousePressEvent(MouseEvent *event);
 	virtual void mouseReleaseEvent(MouseEvent *event);
@@ -93,6 +103,10 @@ public:
 	void _DoPaintEvents(const Point &offset, const Rect &clipRect);
 	void _CallAdvance();
     void _DoGlResetEvents();
+protected:
+	bool _hasFocus;
+    void enableFocus();
+    void disableFocus();
 private:
 	Widget *_parentWidget;
 	Layout * _layout;
@@ -100,6 +114,9 @@ private:
 	Rect _rect;
 	SizePolicy _sizePolicy;
 	Size _sizeHint;
+	bool _enableFocus;
+
+
 	struct WidgetState
 	{
 		WidgetState() {memset(this, 0, sizeof(*this)); deleteOnClose = true;}

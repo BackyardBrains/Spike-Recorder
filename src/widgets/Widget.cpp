@@ -15,6 +15,8 @@ namespace Widgets {
 
 Widget::Widget(Widget *parent) : _parentWidget(parent), _layout(NULL) {
 	setParentWidget(parent);
+	_enableFocus = false;
+	_hasFocus = false;
 }
 
 Widget::~Widget() {
@@ -26,6 +28,8 @@ Widget::~Widget() {
 		if (it != parentWidget()->_children.rend())
 			parentWidget()->_children.erase(parentWidget()->_children.begin() + (&(*it) - parentWidget()->_children.data())); // TODO simplify this conversion from reverse_iterator to iterator
 	}
+
+
 
 	Application *app = Application::getInstance();
 	if(app->hoverWidget() == this)
@@ -70,7 +74,7 @@ void Widget::setLayout(Layout *newLayout) {
 void Widget::setGeometry(const Rect &newRect) {
 	const Size oldSize = _rect.size();
 	_rect = newRect;
-	
+
 	if (_layout)
 		_layout->setGeometry(newRect.translated(-geometry().topLeft()));
 	const Size newSize = _rect.size();
@@ -103,6 +107,18 @@ void Widget::move(const Point &newPoint) {
 void Widget::setSize(const Size &newSize) {
 	setGeometry(Rect(geometry().topLeft(), newSize));
 }
+
+
+void Widget::enableFocus()
+{
+    _enableFocus = true;
+}
+
+void Widget::disableFocus()
+{
+    _enableFocus = false;
+}
+
 
 Size Widget::size() const {
 	return Size(width(), height());
@@ -172,15 +188,15 @@ void Widget::_DoPaintEvents(const Point &offset, const Rect &clipRect) {
 
 }
 
-    
+
 void Widget::_DoGlResetEvents() {
         glResetEvent();
         for(WidgetVector::iterator it = _children.begin(); it != _children.end(); ++it)
                 (*it)->_DoGlResetEvents();
 }
 
-    
-    
+
+
 Point Widget::mapToParent(const Point &point) const {
 	Point result = point;
 	if (parentWidget())
@@ -232,6 +248,25 @@ bool Widget::hasMouseTracking() const {
 	return _state.mouseTracking;
 }
 
+
+bool Widget::canReceiveFocus()
+{
+    return _enableFocus;
+}
+
+bool Widget::hasFocus()
+{
+    return _hasFocus;
+}
+
+void Widget::setFocus(bool focusState)
+{
+    if(canReceiveFocus())
+    {
+        _hasFocus = focusState;
+    }
+}
+
 void Widget::setDeleteOnClose(bool d) {
 	_state.deleteOnClose = d;
 }
@@ -249,7 +284,7 @@ void Widget::resizeEvent(ResizeEvent *event) {
 void Widget::glResetEvent() {
 
 }
-    
+
 void Widget::paintEvent() {
 }
 
@@ -262,6 +297,12 @@ void Widget::leaveEvent() {
 void Widget::mousePressEvent(MouseEvent *event) {
 }
 
+void Widget::textInputEvent(const SDL_Event &event){
+}
+
+void Widget::textEditingEvent(const SDL_Event &event){
+}
+
 void Widget::mouseReleaseEvent(MouseEvent *event) {
 }
 
@@ -272,6 +313,9 @@ void Widget::keyPressEvent(KeyboardEvent *event) {
 }
 
 void Widget::keyReleaseEvent(KeyboardEvent *event) {
+}
+
+void Widget::keyDownEvent(const  SDL_Event &event){
 }
 
 Widget::WidgetVector &Widget::children() {

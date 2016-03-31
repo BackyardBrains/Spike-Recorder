@@ -51,6 +51,7 @@ private:
 	Widget *_mouseGrabber;
 	Widget *_keyboardGrabber;
 	Widget *_hoverWidget;
+	Widget *_widgetInFocus;
 	MouseButtons _buttonState;
 	WidgetList _windowStack;
 	WidgetList _popupStack;
@@ -60,7 +61,7 @@ private:
 	virtual void advance();
 	virtual void keyPressEvent(KeyboardEvent *event);
 	virtual void keyReleaseEvent(KeyboardEvent *event);
-	
+
 	void _HandleEvent(const void *eventRaw);
 	Widget * _GetWidgetAt(const Point &point) const;
 

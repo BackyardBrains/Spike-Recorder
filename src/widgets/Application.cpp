@@ -94,6 +94,7 @@ void Application::run() {
 	_running = true;
 	Point oldPos;
 	_buttonState = ToMouseButtonsFromSDL(SDL_GetMouseState(&oldPos.x, &oldPos.y));
+	SDL_StartTextInput();
 	while (_running && !_windowStack.empty()) {
 
 		// Delete closed windows/popups
@@ -175,7 +176,7 @@ KeyModifiers sdl_keymod_to_keymod(unsigned short mod) {
 
 void Application::_HandleEvent(const void *eventRaw) {
 	const SDL_Event &event = *reinterpret_cast<const SDL_Event*>(eventRaw);
-	
+
 	if (event.type == SDL_MOUSEMOTION || event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP || event.type == SDL_MOUSEWHEEL) {
 		// update our internal button state tracking
 		if (event.type == SDL_MOUSEMOTION)
@@ -193,7 +194,7 @@ void Application::_HandleEvent(const void *eventRaw) {
 
 		// TODO generate events if the event.motion.state magically changed things
 		// TODO keep track of the keyboard modifiers state
-		
+
 		int x, y;
 		SDL_GetMouseState(&x,&y);
 
@@ -263,7 +264,7 @@ void Application::_HandleEvent(const void *eventRaw) {
 				else
 					button = WheelDownButton;
 			}
-			
+
 			MouseEvent mouseEvent(button, _buttonState, newPos - origin, oldPos - origin);
 
 			if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEWHEEL) {
@@ -273,7 +274,27 @@ void Application::_HandleEvent(const void *eventRaw) {
 				else if (_hoverWidget) {
 					_hoverWidget->mousePressEvent(&mouseEvent);
 					if (mouseEvent.isAccepted() && event.type != SDL_MOUSEWHEEL)
+                    {
 						_mouseGrabber = _hoverWidget;
+                    }
+
+                        //set focus on widgets that can accept focus
+                        if(!_hoverWidget->hasFocus())
+                        {
+                            if(_widgetInFocus!=NULL)
+                            {
+                                _widgetInFocus->setFocus(false);
+                            }
+                            if(_hoverWidget->canReceiveFocus())
+                            {
+                                _widgetInFocus = _hoverWidget;
+                                _widgetInFocus->setFocus(true);
+                            }
+                            else
+                            {
+                                _widgetInFocus = NULL;
+                            }
+                        }
 				}
 			}
 			else if (event.type == SDL_MOUSEBUTTONUP) {
@@ -297,7 +318,22 @@ void Application::_HandleEvent(const void *eventRaw) {
 					_hoverWidget->mouseMotionEvent(&mouseEvent);
 			}
 		}
-	} else if (event.type == SDL_KEYDOWN) {
+	}
+	else if(event.type ==SDL_TEXTINPUT)
+	{
+        if(_widgetInFocus!=NULL)
+        {
+            _widgetInFocus->textInputEvent(event);
+        }
+	}
+	else if(event.type ==SDL_TEXTEDITING)
+	{
+        if(_widgetInFocus!=NULL)
+        {
+            _widgetInFocus->textEditingEvent(event);
+        }
+	}
+	else if (event.type == SDL_KEYDOWN) {
 		const SDL_KeyboardEvent &kevent = *reinterpret_cast<const SDL_KeyboardEvent*>(&event);
 		if(kevent.keysym.sym == SDLK_q && kevent.keysym.mod | KMOD_CTRL)
 			_running = false;
@@ -308,6 +344,7 @@ void Application::_HandleEvent(const void *eventRaw) {
 			} else if(_hoverWidget) {
 				for(Widget *w = _hoverWidget; w != NULL; w = w->parentWidget()) {
 					w->keyPressEvent(&e);
+					w->keyDownEvent(event);
 					if(e.isAccepted()) {
 						_keyboardGrabber = w;
 						break;
@@ -338,7 +375,7 @@ void Application::_HandleEvent(const void *eventRaw) {
 			int w, h;
 			SDL_GetWindowSize(sdlWindow,&w,&h);
 			glViewport(0, 0, w, h);
-			
+
 			for(WidgetList::iterator it = _windowStack.begin(); it != _windowStack.end(); it++) {
 				(*it)->setSize(Size(std::max(MIN_WINDOW_W,w), std::max(MIN_WINDOW_H,h)));
 				(*it)->_DoGlResetEvents();
