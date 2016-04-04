@@ -68,7 +68,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 	}
 
     //---------- High/Low pass filter --------------------------------------
-    if(!_manager.fileMode()) {
+   /* if(!_manager.fileMode()) {
 
         Widgets::TextInput * textInput1 = new Widgets::TextInput(group);
         Widgets::TextInput * textInput2 = new Widgets::TextInput(group);
@@ -79,10 +79,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
         rangeSelector->updateHighLogValue(_manager.lowCornerFrequency());
         rangeSelector->updateLowLogValue(_manager.highCornerFrequency());
 
-       /* bandfhbox->addWidget(bandfLabel);
-		bandfhbox->addSpacing(10);
-		bandfhbox->addWidget(rangeSelector, Widgets::AlignVCenter);
-		bandfhbox->addSpacing(10);*/
+
         gvbox->addWidget(textInput1);
 		gvbox->addSpacing(10);
 		gvbox->addWidget(textInput2);
@@ -90,7 +87,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
         gvbox->addWidget(rangeSelector);
 		gvbox->addSpacing(20);
     }
-
+*/
 
 
 
