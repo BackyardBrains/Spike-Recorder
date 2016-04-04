@@ -17,6 +17,10 @@ OBJECTS = \
 	src/engine/FFTBackend.o \
 	src/engine/HIDUsbManager.o \
 	src/engine/EkgBackend.o \
+	src/engine/FilterBase.o \
+	src/engine/HighPassFilter.o \
+	src/engine/LowPassFilter.o \
+	src/engine/NotchFilter.o \
 	src/widgets/LayoutItem.o \
 	src/widgets/BoxLayout.o \
 	src/widgets/Widget.o \
@@ -30,6 +34,8 @@ OBJECTS = \
 	src/widgets/LoadTexture.o \
 	src/widgets/Label.o \
 	src/widgets/ErrorBox.o \
+	src/widgets/TextInput.o \
+	src/widgets/RangeSelector.o \
 	src/widgets/SwitchLayout.o \
 	src/widgets/ToolTip.o \
 	src/widgets/Plot.o \
