@@ -13,6 +13,8 @@
 #include <cassert>
 
 #include <SDL.h>
+
+#define FFT_POWER_BASE_LEVEL_FFT 8e-7
 namespace BackyardBrains {
 
 static void val2hue(uint8_t *p, double val) {
@@ -67,7 +69,7 @@ FFTView::FFTView(AudioView &av, RecordingManager &manager, AnalysisManager &anam
 	setSizePolicy(Widgets::SizePolicy(Widgets::SizePolicy::Expanding, Widgets::SizePolicy::Fixed));
 
 	_ffttex = 0;
-	
+
 	// prefill buffer with blue
 	for(int f = 0; f < FFTBackend::FFTFRES; f++) {
 		for(int t = 0; t < FFTBackend::FFTTRES; t++) {
@@ -117,7 +119,7 @@ void FFTView::drawDataRect() const {
 	int xoff = AudioView::DATA_XOFF;
 	int w = _av.screenWidth();
 
-	Widgets::Rect r(xoff,0, 
+	Widgets::Rect r(xoff,0,
 			w*FFTBackend::FFTTRES/(float)_anaman.fft.viewwidth(),height());
 
 	glTranslatef(texoff,0,0);
@@ -173,7 +175,7 @@ void FFTView::glResetEvent() {
     init_texture(_ffttex);
     _anaman.fft.force();
 }
-    
+
 void FFTView::advance() {
 	int t = SDL_GetTicks()-_startTime;
 	if((t > 0 && t < 1300) || sizeHint().h > 0) {
@@ -196,7 +198,7 @@ void FFTView::advance() {
 	_anaman.fft.request(opos,len);
 	for(int f = 0; f < FFTBackend::FFTFRES; f++) {
 		for(int t = 0; t < FFTBackend::FFTTRES; t++) {
-			float val = tanh(2e-5*_anaman.fft.fftcache()[t][f]);
+			float val = tanh(FFT_POWER_BASE_LEVEL_FFT*_anaman.fft.fftcache()[t][f]);
 			val2hue((uint8_t *)&_fftviewbuffer[f][t],val);
 		}
 	}

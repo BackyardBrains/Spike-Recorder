@@ -68,10 +68,10 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 	}
 
     //---------- High/Low pass filter --------------------------------------
-   /* if(!_manager.fileMode()) {
+    if(!_manager.fileMode()) {
 
-        Widgets::TextInput * textInput1 = new Widgets::TextInput(group);
-        Widgets::TextInput * textInput2 = new Widgets::TextInput(group);
+       // Widgets::TextInput * textInput1 = new Widgets::TextInput(group);
+       // Widgets::TextInput * textInput2 = new Widgets::TextInput(group);
         Widgets::RangeSelector *rangeSelector = new Widgets::RangeSelector(group);
         rangeSelector->setRange(0,_manager.sampleRate()/2);
         rangeSelector->lowValueChanged.connect(this, &ConfigView::lowFilterValueChanged);
@@ -80,14 +80,14 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
         rangeSelector->updateLowLogValue(_manager.highCornerFrequency());
 
 
-        gvbox->addWidget(textInput1);
-		gvbox->addSpacing(10);
-		gvbox->addWidget(textInput2);
-		gvbox->addSpacing(10);
+       // gvbox->addWidget(textInput1);
+		//gvbox->addSpacing(10);
+		//gvbox->addWidget(textInput2);
+		//gvbox->addSpacing(10);
         gvbox->addWidget(rangeSelector);
 		gvbox->addSpacing(20);
     }
-*/
+
 
 
 

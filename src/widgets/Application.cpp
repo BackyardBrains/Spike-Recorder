@@ -8,6 +8,7 @@
 #include <SDL_opengl.h>
 #include <bass.h>
 #include <cassert>
+#include <iostream>
 
 namespace BackyardBrains {
 
@@ -323,6 +324,7 @@ void Application::_HandleEvent(const void *eventRaw) {
 	{
         if(_widgetInFocus!=NULL)
         {
+            std::cout<<"----- Text: "<<event.edit.text<<"Start: "<<event.edit.start<<" Length "<<event.edit.length<<"\n";
             _widgetInFocus->textInputEvent(event);
         }
 	}
@@ -330,6 +332,7 @@ void Application::_HandleEvent(const void *eventRaw) {
 	{
         if(_widgetInFocus!=NULL)
         {
+            std::cout<<"Text: "<<event.edit.text<<"Start: "<<event.edit.start<<" Length "<<event.edit.length<<"\n";
             _widgetInFocus->textEditingEvent(event);
         }
 	}
@@ -344,15 +347,19 @@ void Application::_HandleEvent(const void *eventRaw) {
 			} else if(_hoverWidget) {
 				for(Widget *w = _hoverWidget; w != NULL; w = w->parentWidget()) {
 					w->keyPressEvent(&e);
-					w->keyDownEvent(event);
 					if(e.isAccepted()) {
 						_keyboardGrabber = w;
 						break;
 					}
 				}
-			} else {
+			}
+			else {
 				keyPressEvent(&e); // global keyboard controls
 			}
+			if(_widgetInFocus!=NULL)
+            {
+                _widgetInFocus->keyDownEvent(event);
+            }
 		}
 	}
 	else if (event.type == SDL_KEYUP) {

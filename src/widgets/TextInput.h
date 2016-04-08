@@ -22,13 +22,16 @@ namespace Widgets {
             bool _renderText;
             int _cursor;
             int _selectionLength;
-
+            bool _textSelected;
+            uint64_t _cursorTimerMs;
             void paintEvent();
             void mousePressEvent(MouseEvent *event);
             void keyDownEvent(const SDL_Event  &event);
             void textInputEvent(const SDL_Event &event);
             void textEditingEvent(const SDL_Event &event);
 
+            void drawtextbgbox(const std::string &s, int x, int y, Widgets::Alignment a);
+            void drawCursor();
         private:
     };
 
