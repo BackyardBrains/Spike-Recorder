@@ -83,6 +83,7 @@
 		248E59241AAE1B820011707F /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 248E59121AAE1A910011707F /* OpenGL.framework */; };
 		24D572A11C8772BD007F4DEB /* AnalysisManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24D5729F1C8772BD007F4DEB /* AnalysisManager.cpp */; };
 		24D572A41C8772E5007F4DEB /* EkgBackend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24D572A21C8772E5007F4DEB /* EkgBackend.cpp */; };
+		24E3E9161CB80A8000267CF3 /* TextInput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24E3E9141CB80A8000267CF3 /* TextInput.cpp */; };
 		24E8E6EB1BD95DD9003386A6 /* tinyxml2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24E8E6E91BD95DD9003386A6 /* tinyxml2.cpp */; };
 		24F40AB31ACEA94700B3CCE1 /* HIDUsbManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24F40AB11ACEA94700B3CCE1 /* HIDUsbManager.cpp */; };
 		24F40AB81ACEAD1600B3CCE1 /* hid.c in Sources */ = {isa = PBXBuildFile; fileRef = 24F40AB71ACEAD1600B3CCE1 /* hid.c */; };
@@ -312,6 +313,8 @@
 		24D572A01C8772BD007F4DEB /* AnalysisManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnalysisManager.h; sourceTree = "<group>"; };
 		24D572A21C8772E5007F4DEB /* EkgBackend.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EkgBackend.cpp; sourceTree = "<group>"; };
 		24D572A31C8772E5007F4DEB /* EkgBackend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EkgBackend.h; sourceTree = "<group>"; };
+		24E3E9141CB80A8000267CF3 /* TextInput.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextInput.cpp; sourceTree = "<group>"; };
+		24E3E9151CB80A8000267CF3 /* TextInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextInput.h; sourceTree = "<group>"; };
 		24E8E6E91BD95DD9003386A6 /* tinyxml2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxml2.cpp; sourceTree = "<group>"; };
 		24E8E6EA1BD95DD9003386A6 /* tinyxml2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tinyxml2.h; sourceTree = "<group>"; };
 		24E8E6EE1BD98864003386A6 /* constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = constants.h; path = src/constants.h; sourceTree = SOURCE_ROOT; };
@@ -550,6 +553,8 @@
 		248E58B41AAE19570011707F /* widgets */ = {
 			isa = PBXGroup;
 			children = (
+				24E3E9141CB80A8000267CF3 /* TextInput.cpp */,
+				24E3E9151CB80A8000267CF3 /* TextInput.h */,
 				245BF6FE1CAAA06E004BEA8C /* RangeSelector.cpp */,
 				245BF6FF1CAAA06E004BEA8C /* RangeSelector.h */,
 				248E58B51AAE19570011707F /* Application.cpp */,
@@ -779,6 +784,7 @@
 				248E58EA1AAE19570011707F /* RecordingManager.cpp in Sources */,
 				248E59011AAE19570011707F /* Painter.cpp in Sources */,
 				248E58EF1AAE19570011707F /* MainView.cpp in Sources */,
+				24E3E9161CB80A8000267CF3 /* TextInput.cpp in Sources */,
 				248E58F91AAE19570011707F /* ErrorBox.cpp in Sources */,
 				245BF7001CAAA06E004BEA8C /* RangeSelector.cpp in Sources */,
 				248E58EB1AAE19570011707F /* SpikeSorter.cpp in Sources */,
@@ -883,7 +889,7 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_LINK_OBJC_RUNTIME = YES;
 				CODE_SIGN_ENTITLEMENTS = SpikeRecorder.entitlements;
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -926,7 +932,7 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_LINK_OBJC_RUNTIME = YES;
 				CODE_SIGN_ENTITLEMENTS = SpikeRecorder.entitlements;
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (

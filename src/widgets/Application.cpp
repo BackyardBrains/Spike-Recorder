@@ -23,7 +23,7 @@ Application::Application() : _running(false), _mouseGrabber(0), _keyboardGrabber
 	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
 		Log::fatal("SDL failed to initialize: %s", SDL_GetError());
 	}
-
+    _widgetInFocus = NULL;
 #if defined(_WIN32) && (_WIN32_WINNT >= 0x0501)
 	// FILE *ctt = fopen("CON", "w" );
 	AttachConsole(ATTACH_PARENT_PROCESS);
