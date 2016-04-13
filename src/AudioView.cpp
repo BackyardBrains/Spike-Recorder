@@ -19,7 +19,8 @@ namespace BackyardBrains {
 
 const Widgets::Color AudioView::COLORS[] = {
 	Widgets::Colors::black,
-    Widgets::Color(218,218,218),
+    //Widgets::Color(218,218,218),
+    Widgets::Color(0,180,0),
     Widgets::Color(255,0,59),
 	Widgets::Color(225,252,90),
 	Widgets::Color(255,138,91),
@@ -59,7 +60,7 @@ AudioView::~AudioView() {
 
 void AudioView::updateChannels() {
 	auto vdevices = _manager.virtualDevices();
-	std::map<int, int> vdev2chan; 
+	std::map<int, int> vdev2chan;
 	for(int i = 0; i < (int)_channels.size(); i++)
 		vdev2chan[_channels[i].virtualDevice] = i;
 
@@ -434,7 +435,7 @@ void AudioView::drawAudio() {
 
 			int16_t *rmsData;
 			float rms;
-            
+
 			if(_manager.threshMode()) {
 				assert(endsample < samples);
 				rmsData = new int16_t[samples];
@@ -445,7 +446,7 @@ void AudioView::drawAudio() {
             {
 				long pos = _manager.pos()+_channelOffset-samples;
 				rmsData = new int16_t[endsample-startsample];
-                
+
                 //when in file mode playing head is at the middle of the screen
                 //while in normal (realtime view) signal playing head is at right hand side of the screen
                 if(_manager.fileMode())
@@ -467,7 +468,7 @@ void AudioView::drawAudio() {
 			Widgets::Painter::setColor(Widgets::Colors::white);
 			Widgets::Application::font()->draw(s.str().c_str(), width()-20, _channels[i].pos*height()+30, Widgets::AlignRight);
 		}
-		
+
 	}
 	Widgets::Painter::setColor(Widgets::Colors::white);
 	drawGainControls();

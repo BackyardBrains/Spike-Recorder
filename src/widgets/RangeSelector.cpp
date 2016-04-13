@@ -21,7 +21,7 @@ RangeSelector::RangeSelector(Widget *parent) : Widget(parent)
 
     setSizePolicy(SizePolicy(SizePolicy::Expanding, SizePolicy::Fixed));
 
-    setSizeHint(Size(SLIDER_MIN_SIZE, 4*Y_OFFSET));
+    setSizeHint(Size(SLIDER_MIN_SIZE, 2*Y_OFFSET));
 }
 
 RangeSelector::~RangeSelector()
@@ -116,6 +116,25 @@ int RangeSelector::highValue() const
     return _highValue;
 }
 
+int RangeSelector::getLowValue()
+{
+    if(_lowValue < 1)
+    {
+        return 0;
+    }
+    return (int)pow(10,(((double)lowValue())/((double)_maximum)*log10((double)_maximum)));
+}
+
+int RangeSelector::getHighValue()
+{
+     if(_highValue < 1)
+    {
+        return 0;
+    }
+    return (int)pow(10,(((double)highValue())/((double)_maximum)*log10((double)_maximum)));
+}
+
+
 void RangeSelector::setHighValue(int val)
 {
      const int oldValue = _highValue;
@@ -169,7 +188,7 @@ void RangeSelector::paintEvent()
     if(width() == 0 && height() == 0)
 		return;
 
-    std::stringstream titles;
+  /*  std::stringstream titles;
 	 titles <<"Set band-pass filter cutoff frequencies";
     Widgets::Painter::setColor(Widgets::Colors::white);
     Widgets::Application::font()->draw(titles.str().c_str(),width()/2, 0, AlignHCenter);
@@ -196,7 +215,7 @@ void RangeSelector::paintEvent()
     //Widgets::Painter::setColor(bg);
     // drawtextbgbox(s.str(), 35, y-20, Widgets::AlignLeft);
     Widgets::Painter::setColor(Widgets::Colors::white);
-    Widgets::Application::font()->draw(s1.str().c_str(),width()/2+100, Y_OFFSET, AlignHCenter);
+    Widgets::Application::font()->draw(s1.str().c_str(),width()/2+100, Y_OFFSET, AlignHCenter);*/
 
     //----- draw log10 scale --------------
     double maximumOnLogScale = log10((double)_maximum);
@@ -225,9 +244,9 @@ void RangeSelector::paintEvent()
                     scaleMarkFreq <<""<< frequencyMark<<"";
                 }
                 Widgets::Painter::setColor(Widgets::Colors::white);
-                Widgets::Application::font()->draw(scaleMarkFreq.str().c_str(),positionInPixels, 3*Y_OFFSET+6, AlignHCenter);
+                Widgets::Application::font()->draw(scaleMarkFreq.str().c_str(),positionInPixels, Y_OFFSET+6, AlignHCenter);
             }
-            const Rect markRect = Rect(positionInPixels,3*Y_OFFSET, 1,4);
+            const Rect markRect = Rect(positionInPixels,Y_OFFSET, 1,4);
             Painter::setColor(Colors::white);
             Painter::drawRect(markRect);
         }
@@ -237,7 +256,7 @@ void RangeSelector::paintEvent()
 	Painter::setColor(Colors::widgetbg);
 	Painter::drawRect(gutRect);
 
-	const Rect gutGreenRect = Rect(_ValueToSliderOffset(_lowValue), 2*Y_OFFSET, _ValueToSliderOffset(_highValue)-_ValueToSliderOffset(_lowValue), Y_OFFSET);
+	const Rect gutGreenRect = Rect(_ValueToSliderOffset(_lowValue), 0, _ValueToSliderOffset(_highValue)-_ValueToSliderOffset(_lowValue), Y_OFFSET);
 	Painter::setColor(Colors::darkgreen);
 	Painter::drawRect(gutGreenRect);
 
@@ -331,7 +350,7 @@ int RangeSelector::_SliderLength() const
 
 Rect RangeSelector::_GutterRect() const
 {
-    return   Rect(0, 2*Y_OFFSET, width(), Y_OFFSET);
+    return   Rect(0, 0, width(), Y_OFFSET);
 }
 
 Rect RangeSelector::_HighSliderRect() const
@@ -339,7 +358,7 @@ Rect RangeSelector::_HighSliderRect() const
     const int sliderLength = _SliderLength();
 	const int sliderOffset = _ValueToSliderOffset(_highValue);
 
-    return Rect(sliderOffset, 2*Y_OFFSET, sliderLength, Y_OFFSET);
+    return Rect(sliderOffset, 0, sliderLength, Y_OFFSET);
 }
 
 Rect RangeSelector::_LowSliderRect() const
@@ -347,7 +366,7 @@ Rect RangeSelector::_LowSliderRect() const
     const int sliderLength = _SliderLength();
 	const int sliderOffset = _ValueToSliderOffset(_lowValue);
 
-    return Rect(sliderOffset, 2*Y_OFFSET, sliderLength, Y_OFFSET);
+    return Rect(sliderOffset, 0, sliderLength, Y_OFFSET);
 }
 
 int RangeSelector::_ValueToSliderOffset(int val) const

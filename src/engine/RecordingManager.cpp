@@ -150,10 +150,10 @@ void RecordingManager::sendEKGImpuls()
 
     clock_t end = clock();
     double elapsed_secs = double(end - timerEKG) / CLOCKS_PER_SEC;
-    if(elapsed_secs>0.03)
+    if(elapsed_secs>0.2)
     {
         timerEKG = end;
-      //  _arduinoSerial.sendEventMessage(0);
+        _arduinoSerial.sendEventMessage(0);
     }
 
 }
@@ -443,7 +443,7 @@ bool RecordingManager::initSerial(const char *portName)
         return false;
     }*/
 
-    bytespersample = 4; // bass converts everything it doesnt support.
+    bytespersample = 4; // bass converts everything it doesnt support.
     setSampleRate(info.freq);
     _devices.push_back(Device(0, _numOfSerialChannels,_sampleRate));
     _devices.back().type = Device::Serial;

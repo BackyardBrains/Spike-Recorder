@@ -2,7 +2,7 @@
 #define TEXTINPUT_H
 #include <sstream>
 #include "Widget.h"
-
+#include <string>
 namespace BackyardBrains {
 
 namespace Widgets {
@@ -12,9 +12,19 @@ namespace Widgets {
         public:
             TextInput( Widget *parent = NULL,int initialWidth = 200);
             virtual ~TextInput();
-            std::string text(){return _text;}
+
             bool selected(){return _selected;}
+
             sigslot::signal1<std::string> textChanged;
+
+            sigslot::signal1<std::string> textEditingEnded;
+
+            std::string text(){return _text;}
+            void setText(std::string newText);
+            void setFloat(float newFloat);
+            void setInt(int newInt);
+            int getInt();
+            float getFloat();
         protected:
             bool _selected;
             std::string _text = "";
@@ -23,6 +33,11 @@ namespace Widgets {
             int _cursor;
             int _selectionLength;
             bool _textSelected;
+
+            int _cursorPosition;//position of the cursor in text input (not text)
+            int _invisibleOffset;//_invisible offset of the text
+
+
             uint64_t _cursorTimerMs;
             void paintEvent();
             void mousePressEvent(MouseEvent *event);

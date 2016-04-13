@@ -11,8 +11,7 @@
 #include "widgets/ErrorBox.h"
 #include "widgets/Label.h"
 #include "widgets/ErrorBox.h"
-#include "widgets/RangeSelector.h"
-#include "widgets/TextInput.h"
+
 #include "DropDownList.h"
 #include "AudioView.h"
 #include "ColorDropDownList.h"
@@ -70,20 +69,54 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
     //---------- High/Low pass filter --------------------------------------
     if(!_manager.fileMode()) {
 
-       // Widgets::TextInput * textInput1 = new Widgets::TextInput(group);
-       // Widgets::TextInput * textInput2 = new Widgets::TextInput(group);
-        Widgets::RangeSelector *rangeSelector = new Widgets::RangeSelector(group);
+        Widgets::Label *filterMainLabel = new Widgets::Label(group);
+		filterMainLabel->setText("Set band-pass filter cutoff frequencies");
+		filterMainLabel->updateSize();
+
+
+        lowValueTI = new Widgets::TextInput(group, 50);
+        lowValueTI->textEditingEnded.connect(this, &ConfigView::lowFilterTIValueChanged);
+        highValueTI = new Widgets::TextInput(group, 50);
+        highValueTI->textEditingEnded.connect(this, &ConfigView::highFilterTIValueChanged);
+
+
+        rangeSelector = new Widgets::RangeSelector(group);
         rangeSelector->setRange(0,_manager.sampleRate()/2);
+
+        highValueTI->setInt(_manager.lowCornerFrequency());
+        lowValueTI->setInt(_manager.highCornerFrequency());
+
         rangeSelector->lowValueChanged.connect(this, &ConfigView::lowFilterValueChanged);
         rangeSelector->highValueChanged.connect(this, &ConfigView::highFilterValueChanged);
         rangeSelector->updateHighLogValue(_manager.lowCornerFrequency());
         rangeSelector->updateLowLogValue(_manager.highCornerFrequency());
 
 
-       // gvbox->addWidget(textInput1);
-		//gvbox->addSpacing(10);
-		//gvbox->addWidget(textInput2);
-		//gvbox->addSpacing(10);
+        Widgets::BoxLayout *labelsBox = new Widgets::BoxLayout(Widgets::Horizontal);
+
+        Widgets::Label *lowFilterLabel = new Widgets::Label(group);
+		lowFilterLabel->setText("Low");
+		lowFilterLabel->updateSize();
+
+        Widgets::Label *highFilterLabel = new Widgets::Label(group);
+		highFilterLabel->setText("High");
+		highFilterLabel->updateSize();
+
+        labelsBox->addSpacing(8);
+        labelsBox->addWidget(lowFilterLabel, Widgets::AlignBottom);
+		labelsBox->addSpacing(415);
+		labelsBox->addWidget(highFilterLabel, Widgets::AlignBottom);
+
+        gvbox->addLayout(labelsBox);
+
+        Widgets::BoxLayout *valuesBox = new Widgets::BoxLayout(Widgets::Horizontal);
+
+		valuesBox->addWidget(lowValueTI);
+		valuesBox->addSpacing(40);
+		valuesBox->addWidget(filterMainLabel);
+		valuesBox->addSpacing(40);
+		valuesBox->addWidget(highValueTI);
+		gvbox->addLayout(valuesBox);
         gvbox->addWidget(rangeSelector);
 		gvbox->addSpacing(20);
     }
@@ -538,6 +571,7 @@ void ConfigView::mutePressed() {
 //
 void ConfigView::highFilterValueChanged(int hvalue)
 {
+    highValueTI->setInt(hvalue);
     if(hvalue>=_manager.sampleRate()/2)
     {
 
@@ -556,7 +590,7 @@ void ConfigView::highFilterValueChanged(int hvalue)
 //
 void ConfigView::lowFilterValueChanged(int lvalue)
 {
-
+    lowValueTI->setInt(lvalue);
      if(lvalue<=0)
     {
 
@@ -571,7 +605,17 @@ void ConfigView::lowFilterValueChanged(int lvalue)
 }
 
 
+void ConfigView::lowFilterTIValueChanged(std::string newString)
+{
+    rangeSelector->updateLowLogValue(lowValueTI->getInt());
+    lowValueTI->setInt(rangeSelector->getLowValue());
+}
 
+void ConfigView::highFilterTIValueChanged(std::string newString)
+{
+    rangeSelector->updateHighLogValue(highValueTI->getInt());
+    highValueTI->setInt(rangeSelector->getHighValue());
+}
 //
 // Enable/disable 50Hz filter checkbox pressed
 //

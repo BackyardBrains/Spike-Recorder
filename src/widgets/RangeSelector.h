@@ -1,6 +1,6 @@
 #ifndef RANGESELECTOR_H
 #define RANGESELECTOR_H
-
+#include "TextInput.h"
 #include "Widget.h"
 
 namespace BackyardBrains {
@@ -18,17 +18,20 @@ namespace Widgets  {
                 int maximum() const;
                 void setMaximum(int maxVal);
                 void setRange(int minVal, int maxVal);
-                int lowValue() const;
-                void setLowValue(int val);
-                int highValue() const;
-                void setHighValue(int val);
+
                 void updateLowLogValue(int val); // don't emit a signal
                 void updateHighLogValue(int val); // don't emit a signal
-
+                int getLowValue();
+                int getHighValue();
                 sigslot::signal1<int> lowValueChanged;
                 sigslot::signal1<int> highValueChanged;
             protected:
             private:
+
+                void setLowValue(int val);
+                void setHighValue(int val);
+                int lowValue() const;
+                int highValue() const;
                 int _minimum;
                 int _maximum;
                 int _lowValue;
@@ -47,6 +50,9 @@ namespace Widgets  {
                 Rect _GutterRect() const;
                 Rect _HighSliderRect() const;
                 Rect _LowSliderRect() const;
+
+                TextInput * lowValueTI;
+                TextInput * highValueTI;
 
                 int _highSliderClickedPixelOffset;
                 int _highDraggingSliderOffset;

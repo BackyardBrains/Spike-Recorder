@@ -4,6 +4,9 @@
 #include "widgets/Widget.h"
 #include "widgets/PushButton.h"
 #include "DropDownList.h"
+#include "widgets/RangeSelector.h"
+#include "widgets/TextInput.h"
+
 #if defined(_WIN32)
     #include "BYBFirmwareVO.h"
 #endif
@@ -47,6 +50,9 @@ private:
 	Widgets::PushButton *_muteCKBox;
 	Widgets::PushButton *_50hzFilter;
     Widgets::PushButton *_60hzFilter;
+    Widgets::TextInput * lowValueTI;
+    Widgets::TextInput * highValueTI;
+    Widgets::RangeSelector *rangeSelector;
 
 	std::vector<SignalCatcher> _catchers;
 	std::vector<ColorDropDownList *> _clrs;
@@ -86,6 +92,8 @@ private:
 	void sixtyHzPressed();
     void highFilterValueChanged(int hvalue);
     void lowFilterValueChanged(int lvalue);
+    void lowFilterTIValueChanged(std::string newString);
+    void highFilterTIValueChanged(std::string newString);
 
 
 
