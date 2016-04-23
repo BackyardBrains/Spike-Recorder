@@ -13,8 +13,8 @@ class AnalysisManager : public sigslot::has_slots<> {
 public:
 	AnalysisManager(RecordingManager &recman);
 
-	EkgBackend ekg;	
-	FFTBackend fft;	
+	EkgBackend ekg;
+	FFTBackend fft;
 
 	// calculate the root mean square of data
 	float calculateRMS(int16_t *data, int length);

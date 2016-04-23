@@ -158,6 +158,13 @@ public:
     int highCornerFrequency(){return (int)_highCornerFreq;}
     int lowCornerFrequency(){return (int)_lowCornerFreq;}
 
+
+
+    void setCalibrationCoeficient(float newCalibrationCoeficient);
+    void resetCalibrationCoeficient();
+    bool isCalibrated(){return systemIsCalibrated;}
+    float getCalibrationCoeficient(){return calibrationCoeficient;}
+
     std::string currentHIDFirmwareVersion() {return _hidUsbManager.firmwareVersion;}
 
 
@@ -222,6 +229,10 @@ private:
 	void closeSerial();
 	void closeHid();
 	SampleBuffer *sampleBuffer(int virtualDeviceIndex);
+
+
+    bool systemIsCalibrated;
+    float calibrationCoeficient;
 
 	std::vector<VirtualDevice> _virtualDevices;
 	std::vector<Device> _devices;

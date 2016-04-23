@@ -94,6 +94,7 @@ private:
     void lowFilterValueChanged(int lvalue);
     void lowFilterTIValueChanged(std::string newString);
     void highFilterTIValueChanged(std::string newString);
+    void calibratePressed();
 
 
 

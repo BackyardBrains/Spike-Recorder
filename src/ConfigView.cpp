@@ -18,6 +18,7 @@
 #include "Log.h"
 #include <bass.h>
 #include <sstream>
+#include "CalibrationWindow.h"
 
 
 namespace BackyardBrains {
@@ -66,8 +67,29 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 		gvbox->addSpacing(30);
 	}
 
+    //---------- Calibrator code --------------------------------------
+	if(!_manager.fileMode()) {
+        Widgets::Label *calibrateMainLabel = new Widgets::Label(group);
+		calibrateMainLabel->setText("Calibrate SpikeRecorder for current setup ");
+		calibrateMainLabel->updateSize();
+
+        Widgets::PushButton *calibrateButton = new Widgets::PushButton(group);
+        calibrateButton->clicked.connect(this, &ConfigView::calibratePressed);
+        calibrateButton->setNormalTex(Widgets::TextureGL::get("data/calibratebtn-normal.bmp"));
+        calibrateButton->setHoverTex(Widgets::TextureGL::get("data/calibratebtn-high.bmp"));
+        calibrateButton->setSize(Widgets::Size(80,26));
+
+        Widgets::BoxLayout *hcalBox = new Widgets::BoxLayout(Widgets::Horizontal);
+        hcalBox->addWidget(calibrateMainLabel);
+        hcalBox->addSpacing(10);
+        hcalBox->addWidget(calibrateButton);
+
+        gvbox->addLayout(hcalBox);
+        gvbox->addSpacing(40);
+	}
+
     //---------- High/Low pass filter --------------------------------------
-    if(!_manager.fileMode()) {
+  /*  if(!_manager.fileMode()) {
 
         Widgets::Label *filterMainLabel = new Widgets::Label(group);
 		filterMainLabel->setText("Set band-pass filter cutoff frequencies");
@@ -171,7 +193,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 		gvbox->addLayout(filterhbox);
 		gvbox->addSpacing(40);
 	}
-
+*/
 
     //----------- Color chooser for channels --------------------------------
 
@@ -688,5 +710,18 @@ void ConfigView::colorChanged(int virtualDevice, int coloridx) {
 		_audioView.setChannelColor(channel, coloridx);
 	}
 }
+
+
+void ConfigView::calibratePressed()
+{
+    close();
+    CalibrationWindow * c = new CalibrationWindow(_manager,_audioView);
+    c->setMouseTracking(true);
+	c->setDeleteOnClose(true);
+	c->setGeometry(Widgets::Rect(240, 20, 380, 160));
+	Widgets::Application::getInstance()->addWindow(c);
+
+}
+
 
 }

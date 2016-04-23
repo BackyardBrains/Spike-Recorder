@@ -31,6 +31,9 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
 	_player.start(_sampleRate);
     _HIDShouldBeReloaded = false;
 
+    systemIsCalibrated = false;
+    calibrationCoeficient = 1.0f;
+
     _arduinoSerial.getAllPortsList();
 
     std::list<std::string>::iterator list_it;
@@ -47,6 +50,18 @@ RecordingManager::~RecordingManager() {
 	_player.stop();
 	BASS_Free();
 	Log::msg("libbass deinitialized.");
+}
+
+void RecordingManager::setCalibrationCoeficient(float newCalibrationCoeficient)
+{
+    systemIsCalibrated = true;
+    calibrationCoeficient = newCalibrationCoeficient;
+}
+
+void RecordingManager::resetCalibrationCoeficient()
+{
+    systemIsCalibrated = false;
+    calibrationCoeficient = 1.0f;
 }
 
 void RecordingManager::constructMetadata(MetadataChunk *m) const {

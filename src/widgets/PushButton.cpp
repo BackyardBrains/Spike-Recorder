@@ -11,6 +11,11 @@ PushButton::PushButton(Widget *parent) : Widget(parent), _normaltex(NULL), _hove
 	setSizeHint(Size(48,48));
 }
 
+void PushButton::setSize(Size newSize)
+{
+    setSizeHint(newSize);
+}
+
 void PushButton::paintEvent()
 {
 	if(_normaltex != NULL) {
@@ -38,7 +43,7 @@ void PushButton::paintEvent()
 void PushButton::setNormalTex(const TextureGL *tex) {
 	_normaltex = tex;
 }
-    
+
 void PushButton::setRightPadding(int padding)
 {
     _rightPadding = padding;

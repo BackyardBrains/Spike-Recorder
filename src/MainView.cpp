@@ -27,7 +27,7 @@
 #include <SDL.h>
 #include <cerrno>
 #include <cstring>
-
+#include "CalibrationWindow.h"
 #include <sstream>
 
 #if defined(_WIN32)
@@ -371,12 +371,18 @@ void MainView::filePressed() {
 }
 
 void MainView::configPressed() {
+
+
+
     _manager.refreshSerialPorts();
 	ConfigView *c = new ConfigView(_manager, *_audioView);
 	c->setMouseTracking(true);
 	c->setDeleteOnClose(true);
 	c->setGeometry(rect());
 	Widgets::Application::getInstance()->addWindow(c);
+
+
+
 }
 
 void MainView::analysisPressed() {

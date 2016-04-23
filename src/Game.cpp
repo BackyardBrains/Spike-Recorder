@@ -99,6 +99,12 @@ void Game::loadResources() {
     Widgets::TextureGL::load("data/fftcrossed.bmp");
     Widgets::TextureGL::load("data/threshcrossed.bmp");
     Widgets::TextureGL::load("data/configcrossed.bmp");
+    Widgets::TextureGL::load("data/calibratebtn-high.bmp");
+    Widgets::TextureGL::load("data/cancel-high.bmp");
+    Widgets::TextureGL::load("data/calibratebtn-normal.bmp");
+    Widgets::TextureGL::load("data/cancel-normal.bmp");
+    Widgets::TextureGL::load("data/okbtn-normal.bmp");
+    Widgets::TextureGL::load("data/okbtn-high.bmp");
 
 }
 

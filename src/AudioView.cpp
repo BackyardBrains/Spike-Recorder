@@ -373,6 +373,28 @@ void AudioView::drawGainControls() {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+//
+// timePeriod - time period for calibration in seconds
+// voltagePtoP - voltage of calibrator signal peak to peak in mV
+// returns how many our units is equal to 1mV
+//
+float AudioView::calculateCalibrationCoeficient(float timePeriod, float voltagePtoP)
+{
+    int lengthOfData = _manager.sampleRate()*timePeriod;
+
+    int vdevice = _channels[0].virtualDevice;
+    int16_t *rmsData;
+    float rms;
+    rmsData = new int16_t[lengthOfData];
+    _manager.getData(vdevice, _manager.pos()-lengthOfData, lengthOfData, rmsData);
+    rms = _anaman.calculateRMS(rmsData, lengthOfData);
+
+    delete[] rmsData;
+
+    return (rms/0.7071f)/voltagePtoP;
+}
+
+
 void AudioView::drawAudio() {
 	float scalew = scaleWidth();
 	float xoff = DATA_XOFF;
@@ -461,7 +483,15 @@ void AudioView::drawAudio() {
 
 			std::stringstream s;
 			s.precision(3);
-			s <<"RMS:"<< std::fixed << rms/200.0 ;
+			if(_manager.isCalibrated())
+            {
+                s <<"RMS:"<< std::fixed << rms*_manager.getCalibrationCoeficient()<<" mV";
+            }
+            else
+            {
+                s <<"RMS:"<< std::fixed << rms/200.0 ;
+            }
+
 
 			Widgets::Painter::setColor(bg);
 			drawtextbgbox(s.str(), width()-20, _channels[i].pos*height()+30, Widgets::AlignRight);
