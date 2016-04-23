@@ -164,9 +164,13 @@ void RecordingManager::sendEKGImpuls()
 {
 
     clock_t end = clock();
+#if defined(__APPLE__) || defined(__linux__)
+    end = end*1000;
+#endif
     double elapsed_secs = double(end - timerEKG) / CLOCKS_PER_SEC;
     if(elapsed_secs>0.2)
     {
+        
         timerEKG = end;
         _arduinoSerial.sendEventMessage(0);
     }
