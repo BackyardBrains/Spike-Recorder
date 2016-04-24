@@ -554,7 +554,7 @@ void RecordingManager::closeSerial()
 bool RecordingManager::loadFile(const char *filename) {
 
 
-
+    resetCalibrationCoeficient();
 	_spikeTrains.clear();
 	closeSerial();
 	closeHid();
@@ -1410,26 +1410,11 @@ void RecordingManager::advance(uint32_t samples) {
 		for(int chan = 0; chan < channum; chan++)
 			channels[chan].resize(len);
 
-		/*// OLD code before we implemented filtering
-		for (DWORD i = 0; i < samplesRead/channum; i++) {
-			for(int chan = 0; chan < channum; chan++) {
-				channels[chan][i] = buffer[i*channum + chan];
-				//        printf("%u, ", buffer[i*channum + chan]);
-
-				if(_devices[idx].dcBiasNum < _sampleRate*10) {
-					_devices[idx].dcBiasSum[chan] += channels[chan][i];
-					if(chan == 0)
-						_devices[idx].dcBiasNum++;
-				}
-			}
-		}
-        */
-
-
     // de-interleave the channels
 	    for (int i = 0; i < samplesRead/channum; i++) {
 	        for(int chan = 0; chan < channum; chan++) {
 	            channels[chan][i] = buffer[i*channum + chan];//sort data to channels
+
 	        }
 	    }
 

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		240506621CCBEC6A00E8FCEE /* CalibrationWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 240506601CCBEC6A00E8FCEE /* CalibrationWindow.cpp */; };
 		24079F321AB0CBE700820291 /* icon_128x128.png in Resources */ = {isa = PBXBuildFile; fileRef = 24079F281AB0CBE700820291 /* icon_128x128.png */; };
 		24079F331AB0CBE700820291 /* icon_128x128@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 24079F291AB0CBE700820291 /* icon_128x128@2x.png */; };
 		24079F341AB0CBE700820291 /* icon_16x16.png in Resources */ = {isa = PBXBuildFile; fileRef = 24079F2A1AB0CBE700820291 /* icon_16x16.png */; };
@@ -117,6 +118,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		240506601CCBEC6A00E8FCEE /* CalibrationWindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CalibrationWindow.cpp; path = src/CalibrationWindow.cpp; sourceTree = SOURCE_ROOT; };
+		240506611CCBEC6A00E8FCEE /* CalibrationWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CalibrationWindow.h; path = src/CalibrationWindow.h; sourceTree = SOURCE_ROOT; };
 		24079F281AB0CBE700820291 /* icon_128x128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_128x128.png; sourceTree = "<group>"; };
 		24079F291AB0CBE700820291 /* icon_128x128@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_128x128@2x.png"; sourceTree = "<group>"; };
 		24079F2A1AB0CBE700820291 /* icon_16x16.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_16x16.png; sourceTree = "<group>"; };
@@ -461,6 +464,8 @@
 				2421F0941ACFDDEF00927F19 /* AnalysisPlots.cpp */,
 				2421F0951ACFDDEF00927F19 /* AnalysisPlots.h */,
 				248E58941AAE19570011707F /* AudioView.cpp */,
+				240506601CCBEC6A00E8FCEE /* CalibrationWindow.cpp */,
+				240506611CCBEC6A00E8FCEE /* CalibrationWindow.h */,
 				24E8E6EE1BD98864003386A6 /* constants.h */,
 				248E58951AAE19570011707F /* AudioView.h */,
 				248E58961AAE19570011707F /* ColorDropDownList.cpp */,
@@ -792,6 +797,7 @@
 				2421F08F1ACFDDBD00927F19 /* FileReadUtil.cpp in Sources */,
 				248E58ED1AAE19570011707F /* Game.cpp in Sources */,
 				2421F0931ACFDDDA00927F19 /* BASSErrors.cpp in Sources */,
+				240506621CCBEC6A00E8FCEE /* CalibrationWindow.cpp in Sources */,
 				24079FAC1AB1D1F500820291 /* DropDownList.cpp in Sources */,
 				245BF6FD1CAAA024004BEA8C /* NotchFilter.cpp in Sources */,
 				248646421AB1FBAD003852AA /* Log.cpp in Sources */,
