@@ -190,6 +190,7 @@ void ThresholdPanel::ekgPressed() {
 		_ekgButton->setNormalTex(Widgets::TextureGL::get("data/ekg.bmp"));
 		_ekgButton->setHoverTex(Widgets::TextureGL::get("data/ekghigh.bmp"));
 		_ekgWidget->setSound(0);
+        _speakerButton->setNormalTex(Widgets::TextureGL::get("data/speakeroff.bmp"));
         _triggerButton->setVisible(true);
 	}
 }

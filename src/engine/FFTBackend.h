@@ -5,6 +5,7 @@
 #include <vector>
 #include <utility>
 #include <complex>
+#include "HighPassFilter.h"
 
 namespace BackyardBrains {
 
@@ -41,19 +42,22 @@ public:
 
 	// Just get the most recent window
 	const float *fftcache_last() const;
+    float lowPassAlphaWaves;
 
 private:
 	RecordingManager &_manager;
 
-	void addWindow(float *result, int pos, int device, int len, int samplerate);
-
+    void addWindow(float *result, int pos, int device, int len, int samplerate, bool calculateAlphaPower);
+    void fft(int sign, std::vector<std::complex<float>> &zs);;
+    
 	int _device; // recording device to fetch data from
 
-	int _begin; // first sample shown in the buffer
-	int _end; // last sample shown in the buffer
+	long long _begin; // first sample shown in the buffer
+	long long _end; // last sample shown in the buffer
 
 	int _viewwidth; // time span covered by the whole buffer in window lengths
-
+    HighPassFilter _hPassFilter;//used to eliminate DC component
+    int oldSampleRate;
 	int16_t *_samplebuf; // internal buffer for samples received from RecordingManager
 	std::vector<std::complex<float> > _fftbuf; // internal buffer for storing a single fft window
 

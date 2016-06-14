@@ -629,11 +629,19 @@ namespace BackyardBrains {
         int n, written=0;
         fd_set wfds;
         struct timeval tv;
+        
         while (written < len) {
+           // std::cout<<written<<",";
             n = write(fd, (const char *)ptr + written, len - written);
-            if (n < 0 && (errno == EAGAIN || errno == EINTR)) n = 0;
+            if (n < 0 && (errno == EAGAIN || errno == EINTR))
+            {
+               n = 0;
+            }
             //printf("Write, n = %d\n", n);
-            if (n < 0) return -1;
+            if (n < 0)
+            {
+              return -1;
+            }
             if (n > 0) {
                 written += n;
             } else {
@@ -646,6 +654,7 @@ namespace BackyardBrains {
                 if (n <= 0) return -1;
             }
         }
+        std::cout<<written<<"-"<<(char *)ptr<<"|";
         return written;
 
 

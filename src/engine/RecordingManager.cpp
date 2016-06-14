@@ -42,6 +42,9 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
             std::cout<<list_it->c_str()<<"\n";
     }
 
+    alphaFeedbackActive = false;
+    alphaWavePower = 0;
+    
 	initRecordingDevices();
 }
 
@@ -305,7 +308,7 @@ void RecordingManager::scanForHIDDevices()
     try{
         if(_firmwareUpdateStage<1)
         {
-            _hidUsbManager.getAllDevicesList();
+        //    _hidUsbManager.getAllDevicesList();
         }
     }catch(int e)
     {
@@ -710,6 +713,29 @@ Player &RecordingManager::player() {
 	return _player;
 }
 
+    
+int RecordingManager::numberOfChannels()
+{
+    if(hidMode())
+    {
+        return _numOfHidChannels;
+    }
+    else if(serialMode())
+    {
+        return _arduinoSerial.numberOfChannels();
+    }
+    else if(fileMode())
+    {
+        return _devices[0].channels;
+    }
+    else
+    {
+        return _devices[0].channels;
+    }
+    
+}
+    
+    
 int RecordingManager::sampleRate() const {
 	return _sampleRate;
 }
@@ -870,6 +896,9 @@ std::vector<std::pair<int16_t,int16_t> > RecordingManager::getTriggerSamplesEnve
 	return result;
 }
 
+    
+#pragma mark - Advance one step
+    
 void RecordingManager::advanceFileMode(uint32_t samples) {
 	if(!_paused && _pos >= fileLength()-1) {
 		pauseChanged.emit();
@@ -1119,30 +1148,54 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 	    delete[] buffer;
 
 
+       
+        
         //Push data to speaker
 
         //const int nchan = _devices.begin()->channels;
         int bytesPerSample = _devices.begin()->bytespersample;
-        int16_t *buf = new int16_t[samplesRead];
+        
 
-        if(_player.volume() > 0) {
-
-
-            SampleBuffer *s = sampleBuffer(_selectedVDevice);
-            if(s != NULL) {
-                s->getData(buf, _pos, samplesRead);
-            } else {
-                memset(buf, 0, samplesRead*sizeof(int16_t));
+        if(alphaFeedbackActive)
+        {
+            int16_t *buf = new int16_t[samples];
+            //std::cout<<alphaWavePower<<"\n";
+            //648044
+            //200
+           
+            double progress = 0.1+0.4*alphaWavePower/50000.0;
+            for( int index= 0;index<samples;index++)
+            {
+                _alphaAudioTime+=progress;
+                buf[index]=2500*sin(_alphaAudioTime);
             }
-
-            _player.push(buf, samplesRead*sizeof(int16_t));
-
-
-        } else {
-            _player.setPos(_pos, bytesPerSample, 1);
-            //std::cout<<"\nSet position: "<<_pos;
+            _player.push(buf, samples*sizeof(int16_t));
+            delete[] buf;
         }
-         delete[] buf;
+        else
+        {
+            int16_t *buf = new int16_t[samplesRead];
+            if(_player.volume() > 0) {
+
+
+                SampleBuffer *s = sampleBuffer(_selectedVDevice);
+                if(s != NULL) {
+                    s->getData(buf, _pos, samplesRead);
+                } else {
+                    memset(buf, 0, samplesRead*sizeof(int16_t));
+                }
+
+                _player.push(buf, samplesRead*sizeof(int16_t));
+
+
+            } else {
+                _player.setPos(_pos, bytesPerSample, 1);
+                //std::cout<<"\nSet position: "<<_pos;
+            }
+             delete[] buf;
+        }
+        
+        
 
          _pos+=samplesRead;
 	}
@@ -1189,28 +1242,6 @@ void RecordingManager::advanceHidMode(uint32_t samples)
         for(int chan = 0; chan < channum; chan++)
             channels[chan].resize(len);
 
-       /* // OLD CODE before we implemented filtering
-        for (DWORD i = 0; i < (unsigned int)samplesRead; i++) {
-            for(int chan = 0; chan < channum; chan++) {
-                channels[chan][i] = buffer[i*channum + chan];//sort data to channels
-
-                //if we are in first 10 seconds interval
-                //add current sample to summ used to remove DC component
-                if(_devices.begin()->dcBiasNum < _sampleRate*10) {
-                    _devices.begin()->dcBiasSum[chan] += 0;//channels[chan][i];
-                    if(chan == 0)
-                    {
-                        _devices.begin()->dcBiasNum++;
-                    }
-                }
-            }
-        }
-        */
-
-
-
-
-
          // de-interleave the channels
 	    for (int i = 0; i < samplesRead; i++) {
 	        for(int chan = 0; chan < channum; chan++) {
@@ -1252,7 +1283,7 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 	            //if we are in first 10 seconds interval
 	            //add current sample to summ used to remove DC component
 	            if(_devices.begin()->dcBiasNum < _sampleRate*10) {
-	                _devices.begin()->dcBiasSum[chan] += 0;
+	                _devices.begin()->dcBiasSum[chan] += 0;///// We are not doing that right now on HID
 	                if(chan == 0)
 	                {
 	                    _devices.begin()->dcBiasNum++;
@@ -1280,7 +1311,7 @@ void RecordingManager::advanceHidMode(uint32_t samples)
                         if(_triggers.empty() || ntrigger - _triggers.front() > _sampleRate/10) {
                             if((thresh > 0 && channels[chan][i] > thresh) || (thresh <= 0 && channels[chan][i] < thresh)) {
                                 _triggers.push_front(_pos + i);
-                    triggerd = true;
+                                triggerd = true;
                                 if(_triggers.size() > (unsigned int)_threshAvgCount)//_threshAvgCount == 1
                                     _triggers.pop_back();
                             }
@@ -1528,31 +1559,28 @@ void RecordingManager::advance(uint32_t samples) {
 
 }
 
-int RecordingManager::numberOfChannels()
+#pragma mark - Filters
+
+
+//
+// Trigger calculation of mean value to substract from signal
+// Trigger elimination of offset
+//
+void RecordingManager::startRemovingMeanValue()
 {
-    if(hidMode())
-    {
-        return _numOfHidChannels;
-    }
-    else if(serialMode())
-    {
-        return _arduinoSerial.numberOfChannels();
-    }
-    else if(fileMode())
-    {
-        return _devices[0].channels;
-    }
-    else
-    {
-        return _devices[0].channels;
-    }
-
+        //Reset mean sum counter
+        _devices.begin()->dcBiasNum = 0;
+        for(int chan = 0; chan < numberOfChannels(); chan++) {
+            //reset sum for all channels
+            _devices.begin()->dcBiasSum[chan]  = 0;
+        }
 }
-
-
+    
+    
 void RecordingManager::enableLowPassFilterWithCornerFreq(float cornerFreq)
 {
 
+    
     if(cornerFreq<0)
     {
         cornerFreq = 0.0f;
@@ -1573,6 +1601,7 @@ void RecordingManager::enableLowPassFilterWithCornerFreq(float cornerFreq)
 
 void RecordingManager::enableHighPassFilterWithCornerFreq(float cornerFreq)
 {
+    startRemovingMeanValue();
     _highCornerFreq = cornerFreq;
     if(cornerFreq<0)
     {
@@ -1591,6 +1620,20 @@ void RecordingManager::enableHighPassFilterWithCornerFreq(float cornerFreq)
     _highPassFilterEnabled = true;
 }
 
+void RecordingManager::turnAlphaFeedbackON()
+{
+    alphaFeedbackActive = true;
+    _player.setVolume(100);
+}
+    
+void RecordingManager::turnAlphaFeedbackOFF()
+{
+    alphaFeedbackActive = false;
+    _player.setVolume(0);
+}
+
+#pragma mark - Bind/Unbind device
+    
 bool RecordingManager::bindVirtualDevice(int vdevice) {
 	assert(vdevice >= 0 && vdevice < (int)_virtualDevices.size());
 	_virtualDevices[vdevice].bound = true;

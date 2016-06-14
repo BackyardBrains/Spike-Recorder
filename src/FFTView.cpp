@@ -178,6 +178,9 @@ void FFTView::glResetEvent() {
 
 void FFTView::advance() {
 	int t = SDL_GetTicks()-_startTime;
+    
+    
+    //Animation of FFT window rising from bottom of the window
 	if((t > 0 && t < 1300) || sizeHint().h > 0) {
 		if(_active) {
 			setSizeHint(Widgets::Size(sizeHint().w, 200.f*std::tanh(t/500.f)));
@@ -191,7 +194,10 @@ void FFTView::advance() {
 	if(!_active)
 		return;
 
-	int len = _av.sampleCount(_av.screenWidth(), _av.scaleWidth());
+	//get length of the signal on the screen
+    int len = _av.sampleCount(_av.screenWidth(), _av.scaleWidth());
+    
+    //get position of the begining of the signal on the screen
 	int opos = _manager.pos()+_av.channelOffset()-len+_manager.fileMode()*len/2;
 
 	_anaman.fft.setDevice(_manager.selectedVDevice());

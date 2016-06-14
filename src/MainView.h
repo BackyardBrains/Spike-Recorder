@@ -36,7 +36,10 @@ private:
 	Widgets::PushButton *_analysisButton;
 	Widgets::PushButton *_usbButton;
 	Widgets::PushButton *threshButton;
-
+    
+    Widgets::PushButton *_alphaFeedbackButton;
+    void alphaFeedbackPressed();
+    bool alphaFeedbackAcive;
 
 	Widgets::ScrollBar *_seekBar;
 	Widgets::Widget *_threshavgGroup;

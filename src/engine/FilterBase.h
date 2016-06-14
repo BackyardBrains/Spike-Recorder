@@ -12,8 +12,9 @@ namespace BackyardBrains {
             void initWithSamplingRate(float sr);
             void setCoefficients();
             void filterIntData(int16_t * data, int32_t numFrames);
-        protected:
             void filterContiguousData( float * data, uint32_t numFrames);
+        protected:
+        
             void intermediateVariables(float Fc, float Q);
             float zero, one;
             float samplingRate;

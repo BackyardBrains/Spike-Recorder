@@ -59,6 +59,12 @@ public:
 
 	Player &player();
 
+    //alpha wave audio feedback
+    
+    float alphaWavePower;
+    void turnAlphaFeedbackON();
+    void turnAlphaFeedbackOFF();
+    
     //position of the current file/recording in samples
     //(this sample is at the middle of the screen in the audio view)
 	int64_t pos() const {return _pos;}
@@ -141,6 +147,9 @@ public:
     void swapRTRepeating();
     void reloadHID();
     bool _HIDShouldBeReloaded;
+    
+    
+    
     void enable50HzFilter(){ _60HzFilterEnabled = false; _50HzFilterEnabled = true;}
     void disable50HzFilter(){_50HzFilterEnabled = false;}
     void enable60HzFilter(){_50HzFilterEnabled = false;_60HzFilterEnabled = true;}
@@ -154,7 +163,7 @@ public:
 
     bool highPassFilterEnabled() {return _highPassFilterEnabled;}
     void enableHighPassFilterWithCornerFreq(float cornerFreq);
-    void disableHighPassFilter(){_highPassFilterEnabled = false;}
+    void disableHighPassFilter(){_highPassFilterEnabled = false;startRemovingMeanValue();}
     int highCornerFrequency(){return (int)_highCornerFreq;}
     int lowCornerFrequency(){return (int)_lowCornerFreq;}
 
@@ -241,10 +250,12 @@ private:
 	bool _paused;
 	bool _threshMode;
 
-    bool _50HzFilterEnabled;
-    bool _60HzFilterEnabled;
-    bool _lowPassFilterEnabled;
-    bool _highPassFilterEnabled;
+    void startRemovingMeanValue();
+    
+    bool _50HzFilterEnabled = false;
+    bool _60HzFilterEnabled= false;
+    bool _lowPassFilterEnabled = false;
+    bool _highPassFilterEnabled = false;
     float _highCornerFreq;
     float _lowCornerFreq;
     int numberOfChannels();
@@ -284,7 +295,8 @@ private:
         BSLFirmwareUpdater _bslFirmwareUpdater;
     #endif
 
-
+    double _alphaAudioTime = 0;
+    bool alphaFeedbackActive;
 
 };
 

@@ -102,6 +102,16 @@ MainView::MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder
 	_pauseButton->setHoverTex(Widgets::TextureGL::get("data/pausehigh.bmp"));
 	_pauseButton->setSizeHint(Widgets::Size(64,64));
 
+    
+   /* _alphaFeedbackButton = new Widgets::PushButton(this);
+    _alphaFeedbackButton->setNormalTex(Widgets::TextureGL::get("data/speakeroff.bmp"));
+    _alphaFeedbackButton->setSizeHint(Widgets::Size(50,50));
+    _alphaFeedbackButton->clicked.connect(this, &MainView::alphaFeedbackPressed);
+    _alphaFeedbackButton->setVisible(false);
+     alphaFeedbackAcive = false;
+    */
+    
+    
 	Widgets::PushButton * const backwardButton = new Widgets::PushButton(this);
 	backwardButton->setNormalTex(Widgets::TextureGL::get("data/backward.bmp"));
 	backwardButton->setHoverTex(Widgets::TextureGL::get("data/backwardhigh.bmp"));
@@ -143,6 +153,8 @@ MainView::MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder
     topBar->addSpacing(5);
 	topBar->addWidget(_threshavgGroup, Widgets::AlignVCenter);
 	topBar->addStretch();
+   // topBar->addWidget(_alphaFeedbackButton);
+   // topBar->addSpacing(10);
 	topBar->addWidget(_recordButton);
 	topBar->addSpacing(5);
 	topBar->addWidget(_fileButton);
@@ -217,6 +229,20 @@ void MainView::backwardPressed() {
 void MainView::ekgPressed() {
 }
 
+    
+void MainView::alphaFeedbackPressed()
+{
+  /*  if(alphaFeedbackAcive)
+    {
+        _alphaFeedbackButton->setNormalTex(Widgets::TextureGL::get("data/speakeroff.bmp"));
+        alphaFeedbackAcive = false;
+    }
+    else
+    {
+        _alphaFeedbackButton->setNormalTex(Widgets::TextureGL::get("data/speaker.bmp"));
+        alphaFeedbackAcive = true;
+    }*/
+}
 void MainView::forwardPressed() {
 	if(_manager.fileMode()) { // end file mode when in file mode
 		//delete _anaView;
@@ -578,6 +604,26 @@ void MainView::paintEvent()
         _usbButton->setVisible(false);
         _usbButton->setSizeHint(Widgets::Size(0,0));
     }
+ /*   if(_fftView->active() && _manager.serialMode())
+    {
+        _alphaFeedbackButton->setVisible(true);
+        if(alphaFeedbackAcive)
+        {
+            _manager.alphaWavePower = _anaman.fft.lowPassAlphaWaves;
+            _manager.turnAlphaFeedbackON();
+        
+        }
+        else
+        {
+            _manager.turnAlphaFeedbackOFF();
+        }
+    }
+    else
+    {
+        _manager.turnAlphaFeedbackOFF();
+        _alphaFeedbackButton->setVisible(false);
+    }
+  */
     if(_manager.hidMode())
     {
         _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.bmp"));

@@ -38,7 +38,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 	_catchers.reserve(_clrs.size());
 
 	Widgets::Widget *group = new Widgets::Widget(this);
-	group->setSizeHint(Widgets::Size(500,400));
+	group->setSizeHint(Widgets::Size(500,600));
 	Widgets::BoxLayout *gvbox = new Widgets::BoxLayout(Widgets::Vertical, group);
 
 
@@ -56,7 +56,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 			_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
 		else
 			_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
-		_muteCKBox->setSizeHint(Widgets::Size(16,16));
+		_muteCKBox->setSizeHint(Widgets::Size(19,19));
 		_muteCKBox->clicked.connect(this, &ConfigView::mutePressed);
 
 		mutehbox->addWidget(muteLabel);
@@ -68,7 +68,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 	}
 
     //---------- Calibrator code --------------------------------------
-	if(!_manager.fileMode()) {
+/*	if(!_manager.fileMode()) {
         Widgets::Label *calibrateMainLabel = new Widgets::Label(group);
 		calibrateMainLabel->setText("Calibrate SpikeRecorder for current setup ");
 		calibrateMainLabel->updateSize();
@@ -86,10 +86,10 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 
         gvbox->addLayout(hcalBox);
         gvbox->addSpacing(40);
-	}
+	}*/
 
     //---------- High/Low pass filter --------------------------------------
-  /*  if(!_manager.fileMode()) {
+    if(!_manager.fileMode()) {
 
         Widgets::Label *filterMainLabel = new Widgets::Label(group);
 		filterMainLabel->setText("Set band-pass filter cutoff frequencies");
@@ -166,18 +166,30 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 
 		_50hzFilter = new Widgets::PushButton(group);
 		if(_manager.fiftyHzFilterEnabled())
-			_50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
-		else
+        {
+            std::cout<<"\n\n-----50hz enabled init";
 			_50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
-		_50hzFilter->setSizeHint(Widgets::Size(16,16));
+        }
+		else
+        {
+            std::cout<<"\n\n-------50hz disabled init";
+			_50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
+        }
+		_50hzFilter->setSizeHint(Widgets::Size(19,19));
 		_50hzFilter->clicked.connect(this, &ConfigView::fiftyHzPressed);
 
 		_60hzFilter = new Widgets::PushButton(group);
 		if(_manager.sixtyHzFilterEnabled())
-			_60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
-		else
+        {
+            std::cout<<"\n\n-----6s0hz enabled init";
 			_60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
-		_60hzFilter->setSizeHint(Widgets::Size(16,16));
+        }
+		else
+        {
+             std::cout<<"\n\n-------60hz disabled init";
+			_60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
+        }
+		_60hzFilter->setSizeHint(Widgets::Size(19,19));
 		_60hzFilter->clicked.connect(this, &ConfigView::sixtyHzPressed);
 
 		filterhbox->addWidget(filterLabel);
@@ -193,7 +205,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 		gvbox->addLayout(filterhbox);
 		gvbox->addSpacing(40);
 	}
-*/
+
 
     //----------- Color chooser for channels --------------------------------
 
@@ -645,14 +657,14 @@ void ConfigView::fiftyHzPressed() {
     if(_manager.fiftyHzFilterEnabled())
     {
         _manager.disable50HzFilter();
-        _60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
-        _50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
+        _60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
+        _50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
     }
     else
     {
         _manager.enable50HzFilter();
-        _50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
-        _60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
+        _50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
+        _60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
     }
 }
 
@@ -664,14 +676,14 @@ void ConfigView::sixtyHzPressed() {
     if(_manager.sixtyHzFilterEnabled())
     {
         _manager.disable60HzFilter();
-        _60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
-        _50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
+        _60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
+        _50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
     }
     else
     {
         _manager.enable60HzFilter();
-        _60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
-        _50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
+        _60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
+        _50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
     }
 }
 

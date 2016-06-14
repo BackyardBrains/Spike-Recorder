@@ -162,6 +162,16 @@ void RangeSelector::updateLowLogValue(int val) // don't emit a signal
     val = _maximum*(log10((double)val)/log10((double)_maximum)) +1;
     _lowValue = std::max(_minimum, std::min(val, _maximum));
 
+    
+    int lowLogFreqValue = (int)pow(10,(((double)lowValue())/((double)_maximum)*log10((double)_maximum)));
+    if(_lowValue==0)
+    {
+        lowLogFreqValue = 0;
+    }
+
+    lowValueChanged.emit(lowLogFreqValue);
+    
+    
 	//if we want to move low value over high value push high value
 	if(_lowValue>_highValue)
     {
@@ -176,6 +186,17 @@ void RangeSelector::updateHighLogValue(int val) // don't emit a signal
 
     _highValue = std::max(_minimum, std::min(val, _maximum));
 
+    
+    int highLogFreqValue = (int)pow(10,(((double)highValue())/((double)_maximum)*log10((double)_maximum)));
+    if(_highValue==0)
+    {
+        highLogFreqValue = 0;
+    }
+
+    highValueChanged.emit(highLogFreqValue);
+    
+    
+    
 	//if we want to move high value below low value push low value
 	if(_lowValue>_highValue)
     {
