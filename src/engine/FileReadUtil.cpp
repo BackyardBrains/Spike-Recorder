@@ -20,7 +20,8 @@ bool OpenWAVFile(const char *file, HSTREAM &handle, int &nchan, int &samplerate,
 	bytespersample = info.origres/8;
 	if(bytespersample == 0) {
 		Log::error("Bass Error: Failed to load file '%s': strange bytes per sample", file);
-		return false;
+        bytespersample = 2;
+		//return false;
 	}
 	if(bytespersample >= 3)
 		bytespersample = 4; // bass converts everything it doesn’t support.

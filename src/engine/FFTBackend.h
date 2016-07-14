@@ -49,7 +49,7 @@ private:
 
     void addWindow(float *result, int pos, int device, int len, int samplerate, bool calculateAlphaPower);
     void fft(int sign, std::vector<std::complex<float>> &zs);;
-    
+    void updateAlphawave( int device, int samplerate );
 	int _device; // recording device to fetch data from
 
 	long long _begin; // first sample shown in the buffer

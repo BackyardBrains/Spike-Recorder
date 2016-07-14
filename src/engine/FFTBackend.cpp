@@ -24,6 +24,44 @@ namespace BackyardBrains {
     }
     
     
+    void FFTBackend::updateAlphawave( int device, int samplerate )
+    {
+        _manager.getData(device, _manager.pos()-SWINDOW-1, SWINDOW, _samplebuf);
+        // simple downsampling because only low frequencies are required
+        const int ds = 4;
+        _fftbuf.resize(SWINDOW/ds);
+        for(int i = 0; i < SWINDOW/ds; i++)
+            _fftbuf[i] = _samplebuf[ds*i];
+        
+        float windowt = SWINDOW/(float)samplerate;
+        float binsize = windowt*FFTMAXF/(float)FFTFRES;
+        
+        transform(_fftbuf);
+        double alphapower = 1;
+        // resampling the result to have exactly FFTFRES bins
+        for(int i = 0; i < FFTFRES; i++) {
+            float f = i*FFTMAXF/(float)FFTFRES;
+            
+            int lower = f*windowt;
+            int upper = std::min((int)(f*windowt+binsize+1), SWINDOW/ds-1);
+            
+            double max = std::abs(_fftbuf[lower]);
+            for(int j = lower; j <= upper; j++) {
+                if(std::abs(_fftbuf[j]) > max) {
+                    max = std::abs(_fftbuf[j]);
+                }
+            }
+
+            //calculating power of alpha waves
+            if(f>9.0 && f<11.0)
+            {
+                alphapower = max;
+            }
+        }
+         lowPassAlphaWaves = 0.98*lowPassAlphaWaves+0.02*alphapower;
+    }
+    
+    
     void FFTBackend::addWindow(float *result, int pos, int device, int len, int samplerate, bool calculateAlphaPower) {
         _manager.getData(device, pos, len, _samplebuf);
         
@@ -38,8 +76,7 @@ namespace BackyardBrains {
         
         transform(_fftbuf);
         
-        double alphapower = 1;;
-        double fortyHzPower = 1;
+      //  double alphapower = 1;
         // resampling the result to have exactly FFTFRES bins
         for(int i = 0; i < FFTFRES; i++) {
             float f = i*FFTMAXF/(float)FFTFRES;
@@ -57,19 +94,19 @@ namespace BackyardBrains {
             
             result[FFTFRES-1-i] = max/4.0;
             //calculating power of alpha waves
-            if(f>9.0 && f<11.0 && calculateAlphaPower)
-            {
-                alphapower = max;
-            }
+           // if(f>9.0 && f<11.0 && calculateAlphaPower)
+           // {
+           //     alphapower = max;
+           // }
            
 
         }
-        if(fortyHzPower<1.0)
+        /*if(fortyHzPower<1.0)
         {
             fortyHzPower = 1.0;
-        }
+        }*/
         
-        lowPassAlphaWaves = 0.98*lowPassAlphaWaves+0.02*(alphapower/fortyHzPower);
+        //lowPassAlphaWaves = 0.98*lowPassAlphaWaves+0.02*alphapower;
         //std::cout<< lowPassAlphaWaves<<"   "<<alphapower<<"\n";
         // smoothing filter on the result in the frequency domain
         for(int i = 1; i < FFTFRES-1; i++) {
@@ -77,7 +114,7 @@ namespace BackyardBrains {
             uint8_t *pm = (uint8_t *)&result[i-1];
             uint8_t *pp = (uint8_t *)&result[i+1];
             for(int j = 0; j < 3; j++) {
-                p[j] = (pm[j]+2*p[j]+pp[j])/4.;
+                p[j] = (pm[j]+2*p[j]+pp[j])/1.;
             }
         }
         
@@ -121,12 +158,14 @@ namespace BackyardBrains {
                 continue;
             }
             addWindow(resultbuf, pos+i*windowdist, _device,
-                      SWINDOW, _manager.sampleRate(), i==(_viewwidth-1));
+                      SWINDOW, _manager.sampleRate(), false);
             for(int j = 0; j < FFTFRES; j++) {
                 int idx = (((i+(int)_offset)%FFTTRES)+FFTTRES)%FFTTRES;
                 _fftcache[idx][j] = resultbuf[j];
             }
         }
+        
+        updateAlphawave(_device, _manager.sampleRate() );
         
         _begin = pos;
         _end = pos+(_viewwidth-1)*windowdist;

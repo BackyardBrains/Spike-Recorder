@@ -103,13 +103,13 @@ MainView::MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder
 	_pauseButton->setSizeHint(Widgets::Size(64,64));
 
     
-   /* _alphaFeedbackButton = new Widgets::PushButton(this);
+    _alphaFeedbackButton = new Widgets::PushButton(this);
     _alphaFeedbackButton->setNormalTex(Widgets::TextureGL::get("data/speakeroff.bmp"));
     _alphaFeedbackButton->setSizeHint(Widgets::Size(50,50));
     _alphaFeedbackButton->clicked.connect(this, &MainView::alphaFeedbackPressed);
     _alphaFeedbackButton->setVisible(false);
      alphaFeedbackAcive = false;
-    */
+    
     
     
 	Widgets::PushButton * const backwardButton = new Widgets::PushButton(this);
@@ -128,7 +128,7 @@ MainView::MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder
 	_seekBar->setVisible(false);
 	_seekBar->setRange(0,1000);
 	_seekBar->setPageStep(25);
-	_seekBar->setValue(1000);
+	_seekBar->setValue(0);
 	_seekBar->valueChanged.connect(_audioView, &AudioView::setRelOffset);
  	_audioView->relOffsetChanged.connect(_seekBar, &Widgets::ScrollBar::updateValue);
 
@@ -153,8 +153,8 @@ MainView::MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder
     topBar->addSpacing(5);
 	topBar->addWidget(_threshavgGroup, Widgets::AlignVCenter);
 	topBar->addStretch();
-   // topBar->addWidget(_alphaFeedbackButton);
-   // topBar->addSpacing(10);
+    topBar->addWidget(_alphaFeedbackButton);
+    topBar->addSpacing(10);
 	topBar->addWidget(_recordButton);
 	topBar->addSpacing(5);
 	topBar->addWidget(_fileButton);
@@ -232,16 +232,17 @@ void MainView::ekgPressed() {
     
 void MainView::alphaFeedbackPressed()
 {
-  /*  if(alphaFeedbackAcive)
+    if(alphaFeedbackAcive)
     {
         _alphaFeedbackButton->setNormalTex(Widgets::TextureGL::get("data/speakeroff.bmp"));
         alphaFeedbackAcive = false;
+        _manager.player().setVolume(0);
     }
     else
     {
         _alphaFeedbackButton->setNormalTex(Widgets::TextureGL::get("data/speaker.bmp"));
         alphaFeedbackAcive = true;
-    }*/
+    }
 }
 void MainView::forwardPressed() {
 	if(_manager.fileMode()) { // end file mode when in file mode
@@ -604,7 +605,7 @@ void MainView::paintEvent()
         _usbButton->setVisible(false);
         _usbButton->setSizeHint(Widgets::Size(0,0));
     }
- /*   if(_fftView->active() && _manager.serialMode())
+    if(_fftView->active() && _manager.serialMode())
     {
         _alphaFeedbackButton->setVisible(true);
         if(alphaFeedbackAcive)
@@ -623,7 +624,7 @@ void MainView::paintEvent()
         _manager.turnAlphaFeedbackOFF();
         _alphaFeedbackButton->setVisible(false);
     }
-  */
+  
     if(_manager.hidMode())
     {
         _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.bmp"));

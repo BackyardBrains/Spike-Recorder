@@ -308,7 +308,7 @@ void RecordingManager::scanForHIDDevices()
     try{
         if(_firmwareUpdateStage<1)
         {
-        //    _hidUsbManager.getAllDevicesList();
+            _hidUsbManager.getAllDevicesList();
         }
     }catch(int e)
     {
@@ -617,14 +617,14 @@ bool RecordingManager::loadFile(const char *filename) {
 
 	_player.start(_sampleRate);
 	devicesChanged.emit();
-
+    
 	_player.setVolume(100);
 
 	if(!_paused) {
 		pauseChanged.emit();
 		setPaused(true);
 	}
-
+    
 	Log::msg("loaded file '%s'.", filename);
 	return true;
 }
@@ -1629,7 +1629,7 @@ void RecordingManager::turnAlphaFeedbackON()
 void RecordingManager::turnAlphaFeedbackOFF()
 {
     alphaFeedbackActive = false;
-    _player.setVolume(0);
+  //  _player.setVolume(0);
 }
 
 #pragma mark - Bind/Unbind device

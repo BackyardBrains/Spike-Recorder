@@ -83,6 +83,15 @@ void AudioView::updateChannels() {
 			}
 		}
 	}
+    if(_manager.fileMode()) {
+        //positionseek bar to begining
+        relOffsetChanged.emit(0);
+    }
+    else
+    {
+        //position seek bar to end
+        relOffsetChanged.emit(1000);
+    }
 }
 
 static bool compare_second(const std::pair<int, int> &a, const std::pair<int, int> &b) {

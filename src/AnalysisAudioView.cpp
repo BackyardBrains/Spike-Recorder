@@ -93,7 +93,7 @@ void AnalysisAudioView::paintEvent() {
 			if(samplepos < -samples/2 || samplepos > samples/2)
 				continue;
 
-			const int y = height()*_channels[0].pos - _spikes.spikes()[i].second*height()*ampScale*_channels[0].gain;
+            const int y = height()*_channels[0].pos - _spikes.spikes()[i].second*height()*ampScale*_channels[0].gain;
 			const float x = MOVEPIN_SIZE*1.48f+screenWidth()*(samples/2-samplepos)/(float)samples;
 
 			bool selected = _spikes.spikes()[i].second >= std::min(_threshPos[0], _threshPos[1]) && _spikes.spikes()[i].second <= std::max(_threshPos[0], _threshPos[1]);

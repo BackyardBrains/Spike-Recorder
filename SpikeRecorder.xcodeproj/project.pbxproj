@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C7EA2531D380C0200D5FCD7 /* libbass.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C7EA2521D380C0200D5FCD7 /* libbass.dylib */; };
+		1C7EA2541D380C0800D5FCD7 /* libbass.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1C7EA2521D380C0200D5FCD7 /* libbass.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		1C7EA2551D380C0C00D5FCD7 /* libbass.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1C7EA2521D380C0200D5FCD7 /* libbass.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		240506621CCBEC6A00E8FCEE /* CalibrationWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 240506601CCBEC6A00E8FCEE /* CalibrationWindow.cpp */; };
 		24079F321AB0CBE700820291 /* icon_128x128.png in Resources */ = {isa = PBXBuildFile; fileRef = 24079F281AB0CBE700820291 /* icon_128x128.png */; };
 		24079F331AB0CBE700820291 /* icon_128x128@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 24079F291AB0CBE700820291 /* icon_128x128@2x.png */; };
@@ -18,8 +21,6 @@
 		24079F391AB0CBE700820291 /* icon_32x32@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 24079F2F1AB0CBE700820291 /* icon_32x32@2x.png */; };
 		24079F3A1AB0CBE700820291 /* icon_512x512.png in Resources */ = {isa = PBXBuildFile; fileRef = 24079F301AB0CBE700820291 /* icon_512x512.png */; };
 		24079F3B1AB0CBE700820291 /* icon_512x512@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 24079F311AB0CBE700820291 /* icon_512x512@2x.png */; };
-		24079F3F1AB0CCDF00820291 /* libbass.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 248E591A1AAE1AD50011707F /* libbass.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		24079F431AB0CCFC00820291 /* libbass.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 248E591A1AAE1AD50011707F /* libbass.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		24079FA71AB1C73600820291 /* ArduinoSerial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24079FA51AB1C73600820291 /* ArduinoSerial.cpp */; };
 		24079FA91AB1C90E00820291 /* data in Resources */ = {isa = PBXBuildFile; fileRef = 24079FA81AB1C90E00820291 /* data */; };
 		24079FAC1AB1D1F500820291 /* DropDownList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24079FAA1AB1D1F500820291 /* DropDownList.cpp */; };
@@ -79,7 +80,6 @@
 		248E59061AAE19570011707F /* Widget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 248E58E01AAE19570011707F /* Widget.cpp */; };
 		248E59101AAE1A180011707F /* GLee.c in Sources */ = {isa = PBXBuildFile; fileRef = 248E590A1AAE1A180011707F /* GLee.c */; };
 		248E591F1AAE1B7C0011707F /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 248E591C1AAE1ADE0011707F /* IOKit.framework */; };
-		248E59201AAE1B820011707F /* libbass.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 248E591A1AAE1AD50011707F /* libbass.dylib */; };
 		248E59231AAE1B820011707F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 248E59141AAE1A970011707F /* Cocoa.framework */; };
 		248E59241AAE1B820011707F /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 248E59121AAE1A910011707F /* OpenGL.framework */; };
 		24D572A11C8772BD007F4DEB /* AnalysisManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24D5729F1C8772BD007F4DEB /* AnalysisManager.cpp */; };
@@ -97,9 +97,9 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				24079F3F1AB0CCDF00820291 /* libbass.dylib in CopyFiles */,
 				2407F7061C7F49A400D215B9 /* SDL2.framework in CopyFiles */,
 				247FF9321C919F21004DF81C /* SDL2_image.framework in CopyFiles */,
+				1C7EA2541D380C0800D5FCD7 /* libbass.dylib in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -111,13 +111,14 @@
 			files = (
 				2407F7071C7F49A900D215B9 /* SDL2.framework in CopyFiles */,
 				247FF9331C919F24004DF81C /* SDL2_image.framework in CopyFiles */,
-				24079F431AB0CCFC00820291 /* libbass.dylib in CopyFiles */,
+				1C7EA2551D380C0C00D5FCD7 /* libbass.dylib in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1C7EA2521D380C0200D5FCD7 /* libbass.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libbass.dylib; sourceTree = "<group>"; };
 		240506601CCBEC6A00E8FCEE /* CalibrationWindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CalibrationWindow.cpp; path = src/CalibrationWindow.cpp; sourceTree = SOURCE_ROOT; };
 		240506611CCBEC6A00E8FCEE /* CalibrationWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CalibrationWindow.h; path = src/CalibrationWindow.h; sourceTree = SOURCE_ROOT; };
 		24079F281AB0CBE700820291 /* icon_128x128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_128x128.png; sourceTree = "<group>"; };
@@ -309,7 +310,6 @@
 		248E590E1AAE1A180011707F /* sigslot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sigslot.h; sourceTree = "<group>"; };
 		248E59121AAE1A910011707F /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		248E59141AAE1A970011707F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
-		248E591A1AAE1AD50011707F /* libbass.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libbass.dylib; sourceTree = "<group>"; };
 		248E591C1AAE1ADE0011707F /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		248E594C1AAEF7320011707F /* FFTView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FFTView.h; path = src/FFTView.h; sourceTree = SOURCE_ROOT; };
 		24D5729F1C8772BD007F4DEB /* AnalysisManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnalysisManager.cpp; sourceTree = "<group>"; };
@@ -333,9 +333,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				248E591F1AAE1B7C0011707F /* IOKit.framework in Frameworks */,
-				248E59201AAE1B820011707F /* libbass.dylib in Frameworks */,
 				248E59231AAE1B820011707F /* Cocoa.framework in Frameworks */,
 				247FF9311C919F12004DF81C /* SDL2_image.framework in Frameworks */,
+				1C7EA2531D380C0200D5FCD7 /* libbass.dylib in Frameworks */,
 				2407F7051C7F499800D215B9 /* SDL2.framework in Frameworks */,
 				248E59241AAE1B820011707F /* OpenGL.framework in Frameworks */,
 			);
@@ -638,11 +638,11 @@
 		248E591E1AAE1B450011707F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1C7EA2521D380C0200D5FCD7 /* libbass.dylib */,
 				247FF9301C919F12004DF81C /* SDL2_image.framework */,
 				2407F7041C7F499800D215B9 /* SDL2.framework */,
 				2407F6C81C7F497800D215B9 /* SDL2 */,
 				248E591C1AAE1ADE0011707F /* IOKit.framework */,
-				248E591A1AAE1AD50011707F /* libbass.dylib */,
 				248E59141AAE1A970011707F /* Cocoa.framework */,
 				248E59121AAE1A910011707F /* OpenGL.framework */,
 			);
@@ -896,7 +896,7 @@
 				CLANG_LINK_OBJC_RUNTIME = YES;
 				CODE_SIGN_ENTITLEMENTS = SpikeRecorder.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "3rd Party Mac Developer Application: Backyard Brains (MLGRKD657P)";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -922,6 +922,7 @@
 					"$(PROJECT_DIR)/support",
 					"$(PROJECT_DIR)/**",
 					"$(PROJECT_DIR)/src/**",
+					"$(PROJECT_DIR)",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
@@ -940,7 +941,7 @@
 				CLANG_LINK_OBJC_RUNTIME = YES;
 				CODE_SIGN_ENTITLEMENTS = SpikeRecorder.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "3rd Party Mac Developer Application: Backyard Brains (MLGRKD657P)";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -966,6 +967,7 @@
 					"$(PROJECT_DIR)/support",
 					"$(PROJECT_DIR)/**",
 					"$(PROJECT_DIR)/src/**",
+					"$(PROJECT_DIR)",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";

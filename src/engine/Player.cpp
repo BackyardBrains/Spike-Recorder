@@ -42,7 +42,9 @@ int Player::volume() const {
 }
 
 void Player::setVolume(int volume) {
-	BASS_ChannelSetAttribute(_output, BASS_ATTRIB_VOL, volume*0.01f);
+	
+    if(!BASS_ChannelSetAttribute(_output, BASS_ATTRIB_VOL, volume*0.01f))
+        Log::error("Bass Error: volume %s", GetBassStrError());
 }
 
 bool Player::paused() const {

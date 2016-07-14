@@ -123,7 +123,7 @@ void ThresholdPanel::paintEvent()
             _switchLayout->setSelected(!state);
         }
         _ekgButton->setVisible(false);
-        _ekgButton->setSizeHint(Widgets::Size(0,0));
+        
     }
 }
     

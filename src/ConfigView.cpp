@@ -53,9 +53,9 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 
 		_muteCKBox = new Widgets::PushButton(group);
 		if(_manager.player().volume() == 0)
-			_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
-		else
 			_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
+		else
+			_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
 		_muteCKBox->setSizeHint(Widgets::Size(19,19));
 		_muteCKBox->clicked.connect(this, &ConfigView::mutePressed);
 
@@ -592,10 +592,10 @@ void ConfigView::closePressed() {
 
 void ConfigView::mutePressed() {
 	if(_manager.player().volume() == 0) {
-		_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
+		_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
 		_manager.player().setVolume(100);
 	} else {
-		_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
+		_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
 		_manager.player().setVolume(0);
 	}
 }

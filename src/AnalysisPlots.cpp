@@ -90,7 +90,7 @@ void AnalysisPlots::setAvgWaveformData(int idx) {
 	_plots[idx]->setSTD(stdy);
 	_plots[idx]->setStyle(Widgets::Plot::Line);
 	_plots[idx]->setYLabel("");
-	_plots[idx]->setXLabel("time/s");
+	_plots[idx]->setXLabel("time [s]");
 }
 
 void AnalysisPlots::setAutocorrData(int idx) {
@@ -109,7 +109,7 @@ void AnalysisPlots::setAutocorrData(int idx) {
 	_plots[idx]->setSTD(std::vector<float>());
 	_plots[idx]->setStyle(Widgets::Plot::Bar);
 	_plots[idx]->setYLabel("# of spikes");
-	_plots[idx]->setXLabel("time/s");
+	_plots[idx]->setXLabel("time [s]");
 }
 
 void AnalysisPlots::setCrosscorrData(int idx) {
@@ -128,7 +128,7 @@ void AnalysisPlots::setCrosscorrData(int idx) {
 	_plots[idx]->setSTD(std::vector<float>());
 	_plots[idx]->setStyle(Widgets::Plot::Bar);
 	_plots[idx]->setYLabel("# of spikes");
-	_plots[idx]->setXLabel("time/s");
+	_plots[idx]->setXLabel("time [s]");
 
 }
 
@@ -150,7 +150,7 @@ void AnalysisPlots::setISIData(int idx) {
 	_plots[idx]->setSTD(std::vector<float>());
 	_plots[idx]->setStyle(Widgets::Plot::Bar);
 	_plots[idx]->setYLabel("# of spikes");
-	_plots[idx]->setXLabel("log10(time/s)");
+	_plots[idx]->setXLabel("time 10^X [s]");
 }
 
 
