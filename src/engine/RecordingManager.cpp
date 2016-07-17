@@ -9,6 +9,7 @@
 
 #if defined(_WIN32)
     #include <unistd.h>
+    #include <cmath>
 #endif
 
 
@@ -22,6 +23,19 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
 	if(!BASS_Init(-1, _sampleRate, 0, 0, NULL)) {
 		Log::fatal("Bass initialization failed: %s", GetBassStrError());
 	}
+	#if defined(_WIN32)
+        //load acc plugin for .m4a files ALAC (Apple Lossless Audio Codec)
+
+        if(!BASS_PluginLoad("bass_aac.dll", NULL))
+        {
+            Log::fatal("Bass plugin failed: %s", GetBassStrError());
+        }
+
+        if(!BASS_PluginLoad("bassalac.dll", NULL))
+        {
+            Log::fatal("Bass plugin failed: %s", GetBassStrError());
+        }
+	#endif
     _numOfSerialChannels = 1;
     _numOfHidChannels = 2;
     _firmwareUpdateStage = 0;
@@ -44,7 +58,7 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
 
     alphaFeedbackActive = false;
     alphaWavePower = 0;
-    
+
 	initRecordingDevices();
 }
 
@@ -173,7 +187,7 @@ void RecordingManager::sendEKGImpuls()
     double elapsed_secs = double(end - timerEKG) / CLOCKS_PER_SEC;
     if(elapsed_secs>0.2)
     {
-        
+
         timerEKG = end;
         _arduinoSerial.sendEventMessage(0);
     }
@@ -617,14 +631,14 @@ bool RecordingManager::loadFile(const char *filename) {
 
 	_player.start(_sampleRate);
 	devicesChanged.emit();
-    
+
 	_player.setVolume(100);
 
 	if(!_paused) {
 		pauseChanged.emit();
 		setPaused(true);
 	}
-    
+
 	Log::msg("loaded file '%s'.", filename);
 	return true;
 }
@@ -713,7 +727,7 @@ Player &RecordingManager::player() {
 	return _player;
 }
 
-    
+
 int RecordingManager::numberOfChannels()
 {
     if(hidMode())
@@ -732,10 +746,10 @@ int RecordingManager::numberOfChannels()
     {
         return _devices[0].channels;
     }
-    
+
 }
-    
-    
+
+
 int RecordingManager::sampleRate() const {
 	return _sampleRate;
 }
@@ -896,9 +910,9 @@ std::vector<std::pair<int16_t,int16_t> > RecordingManager::getTriggerSamplesEnve
 	return result;
 }
 
-    
+
 #pragma mark - Advance one step
-    
+
 void RecordingManager::advanceFileMode(uint32_t samples) {
 	if(!_paused && _pos >= fileLength()-1) {
 		pauseChanged.emit();
@@ -1148,13 +1162,13 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 	    delete[] buffer;
 
 
-       
-        
+
+
         //Push data to speaker
 
         //const int nchan = _devices.begin()->channels;
         int bytesPerSample = _devices.begin()->bytespersample;
-        
+
 
         if(alphaFeedbackActive)
         {
@@ -1162,7 +1176,7 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
             //std::cout<<alphaWavePower<<"\n";
             //648044
             //200
-           
+
             double progress = 0.1+0.4*alphaWavePower/50000.0;
             for( int index= 0;index<samples;index++)
             {
@@ -1194,8 +1208,8 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
             }
              delete[] buf;
         }
-        
-        
+
+
 
          _pos+=samplesRead;
 	}
@@ -1575,12 +1589,12 @@ void RecordingManager::startRemovingMeanValue()
             _devices.begin()->dcBiasSum[chan]  = 0;
         }
 }
-    
-    
+
+
 void RecordingManager::enableLowPassFilterWithCornerFreq(float cornerFreq)
 {
 
-    
+
     if(cornerFreq<0)
     {
         cornerFreq = 0.0f;
@@ -1625,7 +1639,7 @@ void RecordingManager::turnAlphaFeedbackON()
     alphaFeedbackActive = true;
     _player.setVolume(100);
 }
-    
+
 void RecordingManager::turnAlphaFeedbackOFF()
 {
     alphaFeedbackActive = false;
@@ -1633,7 +1647,7 @@ void RecordingManager::turnAlphaFeedbackOFF()
 }
 
 #pragma mark - Bind/Unbind device
-    
+
 bool RecordingManager::bindVirtualDevice(int vdevice) {
 	assert(vdevice >= 0 && vdevice < (int)_virtualDevices.size());
 	_virtualDevices[vdevice].bound = true;

@@ -71,7 +71,6 @@ void Game::loadResources() {
     Widgets::TextureGL::load("data/usbcon.bmp");
     Widgets::TextureGL::load("data/usbconhigh.bmp");
     Widgets::TextureGL::load("data/usbdiscon.bmp");
-    Widgets::TextureGL::load("data/usbdisconhigh.bmp");
 	Widgets::TextureGL::load("data/heart.bmp");
 	Widgets::TextureGL::load("data/speaker.bmp");
 	Widgets::TextureGL::load("data/speakeroff.bmp");
