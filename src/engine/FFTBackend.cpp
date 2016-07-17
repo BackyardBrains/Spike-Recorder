@@ -92,7 +92,7 @@ namespace BackyardBrains {
             }
             
             
-            result[FFTFRES-1-i] = max/4.0;
+            result[FFTFRES-1-i] = max/1.0;
             //calculating power of alpha waves
            // if(f>9.0 && f<11.0 && calculateAlphaPower)
            // {

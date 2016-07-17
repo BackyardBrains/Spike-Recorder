@@ -308,7 +308,7 @@ void RecordingManager::scanForHIDDevices()
     try{
         if(_firmwareUpdateStage<1)
         {
-            _hidUsbManager.getAllDevicesList();
+           // _hidUsbManager.getAllDevicesList();
         }
     }catch(int e)
     {
