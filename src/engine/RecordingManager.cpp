@@ -922,7 +922,8 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 
 	int numOfBytesInAudioBuffer = _player.stateOfBuffer();
 	//if we don't have enough data preloaded
-	//add some more
+	//add some more (we have to have enough data for audio until next
+    //frame/call of this function)
     if(numOfBytesInAudioBuffer< _sampleRate/15)
     {
         samples +=samples;//double the sample count
@@ -943,6 +944,7 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 		else
 			len = SampleBuffer::SIZE-1 - _devices[idx].sampleBuffers[0].head();
 
+        std::cout<<"Read "<<std::min(len,bufsize)<<" samples\n";
 		bool rc = ReadWAVFile(channels, channum*std::min(len,bufsize)*bytespersample, _devices[idx].handle,
 				channum, bytespersample);
 		if(!rc)
@@ -960,7 +962,7 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 			int dcBias = _devices[idx].dcBiasSum[chan]/_devices[idx].dcBiasNum;
 
 			for(unsigned int i = 0; i < channels[chan].size(); i++) {
-				channels[chan][i] -= dcBias;
+				//channels[chan][i] -= dcBias;
 			}
 		}
 
@@ -1835,7 +1837,7 @@ bool RecordingManager::Device::disable() {
 void RecordingManager::setPos(int64_t pos, bool artificial) {
 	assert(_fileMode);
 	pos = std::max((int64_t)0, std::min(fileLength()-1, pos));
-
+    std::cout<<"\nSeek: "<<pos<<" \n";
 	if(pos == _pos)
 		return;
 
@@ -1843,24 +1845,33 @@ void RecordingManager::setPos(int64_t pos, bool artificial) {
 
 	const int halfsize = SampleBuffer::SIZE/2;
 
-	const int seg1 = std::min(fileLength()-1,_pos+halfsize/2)/halfsize;
-	const int seg2 = std::min(fileLength()-1,pos+halfsize/2)/halfsize;
+    
+    //it counts on rounding during division
+    //how many halfsize we have in _pos+halfsize/2 (current position in file) and
+    //how many halfsize we have in pos+halfsize/2
+	const int seg1 = std::min(fileLength()-1,_pos+halfsize/2)/halfsize;//for current position
+	const int seg2 = std::min(fileLength()-1,pos+halfsize/2)/halfsize;//for goal position
 
 
 	if(seg1 != seg2) {
 		for(int idx = 0; idx < (int)_devices.size(); idx++) {
 			const int nchan = _devices[idx].channels;
 			const int npos = seg2*halfsize;
-
+            
 			for(unsigned int i = 0; i < _devices[idx].sampleBuffers.size(); i++) {
 				SampleBuffer &s = _devices[idx].sampleBuffers[i];
 
+                //if we need to fill more than full segment reset it
 				if(abs(seg2-seg1) > 1 || seg2 == 0 || s.head()%halfsize != halfsize-1)
 					s.reset();
 
+                //set playback emediately to correct position
 				BASS_ChannelSetPosition(_devices[idx].handle, _devices[idx].bytespersample*npos*nchan, BASS_POS_BYTE);
+                
+                //set head for buffer for display of waveform
 				s.setHead(s.head() > halfsize ? 0 : halfsize); // to make it enter the next half segment
 
+                //set cumulative number of samples read from file
 				s.setPos(npos);
 
 			}

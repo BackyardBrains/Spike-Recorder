@@ -79,20 +79,20 @@ void AnalysisAudioView::paintEvent() {
     data = _manager.getSamplesEnvelope(_manager.selectedVDevice(), pos, samples, screenWidth() == 0 ? 1 : std::max(samples/screenWidth(),1));
     
 	Widgets::Painter::setColor(Widgets::Colors::widgetbgdark);
-	drawData(data, 0, samples, MOVEPIN_SIZE*1.5f, height()/2, screenWidth());
+	drawData(data, 0, samples, MOVEPIN_SIZE*1.5f, height()/2.0, screenWidth());
 
 	drawMarkers();
 
 	drawTargetMarkers();
 	drawScale();
-
+    std::cout<<"Spike gain: "<<_channels[0].gain<<" scale:"<<height()*ampScale<<"\n";
 	Widgets::Painter::setColor(Widgets::Colors::white);
 	if(!_channels.empty()) {
 		for(unsigned int i = 0; i < _spikes.spikes().size(); i++) {
 			int samplepos = _manager.pos()-_spikes.spikes()[i].first;
 			if(samplepos < -samples/2 || samplepos > samples/2)
 				continue;
-
+            
             const int y = height()*_channels[0].pos - _spikes.spikes()[i].second*height()*ampScale*_channels[0].gain;
 			const float x = MOVEPIN_SIZE*1.48f+screenWidth()*(samples/2-samplepos)/(float)samples;
 

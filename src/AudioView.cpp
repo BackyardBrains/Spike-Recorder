@@ -244,6 +244,7 @@ void AudioView::setRelOffset(int reloffset) {
 	} else {
 		float f = reloffset*0.001f;
 		int64_t count = _manager.fileLength()-1;
+        //std::cout<<f*count<<" ";
 		_manager.setPos(f*count);
 	}
 
@@ -306,6 +307,7 @@ void AudioView::drawData(std::vector<std::pair<int16_t, int16_t> > &data, int ch
 
 	float scale = height()*ampScale;
 	glBegin(GL_LINE_STRIP);
+    //std::cout<<"Wave gain: "<<_channels[channel].gain<<" scale:"<<scale<<"\n";
 	for(int j = 0; j < (int)data.size(); j++) {
 		int xc = j*dist+x;
 

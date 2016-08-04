@@ -202,7 +202,11 @@ void AnalysisView::savePressed() {
 	if(rc == 0) {
 		s << markers.size() << " spikes were written to '" << filename << "'";
 	} else {
-		s << "Could not write markers: " << strerror(errno);
+        #ifdef __APPLE__
+		s << "Could not write markers: " << strerror(errno)<<". Please use /Users/username/Music/Spike Recorder/ directory.";
+        #else
+        s << "Could not write markers: " << strerror(errno);
+        #endif
 	}
 	Widgets::ErrorBox *box = new Widgets::ErrorBox(s.str().c_str());
 	box->setGeometry(Widgets::Rect(this->width()/2-200, this->height()/2-40, 400, 80));
