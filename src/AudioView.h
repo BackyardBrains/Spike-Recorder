@@ -46,6 +46,7 @@ public:
 	int channelVirtualDevice(int channel) const;
 	int virtualDeviceChannel(int virtualDevice) const;
     void navigateFilePosition(bool navigateForward);
+    void navigateCurrentRecordingPosition(bool navigateForward);
 	int selectedChannel() const;
 
 	float scaleWidth() const; //pixels per second of audio

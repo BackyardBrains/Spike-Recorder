@@ -249,6 +249,33 @@ void AudioView::setRelOffset(int reloffset) {
 	}
 
 }
+    
+void AudioView::navigateCurrentRecordingPosition(bool navigateForward)
+{
+    int samplesOnScreen = sampleCount(screenWidth(), scaleWidth());
+    int deltaMove = samplesOnScreen/20;
+    if(deltaMove<1)
+    {
+        deltaMove = 1;
+    }
+    
+    int64_t currentSample = offset();
+    if(navigateForward)
+    {
+        currentSample = currentSample+deltaMove;
+    }
+    else
+    {
+        currentSample = currentSample-deltaMove;
+    }
+    if(currentSample>0)
+    {
+        currentSample= 0;
+    }
+    
+    setOffset(currentSample);
+    //relOffsetChanged.emit(round(1000.f*_manager.pos()/(float)(_manager.fileLength()-1)));//update slider at the bottom of the scree
+}
 
 void AudioView::navigateFilePosition(bool navigateForward)
 {
@@ -811,10 +838,13 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 		int s = -1;
 		if(x < DATA_XOFF) {
 			if((s = determineSliderHover(x,y,NULL)) != -1)
+            {
+                
 				_channels[s].setGain(_channels[s].gain*1.2f);
+            }
 		} else if(!_manager.threshMode() || x < width()-DATA_XOFF) {
 			const int centeroff = (-sampleCount(screenWidth(), scaleWidth())+sampleCount(screenWidth(), scaleWidth()/0.8f))/2;
-
+           // std::cout<<centeroff<<"\n";
 			_timeScale = std::max(1.f/_manager.sampleRate(), _timeScale*0.8f);
 			if(!_manager.fileMode()) {
 				setOffset(_channelOffset + centeroff*_manager.paused());

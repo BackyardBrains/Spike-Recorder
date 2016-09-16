@@ -220,11 +220,6 @@ void MainView::pausePressed() {
 	}
 }
 
-void MainView::backwardPressed() {
-	_audioView->setOffset(_audioView->offset()-5*_manager.sampleRate());
-	if(_manager.paused())
-		pausePressed();
-}
 
 void MainView::ekgPressed() {
 }
@@ -259,6 +254,13 @@ void MainView::forwardPressed() {
 		pausePressed();
 }
 
+void MainView::backwardPressed() {
+    _audioView->setOffset(_audioView->offset()-5*_manager.sampleRate());
+    if(_manager.paused())
+        pausePressed();
+}
+    
+    
 void MainView::threshPressed() {
 	if(!_manager.threshMode()) {
 
@@ -661,7 +663,7 @@ void MainView::keyPressEvent(Widgets::KeyboardEvent *e) {
 	}
 	if(!_manager.threshMode())
     {
-        if(e->key()==275)//right 37
+        if(e->key()==275 || e->key() == 1073741903)//right 37
         {
             if(_manager.fileMode())
             {
@@ -669,10 +671,17 @@ void MainView::keyPressEvent(Widgets::KeyboardEvent *e) {
             }
             else
             {
-                forwardPressed();
+                if(_manager.paused())
+                {
+                    _audioView->navigateCurrentRecordingPosition(true);
+                }
+                else
+                {
+                    forwardPressed();
+                }
             }
         }
-        if(e->key()==276)//let 39
+        if(e->key()==276 || e->key()== 1073741904)//left 39
         {
             if(_manager.fileMode())
             {
@@ -680,7 +689,15 @@ void MainView::keyPressEvent(Widgets::KeyboardEvent *e) {
             }
             else
             {
-                backwardPressed();
+                if(_manager.paused())
+                {
+                    _audioView->navigateCurrentRecordingPosition(false);
+                }
+                else
+                {
+                    backwardPressed();
+                }
+                
             }
         }
     }
