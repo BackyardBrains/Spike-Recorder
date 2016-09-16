@@ -234,7 +234,9 @@ bool RecordingManager::initHIDUSB()
 	_lowPassFilterEnabled = false;
 	_highPassFilterEnabled = false;
 	_lowCornerFreq = frequency/2;
-	_highCornerFreq = 0;
+
+
+    _highCornerFreq = 1;
 
     int bytespersample = info.origres/8;
 
@@ -278,7 +280,7 @@ bool RecordingManager::initHIDUSB()
     //_player.stop();
     //_player.start(_hidUsbManager.maxSamplingRate());
     _player.setVolume(0);
-
+    enableHighPassFilterWithCornerFreq(1);
 
     return true;
 }
@@ -322,7 +324,7 @@ void RecordingManager::scanForHIDDevices()
     try{
         if(_firmwareUpdateStage<1)
         {
-           // _hidUsbManager.getAllDevicesList();
+            _hidUsbManager.getAllDevicesList();
         }
     }catch(int e)
     {
@@ -1845,7 +1847,7 @@ void RecordingManager::setPos(int64_t pos, bool artificial) {
 
 	const int halfsize = SampleBuffer::SIZE/2;
 
-    
+
     //it counts on rounding during division
     //how many halfsize we have in _pos+halfsize/2 (current position in file) and
     //how many halfsize we have in pos+halfsize/2
@@ -1857,7 +1859,7 @@ void RecordingManager::setPos(int64_t pos, bool artificial) {
 		for(int idx = 0; idx < (int)_devices.size(); idx++) {
 			const int nchan = _devices[idx].channels;
 			const int npos = seg2*halfsize;
-            
+
 			for(unsigned int i = 0; i < _devices[idx].sampleBuffers.size(); i++) {
 				SampleBuffer &s = _devices[idx].sampleBuffers[i];
 
@@ -1867,7 +1869,7 @@ void RecordingManager::setPos(int64_t pos, bool artificial) {
 
                 //set playback emediately to correct position
 				BASS_ChannelSetPosition(_devices[idx].handle, _devices[idx].bytespersample*npos*nchan, BASS_POS_BYTE);
-                
+
                 //set head for buffer for display of waveform
 				s.setHead(s.head() > halfsize ? 0 : halfsize); // to make it enter the next half segment
 

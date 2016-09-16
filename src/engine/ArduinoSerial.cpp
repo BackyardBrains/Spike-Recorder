@@ -431,8 +431,8 @@ namespace BackyardBrains {
         for(int i=0;i<size;i++)
         {
             circularBuffer[cBufHead++] = buffer[i];
-            //uint MSB  = ((uint)(buffer[i])) & 0xFF;
-            //std::cout<<"M: " << MSB<<"\n";
+            uint MSB  = ((uint)(buffer[i])) & 0xFF;
+            std::cout<<"M: " << MSB<<"\n";
             if(cBufHead>=SIZE_OF_CIRC_BUFFER)
             {
                 cBufHead = 0;
@@ -629,7 +629,7 @@ namespace BackyardBrains {
         int n, written=0;
         fd_set wfds;
         struct timeval tv;
-        
+
         while (written < len) {
            // std::cout<<written<<",";
             n = write(fd, (const char *)ptr + written, len - written);

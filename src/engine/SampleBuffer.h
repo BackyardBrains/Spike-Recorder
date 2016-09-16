@@ -150,7 +150,7 @@ public:
 			if (_head == SIZE)
 				_head = 0;
 		}
-        
+
 		_pos += len;//add to cumulative number of samples (number of samples since begining of the time)
       //  std::cout<<"Head: "<<_head<<" Pos: "<<_pos<<"\n";
 	}
