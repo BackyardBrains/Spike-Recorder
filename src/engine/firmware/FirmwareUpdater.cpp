@@ -1,6 +1,7 @@
 #include "FirmwareUpdater.h"
 
-#define ADDRESS_TO_COMPAT_XML "http://unit.rs/stanislav/compatibility.xml"
+//#define ADDRESS_TO_COMPAT_XML "http://unit.rs/stanislav/compatibility.xml"
+#define ADDRESS_TO_COMPAT_XML "https://backyardbrains.com/products/firmwares/sbpro/compatibility.xml"
 #define NEW_FIRMWARE_FILENAME "newfirmware.txt"
 #include "curl/curl.h"
 using namespace tinyxml2;
@@ -26,6 +27,7 @@ namespace BackyardBrains
             if (curl) {
                 fp = fopen(outfilename,"wb");
                 curl_easy_setopt(curl, CURLOPT_URL, url);
+                curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, false);
                 curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &FirmwareUpdater::write_data);
                 curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
                 res = curl_easy_perform(curl);
@@ -49,6 +51,7 @@ namespace BackyardBrains
             if (curl) {
                 fp = fopen(outfilename,"wb");
                 curl_easy_setopt(curl, CURLOPT_URL, url);
+                curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, false);
                 curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &FirmwareUpdater::write_data);
                 curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
                 res = curl_easy_perform(curl);

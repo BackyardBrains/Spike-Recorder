@@ -104,7 +104,7 @@ public:
     //
 	void addData(const int16_t *src, int64_t len)
 	{
-        std::cout<<"Add "<<len<<" samples to buffer\n";
+       // std::cout<<"Add "<<len<<" samples to buffer\n";
 		if (len > 0)
 			_notEmpty = true;
 		for (int i = 0; i < len; i++)
@@ -150,9 +150,9 @@ public:
 			if (_head == SIZE)
 				_head = 0;
 		}
-        
+
 		_pos += len;//add to cumulative number of samples (number of samples since begining of the time)
-        std::cout<<"Head: "<<_head<<" Pos: "<<_pos<<"\n";
+        //std::cout<<"Head: "<<_head<<" Pos: "<<_pos<<"\n";
 	}
 
     //
