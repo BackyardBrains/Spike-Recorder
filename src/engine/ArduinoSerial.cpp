@@ -432,7 +432,7 @@ namespace BackyardBrains {
         {
             circularBuffer[cBufHead++] = buffer[i];
             uint MSB  = ((uint)(buffer[i])) & 0xFF;
-            std::cout<<"M: " << MSB<<"\n";
+            //std::cout<<"M: " << MSB<<"\n";
             if(cBufHead>=SIZE_OF_CIRC_BUFFER)
             {
                 cBufHead = 0;

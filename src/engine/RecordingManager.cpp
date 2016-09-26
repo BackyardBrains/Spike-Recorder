@@ -39,6 +39,9 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
     _numOfSerialChannels = 1;
     _numOfHidChannels = 2;
     _firmwareUpdateStage = 0;
+    
+    initInputConfigPersistance();
+    
     #if defined(_WIN32)
     shouldStartFirmwareUpdatePresentation = false;
     #endif
@@ -81,120 +84,10 @@ void RecordingManager::resetCalibrationCoeficient()
     calibrationCoeficient = 1.0f;
 }
 
-void RecordingManager::constructMetadata(MetadataChunk *m) const {
-	unsigned int nchan = 0;
-
-	for(unsigned int i = 0; i < _virtualDevices.size(); i++)
-		if(_virtualDevices[i].bound)
-			nchan++;
-
-	assert(m->channels.size() <= nchan); // don't want to delete stuff here
-	m->channels.resize(nchan);
-
-	int chani = 0;
-	for(unsigned int i = 0; i < _virtualDevices.size(); i++) {
-		if(_virtualDevices[i].bound) {
-			m->channels[chani].threshold = _virtualDevices[i].threshold;
-			m->channels[chani].name = _virtualDevices[i].name;
-
-			chani++;
-		}
-	}
-
-	m->markers = _markers;
-}
-
-void RecordingManager::applyMetadata(const MetadataChunk &m) {
-	//assert(_virtualDevices.size() == m.channels.size());
-	for(unsigned int i = 0; i < m.channels.size(); i++) {
-		_virtualDevices[i].threshold = m.channels[i].threshold;
-		_virtualDevices[i].name = m.channels[i].name;
-	}
-
-	std::vector<int> neuronIds;
-	_spikeTrains.clear();
-	_markers.clear();
-	for(std::list<std::pair<std::string, int64_t> >::const_iterator it = m.markers.begin(); it != m.markers.end(); it++) {
-		const char *name = it->first.c_str();
-		if(strncmp(name, "_neuron", 7) == 0) {
-			char *endptr;
-			int neuid = strtol(name+7, &endptr, 10);
-			if(name == endptr)
-				continue;
-
-			int neuronidx = -1;
-			for(unsigned int i = 0; i < neuronIds.size(); i++) {
-				if(neuronIds[i] == neuid) {
-					neuronidx = i;
-					break;
-				}
-			}
-
-			if(neuronidx == -1) {
-				neuronIds.push_back(neuid);
-				neuronidx = neuronIds.size()-1;
-				_spikeTrains.push_back(SpikeTrain());
-				int clr = neuid;
-				if(clr < 0)
-					clr = 0;
-				_spikeTrains.back().color = clr;
-			}
-			if(strlen(endptr) > 9) {
-				int num = atoi(endptr+9);
-				if(strncmp(endptr,"threshhig",9) == 0) {
-					_spikeTrains[neuronidx].upperThresh = num;
-				} else if(strncmp(endptr,"threshlow",9) == 0) {
-					_spikeTrains[neuronidx].lowerThresh = num;
-				}
-			} else {
-				_spikeTrains[neuronidx].spikes.push_back(it->second);
-			}
-		} else {
-			_markers.push_back(*it);
-		}
-	}
-}
-
-void RecordingManager::clear() {
 
 
-    for(int i = (int)_virtualDevices.size()-1; i >=0; i--) {
-        unbindVirtualDevice(i);
-    }
 
-	for(int i = 0; i < (int)_devices.size(); i++)
-		_devices[i].disable();
-
-	_virtualDevices.clear();
-	_devices.clear();
-
-	_markers.clear();
-	_triggers.clear();
-
-	_pos = 0;
-	_selectedVDevice = 0;
-}
-
-
-//--------------- Periferals ------------------------------
-void RecordingManager::sendEKGImpuls()
-{
-
-    clock_t end = clock();
-#if defined(__APPLE__) || defined(__linux__)
-    end = end*1000;
-#endif
-    double elapsed_secs = double(end - timerEKG) / CLOCKS_PER_SEC;
-    if(elapsed_secs>0.2)
-    {
-
-        timerEKG = end;
-        _arduinoSerial.sendEventMessage(0);
-    }
-
-}
-
-
+#pragma mark - HID device
 //--------------- HID USB functions -------------------------
 
 void RecordingManager::reloadHID()
@@ -205,7 +98,7 @@ void RecordingManager::reloadHID()
 bool RecordingManager::initHIDUSB()
 {
     std::cout<<"Init HID\n";
-
+    saveInputConfigSettings();
     if(!_hidUsbManager.deviceOpened())
     {
         if(_hidUsbManager.openDevice(this) == -1)
@@ -280,8 +173,8 @@ bool RecordingManager::initHIDUSB()
     //_player.stop();
     //_player.start(_hidUsbManager.maxSamplingRate());
     _player.setVolume(0);
-    enableHighPassFilterWithCornerFreq(1);
-
+    //enableHighPassFilterWithCornerFreq(1);
+    loadFilterSettings();
     return true;
 }
 
@@ -438,11 +331,13 @@ void RecordingManager::swapRTRepeating()
     _hidUsbManager.swapRTRepeat();
 }
 
+#pragma mark - Serial device
 //--------------- Serial port functions ---------------------
 
 bool RecordingManager::initSerial(const char *portName)
 {
 
+    saveInputConfigSettings();
     if(!_arduinoSerial.portOpened())
     {
         if(_arduinoSerial.openPort(portName) == -1)
@@ -516,7 +411,7 @@ bool RecordingManager::initSerial(const char *portName)
   //  _player.stop();
   //  _player.start(_arduinoSerial.maxSamplingRate()/_numOfSerialChannels);
     _player.setVolume(0);
-
+    loadFilterSettings();
 
 	return true;
 }
@@ -548,7 +443,27 @@ int RecordingManager::numberOfSerialChannels()
 {
 	return _numOfSerialChannels;
 }
+    
 
+void RecordingManager::sendEKGImpuls()
+{
+    
+    clock_t end = clock();
+#if defined(__APPLE__) || defined(__linux__)
+    end = end*1000;
+#endif
+    double elapsed_secs = double(end - timerEKG) / CLOCKS_PER_SEC;
+    if(elapsed_secs>0.2)
+    {
+        
+        timerEKG = end;
+        _arduinoSerial.sendEventMessage(0);
+    }
+    
+}
+    
+    
+    
 int RecordingManager::serialPortIndex()
 {
    return std::max(0, std::min(_serialPortIndex,(int)(_arduinoSerial.list.size()-1)));
@@ -568,11 +483,11 @@ void RecordingManager::closeSerial()
 	_serialMode = false;
 }
 
-
+#pragma mark - File device
 
 bool RecordingManager::loadFile(const char *filename) {
 
-
+    saveInputConfigSettings();
     resetCalibrationCoeficient();
 	_spikeTrains.clear();
 	closeSerial();
@@ -648,7 +563,9 @@ bool RecordingManager::loadFile(const char *filename) {
 void RecordingManager::initRecordingDevices() {
 	BASS_DEVICEINFO info;
 	VirtualDevice virtualDevice;
-
+    
+    saveInputConfigSettings();
+    
 	clear();
 	_fileMode = false;
 	_spikeTrains.clear();
@@ -689,7 +606,106 @@ void RecordingManager::initRecordingDevices() {
 	_highCornerFreq = 0;
 //	devicesChanged.emit();
 	Log::msg("Found %d recording devices.", _virtualDevices.size());
+    loadFilterSettings();
 }
+    
+    
+    
+    
+    void RecordingManager::constructMetadata(MetadataChunk *m) const {
+        unsigned int nchan = 0;
+        
+        for(unsigned int i = 0; i < _virtualDevices.size(); i++)
+            if(_virtualDevices[i].bound)
+                nchan++;
+        
+        assert(m->channels.size() <= nchan); // don't want to delete stuff here
+        m->channels.resize(nchan);
+        
+        int chani = 0;
+        for(unsigned int i = 0; i < _virtualDevices.size(); i++) {
+            if(_virtualDevices[i].bound) {
+                m->channels[chani].threshold = _virtualDevices[i].threshold;
+                m->channels[chani].name = _virtualDevices[i].name;
+                
+                chani++;
+            }
+        }
+        
+        m->markers = _markers;
+    }
+    
+void RecordingManager::applyMetadata(const MetadataChunk &m) {
+    //assert(_virtualDevices.size() == m.channels.size());
+    for(unsigned int i = 0; i < m.channels.size(); i++) {
+        _virtualDevices[i].threshold = m.channels[i].threshold;
+        _virtualDevices[i].name = m.channels[i].name;
+    }
+    
+    std::vector<int> neuronIds;
+    _spikeTrains.clear();
+    _markers.clear();
+    for(std::list<std::pair<std::string, int64_t> >::const_iterator it = m.markers.begin(); it != m.markers.end(); it++) {
+        const char *name = it->first.c_str();
+        if(strncmp(name, "_neuron", 7) == 0) {
+            char *endptr;
+            int neuid = strtol(name+7, &endptr, 10);
+            if(name == endptr)
+                continue;
+            
+            int neuronidx = -1;
+            for(unsigned int i = 0; i < neuronIds.size(); i++) {
+                if(neuronIds[i] == neuid) {
+                    neuronidx = i;
+                    break;
+                }
+            }
+            
+            if(neuronidx == -1) {
+                neuronIds.push_back(neuid);
+                neuronidx = neuronIds.size()-1;
+                _spikeTrains.push_back(SpikeTrain());
+                int clr = neuid;
+                if(clr < 0)
+                    clr = 0;
+                _spikeTrains.back().color = clr;
+            }
+            if(strlen(endptr) > 9) {
+                int num = atoi(endptr+9);
+                if(strncmp(endptr,"threshhig",9) == 0) {
+                    _spikeTrains[neuronidx].upperThresh = num;
+                } else if(strncmp(endptr,"threshlow",9) == 0) {
+                    _spikeTrains[neuronidx].lowerThresh = num;
+                }
+            } else {
+                _spikeTrains[neuronidx].spikes.push_back(it->second);
+            }
+        } else {
+            _markers.push_back(*it);
+        }
+    }
+}
+
+void RecordingManager::clear() {
+    
+    
+    for(int i = (int)_virtualDevices.size()-1; i >=0; i--) {
+        unbindVirtualDevice(i);
+    }
+    
+    for(int i = 0; i < (int)_devices.size(); i++)
+        _devices[i].disable();
+    
+    _virtualDevices.clear();
+    _devices.clear();
+    
+    _markers.clear();
+    _triggers.clear();
+    
+    _pos = 0;
+    _selectedVDevice = 0;
+}
+    
 
 // TODO: consolidate this function somewhere
 static int64_t snapTo(int64_t val, int64_t increments) {
@@ -1587,7 +1603,7 @@ void RecordingManager::advance(uint32_t samples) {
 void RecordingManager::startRemovingMeanValue()
 {
         //Reset mean sum counter
-        _devices.begin()->dcBiasNum = 0;
+        _devices.begin()->dcBiasNum = 1;
         for(int chan = 0; chan < numberOfChannels(); chan++) {
             //reset sum for all channels
             _devices.begin()->dcBiasSum[chan]  = 0;
@@ -1614,7 +1630,14 @@ void RecordingManager::enableLowPassFilterWithCornerFreq(float cornerFreq)
         _devices.begin()->_lowPassFilters[chan].setCornerFrequency(cornerFreq);
     }
 
-    _lowPassFilterEnabled = true;
+    if(cornerFreq>((_sampleRate/2)-1))
+    {
+        _lowPassFilterEnabled = false;
+    }
+    else
+    {
+        _lowPassFilterEnabled = true;
+    }
 }
 
 void RecordingManager::enableHighPassFilterWithCornerFreq(float cornerFreq)
@@ -1635,7 +1658,14 @@ void RecordingManager::enableHighPassFilterWithCornerFreq(float cornerFreq)
     {
         _devices.begin()->_highPassFilters[chan].setCornerFrequency(cornerFreq);
     }
-    _highPassFilterEnabled = true;
+    if(cornerFreq<1.0f)
+    {
+        _highPassFilterEnabled = false;
+    }
+    else
+    {
+        _highPassFilterEnabled = true;
+    }
 }
 
 void RecordingManager::turnAlphaFeedbackON()
@@ -1892,6 +1922,159 @@ SampleBuffer *RecordingManager::sampleBuffer(int virtualDeviceIndex) {
 	SampleBuffer *result = &_devices[device].sampleBuffers[channel];
 	return result;
 }
+
+#pragma mark - Input Config related
+
+//
+// Initial state of zoom and filters for each type of audio input
+//
+void RecordingManager::initInputConfigPersistance()
+{
+    //standard line in/microphone input
+    audioInputConfigArray[INPUT_TYPE_STANDARD_AUDIO].inputType = INPUT_TYPE_STANDARD_AUDIO;
+    audioInputConfigArray[INPUT_TYPE_STANDARD_AUDIO].filter50Hz = false;
+    audioInputConfigArray[INPUT_TYPE_STANDARD_AUDIO].filter60Hz = false;
+    audioInputConfigArray[INPUT_TYPE_STANDARD_AUDIO].filterLowPass = DEFAULT_SAMPLE_RATE/2;
+    audioInputConfigArray[INPUT_TYPE_STANDARD_AUDIO].filterHighPass = 0.0f;
+    audioInputConfigArray[INPUT_TYPE_STANDARD_AUDIO].gain = 0.5f;
+    audioInputConfigArray[INPUT_TYPE_STANDARD_AUDIO].timeScale = 0.1f;
+    audioInputConfigArray[INPUT_TYPE_STANDARD_AUDIO].initialized = true;
+    
+    //arduino
+    audioInputConfigArray[INPUT_TYPE_ARDUINO].inputType = INPUT_TYPE_ARDUINO;
+    audioInputConfigArray[INPUT_TYPE_ARDUINO].filter50Hz = false;
+    audioInputConfigArray[INPUT_TYPE_ARDUINO].filter60Hz = false;
+    audioInputConfigArray[INPUT_TYPE_ARDUINO].filterLowPass = 5000;
+    audioInputConfigArray[INPUT_TYPE_ARDUINO].filterHighPass = 0.0f;
+    audioInputConfigArray[INPUT_TYPE_ARDUINO].gain = 0.5f;
+    audioInputConfigArray[INPUT_TYPE_ARDUINO].timeScale = 0.1f;
+    audioInputConfigArray[INPUT_TYPE_ARDUINO].initialized = true;
+    
+    //HID - SpikerBox Pro
+    audioInputConfigArray[INPUT_TYPE_SB_PRO].inputType = INPUT_TYPE_SB_PRO;
+    audioInputConfigArray[INPUT_TYPE_SB_PRO].filter50Hz = false;
+    audioInputConfigArray[INPUT_TYPE_SB_PRO].filter60Hz = false;
+    audioInputConfigArray[INPUT_TYPE_SB_PRO].filterLowPass = 5000;
+    audioInputConfigArray[INPUT_TYPE_SB_PRO].filterHighPass = 1.0f;
+    audioInputConfigArray[INPUT_TYPE_SB_PRO].gain = 0.1f;
+    audioInputConfigArray[INPUT_TYPE_SB_PRO].timeScale = 0.1f;
+    audioInputConfigArray[INPUT_TYPE_SB_PRO].initialized = true;
+    
+    
+    //HID - File
+    audioInputConfigArray[INPUT_TYPE_FILE].inputType = INPUT_TYPE_FILE;
+    audioInputConfigArray[INPUT_TYPE_FILE].filter50Hz = false;
+    audioInputConfigArray[INPUT_TYPE_FILE].filter60Hz = false;
+    audioInputConfigArray[INPUT_TYPE_FILE].filterLowPass = 5000;
+    audioInputConfigArray[INPUT_TYPE_FILE].filterHighPass = 0.0f;
+    audioInputConfigArray[INPUT_TYPE_FILE].gain = 0.5f;
+    audioInputConfigArray[INPUT_TYPE_FILE].timeScale = 0.1f;
+    audioInputConfigArray[INPUT_TYPE_FILE].initialized = true;
+}
+    
+//
+// Returns input config object for particular input type
+//
+AudioInputConfig * RecordingManager::getInputConfigForType(int inputType)
+{
+  if(inputType>=INPUT_TYPE_STANDARD_AUDIO && inputType<=INPUT_TYPE_FILE)
+  {
+      return &(audioInputConfigArray[inputType]);
+  }
+  else
+  {
+      return &(audioInputConfigArray[INPUT_TYPE_STANDARD_AUDIO]);
+  }
+
+}
+    
+int RecordingManager::getCurrentInputType()
+{
+    if(hidMode())
+    {
+        return INPUT_TYPE_SB_PRO;
+    }
+    else if(serialMode())
+    {
+        return INPUT_TYPE_ARDUINO;
+    }
+    else if(fileMode())
+    {
+        return INPUT_TYPE_FILE;
+    }
+    else
+    {//normal audio input
+        return INPUT_TYPE_STANDARD_AUDIO;
+    }
+}
+    
+void RecordingManager::saveInputConfigSettings()
+{
+       if(!firstTimeInitializationOfSettingsForAudioInput)
+       {
+            int inputType = getCurrentInputType();
+       
+            audioInputConfigArray[inputType].filter50Hz = fiftyHzFilterEnabled();
+            audioInputConfigArray[inputType].filter60Hz = sixtyHzFilterEnabled();
+            audioInputConfigArray[inputType].filterLowPass = lowCornerFrequency();
+            audioInputConfigArray[inputType].filterHighPass = highCornerFrequency();
+            //gain and timescale should be constanly updated by AudioView
+            audioInputConfigArray[inputType].initialized = true;
+       }
+        firstTimeInitializationOfSettingsForAudioInput = false;
+}
+    
+    
+void RecordingManager::saveGainForAudioInput(float newGain)
+{
+    int inputType = getCurrentInputType();
+    audioInputConfigArray[inputType].gain = newGain;
+}
+    
+void RecordingManager::saveTimeScaleForAudioInput(float newTimeScale)
+{
+    int inputType = getCurrentInputType();
+    audioInputConfigArray[inputType].timeScale = newTimeScale;
+}
+
+float RecordingManager::loadGainForAudioInput()
+{
+    int inputType = getCurrentInputType();
+    return audioInputConfigArray[inputType].gain;
+}
+    
+float RecordingManager::loadTimeScaleForAudioInput()
+{
+    int inputType = getCurrentInputType();
+    return audioInputConfigArray[inputType].timeScale;
+}
+    
+void RecordingManager::loadFilterSettings()
+{
+    int inputType = getCurrentInputType();
+    enableHighPassFilterWithCornerFreq(audioInputConfigArray[inputType].filterHighPass);
+    enableLowPassFilterWithCornerFreq(audioInputConfigArray[inputType].filterLowPass);
+    
+    if(audioInputConfigArray[inputType].filter60Hz)
+    {
+        enable60HzFilter();
+    }
+    else
+    {
+        disable60HzFilter();
+    }
+    
+    if(audioInputConfigArray[inputType].filter50Hz)
+    {
+        enable50HzFilter();
+    }
+    else
+    {
+        disable50HzFilter();
+    }
+
+}
+
 
 
 } // namespace BackyardBrains

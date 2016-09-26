@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C11473F1D8EE07500BDA6DA /* AudioInputConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C11473D1D8EE07500BDA6DA /* AudioInputConfig.cpp */; };
 		1C7EA2531D380C0200D5FCD7 /* libbass.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C7EA2521D380C0200D5FCD7 /* libbass.dylib */; };
 		1C7EA2541D380C0800D5FCD7 /* libbass.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1C7EA2521D380C0200D5FCD7 /* libbass.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		1C7EA2551D380C0C00D5FCD7 /* libbass.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1C7EA2521D380C0200D5FCD7 /* libbass.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -118,6 +119,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1C11473D1D8EE07500BDA6DA /* AudioInputConfig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioInputConfig.cpp; sourceTree = "<group>"; };
+		1C11473E1D8EE07500BDA6DA /* AudioInputConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioInputConfig.h; sourceTree = "<group>"; };
 		1C7EA2521D380C0200D5FCD7 /* libbass.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libbass.dylib; sourceTree = "<group>"; };
 		240506601CCBEC6A00E8FCEE /* CalibrationWindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CalibrationWindow.cpp; path = src/CalibrationWindow.cpp; sourceTree = SOURCE_ROOT; };
 		240506611CCBEC6A00E8FCEE /* CalibrationWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CalibrationWindow.h; path = src/CalibrationWindow.h; sourceTree = SOURCE_ROOT; };
@@ -541,6 +544,8 @@
 				248E58A31AAE19570011707F /* SampleBuffer.h */,
 				248E58A41AAE19570011707F /* SpikeSorter.cpp */,
 				248E58A51AAE19570011707F /* SpikeSorter.h */,
+				1C11473D1D8EE07500BDA6DA /* AudioInputConfig.cpp */,
+				1C11473E1D8EE07500BDA6DA /* AudioInputConfig.h */,
 			);
 			name = engine;
 			path = src/engine;
@@ -769,6 +774,7 @@
 				24E8E6EB1BD95DD9003386A6 /* tinyxml2.cpp in Sources */,
 				248E58FC1AAE19570011707F /* LoadTexture.cpp in Sources */,
 				248E58E61AAE19570011707F /* ConfigView.cpp in Sources */,
+				1C11473F1D8EE07500BDA6DA /* AudioInputConfig.cpp in Sources */,
 				2421F09C1ACFDF5100927F19 /* Plot.cpp in Sources */,
 				245BF6FB1CAAA024004BEA8C /* HighPassFilter.cpp in Sources */,
 				248BA1F51B3E42AD00EEB5E4 /* ThresholdPanel.cpp in Sources */,

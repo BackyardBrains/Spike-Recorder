@@ -14,6 +14,7 @@
 #include "NotchFilter.h"
 #include "LowPassFilter.h"
 #include "HighPassFilter.h"
+#include "AudioInputConfig.h"
 
 #if defined(_WIN32)
     #include "FirmwareUpdater.h"
@@ -176,6 +177,11 @@ public:
 
     std::string currentHIDFirmwareVersion() {return _hidUsbManager.firmwareVersion;}
 
+    void saveGainForAudioInput(float newGain);
+    void saveTimeScaleForAudioInput(float newTimeScale);
+    float loadGainForAudioInput();
+    float loadTimeScaleForAudioInput();
+    bool firstTimeInitializationOfSettingsForAudioInput = true;
 
     #if defined(_WIN32)
         int prepareForHIDFirmwareUpdate(BYBFirmwareVO * firmwareToUpdate);
@@ -265,7 +271,15 @@ private:
 	bool _serialMode;
 	bool _hidMode;
 	std::string _filename;
-
+    
+    //it keeps last zoom and filter configs for each type of inputs
+    AudioInputConfig audioInputConfigArray[4];
+    void initInputConfigPersistance();
+    void saveInputConfigSettings();
+    AudioInputConfig * getInputConfigForType(int inputType);
+    int getCurrentInputType();
+    void loadFilterSettings();
+    
 	int _sampleRate;
 
 	int _selectedVDevice; // triggers threshold/is played on the speakers

@@ -83,6 +83,10 @@ void AudioView::updateChannels() {
 			}
 		}
 	}
+    
+    //get saved gain and timesclae
+    loadAndApplyAudioInputConfig();
+    
     if(_manager.fileMode()) {
         //positionseek bar to begining
         relOffsetChanged.emit(0);
@@ -94,6 +98,18 @@ void AudioView::updateChannels() {
     }
 }
 
+    
+void AudioView::loadAndApplyAudioInputConfig()
+{
+    _timeScale = _manager.loadTimeScaleForAudioInput();
+    
+    float newGain = _manager.loadGainForAudioInput();
+    for(unsigned int ic = 0; ic < _channels.size(); ic++) {
+        _channels[ic].gain = newGain;
+    }
+
+}
+    
 static bool compare_second(const std::pair<int, int> &a, const std::pair<int, int> &b) {
 	return a.second <= b.second;
 }
@@ -133,6 +149,8 @@ void AudioView::applyMetadata(const MetadataChunk &m) {
 	}
 
 }
+    
+
 
 void AudioView::setChannelColor(int channel, int colorIdx) {
 	_channels.at(channel).colorIdx = std::max(0,std::min(COLOR_NUM-1, colorIdx));
@@ -188,6 +206,12 @@ int AudioView::channelOffset() const {
 
 float AudioView::scaleWidth() const {
 	return 0.05f*screenWidth()/_timeScale;
+}
+    
+//Setter for timescale
+void AudioView::setTimeScale(float newTimesScale)
+{
+    _timeScale = newTimesScale;
 }
 
 int AudioView::screenWidth() const {
@@ -728,7 +752,9 @@ void AudioView::advance() {
 
 		if(t > 400) {
 			Channel &c = _channels[selectedChannel()];
-			c.setGain(c.gain*pow(1.01f,_gainCtrlDir));
+            float newGain = c.gain*pow(1.01f,_gainCtrlDir);
+			c.setGain(newGain);
+            _manager.saveGainForAudioInput(newGain);
 		}
 	}
 }
@@ -799,7 +825,11 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 			_gainCtrlDir = determineGainControlHover(x,y);
 			if(_gainCtrlDir != 0) {
 				Channel &c = _channels[selectedChannel()];
-				c.setGain(c.gain*pow(1.3f,_gainCtrlDir));
+				
+                float newGain = c.gain*pow(1.3f,_gainCtrlDir);
+                c.setGain(newGain);
+                _manager.saveGainForAudioInput(newGain);
+
 				_gainCtrlHoldTime = SDL_GetTicks();
 				event->accept();
 			} else {
@@ -839,13 +869,16 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 		if(x < DATA_XOFF) {
 			if((s = determineSliderHover(x,y,NULL)) != -1)
             {
+                float newGain = _channels[s].gain*1.2f;
+                _channels[s].setGain(newGain);
+                _manager.saveGainForAudioInput(newGain);
                 
-				_channels[s].setGain(_channels[s].gain*1.2f);
             }
 		} else if(!_manager.threshMode() || x < width()-DATA_XOFF) {
 			const int centeroff = (-sampleCount(screenWidth(), scaleWidth())+sampleCount(screenWidth(), scaleWidth()/0.8f))/2;
            // std::cout<<centeroff<<"\n";
 			_timeScale = std::max(1.f/_manager.sampleRate(), _timeScale*0.8f);
+            _manager.saveTimeScaleForAudioInput(_timeScale);
 			if(!_manager.fileMode()) {
 				setOffset(_channelOffset + centeroff*_manager.paused());
 			}
@@ -855,10 +888,15 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 		int s = -1;
 		if(x < DATA_XOFF) {
 			if((s = determineSliderHover(x,y,NULL)) != -1)
-			_channels[s].setGain(_channels[s].gain*0.8f);
+            {
+                float newGain = _channels[s].gain*0.8f;
+                _channels[s].setGain(newGain);
+                _manager.saveGainForAudioInput(newGain);
+            }
 		} else if(!_manager.threshMode() || x < width()-DATA_XOFF) {
 			const int centeroff = (-sampleCount(screenWidth(), scaleWidth())+sampleCount(screenWidth(), scaleWidth()/1.2f))/2;
 			_timeScale = std::min(2.f, _timeScale*1.2f);
+            _manager.saveTimeScaleForAudioInput(_timeScale);
 			if(!_manager.fileMode())
 				setOffset(_channelOffset + centeroff*_manager.paused()); // or else the buffer end will become shown
 		}
@@ -925,7 +963,11 @@ void AudioView::mouseMotionEvent(Widgets::MouseEvent *event) {
 		float newGain = _prevGain*std::fabs((height()*_channels[_clickedGain].pos-event->pos().y)/(float)_clickedPixelOffset);
 		int doffset = (width()*_prevDragX-event->pos().x)/(float)scaleWidth()*_manager.sampleRate();
 		setOffset(_prevDragOffset+doffset);
-		_channels[_clickedGain].setGain(newGain);
+        
+        
+        _channels[_clickedGain].setGain(newGain);
+        _manager.saveGainForAudioInput(newGain);
+        
 		event->accept();
 	}
 

@@ -99,6 +99,8 @@ protected:
 
 	int determineThreshHover(int x, int y, int thresholdPos, int *yoffset);
 	int determineGainControlHover(int x, int y);
+    
+    void setTimeScale(float newTimesScale);
 private:
 	int _clickedGain;
 	float _prevGain;
@@ -133,7 +135,9 @@ private:
 	float thresholdPos();
 
 	void advance();
-
+    
+    
+    void loadAndApplyAudioInputConfig();//load setings for zoom and timescale
 
 
 };
