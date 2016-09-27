@@ -471,6 +471,7 @@ int RecordingManager::serialPortIndex()
 
 void RecordingManager::disconnectFromSerial()
 {
+   
 	closeSerial();
 	initRecordingDevices();
 }
@@ -563,8 +564,10 @@ bool RecordingManager::loadFile(const char *filename) {
 void RecordingManager::initRecordingDevices() {
 	BASS_DEVICEINFO info;
 	VirtualDevice virtualDevice;
-    
-    saveInputConfigSettings();
+    if(getCurrentInputType()!=INPUT_TYPE_STANDARD_AUDIO)
+    {
+        saveInputConfigSettings();
+    }
     
 	clear();
 	_fileMode = false;
