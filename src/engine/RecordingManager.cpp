@@ -1964,7 +1964,7 @@ void RecordingManager::initInputConfigPersistance()
     audioInputConfigArray[INPUT_TYPE_SB_PRO].initialized = true;
     
     
-    //HID - File
+    //HID - File (this is not used anywhere for now)
     audioInputConfigArray[INPUT_TYPE_FILE].inputType = INPUT_TYPE_FILE;
     audioInputConfigArray[INPUT_TYPE_FILE].filter50Hz = false;
     audioInputConfigArray[INPUT_TYPE_FILE].filter60Hz = false;

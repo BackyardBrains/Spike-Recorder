@@ -874,14 +874,43 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
                 _manager.saveGainForAudioInput(newGain);
                 
             }
-		} else if(!_manager.threshMode() || x < width()-DATA_XOFF) {
-			const int centeroff = (-sampleCount(screenWidth(), scaleWidth())+sampleCount(screenWidth(), scaleWidth()/0.8f))/2;
-           // std::cout<<centeroff<<"\n";
+		} else if(!_manager.threshMode() || x < width()-DATA_XOFF) {//do not react on right handle in threshold mode
+            
+
+            
+            double positionOfCursorInPercOfScreen = (((double)(x- DATA_XOFF))/(double)screenWidth());
+            int positionOfSampleUnderCursor = _channelOffset  - (sampleCount(screenWidth(), scaleWidth()) - sampleCount(screenWidth(), scaleWidth()) *positionOfCursorInPercOfScreen);
+            int numberOfSamplesOnLeftInNewScale = sampleCount(screenWidth(), scaleWidth()/0.8f)*positionOfCursorInPercOfScreen;
+            
+            int positionOfRightSideOfNewScreen = positionOfSampleUnderCursor - numberOfSamplesOnLeftInNewScale + sampleCount(screenWidth(), scaleWidth()/0.8f);
+            
+            //calculate index of sample under cursor
+            int sampleIndexInFile = _manager.pos() - sampleCount(screenWidth(), scaleWidth())/2 + positionOfCursorInPercOfScreen*sampleCount(screenWidth(), scaleWidth());
+            //since setOffset in file mode sets sample in the middle of the screen
+            //calculate what will be sample index in the middle of the screen so that
+            //our sample under mouse cursor don't change position
+            int positionForFile = sampleIndexInFile - numberOfSamplesOnLeftInNewScale + sampleCount(screenWidth(), scaleWidth()/0.8f)/2;
+            
+            
+            std::cout<<"offset: "<<_channelOffset<<" position: "<<_manager.pos()<<"\n";
 			_timeScale = std::max(1.f/_manager.sampleRate(), _timeScale*0.8f);
-            _manager.saveTimeScaleForAudioInput(_timeScale);
+            _manager.saveTimeScaleForAudioInput(_timeScale);//save preference for this input type
 			if(!_manager.fileMode()) {
-				setOffset(_channelOffset + centeroff*_manager.paused());
+                if(_manager.paused())
+                {
+                    setOffset(positionOfRightSideOfNewScreen);
+                }
+                else
+                {
+                    setOffset(_channelOffset);
+                }
 			}
+            else
+            {
+                
+                setOffset(positionForFile);
+            
+            }
 		}
 		event->accept();
 	} else if(event->button() == Widgets::WheelDownButton) {
