@@ -1872,7 +1872,7 @@ bool RecordingManager::Device::disable() {
 void RecordingManager::setPos(int64_t pos, bool artificial) {
 	assert(_fileMode);
 	pos = std::max((int64_t)0, std::min(fileLength()-1, pos));
-    std::cout<<"\nSeek: "<<pos<<" \n";
+  //  std::cout<<"\nSeek: "<<pos<<" \n";
 	if(pos == _pos)
 		return;
 
