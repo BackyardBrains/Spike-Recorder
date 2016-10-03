@@ -101,6 +101,8 @@ protected:
 	int determineGainControlHover(int x, int y);
     
     void setTimeScale(float newTimesScale);
+    void mousePressEventFromAnalysisView(Widgets::MouseEvent *event);
+    
 private:
 	int _clickedGain;
 	float _prevGain;
@@ -138,7 +140,8 @@ private:
     
     
     void loadAndApplyAudioInputConfig();//load setings for zoom and timescale
-
+    bool analysisViewIsActive = false;
+    
 
 };
 

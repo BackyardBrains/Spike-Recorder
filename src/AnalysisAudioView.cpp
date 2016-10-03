@@ -85,7 +85,7 @@ void AnalysisAudioView::paintEvent() {
 
 	drawTargetMarkers();
 	drawScale();
-    std::cout<<"Spike gain: "<<_channels[0].gain<<" scale:"<<height()*ampScale<<"\n";
+   // std::cout<<"Spike gain: "<<_channels[0].gain<<" scale:"<<height()*ampScale<<"\n";
 	Widgets::Painter::setColor(Widgets::Colors::white);
 	if(!_channels.empty()) {
 		for(unsigned int i = 0; i < _spikes.spikes().size(); i++) {
@@ -139,7 +139,7 @@ void AnalysisAudioView::mousePressEvent(Widgets::MouseEvent *event) {
 		}
 	}
 
-	AudioView::mousePressEvent(event);
+	AudioView::mousePressEventFromAnalysisView(event);
 }
     
     

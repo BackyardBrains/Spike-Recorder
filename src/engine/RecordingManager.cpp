@@ -558,6 +558,7 @@ bool RecordingManager::loadFile(const char *filename) {
 	}
 
 	Log::msg("loaded file '%s'.", filename);
+    fileIsLoadedAndFirstActionDidNotYetOccurred = true;
 	return true;
 }
 
@@ -727,6 +728,11 @@ void RecordingManager::setPaused(bool pausing) {
 	_player.setPaused(pausing);
 
 	if(_fileMode) { // reset the stream when end of file was reached
+        if(fileIsLoadedAndFirstActionDidNotYetOccurred)
+        {
+            setPos(0);
+           
+        }
 		if(!pausing && _pos >= fileLength()-1) {
 			_triggers.clear();
 			setPos(0);
@@ -1876,6 +1882,7 @@ void RecordingManager::setPos(int64_t pos, bool artificial) {
 	if(pos == _pos)
 		return;
 
+     fileIsLoadedAndFirstActionDidNotYetOccurred = false;
     currentPositionOfWaveform = pos;//set position of waveform to new value
 
 	const int halfsize = SampleBuffer::SIZE/2;

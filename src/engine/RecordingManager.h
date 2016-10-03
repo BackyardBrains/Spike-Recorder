@@ -182,6 +182,7 @@ public:
     float loadGainForAudioInput();
     float loadTimeScaleForAudioInput();
     bool firstTimeInitializationOfSettingsForAudioInput = true;
+    bool fileIsLoadedAndFirstActionDidNotYetOccurred= false;
 
     #if defined(_WIN32)
         int prepareForHIDFirmwareUpdate(BYBFirmwareVO * firmwareToUpdate);
@@ -311,6 +312,7 @@ private:
 
     double _alphaAudioTime = 0;
     bool alphaFeedbackActive;
+    
 
 };
 

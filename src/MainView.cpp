@@ -397,6 +397,7 @@ void MainView::filePressed() {
 	tip->setMouseTracking(false);
 	Widgets::Application::getInstance()->updateLayout();
 	Widgets::Application::getInstance()->addPopup(tip);
+    _manager.fileIsLoadedAndFirstActionDidNotYetOccurred = true;
 }
 
 void MainView::configPressed() {
