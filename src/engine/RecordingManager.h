@@ -28,10 +28,11 @@ class SampleBuffer;
 struct MetadataChunk;
 
 struct SpikeTrain {
-	SpikeTrain() : upperThresh(0), lowerThresh(0), color(0) {}
+	SpikeTrain() : upperThresh(0), lowerThresh(0), channelIndex(0), color(0) {}
 	std::vector<int64_t> spikes;
 	int16_t upperThresh;
 	int16_t lowerThresh;
+    int16_t channelIndex;
 
 	int color;
 };
@@ -149,6 +150,7 @@ public:
     void reloadHID();
     bool _HIDShouldBeReloaded;
     
+    int numberOfChannels();
     
     
     void enable50HzFilter(){ _60HzFilterEnabled = false; _50HzFilterEnabled = true;}
@@ -265,7 +267,7 @@ private:
     bool _highPassFilterEnabled = false;
     float _highCornerFreq;
     float _lowCornerFreq;
-    int numberOfChannels();
+
 	int64_t currentPositionOfWaveform;
 
 	bool _fileMode;

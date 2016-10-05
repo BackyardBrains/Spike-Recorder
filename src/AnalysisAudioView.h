@@ -26,7 +26,7 @@ public:
 	sigslot::signal0<> threshChanged;
 private:
 	SpikeSorter &_spikes;
-
+    RecordingManager &_manager;
 	int _colorIdx;
 
 	int _clickedThresh;

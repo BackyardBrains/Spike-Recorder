@@ -42,10 +42,11 @@ private:
 	void addPressed();
 	void plotsPressed();
 
-	void selectionChanged(int i);
+    void selectionChanged(int idx);
 	void threshChanged();
 	void trainDeleted(int idx);
 	void plotModeChanged(int mode);
+    int numberOfSpikeTrainsForCurrentChannel();
 };
 
 }

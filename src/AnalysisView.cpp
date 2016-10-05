@@ -28,6 +28,7 @@ AnalysisView::AnalysisView(RecordingManager &mngr, AnalysisManager &anaman, Widg
 	}
 	_spikeTrains.push_back(SpikeTrain());
 	_spikeTrains.back().color=_colorCounter;
+    _spikeTrains.back().channelIndex = _manager.selectedVDevice();
 	_colorCounter++;
     
     
@@ -36,7 +37,7 @@ AnalysisView::AnalysisView(RecordingManager &mngr, AnalysisManager &anaman, Widg
 	_audioView->setThresh(_spikeTrains[0].lowerThresh, _spikeTrains[0].upperThresh);
 	_audioView->threshChanged.connect(this,&AnalysisView::addPressed);
 
-	_trainList = new AnalysisTrainList(_spikeTrains, this);
+	_trainList = new AnalysisTrainList(mngr, _spikeTrains, this);
 	_trainList->trainDeleted.connect(this, &AnalysisView::trainDeleted);
 	_plots = new AnalysisPlots(_spikeTrains,_manager, this);
 	_plots->modeChanged.connect(this, &AnalysisView::plotModeChanged);
@@ -108,7 +109,7 @@ AnalysisView::AnalysisView(RecordingManager &mngr, AnalysisManager &anaman, Widg
 	
 	hbox->update();
 
-	_spikeSorter.findSpikes(_manager.fileName(), _manager.selectedVDevice(), _manager.sampleRate()/1000 /* 1 ms */);
+	_spikeSorter.findAllSpikes(_manager.fileName(), _manager.sampleRate()/1000 /* 1 ms */);
 	
 	_wasThreshMode = _manager.threshMode();
 	_manager.setThreshMode(false);
@@ -116,8 +117,23 @@ AnalysisView::AnalysisView(RecordingManager &mngr, AnalysisManager &anaman, Widg
 
 
 	_trainList->selectionChange.connect(this, &AnalysisView::selectionChanged);
+    _trainList->setInitialSelection();
 }
 
+    
+int AnalysisView::numberOfSpikeTrainsForCurrentChannel()
+{
+    int countOfSpikeTrainsForThisChannel = 0;
+    for(unsigned int i = 0; i < _spikeTrains.size(); i++)
+    {
+        if(_spikeTrains[i].channelIndex == _manager.selectedVDevice())
+        {
+            countOfSpikeTrainsForThisChannel++;
+        }
+    }
+    return countOfSpikeTrainsForThisChannel;
+}
+    
 void AnalysisView::paintEvent() {
 	const Widgets::Color bg = Widgets::Colors::background;
 
@@ -157,9 +173,9 @@ void AnalysisView::addPressed() {
 	const int upperthresh = _audioView->upperThresh();
 	const int lowerthresh = _audioView->lowerThresh();
 
-	for(unsigned int i = 0; i < _spikeSorter.spikes().size(); i++)
-		if(_spikeSorter.spikes()[i].second > lowerthresh && _spikeSorter.spikes()[i].second < upperthresh)
-			_spikeTrains[selectedTrain].spikes.push_back(_spikeSorter.spikes()[i].first);
+	for(unsigned int i = 0; i < _spikeSorter.spikes(_manager.selectedVDevice()).size(); i++)
+		if(_spikeSorter.spikes(_manager.selectedVDevice())[i].second > lowerthresh && _spikeSorter.spikes(_manager.selectedVDevice())[i].second < upperthresh)
+			_spikeTrains[selectedTrain].spikes.push_back(_spikeSorter.spikes(_manager.selectedVDevice())[i].first);
 	_spikeTrains[selectedTrain].upperThresh = upperthresh;
 	_spikeTrains[selectedTrain].lowerThresh = lowerthresh;
 
@@ -167,6 +183,7 @@ void AnalysisView::addPressed() {
 		_spikeTrains.push_back(SpikeTrain());		
 		_colorCounter++;
 		_spikeTrains.back().color = _colorCounter;
+        _spikeTrains.back().channelIndex = _manager.selectedVDevice();
 		_plots->setPlotCount(_spikeTrains.size()-1);
 		_trainList->updateSize();
 		Widgets::Application::getInstance()->updateLayout();
@@ -181,7 +198,7 @@ void AnalysisView::savePressed() {
 
 	for(unsigned int i = 0; i < _spikeTrains.size()-1; i++) {
 		std::stringstream s;
-		s << "_neuron" << _spikeTrains[i].color;
+		s << "_ch"<<_spikeTrains[i].channelIndex<<"_neuron" << _spikeTrains[i].color;
 		for(unsigned int j = 0; j < _spikeTrains[i].spikes.size(); j++)
 			markers.push_back(std::make_pair(s.str(), _spikeTrains[i].spikes[j]));
 		// save thresholds
@@ -228,14 +245,45 @@ void AnalysisView::plotsPressed() {
 
 void AnalysisView::selectionChanged(int idx) {
 	_audioView->setColorIdx(_spikeTrains[idx].color);
+    _manager.setSelectedVDevice(_spikeTrains[idx].channelIndex);
 	_audioView->setThresh(_spikeTrains[idx].upperThresh, _spikeTrains[idx].lowerThresh);
 	_plots->setTarget(idx);
 }
 
 void AnalysisView::trainDeleted(int idx) {
+    int channelIndexOfDeletedTrain = _spikeTrains[idx].channelIndex;
 	_spikeTrains.erase(_spikeTrains.begin()+idx);
 	_plots->update();
-	selectionChanged(_trainList->selectedTrain());
+    
+    
+    //find spike train to select after we deleted one
+    //make sure that it is from same channel
+    //if there is no spike trains of same channel select + sign so
+    //user can make new one
+    bool foundNextSpikeTrainWIthSameChannel = false;
+    int newSelectedTrain = 0;
+    for(int i=_trainList->selectedTrain();i<_spikeTrains.size()-1;i++)
+    {
+        if(_spikeTrains[i].channelIndex == channelIndexOfDeletedTrain)
+        {
+            foundNextSpikeTrainWIthSameChannel = true;
+            newSelectedTrain = i;
+            break;
+        }
+    }
+    
+    if(foundNextSpikeTrainWIthSameChannel)
+    {
+        selectionChanged(newSelectedTrain);//if we found spike train from same channel
+    }
+    else
+    {
+        //if we didn't find spike train from same channel
+        //select + sign and set channel index on it
+        _spikeTrains[_spikeTrains.size()-1].channelIndex = channelIndexOfDeletedTrain;
+        selectionChanged(_spikeTrains.size()-1);
+    }
+	
 	_plots->setPlotCount(_spikeTrains.size()-1);
 	_trainList->updateSize();
 	Widgets::Application::getInstance()->updateLayout();

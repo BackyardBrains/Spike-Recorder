@@ -8,8 +8,8 @@
 
 namespace BackyardBrains {
 
-const std::vector<std::pair<int64_t, int16_t> > &SpikeSorter::spikes() const {
-	return _spikes;
+const std::vector<std::pair<int64_t, int16_t> > &SpikeSorter::spikes(int channel) const {
+	return _allSpikeTrains[channel];
 }
 
 static int16_t convert_bytedepth(int8_t *pos, int bytes) {
@@ -102,14 +102,14 @@ void SpikeSorter::searchPart(int8_t *buffer, int size, int chan, int channels, i
 
 		if(next) {
 			if((itp->second >= litp->second && (itp == posspikes.end()-1 || itp->second >= (itp+1)->second)) || itp->first-litp->first > holdoff) {
-				_spikes.push_back(*itp);
+				_allSpikeTrains[chan].push_back(*itp);
 				litp = itp;
 			}
 
 			itp++;
 		} else {
 			if((itn->second <= litn->second && (itn == negspikes.end()-1 || itn->second <= (itn+1)->second)) || itn->first-litn->first > holdoff) {
-				_spikes.push_back(*itn);
+				_allSpikeTrains[chan].push_back(*itn);
 				litn = itn;
 			}
 			
@@ -145,6 +145,32 @@ int SpikeSorter::findThreshold(int handle, int channel, int channels, int bytede
 	return rms[rms.size()*4/10];
 }
 
+void SpikeSorter::findAllSpikes(const std::string &filename, int holdoff)
+{
+    HSTREAM handle = BASS_StreamCreateFile(false, filename.c_str(), 0, 0, BASS_STREAM_DECODE);
+    if(handle == 0) {
+        Log::error("Bass Error: Failed to load file '%s': %s", filename.c_str(), GetBassStrError());
+        return;
+    }
+
+    
+    BASS_CHANNELINFO info;
+    BASS_ChannelGetInfo(handle, &info);
+    
+    BASS_StreamFree(handle);
+    
+    for(int i=0;i<info.chans;i++)
+    {
+        _allSpikeTrains.push_back(std::vector<std::pair<int64_t, int16_t> >(0));
+    }
+    for(int i=0;i<info.chans;i++)
+    {
+        findSpikes(filename, i, holdoff);
+    }
+
+}
+    
+    
 void SpikeSorter::findSpikes(const std::string &filename, int channel, int holdoff) {
 	HSTREAM handle = BASS_StreamCreateFile(false, filename.c_str(), 0, 0, BASS_STREAM_DECODE);
 	if(handle == 0) {
@@ -185,6 +211,7 @@ void SpikeSorter::findSpikes(const std::string &filename, int channel, int holdo
 
 void SpikeSorter::freeSpikes() {
 	_spikes.clear();
+    _allSpikeTrains.clear();
 }
 
 }

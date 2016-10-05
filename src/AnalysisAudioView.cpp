@@ -4,7 +4,7 @@
 #include <SDL_opengl.h>
 namespace BackyardBrains {
 
-AnalysisAudioView::AnalysisAudioView(RecordingManager &manager, AnalysisManager &anaman, SpikeSorter &spikes, Widgets::Widget *parent) : AudioView(parent, manager, anaman), _spikes(spikes), _colorIdx(0), _clickedThresh(-1) {
+AnalysisAudioView::AnalysisAudioView(RecordingManager &manager, AnalysisManager &anaman, SpikeSorter &spikes, Widgets::Widget *parent) : AudioView(parent, manager, anaman), _spikes(spikes), _manager(manager), _colorIdx(0), _clickedThresh(-1) {
 	_threshPos[0] = -0;
 	_threshPos[1] = 0;
 	_channels[0].pos = 0.5;
@@ -88,15 +88,15 @@ void AnalysisAudioView::paintEvent() {
    // std::cout<<"Spike gain: "<<_channels[0].gain<<" scale:"<<height()*ampScale<<"\n";
 	Widgets::Painter::setColor(Widgets::Colors::white);
 	if(!_channels.empty()) {
-		for(unsigned int i = 0; i < _spikes.spikes().size(); i++) {
-			int samplepos = _manager.pos()-_spikes.spikes()[i].first;
+		for(unsigned int i = 0; i < _spikes.spikes(_manager.selectedVDevice()).size(); i++) {
+			int samplepos = _manager.pos()-_spikes.spikes(_manager.selectedVDevice())[i].first;
 			if(samplepos < -samples/2 || samplepos > samples/2)
 				continue;
             
-            const int y = height()*_channels[0].pos - _spikes.spikes()[i].second*height()*ampScale*_channels[0].gain;
+            const int y = height()*_channels[0].pos - _spikes.spikes(_manager.selectedVDevice())[i].second*height()*ampScale*_channels[0].gain;
 			const float x = MOVEPIN_SIZE*1.48f+screenWidth()*(samples/2-samplepos)/(float)samples;
 
-			bool selected = _spikes.spikes()[i].second >= std::min(_threshPos[0], _threshPos[1]) && _spikes.spikes()[i].second <= std::max(_threshPos[0], _threshPos[1]);
+			bool selected = _spikes.spikes(_manager.selectedVDevice())[i].second >= std::min(_threshPos[0], _threshPos[1]) && _spikes.spikes(_manager.selectedVDevice())[i].second <= std::max(_threshPos[0], _threshPos[1]);
 			if(selected)
 				Widgets::Painter::setColor(MARKER_COLORS[_colorIdx % MARKER_COLOR_NUM]);
 			Widgets::Painter::drawRect(Widgets::Rect(x-1,y-1, 3, 3));

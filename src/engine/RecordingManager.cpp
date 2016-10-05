@@ -651,21 +651,31 @@ void RecordingManager::applyMetadata(const MetadataChunk &m) {
     _markers.clear();
     for(std::list<std::pair<std::string, int64_t> >::const_iterator it = m.markers.begin(); it != m.markers.end(); it++) {
         const char *name = it->first.c_str();
-        if(strncmp(name, "_neuron", 7) == 0) {
+        int chid = 0;
+        if(strncmp(name, "_ch", 3) == 0) {
+            char *endptr;
+            chid = strtol(name+3, &endptr, 10);
+        }
+        if(strstr(name,"_neuron"))
+        {
+            name = strstr(name,"_neuron");
+        }
+        
+        if(strncmp(name, "_neuron", 7) > -1) {
             char *endptr;
             int neuid = strtol(name+7, &endptr, 10);
-            if(name == endptr)
+            if(name == endptr)//if there was no number
                 continue;
             
             int neuronidx = -1;
             for(unsigned int i = 0; i < neuronIds.size(); i++) {
-                if(neuronIds[i] == neuid) {
+                if(neuronIds[i] == neuid) {//if we already created spike train for this neuron find neuron index
                     neuronidx = i;
                     break;
                 }
             }
             
-            if(neuronidx == -1) {
+            if(neuronidx == -1) {//add new neuron
                 neuronIds.push_back(neuid);
                 neuronidx = neuronIds.size()-1;
                 _spikeTrains.push_back(SpikeTrain());
@@ -673,6 +683,7 @@ void RecordingManager::applyMetadata(const MetadataChunk &m) {
                 if(clr < 0)
                     clr = 0;
                 _spikeTrains.back().color = clr;
+                _spikeTrains.back().channelIndex = chid;
             }
             if(strlen(endptr) > 9) {
                 int num = atoi(endptr+9);
