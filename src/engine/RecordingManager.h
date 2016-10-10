@@ -67,7 +67,7 @@ public:
     void turnAlphaFeedbackON();
     void turnAlphaFeedbackOFF();
     
-    //position of the current file/recording in samples
+    //position of the current file/recfording in samples
     //(this sample is at the middle of the screen in the audio view)
 	int64_t pos() const {return _pos;}
 	void setPos(int64_t pos, bool artificial = true); // file mode only
@@ -120,6 +120,7 @@ public:
 	sigslot::signal0<> thresholdChanged;
 
 	sigslot::signal0<> triggered;
+    sigslot::signal0<> bufferReset;
 
 	void advance(uint32_t milliseconds);
 
@@ -314,6 +315,8 @@ private:
 
     double _alphaAudioTime = 0;
     bool alphaFeedbackActive;
+    
+    bool loadSecondSegmentOfBuffer = false;//used to force loading ofwhole buffer after reseting buffer
     
 
 };

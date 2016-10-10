@@ -5,6 +5,9 @@ namespace BackyardBrains {
 
 AnalysisManager::AnalysisManager(RecordingManager &recman)
 	: ekg(recman), fft(recman), _recman(recman) {
+        
+        
+        _recman.bufferReset.connect(this, &AnalysisManager::resetBuffers);
 }
 
 float AnalysisManager::calculateRMS(int16_t *data, int length) {
@@ -20,6 +23,12 @@ float AnalysisManager::calculateRMS(int16_t *data, int length) {
 	}
 
 	return 0.f;
+}
+    
+void AnalysisManager::resetBuffers()
+{
+    fft.force();
+    std::cout<<"--------Buffer reset\n";
 }
 
 }

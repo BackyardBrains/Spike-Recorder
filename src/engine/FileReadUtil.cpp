@@ -4,6 +4,7 @@
 #include <bass.h>
 #include <cassert>
 #include <cstring>
+#include <iostream>
 
 namespace BackyardBrains {
 
@@ -36,6 +37,8 @@ bool ReadWAVFile(std::vector<std::vector<int16_t> > &channels, int len, HSTREAM 
 	channels.resize(nchan);
 	uint8_t *buffer = new uint8_t[len];
 	DWORD samplesRead = BASS_ChannelGetData(handle, buffer, len);
+   // long positionInfile = BASS_ChannelGetPosition(handle, BASS_POS_BYTE)/bytespersample;
+   // std::cout<<"Current position: "<<positionInfile<<"\n";
 	if(samplesRead == (DWORD)-1) {
 		Log::error("Bass Error: getting channel data failed: %s", GetBassStrError());
 		delete[] buffer;

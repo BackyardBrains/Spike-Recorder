@@ -19,7 +19,7 @@
 // When circular buffer "_buffer" starts from begining (rewinds) envelopes also start rewriting data
 // from the begining
 //
-// WHole point is to have minimum and maximum on some interval that is phisicaly one pixel
+// Whole point is to have minimum and maximum on some interval that is phisicaly one pixel
 // on the screen so that we can draw vertical line to indicate to user amplitude span of the signal
 //
 //
@@ -152,7 +152,7 @@ public:
 		}
 
 		_pos += len;//add to cumulative number of samples (number of samples since begining of the time)
-      //  std::cout<<"Head: "<<_head<<" Pos: "<<_pos<<"\n";
+       // std::cout<<"Head: "<<_head<<" Pos: "<<_pos<<"\n";
 	}
 
     //
@@ -209,7 +209,7 @@ public:
 			if (i < -SIZE || (i >= 0))
             {
 				dst[j] = 0;
-				std::cout<<"Error - asking for data that does not exist\n";
+				//std::cout<<"Error - asking for data that does not exist\n";
             }
 			else
             {
@@ -237,6 +237,9 @@ public:
 			{
 				// qDebug() << "Whole thing...";
 				// we can process the whole thing
+                
+                //DEBUG: Stanislav
+                
 				uint64_t index = (_head + i + SIZE)%SIZE;// transform index "i" into circular buffer reference frame
 				unsigned int remaining = skip;
 				bounding = std::pair<int16_t, int16_t>(_buffer[index], _buffer[index]);
@@ -348,6 +351,7 @@ public:
 	}
 
 	void reset() {
+        std::cout<<"!!!!!!!!!!!!!!!!!! RESET buffer!!!!!!!!!!!\n";
 		_pos = 0;
 		_head = 0;
 		if(_notEmpty) {
@@ -362,12 +366,12 @@ public:
 	bool empty() const {return !_notEmpty;}
 private:
 
-    //number of samples since begining of the time (we have to have that since
+    //LOADED number of samples since begining of the time (we have to have that since
     //other parts of the application calculate samples from begining of the time
     //and this class has circular buffer that rewinds all the time)
 	int64_t _pos;
 
-    //position of head in "_buffer" circular buffer
+    //LOADED number of bytes position of head in "_buffer" circular buffer
 	int _head;
 
     //Circular buffer with raw data. Size is SIZE = 44100*60*1 samples
