@@ -198,7 +198,7 @@ void FFTView::advance() {
     int len = _av.sampleCount(_av.screenWidth(), _av.scaleWidth());
     
     //get position of the begining of the signal on the screen
-	int opos = _manager.pos()+_av.channelOffset()-len+_manager.fileMode()*len/2;
+    int opos = _manager.pos()+_av.channelOffset()-len;//+_manager.fileMode()*len/2;
 
 	_anaman.fft.setDevice(_manager.selectedVDevice());
 	_anaman.fft.request(opos,len);

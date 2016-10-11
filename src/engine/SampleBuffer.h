@@ -209,7 +209,7 @@ public:
 			if (i < -SIZE || (i >= 0))
             {
 				dst[j] = 0;
-				std::cout<<"Error - asking for data that does not exist\n";
+				//std::cout<<"Error - asking for data that does not exist\n";
             }
 			else
             {
