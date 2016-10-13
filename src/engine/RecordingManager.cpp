@@ -968,10 +968,10 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
     }
 
 
-    const unsigned int bufsize = 44100;//1*sampleRate();
+    const unsigned int bufsize = SEGMENT_SIZE;//1*sampleRate();
 	for(int idx = 0; idx < (int)_devices.size(); idx++) {
         
-        
+        const int channum = _devices[idx].channels;
         //if we are at the end of the file
         if(_devices[idx].sampleBuffers[0].pos() >= fileLength()-1)
         {
@@ -979,7 +979,21 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
             continue;
         }
         
-        //if we fillsegment of buffer (half the buffer)
+        int beginingSegmentOfCurrentContinualDataInBuffer = _devices[idx].sampleBuffers[0].head()/SEGMENT_SIZE;
+        if(_devices[idx].sampleBuffers[0].segmentsState[beginingSegmentOfCurrentContinualDataInBuffer%NUMBER_OF_SEGMENTS] == 0)
+        {
+            for(int chan = 0; chan < channum; chan++)
+            {
+                _devices[idx].sampleBuffers[0].segmentsState[beginingSegmentOfCurrentContinualDataInBuffer] = 1;
+            }
+        }
+        else
+        {
+            continue;
+        }
+        
+        
+       /* //if we fillsegment of buffer (half the buffer)
         if(_devices[idx].sampleBuffers[0].head()%(SampleBuffer::SIZE/2) >= SampleBuffer::SIZE/2-1)
         {
             if(_devices[idx].sampleBuffers[0].pos()<_pos || loadSecondSegmentOfBuffer)//if we need to load 2 segments of buffer
@@ -995,26 +1009,22 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
                 setPos(_pos, true);
                 continue;//if we don't need to load 2 segments of buffer
             }
-        }
+        }*/
 		
-		const int channum = _devices[idx].channels;
+		
 		const int bytespersample = _devices[idx].bytespersample;
 		std::vector<std::vector<int16_t> > channels;
 
-		unsigned int len;
-		if(_devices[idx].sampleBuffers[0].head() < SampleBuffer::SIZE/2)
-			len = SampleBuffer::SIZE/2-1 - _devices[idx].sampleBuffers[0].head();
-		else
-			len = SampleBuffer::SIZE-1 - _devices[idx].sampleBuffers[0].head();
+
 
        // std::cout<<"Read "<<std::min(len,bufsize)<<" samples\n";
-		bool rc = ReadWAVFile(channels, channum*std::min(len,bufsize)*bytespersample, _devices[idx].handle,
+		bool rc = ReadWAVFile(channels, channum*bufsize*bytespersample, _devices[idx].handle,
 				channum, bytespersample);
         
 		if(!rc)
 			continue;
 
-        bufferReset.emit();
+        
 		// TODO make this more sane
 		for(int chan = 0; chan < channum; chan++) {
 			if(_devices[idx].dcBiasNum < _sampleRate*10) {
@@ -1925,235 +1935,102 @@ void RecordingManager::setPos(int64_t pos, bool artificial) {
      fileIsLoadedAndFirstActionDidNotYetOccurred = false;//used for fake preload of file to the half of the screen
     currentPositionOfWaveform = pos;//set position of waveform to new value
 
-	const int halfsize = SampleBuffer::SIZE/2;
+	int endSegment = _devices[0].sampleBuffers[0].head()/SEGMENT_SIZE+1;
 
-    int currentPlayingHeadSegment = _pos/halfsize;//it will round
-    int newPlayingHeadSegment = pos/halfsize;//it will round
-    int newPlayingHeadPositionInsideSegment = pos%halfsize;
-    
-    bool weAreLoading = false;
-    //if segment is loaded position in buffer should be (halfsize-1) or (2*halfsize-1)
-    if(((_devices[0].sampleBuffers[0].head() + 1 )%halfsize) != 0  && _devices[0].sampleBuffers[0].pos()<fileLength())
+    int howMuchIsSetInAdvance = 0;
+    for(int i=endSegment;i<endSegment+NUMBER_OF_SEGMENTS;i++)
     {
-        weAreLoading = true;
-    }
-    
-    
-    if(currentPlayingHeadSegment == newPlayingHeadSegment)
-    {
-            int lastFilesByteLoadedInBuffer = _devices[0].sampleBuffers[0].pos();
-            int headPositionInBuffer = _devices[0].sampleBuffers[0].head();
-            bool inRightBuffer;
-            inRightBuffer = newPlayingHeadPositionInsideSegment>=halfsize;
-            
-            bool inSecondPartOfSegment;
-
-            inSecondPartOfSegment = newPlayingHeadPositionInsideSegment>=(halfsize*0.65);
-        
-            
-            bool inFirstPartOfSegment;
-
-            inFirstPartOfSegment = newPlayingHeadPositionInsideSegment<=(halfsize*0.35);
-        
-                
-            if(inSecondPartOfSegment)//we have to make sure that we prepare next part of the signal in buffer
-            {
-                int thisSegmentEnding = newPlayingHeadSegment*halfsize+halfsize;
-                
-                if(_devices[0].sampleBuffers[0].pos() < thisSegmentEnding)
-                {
-                    //set playback emediately to correct position
-                    for(int idx = 0; idx < (int)_devices.size(); idx++)
-                    {
-                        const int nchan = _devices[idx].channels;
-                        
-                        for(unsigned int i = 0; i < _devices[idx].sampleBuffers.size(); i++) {
-                            SampleBuffer &s = _devices[idx].sampleBuffers[i];
-                            BASS_ChannelSetPosition(_devices[idx].handle, _devices[idx].bytespersample*thisSegmentEnding*nchan, BASS_POS_BYTE);
-                            //weAreLoading = true;
-                            //set LOADED number of bytes (head for buffer for display of waveform0
-                            s.setHead(s.head() > halfsize ? 0 : halfsize); // to make it enter the next half segment
-                            
-                            //set cumulative number of samples LOADED from file
-                            s.setPos(thisSegmentEnding);
-                        }
-                    }
-                }
-                
-            }
-        
-        
-    }//end of when in the same segments
-    
-    
-    //when we seek back in time and we gou out of buffer,
-    // we added halfsize/4 more so to be sure that we will have waveform
-    // to show on the screen since playing head is at the right side of the screen
-    long triggerPosition = pos-halfsize/4;
-    if(triggerPosition<0)
-    {
-        triggerPosition = 0;
-    }
-    int numberOfLoadedSamples = SampleBuffer::SIZE;
-    
-    //if we didn't fill upd the buffer because we encountered end of the file
-    if(fileLength()<=_devices[0].sampleBuffers[0].pos())
-    {
-        numberOfLoadedSamples -= (SampleBuffer::SIZE/2) - fileLength()%(SampleBuffer::SIZE/2);
-    }
-    if((_devices[0].sampleBuffers[0].pos() - triggerPosition)>numberOfLoadedSamples && !weAreLoading)
-    {
-        //find begining of the segment to load data from begining of the segment
-        int beginingOfSegment = newPlayingHeadSegment*halfsize;
-        
-        //if it is in the first half of the segment better
-        //start loading from segment before
-        if(newPlayingHeadPositionInsideSegment<halfsize/2)
+        if(_devices[0].sampleBuffers[0].segmentsState[i%NUMBER_OF_SEGMENTS]==0)
         {
-            beginingOfSegment -= halfsize;
-            if(beginingOfSegment<0)
-            {
-                beginingOfSegment = 0;
-            }
+            howMuchIsSetInAdvance+=SEGMENT_SIZE;
         }
-        
+    }
+    int endOfDataThatNeedsToBeLoaded = _devices[0].sampleBuffers[0].pos() + howMuchIsSetInAdvance;
+    
+    //if we are seeking and we jump outside loaded buffer RESET buffers
+    int leftBoandaryOfLoading = pos - SampleBuffer::SIZE/8;
+    if(leftBoandaryOfLoading<0)
+    {
+        leftBoandaryOfLoading = 0;
+    }
+    
+    if(((endOfDataThatNeedsToBeLoaded - leftBoandaryOfLoading)>SampleBuffer::SIZE) || //if we are ouside on left
+       (endOfDataThatNeedsToBeLoaded < pos)) //if we are outside on right
+    {
         //set playback emediately to correct position
         for(int idx = 0; idx < (int)_devices.size(); idx++)
         {
-            const int nchan = _devices[idx].channels;
-            
             for(unsigned int i = 0; i < _devices[idx].sampleBuffers.size(); i++) {
                 SampleBuffer &s = _devices[idx].sampleBuffers[i];
                 s.reset();
-                weAreLoading = true;
-                loadSecondSegmentOfBuffer = true;
-                BASS_ChannelSetPosition(_devices[idx].handle, _devices[idx].bytespersample*beginingOfSegment*nchan, BASS_POS_BYTE);
+                //round position to segment end
+                long safePositionToStartLoading = pos-SampleBuffer::SIZE/2;
+                if(safePositionToStartLoading<0)
+                {
+                    safePositionToStartLoading = 0;
+                }
+                long positionToStartLoading = safePositionToStartLoading/SEGMENT_SIZE  * SEGMENT_SIZE;
+                positionToStartLoading = std::max((int64_t)0, std::min(fileLength()-1, (int64_t)positionToStartLoading));
+                const int nchan = _devices[idx].channels;
+                BASS_ChannelSetPosition(_devices[idx].handle, _devices[idx].bytespersample*positionToStartLoading*nchan, BASS_POS_BYTE);
                 //set cumulative number of samples LOADED from file
-                s.setPos(beginingOfSegment);
-                
+                s.setPos(positionToStartLoading);
             }
-            bufferReset.emit();
         }
+        
     }
     
+    //if we are approaching end of the loaded buffer initiate loading of more segments on the right
     
-    //if we seek in position after last loaded sample
-    if( ( _devices[0].sampleBuffers[0].pos())<pos  && !weAreLoading  )
+    if((endOfDataThatNeedsToBeLoaded - pos)< SampleBuffer::SIZE/8  && (endOfDataThatNeedsToBeLoaded<fileLength()))
     {
-        //find begining of the segment to load data from begining of the segment
-        int beginingOfSegment = newPlayingHeadSegment*halfsize;
-        
-        //if it is in the first half of the segment better
-        //start loading from segment before
-        if(newPlayingHeadPositionInsideSegment<halfsize/2)
-        {
-            beginingOfSegment -= halfsize;
-            if(beginingOfSegment<0)
-            {
-                beginingOfSegment = 0;
-            }
-        }
-        
-        //set playback emediately to correct position
-        for(int idx = 0; idx < (int)_devices.size(); idx++)
-        {
-            const int nchan = _devices[idx].channels;
+            int endSegment = _devices[0].sampleBuffers[0].head()/SEGMENT_SIZE;
             
-            for(unsigned int i = 0; i < _devices[idx].sampleBuffers.size(); i++) {
-                SampleBuffer &s = _devices[idx].sampleBuffers[i];
-                s.reset();
-                
-                weAreLoading = true;
-                loadSecondSegmentOfBuffer = true;
-                BASS_ChannelSetPosition(_devices[idx].handle, _devices[idx].bytespersample*beginingOfSegment*nchan, BASS_POS_BYTE);
-                //set cumulative number of samples LOADED from file
-                s.setPos(beginingOfSegment);
-                
+            int numOfSegmentsToLoad = 6;
+            if((numOfSegmentsToLoad-1)*SEGMENT_SIZE>(fileLength()-endOfDataThatNeedsToBeLoaded))
+            {
+                numOfSegmentsToLoad =(fileLength()-endOfDataThatNeedsToBeLoaded)/SEGMENT_SIZE +1;
             }
-            bufferReset.emit();
-        }
-    
+           // int newEndOfLoadedData = _devices[0].sampleBuffers[0].pos() + numOfSegmentsToLoad * SEGMENT_SIZE;
+        
+           for(int idx = 0; idx < (int)_devices.size(); idx++)
+           {
+               for(unsigned int i = 0; i < _devices[idx].sampleBuffers.size(); i++) {
+                   SampleBuffer &s = _devices[idx].sampleBuffers[i];
+                   for(int i=endSegment;i<=endSegment+numOfSegmentsToLoad;i++)
+                   {
+                       s.segmentsState[i%NUMBER_OF_SEGMENTS] = 0;
+                   }
+                  // s.setPos(newEndOfLoadedData);
+                  // s.setHead(newEndOfLoadedData);
+               }
+           }
+        
     }
-    
-    
-   // std::cout<<" Pos: "<<_devices[0].sampleBuffers[0].pos()<<" Head: "<<_devices[0].sampleBuffers[0].head()<<"\n";
-    
-    
-    
-    
-    //_pos-pos
-    
-    /*
-    
-    //it counts on rounding during division
-    //how many halfsize we have in _pos+halfsize/2 (current position in file) and
-    //how many halfsize we have in pos+halfsize/2
-	const int seg1 = std::min(fileLength()-1,_pos+halfsize/2)/halfsize;//for current position
-	const int seg2 = std::min(fileLength()-1,pos+halfsize/2)/halfsize;//for goal position
 
-
-	if(seg1 != seg2) {
-		for(int idx = 0; idx < (int)_devices.size(); idx++) {
-			const int nchan = _devices[idx].channels;
-			int npos = seg2*halfsize;
-
-			for(unsigned int i = 0; i < _devices[idx].sampleBuffers.size(); i++) {
-				SampleBuffer &s = _devices[idx].sampleBuffers[i];
-
-                //if we need to fill more than full segment reset it
-				if(abs(seg2-seg1) > 1 || seg2 == 0 || s.head()%halfsize != halfsize-1)
-                {
-					s.reset();
-                    npos = pos-halfsize/2;
-                    if(npos<0)
-                    {
-                        npos = 0;
-                    }
-                    
-                    //set playback emediately to correct position
-                    BASS_ChannelSetPosition(_devices[idx].handle, _devices[idx].bytespersample*npos*nchan, BASS_POS_BYTE);
-                    
-                    //set LOADED number of bytes (head for buffer for display of waveform0
-                    s.setHead(0); // to make it enter the next half segment
-                    
-                    //set cumulative number of samples LOADED from file
-                    s.setPos(npos);
-                    
-                    
-                    
-                }
-                else
-                {
-                    //set playback emediately to correct position
-                    BASS_ChannelSetPosition(_devices[idx].handle, _devices[idx].bytespersample*npos*nchan, BASS_POS_BYTE);
-                    
-                    //set LOADED number of bytes (head for buffer for display of waveform0
-                    s.setHead(s.head() > halfsize ? 0 : halfsize); // to make it enter the next half segment
-                    
-                    //set cumulative number of samples LOADED from file
-                    s.setPos(npos);
-                    
-                }
-
-              
-                
-                
-                //s.setPos(npos); is setting _pos to the end of buffer 2*halfsize;
-                //s.setHead( is setting _head at the half of the buffer
-                //and in DEBUG: stanisalv position is calculated offset - _pos = 700 000 which is in the first segment
-                //and we just fill part of the second segment
-                //I think the point from which we start reading in file is not good. It should be earlier
-                //so that
-                
-
-			}
-		}
-	}*/
-
-    
 
 	_pos = pos;//set current position in file (LOADED can be greater than this, loaded is stored in buffer: s._pos)
      
+}
+    
+//check if buffer has loaded data at "pos" position
+bool RecordingManager::isBufferLoadedAtPosition(long pos)
+{
+    if(!fileMode())
+    {
+        return true;
+    }
+    else
+    {
+        if(pos<_devices[0].sampleBuffers[0].pos())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }
 
 SampleBuffer *RecordingManager::sampleBuffer(int virtualDeviceIndex) {

@@ -29,10 +29,15 @@
 //==============================================================================
 namespace BackyardBrains {
 
+#define NUMBER_OF_SEGMENTS 120
+#define SEGMENT_SIZE 22050
+    
+    
 class SampleBuffer
 {
 public:
-	static const int64_t SIZE = 44100*60*1;
+
+	static const int64_t SIZE = NUMBER_OF_SEGMENTS*SEGMENT_SIZE;
 	static const int SIZE_LOG2 = 21;
 
     //
@@ -45,6 +50,8 @@ public:
 	SampleBuffer(int64_t pos = 0) : _pos(pos), _head(0), _buffer(new int16_t[SIZE]), _notEmpty(false)
 	{
 		memset(_buffer, 0, sizeof(int16_t[SIZE]));
+        memset(segmentsState, 0, sizeof(int[NUMBER_OF_SEGMENTS]));
+        
 		int size = SIZE/2;
         //create SIZE_LOG2 (21) envelope arrays.
 		for (int i = 0; i < SIZE_LOG2; i++, size/=2)
@@ -60,6 +67,7 @@ public:
 	SampleBuffer(const SampleBuffer &other) : _pos(other._pos), _head(other._head), _buffer(new int16_t[SIZE]), _notEmpty(false)
 	{
 		memcpy(_buffer, other._buffer, sizeof(int16_t[SIZE]));
+        memcpy(segmentsState, other.segmentsState, sizeof(int[NUMBER_OF_SEGMENTS]));
 		for (int i = 0; i < static_cast<int>(SIZE_LOG2); i++)
 		{
 			_envelopes[i] = other._envelopes[i];
@@ -83,6 +91,7 @@ public:
 		_pos = other._pos;
 		_head = other._head;
 		memcpy(_buffer, other._buffer, sizeof(int16_t[SIZE]));
+        memcpy(segmentsState, other.segmentsState, sizeof(int[NUMBER_OF_SEGMENTS]));
 		for (int i = 0; i < SIZE_LOG2; i++)
 		{
 			_envelopes[i] = other._envelopes[i];
@@ -152,7 +161,7 @@ public:
 		}
 
 		_pos += len;//add to cumulative number of samples (number of samples since begining of the time)
-       // std::cout<<"Head: "<<_head<<" Pos: "<<_pos<<"\n";
+        std::cout<<"Head: "<<_head<<" Pos: "<<_pos<<"\n";
 	}
 
     //
@@ -354,9 +363,11 @@ public:
         std::cout<<"!!!!!!!!!!!!!!!!!! RESET buffer!!!!!!!!!!!\n";
 		_pos = 0;
 		_head = 0;
+        memset(segmentsState, 0, sizeof(int[NUMBER_OF_SEGMENTS]));
 		if(_notEmpty) {
 			_notEmpty = false;
 			memset(_buffer, 0, SIZE*sizeof(int16_t));
+            
 
 			for (int i = 0, size = SIZE/2; i < SIZE_LOG2; i++, size/=2)
 				_envelopes[i].assign(size+1, std::pair<int16_t, int16_t>(0, 0));
@@ -364,6 +375,7 @@ public:
 		}
 	}
 	bool empty() const {return !_notEmpty;}
+    int segmentsState[NUMBER_OF_SEGMENTS];
 private:
 
     //LOADED number of samples since begining of the time (we have to have that since
@@ -382,6 +394,7 @@ private:
     //First array holds maximum values of signal (just subsampled)
     //Second array holds minimum values of signal (just subsampled)
 	std::vector<std::pair<int16_t, int16_t> > _envelopes[SIZE_LOG2];
+    
 
 	bool _notEmpty;
 };

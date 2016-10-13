@@ -149,8 +149,12 @@ namespace BackyardBrains {
             _viewwidth = FFTTRES;
         }
         
-        int pos = position/windowdist*windowdist;
+        int pos = (position/windowdist)*windowdist;//rounding to whole number of windows
         
+        if(!_manager.isBufferLoadedAtPosition(pos+length))
+        {
+            return;
+        }
         _offset += (pos-_begin)/windowdist;
         _offsetcorrection = (position-pos)/(float)windowdist;
         

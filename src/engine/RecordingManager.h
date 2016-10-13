@@ -185,7 +185,12 @@ public:
     float loadGainForAudioInput();
     float loadTimeScaleForAudioInput();
     bool firstTimeInitializationOfSettingsForAudioInput = true;
+    
+    //used for fake load of half of the screen with waveform from file
     bool fileIsLoadedAndFirstActionDidNotYetOccurred= false;
+    
+    //check if buffer has loaded data at "pos" position
+    bool isBufferLoadedAtPosition(long pos);
 
     #if defined(_WIN32)
         int prepareForHIDFirmwareUpdate(BYBFirmwareVO * firmwareToUpdate);
@@ -317,7 +322,7 @@ private:
     bool alphaFeedbackActive;
     
     bool loadSecondSegmentOfBuffer = false;//used to force loading ofwhole buffer after reseting buffer
-    
+
 
 };
 
