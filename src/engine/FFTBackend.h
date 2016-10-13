@@ -6,6 +6,7 @@
 #include <utility>
 #include <complex>
 #include "HighPassFilter.h"
+#include <sigslot.h>
 
 namespace BackyardBrains {
 

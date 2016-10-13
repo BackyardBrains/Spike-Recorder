@@ -5,6 +5,7 @@
 #include <complex>
 #include <vector>
 
+
 namespace BackyardBrains {
     
     FFTBackend::FFTBackend(RecordingManager &manager) : _manager(manager) {
@@ -17,6 +18,8 @@ namespace BackyardBrains {
         _offset = 0;
         _device = 0;
         lowPassAlphaWaves = 0;
+        
+        
     }
     
     FFTBackend::~FFTBackend() {
@@ -146,8 +149,12 @@ namespace BackyardBrains {
             _viewwidth = FFTTRES;
         }
         
-        int pos = position/windowdist*windowdist;
+        int pos = (position/windowdist)*windowdist;//rounding to whole number of windows
         
+        if(!_manager.isBufferLoadedAtPosition(pos+length))
+        {
+            return;
+        }
         _offset += (pos-_begin)/windowdist;
         _offsetcorrection = (position-pos)/(float)windowdist;
         

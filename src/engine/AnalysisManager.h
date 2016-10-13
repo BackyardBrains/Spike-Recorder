@@ -18,6 +18,7 @@ public:
 
 	// calculate the root mean square of data
 	float calculateRMS(int16_t *data, int length);
+    void resetBuffers();
 private:
 	RecordingManager &_recman;
 };

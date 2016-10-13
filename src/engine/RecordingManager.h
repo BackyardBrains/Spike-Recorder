@@ -67,7 +67,7 @@ public:
     void turnAlphaFeedbackON();
     void turnAlphaFeedbackOFF();
     
-    //position of the current file/recording in samples
+    //position of the current file/recfording in samples
     //(this sample is at the middle of the screen in the audio view)
 	int64_t pos() const {return _pos;}
 	void setPos(int64_t pos, bool artificial = true); // file mode only
@@ -120,6 +120,7 @@ public:
 	sigslot::signal0<> thresholdChanged;
 
 	sigslot::signal0<> triggered;
+    sigslot::signal0<> bufferReset;
 
 	void advance(uint32_t milliseconds);
 
@@ -184,7 +185,12 @@ public:
     float loadGainForAudioInput();
     float loadTimeScaleForAudioInput();
     bool firstTimeInitializationOfSettingsForAudioInput = true;
+    
+    //used for fake load of half of the screen with waveform from file
     bool fileIsLoadedAndFirstActionDidNotYetOccurred= false;
+    
+    //check if buffer has loaded data at "pos" position
+    bool isBufferLoadedAtPosition(long pos);
 
     #if defined(_WIN32)
         int prepareForHIDFirmwareUpdate(BYBFirmwareVO * firmwareToUpdate);
@@ -315,6 +321,8 @@ private:
     double _alphaAudioTime = 0;
     bool alphaFeedbackActive;
     
+    bool loadSecondSegmentOfBuffer = false;//used to force loading ofwhole buffer after reseting buffer
+
 
 };
 
