@@ -89,7 +89,7 @@ void AnalysisPlots::setAvgWaveformData(int idx) {
 	_plots[idx]->setData(x,y);
 	_plots[idx]->setSTD(stdy);
 	_plots[idx]->setStyle(Widgets::Plot::Line);
-	_plots[idx]->setYLabel("");
+	_plots[idx]->setYLabel("mV");
 	_plots[idx]->setXLabel("time [s]");
 }
 

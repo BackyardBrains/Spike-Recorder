@@ -136,7 +136,7 @@ void SpikeAnalysis::averageWaveform(std::vector<float> &average, std::vector<flo
 				break;
 			}
 			for(int j = 0; j < size ; j++) {
-				int16_t val = channels[chan][train[i]+j-size/2-pos];
+				float val = channels[chan][train[i]+j-size/2-pos]/200.0f;
 				average[j] += val;
 				std[j] += val*val;
 			}
