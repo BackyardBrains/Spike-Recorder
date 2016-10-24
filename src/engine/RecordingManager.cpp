@@ -39,9 +39,9 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
     _numOfSerialChannels = 1;
     _numOfHidChannels = 2;
     _firmwareUpdateStage = 0;
-    
+
     initInputConfigPersistance();
-    
+
     #if defined(_WIN32)
     shouldStartFirmwareUpdatePresentation = false;
     #endif
@@ -443,11 +443,11 @@ int RecordingManager::numberOfSerialChannels()
 {
 	return _numOfSerialChannels;
 }
-    
+
 
 void RecordingManager::sendEKGImpuls()
 {
-    
+
     clock_t end = clock();
 #if defined(__APPLE__) || defined(__linux__)
     end = end*1000;
@@ -455,15 +455,15 @@ void RecordingManager::sendEKGImpuls()
     double elapsed_secs = double(end - timerEKG) / CLOCKS_PER_SEC;
     if(elapsed_secs>0.2)
     {
-        
+
         timerEKG = end;
         _arduinoSerial.sendEventMessage(0);
     }
-    
+
 }
-    
-    
-    
+
+
+
 int RecordingManager::serialPortIndex()
 {
    return std::max(0, std::min(_serialPortIndex,(int)(_arduinoSerial.list.size()-1)));
@@ -471,7 +471,7 @@ int RecordingManager::serialPortIndex()
 
 void RecordingManager::disconnectFromSerial()
 {
-   
+
 	closeSerial();
 	initRecordingDevices();
 }
@@ -569,7 +569,7 @@ void RecordingManager::initRecordingDevices() {
     {
         saveInputConfigSettings();
     }
-    
+
 	clear();
 	_fileMode = false;
 	_spikeTrains.clear();
@@ -612,40 +612,40 @@ void RecordingManager::initRecordingDevices() {
 	Log::msg("Found %d recording devices.", _virtualDevices.size());
     loadFilterSettings();
 }
-    
-    
-    
-    
+
+
+
+
     void RecordingManager::constructMetadata(MetadataChunk *m) const {
         unsigned int nchan = 0;
-        
+
         for(unsigned int i = 0; i < _virtualDevices.size(); i++)
             if(_virtualDevices[i].bound)
                 nchan++;
-        
+
         assert(m->channels.size() <= nchan); // don't want to delete stuff here
         m->channels.resize(nchan);
-        
+
         int chani = 0;
         for(unsigned int i = 0; i < _virtualDevices.size(); i++) {
             if(_virtualDevices[i].bound) {
                 m->channels[chani].threshold = _virtualDevices[i].threshold;
                 m->channels[chani].name = _virtualDevices[i].name;
-                
+
                 chani++;
             }
         }
-        
+
         m->markers = _markers;
     }
-    
+
 void RecordingManager::applyMetadata(const MetadataChunk &m) {
     //assert(_virtualDevices.size() == m.channels.size());
     for(unsigned int i = 0; i < m.channels.size(); i++) {
         _virtualDevices[i].threshold = m.channels[i].threshold;
         _virtualDevices[i].name = m.channels[i].name;
     }
-    
+
     std::vector<int> neuronIds;
     _spikeTrains.clear();
     _markers.clear();
@@ -660,13 +660,13 @@ void RecordingManager::applyMetadata(const MetadataChunk &m) {
         {
             name = strstr(name,"_neuron");
         }
-        
+
         if(strncmp(name, "_neuron", 7) > -1) {
             char *endptr;
             int neuid = strtol(name+7, &endptr, 10);
             if(name == endptr)//if there was no number
                 continue;
-            
+
             int neuronidx = -1;
             for(unsigned int i = 0; i < neuronIds.size(); i++) {
                 if(neuronIds[i] == neuid) {//if we already created spike train for this neuron find neuron index
@@ -674,7 +674,7 @@ void RecordingManager::applyMetadata(const MetadataChunk &m) {
                     break;
                 }
             }
-            
+
             if(neuronidx == -1) {//add new neuron
                 neuronIds.push_back(neuid);
                 neuronidx = neuronIds.size()-1;
@@ -702,25 +702,25 @@ void RecordingManager::applyMetadata(const MetadataChunk &m) {
 }
 
 void RecordingManager::clear() {
-    
-    
+
+
     for(int i = (int)_virtualDevices.size()-1; i >=0; i--) {
         unbindVirtualDevice(i);
     }
-    
+
     for(int i = 0; i < (int)_devices.size(); i++)
         _devices[i].disable();
-    
+
     _virtualDevices.clear();
     _devices.clear();
-    
+
     _markers.clear();
     _triggers.clear();
-    
+
     _pos = 0;
     _selectedVDevice = 0;
 }
-    
+
 
 // TODO: consolidate this function somewhere
 static int64_t snapTo(int64_t val, int64_t increments) {
@@ -742,7 +742,7 @@ void RecordingManager::setPaused(bool pausing) {
         if(fileIsLoadedAndFirstActionDidNotYetOccurred)
         {
             setPos(0);
-           
+
         }
 		if(!pausing && _pos >= fileLength()-1) {
 			_triggers.clear();
@@ -768,6 +768,7 @@ Player &RecordingManager::player() {
 
 int RecordingManager::numberOfChannels()
 {
+
     if(hidMode())
     {
         return _numOfHidChannels;
@@ -782,7 +783,14 @@ int RecordingManager::numberOfChannels()
     }
     else
     {
-        return _devices[0].channels;
+        if(_devices.size()>0)
+        {
+            return _devices[0].channels;
+        }
+        else
+        {
+            return 0;
+        }
     }
 
 }
@@ -970,7 +978,7 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 
     const unsigned int bufsize = SEGMENT_SIZE;//1*sampleRate();
 	for(int idx = 0; idx < (int)_devices.size(); idx++) {
-        
+
         const int channum = _devices[idx].channels;
         //if we are at the end of the file
         if(_devices[idx].sampleBuffers[0].pos() >= fileLength()-1)
@@ -978,7 +986,7 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
             setPos(_pos, true);
             continue;
         }
-        
+
         int beginingSegmentOfCurrentContinualDataInBuffer = _devices[idx].sampleBuffers[0].head()/SEGMENT_SIZE;
         if(_devices[idx].sampleBuffers[0].segmentsState[beginingSegmentOfCurrentContinualDataInBuffer%NUMBER_OF_SEGMENTS] == 0)
         {
@@ -991,8 +999,8 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
         {
             continue;
         }
-        
-        
+
+
        /* //if we fillsegment of buffer (half the buffer)
         if(_devices[idx].sampleBuffers[0].head()%(SampleBuffer::SIZE/2) >= SampleBuffer::SIZE/2-1)
         {
@@ -1002,7 +1010,7 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
                 _devices[idx].sampleBuffers[0].setHead((_devices[idx].sampleBuffers[0].head()+1)%SampleBuffer::SIZE);
                 _devices[idx].sampleBuffers[0].setPos(_devices[idx].sampleBuffers[0].pos()+1);
                 BASS_ChannelSetPosition(_devices[idx].handle, _devices[idx].bytespersample*_devices[idx].sampleBuffers[0].pos()*_devices[idx].channels, BASS_POS_BYTE);
-                
+
             }
             else
             {
@@ -1010,8 +1018,8 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
                 continue;//if we don't need to load 2 segments of buffer
             }
         }*/
-		
-		
+
+
 		const int bytespersample = _devices[idx].bytespersample;
 		std::vector<std::vector<int16_t> > channels;
 
@@ -1020,11 +1028,11 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
        // std::cout<<"Read "<<std::min(len,bufsize)<<" samples\n";
 		bool rc = ReadWAVFile(channels, channum*bufsize*bytespersample, _devices[idx].handle,
 				channum, bytespersample);
-        
+
 		if(!rc)
 			continue;
 
-        
+
 		// TODO make this more sane
 		for(int chan = 0; chan < channum; chan++) {
 			if(_devices[idx].dcBiasNum < _sampleRate*10) {
@@ -1660,10 +1668,13 @@ void RecordingManager::advance(uint32_t samples) {
 void RecordingManager::startRemovingMeanValue()
 {
         //Reset mean sum counter
-        _devices.begin()->dcBiasNum = 1;
-        for(int chan = 0; chan < numberOfChannels(); chan++) {
-            //reset sum for all channels
-            _devices.begin()->dcBiasSum[chan]  = 0;
+        if(_devices.size()>0)
+        {
+            _devices.begin()->dcBiasNum = 1;
+            for(int chan = 0; chan < numberOfChannels(); chan++) {
+                //reset sum for all channels
+                _devices.begin()->dcBiasSum[chan]  = 0;
+            }
         }
 }
 
@@ -1931,7 +1942,7 @@ void RecordingManager::setPos(int64_t pos, bool artificial) {
 	//	return;
 
    // std::cout<<"Aiming at: "<<pos<<"--------------------------------\n";
-    
+
      fileIsLoadedAndFirstActionDidNotYetOccurred = false;//used for fake preload of file to the half of the screen
     currentPositionOfWaveform = pos;//set position of waveform to new value
 
@@ -1946,14 +1957,14 @@ void RecordingManager::setPos(int64_t pos, bool artificial) {
         }
     }
     int endOfDataThatNeedsToBeLoaded = _devices[0].sampleBuffers[0].pos() + howMuchIsSetInAdvance;
-    
+
     //if we are seeking and we jump outside loaded buffer RESET buffers
     int leftBoandaryOfLoading = pos - SampleBuffer::SIZE/8;
     if(leftBoandaryOfLoading<0)
     {
         leftBoandaryOfLoading = 0;
     }
-    
+
     if(((endOfDataThatNeedsToBeLoaded - leftBoandaryOfLoading)>SampleBuffer::SIZE) || //if we are ouside on left
        (endOfDataThatNeedsToBeLoaded < pos)) //if we are outside on right
     {
@@ -1977,22 +1988,22 @@ void RecordingManager::setPos(int64_t pos, bool artificial) {
                 s.setPos(positionToStartLoading);
             }
         }
-        
+
     }
-    
+
     //if we are approaching end of the loaded buffer initiate loading of more segments on the right
-    
+
     if((endOfDataThatNeedsToBeLoaded - pos)< SampleBuffer::SIZE/8  && (endOfDataThatNeedsToBeLoaded<fileLength()))
     {
             int endSegment = _devices[0].sampleBuffers[0].head()/SEGMENT_SIZE;
-            
+
             int numOfSegmentsToLoad = 6;
             if((numOfSegmentsToLoad-1)*SEGMENT_SIZE>(fileLength()-endOfDataThatNeedsToBeLoaded))
             {
                 numOfSegmentsToLoad =(fileLength()-endOfDataThatNeedsToBeLoaded)/SEGMENT_SIZE +1;
             }
            // int newEndOfLoadedData = _devices[0].sampleBuffers[0].pos() + numOfSegmentsToLoad * SEGMENT_SIZE;
-        
+
            for(int idx = 0; idx < (int)_devices.size(); idx++)
            {
                for(unsigned int i = 0; i < _devices[idx].sampleBuffers.size(); i++) {
@@ -2005,14 +2016,14 @@ void RecordingManager::setPos(int64_t pos, bool artificial) {
                   // s.setHead(newEndOfLoadedData);
                }
            }
-        
+
     }
 
 
 	_pos = pos;//set current position in file (LOADED can be greater than this, loaded is stored in buffer: s._pos)
-     
+
 }
-    
+
 //check if buffer has loaded data at "pos" position
 bool RecordingManager::isBufferLoadedAtPosition(long pos)
 {
@@ -2059,7 +2070,7 @@ void RecordingManager::initInputConfigPersistance()
     audioInputConfigArray[INPUT_TYPE_STANDARD_AUDIO].gain = 0.5f;
     audioInputConfigArray[INPUT_TYPE_STANDARD_AUDIO].timeScale = 0.1f;
     audioInputConfigArray[INPUT_TYPE_STANDARD_AUDIO].initialized = true;
-    
+
     //arduino
     audioInputConfigArray[INPUT_TYPE_ARDUINO].inputType = INPUT_TYPE_ARDUINO;
     audioInputConfigArray[INPUT_TYPE_ARDUINO].filter50Hz = false;
@@ -2069,18 +2080,18 @@ void RecordingManager::initInputConfigPersistance()
     audioInputConfigArray[INPUT_TYPE_ARDUINO].gain = 0.5f;
     audioInputConfigArray[INPUT_TYPE_ARDUINO].timeScale = 0.1f;
     audioInputConfigArray[INPUT_TYPE_ARDUINO].initialized = true;
-    
+
     //HID - SpikerBox Pro
     audioInputConfigArray[INPUT_TYPE_SB_PRO].inputType = INPUT_TYPE_SB_PRO;
     audioInputConfigArray[INPUT_TYPE_SB_PRO].filter50Hz = false;
     audioInputConfigArray[INPUT_TYPE_SB_PRO].filter60Hz = false;
     audioInputConfigArray[INPUT_TYPE_SB_PRO].filterLowPass = 5000;
     audioInputConfigArray[INPUT_TYPE_SB_PRO].filterHighPass = 1.0f;
-    audioInputConfigArray[INPUT_TYPE_SB_PRO].gain = 0.1f;
+    audioInputConfigArray[INPUT_TYPE_SB_PRO].gain = 0.1f * 0.35012782171f;
     audioInputConfigArray[INPUT_TYPE_SB_PRO].timeScale = 0.1f;
     audioInputConfigArray[INPUT_TYPE_SB_PRO].initialized = true;
-    
-    
+
+
     //HID - File (this is not used anywhere for now)
     audioInputConfigArray[INPUT_TYPE_FILE].inputType = INPUT_TYPE_FILE;
     audioInputConfigArray[INPUT_TYPE_FILE].filter50Hz = false;
@@ -2091,7 +2102,7 @@ void RecordingManager::initInputConfigPersistance()
     audioInputConfigArray[INPUT_TYPE_FILE].timeScale = 0.1f;
     audioInputConfigArray[INPUT_TYPE_FILE].initialized = true;
 }
-    
+
 //
 // Returns input config object for particular input type
 //
@@ -2107,7 +2118,7 @@ AudioInputConfig * RecordingManager::getInputConfigForType(int inputType)
   }
 
 }
-    
+
 int RecordingManager::getCurrentInputType()
 {
     if(hidMode())
@@ -2127,13 +2138,13 @@ int RecordingManager::getCurrentInputType()
         return INPUT_TYPE_STANDARD_AUDIO;
     }
 }
-    
+
 void RecordingManager::saveInputConfigSettings()
 {
        if(!firstTimeInitializationOfSettingsForAudioInput)
        {
             int inputType = getCurrentInputType();
-       
+
             audioInputConfigArray[inputType].filter50Hz = fiftyHzFilterEnabled();
             audioInputConfigArray[inputType].filter60Hz = sixtyHzFilterEnabled();
             audioInputConfigArray[inputType].filterLowPass = lowCornerFrequency();
@@ -2143,14 +2154,14 @@ void RecordingManager::saveInputConfigSettings()
        }
         firstTimeInitializationOfSettingsForAudioInput = false;
 }
-    
-    
+
+
 void RecordingManager::saveGainForAudioInput(float newGain)
 {
     int inputType = getCurrentInputType();
     audioInputConfigArray[inputType].gain = newGain;
 }
-    
+
 void RecordingManager::saveTimeScaleForAudioInput(float newTimeScale)
 {
     int inputType = getCurrentInputType();
@@ -2162,19 +2173,19 @@ float RecordingManager::loadGainForAudioInput()
     int inputType = getCurrentInputType();
     return audioInputConfigArray[inputType].gain;
 }
-    
+
 float RecordingManager::loadTimeScaleForAudioInput()
 {
     int inputType = getCurrentInputType();
     return audioInputConfigArray[inputType].timeScale;
 }
-    
+
 void RecordingManager::loadFilterSettings()
 {
     int inputType = getCurrentInputType();
     enableHighPassFilterWithCornerFreq(audioInputConfigArray[inputType].filterHighPass);
     enableLowPassFilterWithCornerFreq(audioInputConfigArray[inputType].filterLowPass);
-    
+
     if(audioInputConfigArray[inputType].filter60Hz)
     {
         enable60HzFilter();
@@ -2183,7 +2194,7 @@ void RecordingManager::loadFilterSettings()
     {
         disable60HzFilter();
     }
-    
+
     if(audioInputConfigArray[inputType].filter50Hz)
     {
         enable50HzFilter();

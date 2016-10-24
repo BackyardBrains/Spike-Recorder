@@ -3,7 +3,7 @@
 
 #include "widgets/Widget.h"
 #include "AnalysisView.h"
-#include "RecordingManager.h"
+//#include "RecordingManager.h"
 
 namespace BackyardBrains {
 
@@ -14,12 +14,12 @@ public:
 	void updateSize();
 	sigslot::signal1<int> selectionChange;
 	sigslot::signal1<int> trainDeleted;
-    
+
     int selectedChannel();
     void setInitialSelection();
 private:
     RecordingManager &_manager;
-    
+
 	static const int PADDING = 2;
 	static const int FIELDW = 30;
 	static const int FIELDH = 22;

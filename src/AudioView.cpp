@@ -83,12 +83,12 @@ void AudioView::updateChannels() {
 			}
 		}
 	}
-    
+
     //get saved gain and timescale
     loadAndApplyAudioInputConfig();
-    
+
     if(_manager.fileMode()) {
-       
+
        // _manager.setPos(numberOfSamplesToLoad);
     }
     else
@@ -106,14 +106,14 @@ void AudioView::updateChannels() {
 void AudioView::loadAndApplyAudioInputConfig()
 {
     _timeScale = _manager.loadTimeScaleForAudioInput();
-    
+
     float newGain = _manager.loadGainForAudioInput();
     for(unsigned int ic = 0; ic < _channels.size(); ic++) {
         _channels[ic].gain = newGain;
     }
 
 }
-    
+
 static bool compare_second(const std::pair<int, int> &a, const std::pair<int, int> &b) {
 	return a.second <= b.second;
 }
@@ -145,15 +145,15 @@ void AudioView::constructMetadata(MetadataChunk *m) const {
 void AudioView::applyMetadata(const MetadataChunk &m) {
 	_timeScale = m.timeScale;
 
-    
+
     //positionseek bar to begining so that we see half of the screen filled with signal
     //when user click play we will reset file to begining
-    
+
     float portionToPreload = 1000*((float)(sampleCount(screenWidth(), scaleWidth())/2))/((float)_manager.fileLength());
       relOffsetChanged.emit(portionToPreload);
 
     _manager.setPos(sampleCount(screenWidth(), scaleWidth())/2);
-    
+
 	//assert(m.channels.size() == _channels.size()); // i do not know if this works yet with the new channel stuff
 	for(unsigned int i = 0; i < m.channels.size(); i++) {
 		_channels[i].gain = m.channels[i].gain;
@@ -162,7 +162,7 @@ void AudioView::applyMetadata(const MetadataChunk &m) {
 	}
 
 }
-    
+
 
 
 void AudioView::setChannelColor(int channel, int colorIdx) {
@@ -220,7 +220,7 @@ int AudioView::channelOffset() const {
 float AudioView::scaleWidth() const {
 	return 0.05f*screenWidth()/_timeScale;
 }
-    
+
 //Setter for timescale
 void AudioView::setTimeScale(float newTimesScale)
 {
@@ -286,7 +286,7 @@ void AudioView::setRelOffset(int reloffset) {
 	}
 
 }
-    
+
 void AudioView::navigateCurrentRecordingPosition(bool navigateForward)
 {
     int samplesOnScreen = sampleCount(screenWidth(), scaleWidth());
@@ -295,7 +295,7 @@ void AudioView::navigateCurrentRecordingPosition(bool navigateForward)
     {
         deltaMove = 1;
     }
-    
+
     int64_t currentSample = offset();
     if(navigateForward)
     {
@@ -309,7 +309,7 @@ void AudioView::navigateCurrentRecordingPosition(bool navigateForward)
     {
         currentSample= 0;
     }
-    
+
     setOffset(currentSample);
     //relOffsetChanged.emit(round(1000.f*_manager.pos()/(float)(_manager.fileLength()-1)));//update slider at the bottom of the scree
 }
@@ -822,15 +822,15 @@ void AudioView::Channel::setGain(float ngain) {
 	gain = std::min(10.f, std::max(0.001f, ngain));
 }
 
-    
+
 void AudioView::mousePressEventFromAnalysisView(Widgets::MouseEvent *event)
 {
     analysisViewIsActive = true;
     AudioView::mousePressEvent(event);
     analysisViewIsActive = false;
 }
-    
-    
+
+
 void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 	int x = event->pos().x;
 	int y = event->pos().y;
@@ -841,7 +841,7 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 			_gainCtrlDir = determineGainControlHover(x,y);
 			if(_gainCtrlDir != 0) {
 				Channel &c = _channels[selectedChannel()];
-				
+				float gainCoef = pow(1.3f,_gainCtrlDir);//0.769230783//1.29999995
                 float newGain = c.gain*pow(1.3f,_gainCtrlDir);
                 c.setGain(newGain);
                 _manager.saveGainForAudioInput(newGain);
@@ -888,20 +888,20 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
                 float newGain = _channels[s].gain*1.2f;
                 _channels[s].setGain(newGain);
                 _manager.saveGainForAudioInput(newGain);
-                
+
             }
 		} else if(!_manager.threshMode() || x < width()-DATA_XOFF) {//do not react on right handle in threshold mode
-            
+
 
             //calculate offset of buffer after zoom in normal mode
             double positionOfCursorInPercOfScreen = (((double)(x- DATA_XOFF))/(double)screenWidth());
             int positionOfSampleUnderCursor = _channelOffset  - (sampleCount(screenWidth(), scaleWidth()) - sampleCount(screenWidth(), scaleWidth()) *positionOfCursorInPercOfScreen);
             int numberOfSamplesOnLeftInNewScale = sampleCount(screenWidth(), scaleWidth()/0.8f)*positionOfCursorInPercOfScreen;
-            
+
             int positionOfRightSideOfNewScreen = positionOfSampleUnderCursor - numberOfSamplesOnLeftInNewScale + sampleCount(screenWidth(), scaleWidth()/0.8f);
-            
-            
-            
+
+
+
             //calculate offset of buffer after zoom in file mode
             //calculate index of sample under cursor
             int sampleIndexInFile = _manager.pos() - sampleCount(screenWidth(), scaleWidth()) + positionOfCursorInPercOfScreen*sampleCount(screenWidth(), scaleWidth());
@@ -909,8 +909,8 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
             //calculate what will be sample index of sample in righthand edge of the screen (playing head)
             //so that our sample under mouse cursor don't change position
             int positionForFile = sampleIndexInFile - numberOfSamplesOnLeftInNewScale + sampleCount(screenWidth(), scaleWidth()/0.8f);
-            
-            
+
+
            // std::cout<<"offset: "<<_channelOffset<<" position: "<<_manager.pos()<<"\n";
 			_timeScale = std::max(1.f/_manager.sampleRate(), _timeScale*0.8f);
             _manager.saveTimeScaleForAudioInput(_timeScale);//save preference for this input type
@@ -932,9 +932,9 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
                     {
                         setOffset(positionForFile);
                     }
-                    
+
                 }
-            
+
             }
 		}
 		event->accept();
@@ -963,8 +963,8 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
                     {
                         setOffset(_manager.pos() + centeroff);
                     }
-                    
-                    
+
+
                 }
             }
 		}
@@ -1031,11 +1031,11 @@ void AudioView::mouseMotionEvent(Widgets::MouseEvent *event) {
 		float newGain = _prevGain*std::fabs((height()*_channels[_clickedGain].pos-event->pos().y)/(float)_clickedPixelOffset);
 		int doffset = (width()*_prevDragX-event->pos().x)/(float)scaleWidth()*_manager.sampleRate();
 		setOffset(_prevDragOffset+doffset);
-        
-        
+
+
         _channels[_clickedGain].setGain(newGain);
         _manager.saveGainForAudioInput(newGain);
-        
+
 		event->accept();
 	}
 
