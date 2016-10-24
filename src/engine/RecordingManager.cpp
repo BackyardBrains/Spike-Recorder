@@ -2087,7 +2087,7 @@ void RecordingManager::initInputConfigPersistance()
     audioInputConfigArray[INPUT_TYPE_SB_PRO].filter60Hz = false;
     audioInputConfigArray[INPUT_TYPE_SB_PRO].filterLowPass = 5000;
     audioInputConfigArray[INPUT_TYPE_SB_PRO].filterHighPass = 1.0f;
-    audioInputConfigArray[INPUT_TYPE_SB_PRO].gain = 0.1f * 0.35012782171f;
+    audioInputConfigArray[INPUT_TYPE_SB_PRO].gain = 0.1f * 0.20717623328f;
     audioInputConfigArray[INPUT_TYPE_SB_PRO].timeScale = 0.1f;
     audioInputConfigArray[INPUT_TYPE_SB_PRO].initialized = true;
 

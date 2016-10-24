@@ -841,7 +841,7 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 			_gainCtrlDir = determineGainControlHover(x,y);
 			if(_gainCtrlDir != 0) {
 				Channel &c = _channels[selectedChannel()];
-				float gainCoef = pow(1.3f,_gainCtrlDir);//0.769230783//1.29999995
+				//float gainCoef = pow(1.3f,_gainCtrlDir);//0.769230783//1.29999995
                 float newGain = c.gain*pow(1.3f,_gainCtrlDir);
                 c.setGain(newGain);
                 _manager.saveGainForAudioInput(newGain);
