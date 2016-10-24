@@ -161,7 +161,7 @@ public:
 		}
 
 		_pos += len;//add to cumulative number of samples (number of samples since begining of the time)
-        std::cout<<"Head: "<<_head<<" Pos: "<<_pos<<"\n";
+      //  std::cout<<"Head: "<<_head<<" Pos: "<<_pos<<"\n";
 	}
 
     //
@@ -360,7 +360,7 @@ public:
 	}
 
 	void reset() {
-        std::cout<<"!!!!!!!!!!!!!!!!!! RESET buffer!!!!!!!!!!!\n";
+      //  std::cout<<"!!!!!!!!!!!!!!!!!! RESET buffer!!!!!!!!!!!\n";
 		_pos = 0;
 		_head = 0;
         memset(segmentsState, 0, sizeof(int[NUMBER_OF_SEGMENTS]));
