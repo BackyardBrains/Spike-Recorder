@@ -62,11 +62,11 @@ public:
 	Player &player();
 
     //alpha wave audio feedback
-    
+
     float alphaWavePower;
     void turnAlphaFeedbackON();
     void turnAlphaFeedbackOFF();
-    
+
     //position of the current file/recfording in samples
     //(this sample is at the middle of the screen in the audio view)
 	int64_t pos() const {return _pos;}
@@ -150,10 +150,10 @@ public:
     void swapRTRepeating();
     void reloadHID();
     bool _HIDShouldBeReloaded;
-    
+
     int numberOfChannels();
-    
-    
+
+
     void enable50HzFilter(){ _60HzFilterEnabled = false; _50HzFilterEnabled = true;}
     void disable50HzFilter(){_50HzFilterEnabled = false;}
     void enable60HzFilter(){_50HzFilterEnabled = false;_60HzFilterEnabled = true;}
@@ -185,10 +185,10 @@ public:
     float loadGainForAudioInput();
     float loadTimeScaleForAudioInput();
     bool firstTimeInitializationOfSettingsForAudioInput = true;
-    
+
     //used for fake load of half of the screen with waveform from file
     bool fileIsLoadedAndFirstActionDidNotYetOccurred= false;
-    
+
     //check if buffer has loaded data at "pos" position
     bool isBufferLoadedAtPosition(long pos);
 
@@ -199,6 +199,9 @@ public:
         bool firmwareAvailable();
         int finishAndCleanFirmwareUpdate();
         std::list<BYBFirmwareVO> firmwareList() const {return _xmlFirmwareUpdater.firmwares;}
+        int powerStateOnHID();
+        void askForPowerStateHIDDevice();
+        void startActualFirmwareUpdateOnDevice();
     #endif
 
 
@@ -266,7 +269,7 @@ private:
 	bool _threshMode;
 
     void startRemovingMeanValue();
-    
+
     bool _50HzFilterEnabled = false;
     bool _60HzFilterEnabled= false;
     bool _lowPassFilterEnabled = false;
@@ -280,7 +283,7 @@ private:
 	bool _serialMode;
 	bool _hidMode;
 	std::string _filename;
-    
+
     //it keeps last zoom and filter configs for each type of inputs
     AudioInputConfig audioInputConfigArray[4];
     void initInputConfigPersistance();
@@ -288,7 +291,7 @@ private:
     AudioInputConfig * getInputConfigForType(int inputType);
     int getCurrentInputType();
     void loadFilterSettings();
-    
+
 	int _sampleRate;
 
 	int _selectedVDevice; // triggers threshold/is played on the speakers
@@ -320,7 +323,7 @@ private:
 
     double _alphaAudioTime = 0;
     bool alphaFeedbackActive;
-    
+
     bool loadSecondSegmentOfBuffer = false;//used to force loading ofwhole buffer after reseting buffer
 
 

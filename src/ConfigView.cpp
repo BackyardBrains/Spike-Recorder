@@ -326,7 +326,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
         }
 
 
-        // -------------------- HID device connect (only for windows)---------------------------------------
+        // -------------------- HID device connect (works only under windows)---------------------------------------
 
 
         #if defined(_WIN32)

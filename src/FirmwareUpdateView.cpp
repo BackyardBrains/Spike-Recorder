@@ -23,7 +23,7 @@ namespace BackyardBrains {
     FirmwareUpdateView::FirmwareUpdateView(RecordingManager &mngr, AudioView &audioView, Widget *parent) : Widget(parent), _manager(mngr), _audioView(audioView) {
 
         //create close button
-
+        timerUSB = clock();
 
         //create title
         Widgets::Label *topLabel = new Widgets::Label(this);
@@ -84,32 +84,59 @@ namespace BackyardBrains {
 
     //Update progress
     void FirmwareUpdateView::paintEvent() {
+
         Widgets::Color bg = Widgets::Colors::background;
         bg.a = 250;
         Widgets::Painter::setColor(bg);
         Widgets::Painter::drawRect(rect());
 
-        int stage = _manager.getUSBFirmwareUpdateStage();
-        int yoffset = 300;
-        int widthofBar = 500;
-        Widgets::Painter::setColor(Widgets::Color(200,200,200,255));
-        Widgets::Painter::drawRect(Widgets::Rect(this->width()/2-(widthofBar/2)-5, yoffset-5, widthofBar+10, 50));
-        if(stage>=0)
+
+
+        if(_manager.powerStateOnHID()!=0)//if power rail on SB pro is not turned off notify user to turn it off
         {
-            Widgets::Painter::setColor(Widgets::Color(0,250,0,255));
-            Widgets::Painter::drawRect(Widgets::Rect(this->width()/2-(widthofBar/2), yoffset, (int)(((float)widthofBar)*(((float)stage)/20.0f)), 40));
+            if(_manager.powerStateOnHID()==1)//power ON
+            {
+                 infoLabel->setText("Please turn OFF SpikerBox Pro to proceed with firmware update. \n               Keep the device plugged in USB.");
+            }
+
+            if(_manager.powerStateOnHID()==-1)//power state unknown
+            {
+                 infoLabel->setText("Initializing ....");
+            }
+            testPowerOfDevice();
         }
         else
         {
-            Widgets::Painter::setColor(Widgets::Color(255,0,0,255));
-            Widgets::Painter::drawRect(Widgets::Rect(this->width()/2-(widthofBar/2), yoffset, widthofBar, 40));
-            closeButton->setVisible(true);
-            infoLabel->setText("Error while updating firmware. \n Unplug device, plug in again and try again.");
-        }
-        if(stage == 20)
-        {
-            closeButton->setVisible(true);
-             infoLabel->setText("Firmware updated successfully!");
+            if(!firmwareUpdateStarted)
+            {
+                //SB Pro is turned OFF we can start firmware update
+                //start actual firmware update
+                _manager.startActualFirmwareUpdateOnDevice();
+                firmwareUpdateStarted = true;
+            }
+             infoLabel->setText("Firmware updating. Do not unplug device during updating.");
+            int stage = _manager.getUSBFirmwareUpdateStage();
+            int yoffset = 300;
+            int widthofBar = 500;
+            Widgets::Painter::setColor(Widgets::Color(200,200,200,255));
+            Widgets::Painter::drawRect(Widgets::Rect(this->width()/2-(widthofBar/2)-5, yoffset-5, widthofBar+10, 50));
+            if(stage>=0)
+            {
+                Widgets::Painter::setColor(Widgets::Color(0,250,0,255));
+                Widgets::Painter::drawRect(Widgets::Rect(this->width()/2-(widthofBar/2), yoffset, (int)(((float)widthofBar)*(((float)stage)/20.0f)), 40));
+            }
+            else
+            {
+                Widgets::Painter::setColor(Widgets::Color(255,0,0,255));
+                Widgets::Painter::drawRect(Widgets::Rect(this->width()/2-(widthofBar/2), yoffset, widthofBar, 40));
+                closeButton->setVisible(true);
+                infoLabel->setText("Error while updating firmware. \n Unplug device, plug in again and try again.");
+            }
+            if(stage == 20)
+            {
+                closeButton->setVisible(true);
+                 infoLabel->setText("Firmware updated successfully!");
+            }
         }
     }
 
@@ -117,6 +144,20 @@ namespace BackyardBrains {
     void FirmwareUpdateView::closePressed() {
         _manager.finishAndCleanFirmwareUpdate();
         close();
+    }
+
+    void FirmwareUpdateView::testPowerOfDevice()
+    {
+        clock_t end = clock();
+        double elapsed_secs = double(end - timerUSB) / CLOCKS_PER_SEC;
+        if(elapsed_secs>0.5)
+        {
+            timerUSB = end;
+            _manager.askForPowerStateHIDDevice();//ask HID device if power is OFF
+
+        }
+
+
     }
 
 }

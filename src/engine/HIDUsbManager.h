@@ -4,6 +4,11 @@
 #define SIZE_OF_CIRC_BUFFER 4024
 #define SIZE_OF_MESSAGES_BUFFER 64
 #define ESCAPE_SEQUENCE_LENGTH 6
+
+#define HID_POWER_ON 1
+#define HID_POWER_OFF 0
+#define HID_POWER_UNKNOWN -1
+
 #include <stdio.h>
 #include <wchar.h>
 #include <string.h>
@@ -37,6 +42,7 @@ class HIDUsbManager
         void closeDevice();
         void askForCapabilities();
         void askForMaximumRatings();
+        void askForStateOfPowerRail();
         void askForBoard();
         void askForRTRepeat();
         void setNumberOfChannelsAndSamplingRate(int numberOfChannels, int samplingRate);
@@ -54,6 +60,7 @@ class HIDUsbManager
         int addOnBoardPressent();
         bool isRTRepeating();
         void swapRTRepeat();
+        int powerRailIsState();//HID_POWER_ON, HID_POWER_OFF, HID_POWER_UNKNOWN
 
         std::string firmwareVersion;
         std::string hardwareVersion;
@@ -71,6 +78,7 @@ class HIDUsbManager
         hid_device *handle;
         int _numberOfChannels;
         int _samplingRate;
+        int _powerRailState=-1;//Power rail is ON 1, OFF 0, unknown -1
         bool returnTailForOneAndCheck();
         bool checkIfNextByteExist();
         bool areWeAtTheEndOfFrame();

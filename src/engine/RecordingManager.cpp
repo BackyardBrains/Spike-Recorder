@@ -304,14 +304,28 @@ void RecordingManager::scanUSBDevices()
                 }
 
                 _firmwareUpdateStage = 1;
+                _hidUsbManager.askForStateOfPowerRail();
                 shouldStartFirmwareUpdatePresentation = true;//this will open the firmware update view
-                //send command to HID device to prepare for update
-                // this will disconnect HID device and it will enumerate with different VID/PID (TI's update VID/PID)
-                _hidUsbManager.putInFirmwareUpdateMode();
-                //Start procedure of programming firmware
-                _bslFirmwareUpdater.customSelectedFirmware("newfirmware.txt");
-
                 return 0;
+        }
+
+        void RecordingManager::startActualFirmwareUpdateOnDevice()
+        {
+             //send command to HID device to prepare for update
+             // this will disconnect HID device and it will enumerate with different VID/PID (TI's update VID/PID)
+             _hidUsbManager.putInFirmwareUpdateMode();
+             //Start procedure of programming firmware
+             _bslFirmwareUpdater.customSelectedFirmware("newfirmware.txt");
+        }
+
+        int RecordingManager::powerStateOnHID()
+        {
+            return _hidUsbManager.powerRailIsState();
+        }
+
+        void RecordingManager::askForPowerStateHIDDevice()
+        {
+            _hidUsbManager.askForStateOfPowerRail();
         }
 #endif
 

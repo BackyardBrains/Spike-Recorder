@@ -5,6 +5,7 @@
 #include "widgets/Widget.h"
 #include "widgets/PushButton.h"
 #include "widgets/Label.h"
+#include <time.h>
 
 namespace BackyardBrains {
     class RecordingManager;
@@ -15,12 +16,16 @@ namespace BackyardBrains {
             FirmwareUpdateView(RecordingManager &mngr, AudioView &audioView, Widget *parent = NULL);
         protected:
         private:
+
         Widgets::PushButton *closeButton;
         RecordingManager &_manager;
         AudioView &_audioView;
         Widgets::Label *infoLabel;
         void paintEvent();
         void closePressed();
+        clock_t timerUSB;
+        void testPowerOfDevice();
+        bool firmwareUpdateStarted = false;
     };
 }
 #endif // FIRMWAREUPDATEVIEW_H

@@ -78,7 +78,7 @@ namespace BackyardBrains {
         askForCapabilities();//ask for firmware version etc.
         askForMaximumRatings(); //ask for sample rate and number of channels
 
-        askForRTRepeat();//ask if RT board is repeating stimmulation
+        //askForRTRepeat();//ask if RT board is repeating stimmulation
         //set number of channels and sampling rate on micro (this will not work with firmware V0.1)
         setNumberOfChannelsAndSamplingRate(2, maxSamplingRate());
         //send start command to micro
@@ -217,6 +217,10 @@ namespace BackyardBrains {
 
     }
 
+    int HIDUsbManager::powerRailIsState()
+    {
+        return _powerRailState;
+    }
 
     void HIDUsbManager::executeOneMessage(std::string typeOfMessage, std::string valueOfMessage, int offsetin)
     {
@@ -233,6 +237,11 @@ namespace BackyardBrains {
         if(typeOfMessage == "HWV")
         {
             hardwareVersion = valueOfMessage;
+        }
+
+        if(typeOfMessage == "PWR")
+        {
+            _powerRailState = (int)((unsigned int)valueOfMessage[0]-48);
         }
 
         if(typeOfMessage == "EVNT")
@@ -268,10 +277,6 @@ namespace BackyardBrains {
                     restartDevice = true;
                 }
             }
-
-
-
-
         }
         if(typeOfMessage == "RTR")
         {
@@ -642,6 +647,7 @@ namespace BackyardBrains {
         if(handle && _deviceConnected)
         {
             _deviceConnected = false;
+            _powerRailState = -1;
             //hid_close(handle);
             //handle = NULL;
             //_deviceConnected = false;
@@ -677,6 +683,17 @@ namespace BackyardBrains {
     {
         std::stringstream sstm;
         sstm << "?:"<<";\n";
+        writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
+    }
+
+    //
+    // Ask microcontroller for state of power
+    // rail. ON or OFF
+    //
+    void HIDUsbManager::askForStateOfPowerRail()
+    {
+        std::stringstream sstm;
+        sstm << "V:"<<";\n";
         writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
     }
 
