@@ -88,147 +88,196 @@ namespace BackyardBrains
         //
         void FirmwareUpdater::LoadXMLFile()
         {
-            XMLDocument doc;
-            if(doc.LoadFile("compatibility.xml")!= XML_NO_ERROR)
-            {
-                logError("Can not load XML file");
-                return;
-            }
-            XMLElement *rootnode = doc.RootElement();
-
-
-            //Get firmwares node
-            XMLNode *firmwaresNode  = findChildWithName(rootnode, "firmwares");
-            if(firmwaresNode==NULL)
-            {
-                logError("No firmwares in XML. Wrong XML format.");
-                return;
-            }
-
-            //get list of firmwares
-            std::list<BYBFirmwareVO> allFirmwares;
-            XMLNode *firmwareNode = firmwaresNode ->FirstChild();
-            while(firmwareNode!=NULL)
-            {
-                if( checkNodeName(firmwareNode, "firmware"))
-                {
-
-                    //Parse one Firmware node and put into value-object
-                    BYBFirmwareVO * newFirmware = new BYBFirmwareVO();
-                    //go through all properties of one firmware
-                    XMLElement * idNode = findChildWithName(firmwareNode, "id")->ToElement();
-                    if(idNode)
+            try{
+                    XMLDocument doc;
+                    if(doc.LoadFile("compatibility.xml")!= XML_NO_ERROR)
                     {
-                        newFirmware->id = atoi(idNode->GetText());
+                        logError("Can not load XML file");
+                        return;
+                    }
+                    XMLElement *rootnode = doc.RootElement();
+
+
+                    //Get firmwares node
+                    XMLNode *firmwaresNode  = findChildWithName(rootnode, "firmwares");
+                    if(firmwaresNode==NULL)
+                    {
+                        logError("No firmwares in XML. Wrong XML format.");
+                        return;
                     }
 
-                    XMLElement * versionNode = findChildWithName(firmwareNode, "version")->ToElement();
-                    if(versionNode)
+                    //get list of firmwares
+                    std::list<BYBFirmwareVO> allFirmwares;
+                    XMLNode *firmwareNode = firmwaresNode ->FirstChild();
+                    while(firmwareNode!=NULL)
                     {
-                        newFirmware->version = std::string( versionNode->GetText());
-                    }
-
-                    XMLElement * descNode = findChildWithName(firmwareNode, "desc")->ToElement();
-                    if(descNode)
-                    {
-                        newFirmware->description =std::string( descNode->GetText());
-                    }
-
-                    XMLElement * typeNode = findChildWithName(firmwareNode, "type")->ToElement();
-                    if(typeNode)
-                    {
-                        newFirmware->type = std::string(typeNode->GetText());
-                    }
-
-                    XMLElement * urlNode = findChildWithName(firmwareNode, "url")->ToElement();
-                    if(urlNode)
-                    {
-                        newFirmware->URL = std::string(urlNode->GetText());
-                    }
-
-                    newFirmware->filepath = std::string(NEW_FIRMWARE_FILENAME);
-
-                    //add to list of firmwares
-                    if(newFirmware->id!=0)
-                    {
-                        allFirmwares.push_back((*newFirmware));
-                    }
-                }
-
-                firmwareNode = firmwareNode->NextSibling();
-            }
-
-            //check if we found some firmwares
-            if(allFirmwares.size()==0)
-            {
-                logError("No firmwares in XML");
-                return;
-            }
-
-        //------- find our version of software
-            XMLNode *softwareNode  = findChildWithName(rootnode, "software");
-            if(softwareNode==NULL)
-            {
-                logError("No softwareNode in XML. Wrong XML format.");
-                return;
-            }
-
-            XMLNode *buildNode = softwareNode ->FirstChild();
-            while(buildNode!=NULL)
-            {
-                if( checkNodeName(buildNode, "build"))
-                {
-                    XMLElement * versionElement  = findChildWithName(buildNode, "version")->ToElement();
-                    if(versionElement)
-                    {
-                        if(std::string(versionElement->GetText()).compare(CURRENT_VERSION_STRING)==0)
+                        if( checkNodeName(firmwareNode, "firmware"))
                         {
-                            //found our version
-                            XMLNode * tempFirmwaresNode  = findChildWithName(buildNode, "firmwares");
-                            if(tempFirmwaresNode==NULL)
+
+                            //Parse one Firmware node and put into value-object
+                            BYBFirmwareVO * newFirmware = new BYBFirmwareVO();
+                            //go through all properties of one firmware
+                            XMLNode *tempNode;
+                            if((tempNode = findChildWithName(firmwareNode, "id"))==NULL)
                             {
-                                logError("No firmwares for our version of software in XML.");
                                 return;
                             }
-                            //find all the IDs of the firmwares that are compatibile with our version
-                            XMLNode *idNode = tempFirmwaresNode ->FirstChild();
-                            while(idNode!=NULL)
+
+                            XMLElement * idNode = tempNode->ToElement();
+
+                            if(idNode)
                             {
-                                if( checkNodeName(idNode, "id"))
+                                newFirmware->id = atoi(idNode->GetText());
+                            }
+
+                            if((tempNode = findChildWithName(firmwareNode, "version"))==NULL)
+                            {
+                                return;
+                            }
+
+                            XMLElement * versionNode = tempNode->ToElement();
+                            if(versionNode)
+                            {
+                                newFirmware->version = std::string( versionNode->GetText());
+                            }
+
+
+                            if((tempNode = findChildWithName(firmwareNode, "desc"))==NULL)
+                            {
+                                return;
+                            }
+
+                            XMLElement * descNode = tempNode->ToElement();
+                            if(descNode)
+                            {
+                                newFirmware->description =std::string( descNode->GetText());
+                            }
+
+
+                            if((tempNode = findChildWithName(firmwareNode, "type"))==NULL)
+                            {
+                                return;
+                            }
+
+                            XMLElement * typeNode = tempNode->ToElement();
+                            if(typeNode)
+                            {
+                                newFirmware->type = std::string(typeNode->GetText());
+                            }
+
+
+                            if((tempNode = findChildWithName(firmwareNode, "url"))==NULL)
+                            {
+                                return;
+                            }
+
+                            XMLElement * urlNode = tempNode->ToElement();
+                            if(urlNode)
+                            {
+                                newFirmware->URL = std::string(urlNode->GetText());
+                            }
+
+                            if((tempNode = findChildWithName(firmwareNode, "hardware"))==NULL)
+                            {
+                                return;
+                            }
+
+                            XMLElement * hardwareNode = tempNode->ToElement();
+                            if(urlNode)
+                            {
+                                newFirmware->hardware = std::string(hardwareNode->GetText());
+                            }
+
+                            newFirmware->filepath = std::string(NEW_FIRMWARE_FILENAME);
+
+                            //add to list of firmwares
+                            if(newFirmware->id!=0)
+                            {
+                                allFirmwares.push_back((*newFirmware));
+                            }
+                        }
+
+
+                        firmwareNode = firmwareNode->NextSibling();
+                    }
+
+                    //check if we found some firmwares
+                    if(allFirmwares.size()==0)
+                    {
+                        logError("No firmwares in XML");
+                        return;
+                    }
+
+                //------- find our version of software
+                    XMLNode *softwareNode  = findChildWithName(rootnode, "software");
+                    if(softwareNode==NULL)
+                    {
+                        logError("No softwareNode in XML. Wrong XML format.");
+                        return;
+                    }
+
+                    XMLNode *buildNode = softwareNode ->FirstChild();
+                    while(buildNode!=NULL)
+                    {
+                        if( checkNodeName(buildNode, "build"))
+                        {
+                            XMLElement * versionElement  = findChildWithName(buildNode, "version")->ToElement();
+                            if(versionElement)
+                            {
+                                if(std::string(versionElement->GetText()).compare(CURRENT_VERSION_STRING)==0)
                                 {
-                                    XMLElement * idElement = idNode->ToElement();
-                                    if(idElement)
+                                    //found our version
+                                    XMLNode * tempFirmwaresNode  = findChildWithName(buildNode, "firmwares");
+                                    if(tempFirmwaresNode==NULL)
                                     {
-                                        int idToAdd = atoi(idElement->GetText());
-
-
-                                        for( listBYBFirmwareVO::iterator ti = allFirmwares.begin();
-                                            ti != allFirmwares.end();
-                                            ti ++)
+                                        logError("No firmwares for our version of software in XML.");
+                                        return;
+                                    }
+                                    //find all the IDs of the firmwares that are compatibile with our version
+                                    XMLNode *idNode = tempFirmwaresNode ->FirstChild();
+                                    while(idNode!=NULL)
+                                    {
+                                        if( checkNodeName(idNode, "id"))
                                         {
-                                            if(ti->id == idToAdd)
+                                            XMLElement * idElement = idNode->ToElement();
+                                            if(idElement)
                                             {
-                                                BYBFirmwareVO tempBYBFirmware;
-                                                tempBYBFirmware.description = ((BYBFirmwareVO)(*ti)).description;
-                                                tempBYBFirmware.URL =((BYBFirmwareVO)(*ti)).URL;
-                                                tempBYBFirmware.version = ((BYBFirmwareVO)(*ti)).version;
-                                                tempBYBFirmware.type = ((BYBFirmwareVO)(*ti)).type;
-                                                tempBYBFirmware.id = ((BYBFirmwareVO)(*ti)).id;
-                                                firmwares.push_back(tempBYBFirmware);
-                                                break;
+                                                int idToAdd = atoi(idElement->GetText());
+
+
+                                                for( listBYBFirmwareVO::iterator ti = allFirmwares.begin();
+                                                    ti != allFirmwares.end();
+                                                    ti ++)
+                                                {
+                                                    if(ti->id == idToAdd)
+                                                    {
+                                                        BYBFirmwareVO tempBYBFirmware;
+                                                        tempBYBFirmware.description = ((BYBFirmwareVO)(*ti)).description;
+                                                        tempBYBFirmware.URL =((BYBFirmwareVO)(*ti)).URL;
+                                                        tempBYBFirmware.version = ((BYBFirmwareVO)(*ti)).version;
+                                                        tempBYBFirmware.type = ((BYBFirmwareVO)(*ti)).type;
+                                                        tempBYBFirmware.id = ((BYBFirmwareVO)(*ti)).id;
+                                                        tempBYBFirmware.hardware = ((BYBFirmwareVO)(*ti)).hardware;
+                                                        firmwares.push_back(tempBYBFirmware);
+                                                        break;
+                                                    }
+                                                }
+
                                             }
                                         }
-
+                                        idNode = idNode->NextSibling();
                                     }
+                                    break;
                                 }
-                                idNode = idNode->NextSibling();
                             }
-                            break;
                         }
-                    }
-                }
 
-                buildNode = buildNode->NextSibling();
+                        buildNode = buildNode->NextSibling();
+                    }
+            }
+            catch(...)
+            {
+                logError("Error while downloading or parsing compatibility XML");
             }
         }
 

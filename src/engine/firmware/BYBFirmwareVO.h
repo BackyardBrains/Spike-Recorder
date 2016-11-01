@@ -12,6 +12,7 @@ class BYBFirmwareVO
         std::string type;
         std::string URL;
         std::string filepath;
+        std::string hardware;
     protected:
     private:
 };

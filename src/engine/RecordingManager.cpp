@@ -249,13 +249,76 @@ void RecordingManager::scanUSBDevices()
 
 #if defined(_WIN32)
 
+         std::list<BYBFirmwareVO> RecordingManager::firmwareList()
+         {
+             _currentFirmwares.clear();
+
+            //first check if there are firmwares that have same hardware version and same hardware type
+            for( std::list<BYBFirmwareVO>::iterator ti = _xmlFirmwareUpdater.firmwares.begin();
+                    ti != _xmlFirmwareUpdater.firmwares.end();
+                    ti ++)
+                {
+                    if(((BYBFirmwareVO)(*ti)).hardware.compare(_hidUsbManager.hardwareVersion)==0)
+                    {
+                        //found hardware version
+                        if(((BYBFirmwareVO)(*ti)).type.compare(_hidUsbManager.hardwareType)==0)
+                        {
+
+                             BYBFirmwareVO tempBYBFirmware;
+                            tempBYBFirmware.description = ((BYBFirmwareVO)(*ti)).description;
+                            tempBYBFirmware.URL =((BYBFirmwareVO)(*ti)).URL;
+                            tempBYBFirmware.version = ((BYBFirmwareVO)(*ti)).version;
+                            tempBYBFirmware.type = ((BYBFirmwareVO)(*ti)).type;
+                            tempBYBFirmware.id = ((BYBFirmwareVO)(*ti)).id;
+                            tempBYBFirmware.hardware = ((BYBFirmwareVO)(*ti)).hardware;
+                            _currentFirmwares.push_back(tempBYBFirmware);
+                        }
+                    }
+
+                }
+            return _currentFirmwares;
+         }
+
         //
         // Check if we downloaded list of firmwares from server
         // And if there are some firmwares that work with current version of software
         //
         bool  RecordingManager::firmwareAvailable()
         {
-            return _xmlFirmwareUpdater.firmwares.size()>0;
+
+            std::list<BYBFirmwareVO> tempCurrentFirmwares;
+
+            //first check if there are firmwares that have same hardware version and hardware type
+            for( std::list<BYBFirmwareVO>::iterator ti = _xmlFirmwareUpdater.firmwares.begin();
+                    ti != _xmlFirmwareUpdater.firmwares.end();
+                    ti ++)
+                {
+                    //check if hardware version is the same with connected HID device
+                    //we don't want to overwrite hardware version that is in firmware with firmware that has
+                    //different hardware version
+
+                    std::cout<<"HDW XML: "<<((BYBFirmwareVO)(*ti)).hardware<<" - HID: "<<_hidUsbManager.hardwareVersion<<" TYPE XML: "<<((BYBFirmwareVO)(*ti)).type<<" - HID: "<<_hidUsbManager.hardwareType<<" \n";
+                    if(((BYBFirmwareVO)(*ti)).hardware.compare(_hidUsbManager.hardwareVersion)==0)
+                    {
+                        //found hardware version
+
+                        //check if we have hardware type that is equal to hardware type that is connected
+                        if(((BYBFirmwareVO)(*ti)).type.compare(_hidUsbManager.hardwareType)==0)
+                        {
+
+                             BYBFirmwareVO tempBYBFirmware;
+                            tempBYBFirmware.description = ((BYBFirmwareVO)(*ti)).description;
+                            tempBYBFirmware.URL =((BYBFirmwareVO)(*ti)).URL;
+                            tempBYBFirmware.version = ((BYBFirmwareVO)(*ti)).version;
+                            tempBYBFirmware.type = ((BYBFirmwareVO)(*ti)).type;
+                            tempBYBFirmware.id = ((BYBFirmwareVO)(*ti)).id;
+                            tempBYBFirmware.hardware = ((BYBFirmwareVO)(*ti)).hardware;
+                            tempCurrentFirmwares.push_back(tempBYBFirmware);
+                        }
+                    }
+
+                }
+            return tempCurrentFirmwares.size()>0;
         }
 
         //

@@ -198,10 +198,11 @@ public:
         bool shouldStartFirmwareUpdatePresentation;
         bool firmwareAvailable();
         int finishAndCleanFirmwareUpdate();
-        std::list<BYBFirmwareVO> firmwareList() const {return _xmlFirmwareUpdater.firmwares;}
+        std::list<BYBFirmwareVO> firmwareList();
         int powerStateOnHID();
         void askForPowerStateHIDDevice();
         void startActualFirmwareUpdateOnDevice();
+
     #endif
 
 
@@ -319,6 +320,7 @@ private:
     #if defined(_WIN32)
         FirmwareUpdater _xmlFirmwareUpdater;
         BSLFirmwareUpdater _bslFirmwareUpdater;
+        std::list<BYBFirmwareVO> _currentFirmwares;
     #endif
 
     double _alphaAudioTime = 0;
