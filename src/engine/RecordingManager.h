@@ -179,6 +179,8 @@ public:
     float getCalibrationCoeficient(){return calibrationCoeficient;}
 
     std::string currentHIDFirmwareVersion() {return _hidUsbManager.firmwareVersion;}
+    std::string currentHIDFirmwareType() {return _hidUsbManager.hardwareType;}
+    std::string currentHIDHardwareVersion() {return _hidUsbManager.hardwareVersion;}
 
     void saveGainForAudioInput(float newGain);
     void saveTimeScaleForAudioInput(float newTimeScale);

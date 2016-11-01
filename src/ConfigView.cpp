@@ -374,7 +374,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
                     Widgets::Label *updateLabel = new Widgets::Label(group);
 
                     std::stringstream labelTextString;
-                    labelTextString <<"Change firmware (current version V"<< _manager.currentHIDFirmwareVersion()<<"):";
+                    labelTextString <<"Change firmware (device "<< _manager.currentHIDFirmwareType()<<" F:"<<_manager.currentHIDFirmwareVersion()<<" H:"<<_manager.currentHIDHardwareVersion()<<"):";
 
                     updateLabel->setText(labelTextString.str().c_str());
                     updateLabel->updateSize();
