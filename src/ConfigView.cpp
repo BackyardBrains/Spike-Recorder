@@ -38,7 +38,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 	_catchers.reserve(_clrs.size());
 
 	Widgets::Widget *group = new Widgets::Widget(this);
-	group->setSizeHint(Widgets::Size(500,600));
+	group->setSizeHint(Widgets::Size(500,2500));
 	Widgets::BoxLayout *gvbox = new Widgets::BoxLayout(Widgets::Vertical, group);
 
 
