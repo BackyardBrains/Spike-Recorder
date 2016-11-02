@@ -297,7 +297,7 @@ void RecordingManager::scanUSBDevices()
                     //we don't want to overwrite hardware version that is in firmware with firmware that has
                     //different hardware version
 
-                    std::cout<<"HDW XML: "<<((BYBFirmwareVO)(*ti)).hardware<<" - HID: "<<_hidUsbManager.hardwareVersion<<" TYPE XML: "<<((BYBFirmwareVO)(*ti)).type<<" - HID: "<<_hidUsbManager.hardwareType<<" \n";
+                    //std::cout<<"HDW XML: "<<((BYBFirmwareVO)(*ti)).hardware<<" - HID: "<<_hidUsbManager.hardwareVersion<<" TYPE XML: "<<((BYBFirmwareVO)(*ti)).type<<" - HID: "<<_hidUsbManager.hardwareType<<" \n";
                     if(((BYBFirmwareVO)(*ti)).hardware.compare(_hidUsbManager.hardwareVersion)==0)
                     {
                         //found hardware version

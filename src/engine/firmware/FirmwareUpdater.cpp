@@ -221,7 +221,14 @@ namespace BackyardBrains
                     {
                         if( checkNodeName(buildNode, "build"))
                         {
+                            XMLNode * tempVersionNode = findChildWithName(buildNode, "version");
+                            if(tempVersionNode==NULL)
+                            {
+                                logError("No version of software tag in XML.");
+                                return;
+                            }
                             XMLElement * versionElement  = findChildWithName(buildNode, "version")->ToElement();
+
                             if(versionElement)
                             {
                                 if(std::string(versionElement->GetText()).compare(CURRENT_VERSION_STRING)==0)
@@ -237,7 +244,7 @@ namespace BackyardBrains
                                     XMLNode *idNode = tempFirmwaresNode ->FirstChild();
                                     while(idNode!=NULL)
                                     {
-                                        if( checkNodeName(idNode, "id"))
+                                        if( checkNodeName(idNode, "firmwareid"))
                                         {
                                             XMLElement * idElement = idNode->ToElement();
                                             if(idElement)

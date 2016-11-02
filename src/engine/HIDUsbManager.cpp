@@ -173,6 +173,10 @@ namespace BackyardBrains {
         bool stillProcessing = true;
         int currentPositionInString = 0;
         char message[SIZE_OF_MESSAGES_BUFFER];
+        for(int i=0;i<SIZE_OF_MESSAGES_BUFFER;i++)
+        {
+            message[i] = 0;
+        }
         int endOfMessage = 0;
         int startOfMessage = 0;
 
@@ -180,7 +184,7 @@ namespace BackyardBrains {
 
         while(stillProcessing)
         {
-
+            std::cout<<"----- MB: "<< currentPositionInString<<"     :"<<messagesBuffer<<"\n";
             if(messagesBuffer[currentPositionInString]==';')
             {
                //we have message, parse it
@@ -188,6 +192,7 @@ namespace BackyardBrains {
                 {
                     if(message[k]==':')
                     {
+
                         std::string typeOfMessage(message, k);
                         std::string valueOfMessage(message+k+1, (endOfMessage-startOfMessage)-k-1);
                         executeOneMessage(typeOfMessage, valueOfMessage, offset);

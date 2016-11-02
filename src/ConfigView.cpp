@@ -367,69 +367,87 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 
         if(_manager.hidMode())
         {
-            if(_manager.firmwareAvailable())
-            {
+
                      Widgets::BoxLayout *updateHbox = new Widgets::BoxLayout(Widgets::Horizontal);
                     //Add label
                     Widgets::Label *updateLabel = new Widgets::Label(group);
 
                     std::stringstream labelTextString;
-                    labelTextString <<"Change firmware (device "<< _manager.currentHIDFirmwareType()<<" F:"<<_manager.currentHIDFirmwareVersion()<<" H:"<<_manager.currentHIDHardwareVersion()<<"):";
-
+                    if(_manager.firmwareAvailable())
+                    {
+                        labelTextString <<"Change firmware (device "<< _manager.currentHIDFirmwareType()<<" F:"<<_manager.currentHIDFirmwareVersion()<<" H:"<<_manager.currentHIDHardwareVersion()<<"):";
+                    }
+                    else
+                    {
+                        labelTextString <<"Connected device: "<< _manager.currentHIDFirmwareType()<<" F:"<<_manager.currentHIDFirmwareVersion()<<" H:"<<_manager.currentHIDHardwareVersion()<<"";
+                    }
                     updateLabel->setText(labelTextString.str().c_str());
                     updateLabel->updateSize();
                     updateHbox->addSpacing(0);
                     updateHbox->addWidget(updateLabel, Widgets::AlignLeft);
                     updateHbox->addSpacing(5);
 
-                    //Add dropbox
-                    firmwaresWidget = new DropDownList(group,400,30);
-                    firmwaresWidget->clear();
-                    std::list<BYBFirmwareVO> fps =  _manager.firmwareList();
 
-                    for( listBYBFirmwareVO::iterator ti = fps.begin();
-                        ti != fps.end();
-                        ti ++)
+                    Widgets::BoxLayout *updateSelectionHbox = new Widgets::BoxLayout(Widgets::Horizontal);
+                    if(_manager.firmwareAvailable())
                     {
-                        std::stringstream sstm;
-                         sstm <<((BYBFirmwareVO)(*ti)).description << " (V" << ((BYBFirmwareVO)(*ti)).version <<")";
+                        //Add dropbox
+                        firmwaresWidget = new DropDownList(group,400,30);
+                        firmwaresWidget->clear();
+                        std::list<BYBFirmwareVO> fps =  _manager.firmwareList();
 
-                        firmwaresWidget->addItem(sstm.str().c_str() );
+                        for( listBYBFirmwareVO::iterator ti = fps.begin();
+                            ti != fps.end();
+                            ti ++)
+                        {
+                            std::stringstream sstm;
+                             sstm <<((BYBFirmwareVO)(*ti)).description << " (V" << ((BYBFirmwareVO)(*ti)).version <<")";
+
+                            firmwaresWidget->addItem(sstm.str().c_str() );
+                        }
+
+
+
+                        firmwaresWidget->setSelection(0);
+
+                        selectedFirmware = new BYBFirmwareVO();
+                        selectedFirmware->URL = std::string((_manager.firmwareList().front()).URL);
+                        selectedFirmware->filepath = std::string((_manager.firmwareList().front()).filepath);
+                        selectedFirmware->id = (_manager.firmwareList().front()).id;
+
+                        firmwaresWidget->setDisabled(false);
+
+
+
+
+                        _catchers.push_back(SignalCatcher(_catchers.size(), this));
+                        firmwaresWidget->indexChanged.connect(&_catchers[_catchers.size()-1], &SignalCatcher::catchFirmwareSelection);
+
+
+                        updateSelectionHbox->addWidget(firmwaresWidget);
+
+                        //Button for update HID device
+                        _updateButton = new Widgets::PushButton(group);
+
+                        _updateButton->clicked.connect(this, &ConfigView::firmwareUpdatePressed);
+
+                        _updateButton->setNormalTex(Widgets::TextureGL::get("data/disconnected.bmp"));
+                        _updateButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.bmp"));
+                        _updateButton->setSizeHint(Widgets::Size(26,26));
+                        updateSelectionHbox->addSpacing(5);
+                        updateSelectionHbox->addWidget(_updateButton);
+                        updateSelectionHbox->update();
                     }
 
 
-                    firmwaresWidget->setSelection(0);
-
-                    selectedFirmware = new BYBFirmwareVO();
-                    selectedFirmware->URL = std::string((_manager.firmwareList().front()).URL);
-                    selectedFirmware->filepath = std::string((_manager.firmwareList().front()).filepath);
-                    selectedFirmware->id = (_manager.firmwareList().front()).id;
-
-                    firmwaresWidget->setDisabled(false);
-                    _catchers.push_back(SignalCatcher(_catchers.size(), this));
-                    firmwaresWidget->indexChanged.connect(&_catchers[_catchers.size()-1], &SignalCatcher::catchFirmwareSelection);
-                     Widgets::BoxLayout *updateSelectionHbox = new Widgets::BoxLayout(Widgets::Horizontal);
-                    updateSelectionHbox->addWidget(firmwaresWidget);
-
-
-
-                    //Button for update HID device
-                    _updateButton = new Widgets::PushButton(group);
-                    _updateButton->clicked.connect(this, &ConfigView::firmwareUpdatePressed);
-
-                    _updateButton->setNormalTex(Widgets::TextureGL::get("data/disconnected.bmp"));
-                    _updateButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.bmp"));
-                    _updateButton->setSizeHint(Widgets::Size(26,26));
-                    updateSelectionHbox->addSpacing(5);
-                    updateSelectionHbox->addWidget(_updateButton);
-
-
-                    updateSelectionHbox->update();
                     gvbox->addSpacing(20);
                     gvbox->addLayout(updateHbox);
-                    gvbox->addLayout(updateSelectionHbox);
-                    //gvbox->addWidget(firmwaresWidget);
-            }
+                    if(_manager.firmwareAvailable())
+                    {
+                        gvbox->addLayout(updateSelectionHbox);
+                    }
+
+
         }
         #endif
 
