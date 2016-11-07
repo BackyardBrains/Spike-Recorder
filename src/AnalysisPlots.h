@@ -21,7 +21,7 @@ public:
 		TabCross = 2,
 		TabISI = 3
 	};
-	AnalysisPlots(const std::vector<SpikeTrain> &spikeTrains, const RecordingManager &manager, Widget *parent = NULL);
+	AnalysisPlots(const std::vector<SpikeTrain> &spikeTrains, RecordingManager &manager, Widget *parent = NULL);
 	void setActive(bool active);
 	bool active() const;
 
@@ -32,7 +32,7 @@ public:
 
 	sigslot::signal1<int> modeChanged;
 private:
-	const RecordingManager &_manager;
+    RecordingManager &_manager;
 	bool _active;
 	const std::vector<SpikeTrain> &_spikeTrains;
 

@@ -161,6 +161,12 @@ void FileRecorder::writeMetadata(const MetadataChunk *meta) {
 	write_subchunk("cclr", colors.str(), _file);
 	write_subchunk("ctms", timeScale.str(), _file);
 	write_subchunk("cnam", names.str(), _file);
+    if(_manager.isCalibrated())
+    {
+        std::stringstream calibrationCoefficient;
+        calibrationCoefficient << _manager.getCalibrationCoeficient() << ';';
+        write_subchunk("clbr", calibrationCoefficient.str(), _file);
+    }
 
 	uint32_t size = ftell(_file)-sizepos-4;
 	fseek(_file, sizepos, SEEK_SET);
@@ -274,7 +280,7 @@ void FileRecorder::parseMarkerTextFile(std::list<std::pair<std::string, int64_t>
 	fclose(f);
 }
 
-int FileRecorder::parseMetadataStr(MetadataChunk *meta, const char *str) {
+int FileRecorder::parseMetadataStr(MetadataChunk *meta, const char *str, RecordingManager &manager) {
 	const char *p = str;
 
 	while(*p != 0) {
@@ -290,7 +296,8 @@ int FileRecorder::parseMetadataStr(MetadataChunk *meta, const char *str) {
 			CGIN,
 			CCLR,
 			CTMS,
-			CNAM
+			CNAM,
+            CLBR
 		} keytype = CINVAL;
 
 		const char *beg = p;
@@ -314,6 +321,8 @@ int FileRecorder::parseMetadataStr(MetadataChunk *meta, const char *str) {
 					keytype = CTMS;
 				else if(strncmp(beg, "cnam", p-beg) == 0)
 					keytype = CNAM;
+                else if(strncmp(beg, "clbr", p-beg) == 0)
+                    keytype = CLBR;
 				else {
 					Log::error("Metadata Parser Error: skipped key '%s'.", std::string(beg,p).c_str());
 					mode = MVAL;
@@ -350,6 +359,10 @@ int FileRecorder::parseMetadataStr(MetadataChunk *meta, const char *str) {
 				case CTMS:
 					meta->timeScale = atof(val.c_str());
 					break;
+                case CLBR:
+                        manager.setCalibrationCoeficient(atof(val.c_str()));
+                        entry--;
+                    break;
 				case CINVAL:
 					assert(false);
 				}

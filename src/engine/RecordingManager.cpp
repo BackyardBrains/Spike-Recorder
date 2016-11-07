@@ -81,7 +81,7 @@ void RecordingManager::setCalibrationCoeficient(float newCalibrationCoeficient)
 void RecordingManager::resetCalibrationCoeficient()
 {
     systemIsCalibrated = false;
-    calibrationCoeficient = 1.0f;
+    calibrationCoeficient = 0.005f;
 }
 
 
@@ -168,7 +168,8 @@ bool RecordingManager::initHIDUSB()
     {
         bindVirtualDevice(i);
     }
-
+    
+    setCalibrationCoeficient(0.005f);
 
     //_player.stop();
     //_player.start(_hidUsbManager.maxSamplingRate());
@@ -414,6 +415,7 @@ void RecordingManager::swapRTRepeating()
 bool RecordingManager::initSerial(const char *portName)
 {
 
+    resetCalibrationCoeficient();
     saveInputConfigSettings();
     if(!_arduinoSerial.portOpened())
     {
@@ -565,6 +567,7 @@ void RecordingManager::closeSerial()
 
 bool RecordingManager::loadFile(const char *filename) {
 
+    resetCalibrationCoeficient();
     saveInputConfigSettings();
     resetCalibrationCoeficient();
 	_spikeTrains.clear();
@@ -646,6 +649,8 @@ void RecordingManager::initRecordingDevices() {
     {
         saveInputConfigSettings();
     }
+    
+    resetCalibrationCoeficient();
 
 	clear();
 	_fileMode = false;

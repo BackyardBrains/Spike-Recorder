@@ -88,7 +88,7 @@ void SpikeAnalysis::isi(std::vector<int> &hist,
 }	
 
 void SpikeAnalysis::averageWaveform(std::vector<float> &average, std::vector<float> &std,
-		const std::vector<int64_t> &train, const char *filename, int chan) {
+		const std::vector<int64_t> &train, const char *filename, int chan, float calibrationCoeficient) {
 	const int BUFSIZE = 32768;
 	HSTREAM handle;
 	int chans, samplerate, bytespersample;
@@ -136,7 +136,7 @@ void SpikeAnalysis::averageWaveform(std::vector<float> &average, std::vector<flo
 				break;
 			}
 			for(int j = 0; j < size ; j++) {
-				float val = channels[chan][train[i]+j-size/2-pos]/200.0f;
+				float val = channels[chan][train[i]+j-size/2-pos]*calibrationCoeficient;
 				average[j] += val;
 				std[j] += val*val;
 			}

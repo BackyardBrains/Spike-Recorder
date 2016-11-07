@@ -106,7 +106,7 @@ public:
 	bool start(const std::string &filename);
 	void stop(const MetadataChunk *meta);
 
-	static int parseMetadataStr(MetadataChunk *meta, const char *str);
+	static int parseMetadataStr(MetadataChunk *meta, const char *str, RecordingManager &manager);
 
 	bool recording() const;
 	const std::string &filename() const;

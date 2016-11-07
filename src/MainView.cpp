@@ -378,7 +378,7 @@ void MainView::filePressed() {
 	const char *mdatastr = _manager.fileMetadataString();
 	if(mdatastr)
     {
-		FileRecorder::parseMetadataStr(&m, mdatastr);
+		FileRecorder::parseMetadataStr(&m, mdatastr, _manager);
     }
     FileRecorder::parseMarkerTextFile(m.markers, FileRecorder::eventTxtFilename(d.getResultFilename().c_str()), _manager.sampleRate());
     _manager.applyMetadata(m);

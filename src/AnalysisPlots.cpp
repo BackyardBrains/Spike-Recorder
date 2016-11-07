@@ -12,7 +12,7 @@
 
 namespace BackyardBrains {
 
-AnalysisPlots::AnalysisPlots(const std::vector<SpikeTrain> &trains, const RecordingManager &manager, Widget *parent) : Widget(parent), _manager(manager), _active(0), _spikeTrains(trains), _target(0) {
+AnalysisPlots::AnalysisPlots(const std::vector<SpikeTrain> &trains, RecordingManager &manager, Widget *parent) : Widget(parent), _manager(manager), _active(0), _spikeTrains(trains), _target(0) {
 	setSizeHint(Widgets::Size());
 	
 	_tabs = new Widgets::TabBar(this);
@@ -76,7 +76,8 @@ void AnalysisPlots::setTarget(int target) {
 
 void AnalysisPlots::setAvgWaveformData(int idx) {
 	std::vector<float> buf, stdy;
-	SpikeAnalysis::averageWaveform(buf, stdy, _spikeTrains[idx].spikes, _manager.fileName().c_str(), 0);
+    const float calibrationCoeficient = _manager.getCalibrationCoeficient();
+	SpikeAnalysis::averageWaveform(buf, stdy, _spikeTrains[idx].spikes, _manager.fileName().c_str(), 0, calibrationCoeficient);
 	std::vector<float> x, y;
 	
 	y.resize(buf.size());
