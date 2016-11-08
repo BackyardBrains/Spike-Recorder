@@ -181,10 +181,17 @@ void Application::_HandleEvent(const void *eventRaw) {
 	if (event.type == SDL_MOUSEMOTION || event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP || event.type == SDL_MOUSEWHEEL) {
 		// update our internal button state tracking
 		if (event.type == SDL_MOUSEMOTION)
+        {
+             Log::msg("Mouse motion which: %d x: %f y: %f", event.motion.which, event.motion.x, event.motion.y );
 			_buttonState = ToMouseButtonsFromSDL(event.motion.state);
+        }
 		else if (event.type == SDL_MOUSEBUTTONDOWN)
+        {
+            Log::msg("Mouse button down which: %d x: %f y: %f", event.button.which, event.button.x, event.button.y );
 			_buttonState |= ToMouseButtonFromSDL(event.button.button);
+        }
 		else if (event.type == SDL_MOUSEWHEEL) {
+            Log::msg("Mouse button UP which: %d x: %f y: %f", event.button.which, event.button.x, event.button.y );
 			/*if(event.wheel.y > 0)
 				_buttonState |= WheelUpButton;
 			if(event.wheel.y < 0)
@@ -192,6 +199,7 @@ void Application::_HandleEvent(const void *eventRaw) {
 		}
 		else // if (event.type == SDL_MOUSEBUTTONUP)
 
+        Log::msg("Mouse wheel which: %d x: %f y: %f", event.wheel.which, event.wheel.x, event.wheel.y );
 			_buttonState &= ~ToMouseButtonFromSDL(event.button.button);
 
 		// TODO generate events if the event.motion.state magically changed things
