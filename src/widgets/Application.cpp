@@ -191,6 +191,7 @@ void Application::_HandleEvent(const void *eventRaw) {
 				_buttonState |= WheelDownButton;*/
 		}
 		else // if (event.type == SDL_MOUSEBUTTONUP)
+
 			_buttonState &= ~ToMouseButtonFromSDL(event.button.button);
 
 		// TODO generate events if the event.motion.state magically changed things
@@ -229,6 +230,7 @@ void Application::_HandleEvent(const void *eventRaw) {
 
 
 		}
+
 		if (!windowWidget) {
 			for (WidgetList::const_reverse_iterator it = _windowStack.rbegin(); it != _windowStack.rend(); ++it) {
 				if ((*it)->geometry().contains(newPos)) {
@@ -319,6 +321,26 @@ void Application::_HandleEvent(const void *eventRaw) {
 					_hoverWidget->mouseMotionEvent(&mouseEvent);
 			}
 		}
+	}
+    else if(event.type ==SDL_FINGERMOTION)
+	{
+        Log::msg("Finger motion %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
+        std::cout<<"Finger motion: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y<<"\n";
+	}
+	 else if(event.type ==SDL_FINGERDOWN)
+	{
+        Log::msg("Finger DOWN %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
+        std::cout<<"Finger DOWN: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y<<"\n";
+	}
+	 else if(event.type ==SDL_FINGERUP)
+	{
+        Log::msg("Finger UP %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
+        std::cout<<"Finger UP: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y<<"\n";
+	}
+    else if(event.type ==SDL_MULTIGESTURE)
+	{
+        Log::msg("Finger MULTY number of fingers: %u theta: %f Distance: %f, X: %f, Y: %f ",event.mgesture.numFingers, event.mgesture.dTheta, event.mgesture.dDist, event.mgesture.x, event.mgesture.y );
+        std::cout<<"Finger MULTY: number of fingers:"<<event.mgesture.numFingers<<" Theta: "<<event.mgesture.dTheta<<" Distance: "<<event.mgesture.dDist<<", x: "<<event.mgesture.x<<", y: "<<event.mgesture.y<<"\n";
 	}
 	else if(event.type ==SDL_TEXTINPUT)
 	{

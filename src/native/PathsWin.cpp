@@ -2,8 +2,19 @@
 #include <windows.h>
 #include <shlobj.h>
 #include <direct.h>
+#include <string>
+#include <iostream>
+#include <sstream>
+#include <string>
 
 namespace BackyardBrains {
+
+std::string ExePath() {
+    char buffer[MAX_PATH];
+    GetModuleFileName( NULL, buffer, MAX_PATH );
+    std::string::size_type pos = std::string( buffer ).find_last_of( "\\/" );
+    return std::string( buffer ).substr( 0, pos);
+}
 
 std::string getRecordingPath() {
 	char path[MAX_PATH];
@@ -16,7 +27,12 @@ std::string getRecordingPath() {
 }
 
 std::string getLoggingPath() {
-	return "%APPDATA%\\BackyardBrains\\SpikeRecorder\\byb.log";
+
+    std::stringstream ss;
+ss << ExePath() << "\\byb.log";
+//std::string s = ss.str();
+return ss.str().c_str();
+	//return "%APPDATA%\\BackyardBrains\\SpikeRecorder\\byb.log";
 }
 
 }

@@ -14,6 +14,7 @@ Log::Log() {
 	if(getLoggingPath() == "") {
 		_out = stdout;
 	} else {
+	    fprintf(stderr,getLoggingPath().c_str());
 		_out = fopen(getLoggingPath().c_str(), "w");
 		if(_out == 0) {
 			fprintf(stderr, "Error opening logging destination:%s\nRedirecting log to stdout.\n", strerror(errno));
