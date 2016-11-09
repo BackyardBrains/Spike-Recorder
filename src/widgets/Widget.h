@@ -99,6 +99,7 @@ public:
 	virtual void mousePressEvent(MouseEvent *event);
 	virtual void mouseReleaseEvent(MouseEvent *event);
 	virtual void mouseMotionEvent(MouseEvent *event);
+    virtual void twoFingersPinchEvent(const  SDL_Event &event, int pinchDirection);
 
 	void _DoPaintEvents(const Point &offset, const Rect &clipRect);
 	void _CallAdvance();

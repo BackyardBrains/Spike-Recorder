@@ -830,6 +830,108 @@ void AudioView::mousePressEventFromAnalysisView(Widgets::MouseEvent *event)
     analysisViewIsActive = false;
 }
 
+void AudioView::twoFingersPinchEvent(const  SDL_Event &event, int pinchDirection)
+{
+    Log::msg("Audio view two finger");
+    if(pinchDirection == 1)//vertical
+    {
+        Log::msg("Audio view vertical");
+        float newGain = _channels[selectedChannel()].gain*(1.0f+event.mgesture.dDist*4.0f);
+        _channels[selectedChannel()].setGain(newGain);
+        _manager.saveGainForAudioInput(newGain);
+    }
+    else if(pinchDirection == -1)//horizontal
+    {
+        int x=event.mgesture.x*width();
+        float coeficient = 1.0f-event.mgesture.dDist*4.0f;
+        
+        if(coeficient<1.0f)
+        {
+        
+                if(!_manager.threshMode() || x < width()-DATA_XOFF) {//do not react on right handle in threshold mode
+                    
+                    
+                    //calculate offset of buffer after zoom in normal mode
+                    double positionOfCursorInPercOfScreen = (((double)(x- DATA_XOFF))/(double)screenWidth());
+                    int positionOfSampleUnderCursor = _channelOffset  - (sampleCount(screenWidth(), scaleWidth()) - sampleCount(screenWidth(), scaleWidth()) *positionOfCursorInPercOfScreen);
+                    int numberOfSamplesOnLeftInNewScale = sampleCount(screenWidth(), scaleWidth()/coeficient)*positionOfCursorInPercOfScreen;
+                    
+                    int positionOfRightSideOfNewScreen = positionOfSampleUnderCursor - numberOfSamplesOnLeftInNewScale + sampleCount(screenWidth(), scaleWidth()/coeficient);
+                    
+                    
+                    
+                    //calculate offset of buffer after zoom in file mode
+                    //calculate index of sample under cursor
+                    int sampleIndexInFile = _manager.pos() - sampleCount(screenWidth(), scaleWidth()) + positionOfCursorInPercOfScreen*sampleCount(screenWidth(), scaleWidth());
+                    
+                    //calculate what will be sample index of sample in righthand edge of the screen (playing head)
+                    //so that our sample under mouse cursor don't change position
+                    int positionForFile = sampleIndexInFile - numberOfSamplesOnLeftInNewScale + sampleCount(screenWidth(), scaleWidth()/coeficient);
+                    
+                    
+                    // std::cout<<"offset: "<<_channelOffset<<" position: "<<_manager.pos()<<"\n";
+                    _timeScale = std::max(1.f/_manager.sampleRate(), _timeScale*coeficient);
+                    _manager.saveTimeScaleForAudioInput(_timeScale);//save preference for this input type
+                    if(!_manager.fileMode()) {
+                        if(_manager.paused())
+                        {
+                            setOffset(positionOfRightSideOfNewScreen);
+                        }
+                        else
+                        {
+                            setOffset(_channelOffset);
+                        }
+                    }
+                    else
+                    {
+                        if(_manager.paused())
+                        {
+                            if(!analysisViewIsActive)
+                            {
+                                setOffset(positionForFile);
+                            }
+                            
+                        }
+                        
+                    }
+                }
+        }
+        else//if coeficient is >1.0f
+        {
+            if(!_manager.threshMode() || x < width()-DATA_XOFF) {
+                const int centeroff = (-sampleCount(screenWidth(), scaleWidth())+sampleCount(screenWidth(), scaleWidth()/coeficient))/2;
+                _timeScale = std::min(2.f, _timeScale*coeficient);
+                _manager.saveTimeScaleForAudioInput(_timeScale);
+                if(!_manager.fileMode())
+                {
+                    setOffset(_channelOffset + centeroff*_manager.paused()); // or else the buffer end will become shown
+                }
+                else
+                {
+                    if(_manager.paused())
+                    {
+                        if(!analysisViewIsActive)
+                        {
+                            setOffset(_manager.pos() + centeroff);
+                        }
+                        
+                        
+                    }
+                }
+            }
+        }
+
+        
+        
+        
+        
+       /* Log::msg("Audio view horizontal");
+        _timeScale = std::max(1.f/_manager.sampleRate(), _timeScale*(1.0f-event.mgesture.dDist*4.0f));
+        _manager.saveTimeScaleForAudioInput(_timeScale);*/
+    }
+    
+}
+    
 
 void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 	int x = event->pos().x;

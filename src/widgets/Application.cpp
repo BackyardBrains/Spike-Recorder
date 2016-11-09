@@ -178,7 +178,39 @@ KeyModifiers sdl_keymod_to_keymod(unsigned short mod) {
 void Application::_HandleEvent(const void *eventRaw) {
 	const SDL_Event &event = *reinterpret_cast<const SDL_Event*>(eventRaw);
 
-	if (event.type == SDL_MOUSEMOTION || event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP || event.type == SDL_MOUSEWHEEL) {
+    if(event.type ==SDL_FINGERMOTION)
+    {
+        Log::msg("Finger motion %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
+        keepTrackOfFingerMoves(event);
+        std::cout<<"Finger motion: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y<<"\n";
+    }
+    else if(event.type ==SDL_FINGERDOWN)
+    {
+        
+        Log::msg("Finger DOWN %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
+        keepTrackOfFingerMoves(event);
+        std::cout<<"Finger DOWN: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y<<"\n";
+    }
+    else if(event.type ==SDL_FINGERUP)
+    {
+        Log::msg("Finger UP %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
+        std::cout<<"Finger UP: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y<<"\n";
+    }
+    else if(event.type ==SDL_MULTIGESTURE)
+    {
+        if(event.mgesture.numFingers==2)
+        {
+            if(_hoverWidget)
+            {
+                _hoverWidget->twoFingersPinchEvent(event, twoFingersGestureDirection());
+            }
+        }
+        Log::msg("Finger MULTY number of fingers: %u theta: %f Distance: %f, X: %f, Y: %f ",event.mgesture.numFingers, event.mgesture.dTheta, event.mgesture.dDist, event.mgesture.x, event.mgesture.y );
+        std::cout<<"Finger MULTY: number of fingers:"<<event.mgesture.numFingers<<" Theta: "<<event.mgesture.dTheta<<" Distance: "<<event.mgesture.dDist<<", x: "<<event.mgesture.x<<", y: "<<event.mgesture.y<<"\n";
+    }
+    
+    
+    if (event.type == SDL_MOUSEMOTION || event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP || event.type == SDL_MOUSEWHEEL ) {
 		// update our internal button state tracking
 		if (event.type == SDL_MOUSEMOTION)
         {
@@ -198,9 +230,10 @@ void Application::_HandleEvent(const void *eventRaw) {
 				_buttonState |= WheelDownButton;*/
 		}
 		else // if (event.type == SDL_MOUSEBUTTONUP)
-
+        {
         Log::msg("Mouse wheel which: %d x: %f y: %f", event.wheel.which, event.wheel.x, event.wheel.y );
 			_buttonState &= ~ToMouseButtonFromSDL(event.button.button);
+        }
 
 		// TODO generate events if the event.motion.state magically changed things
 		// TODO keep track of the keyboard modifiers state
@@ -270,6 +303,15 @@ void Application::_HandleEvent(const void *eventRaw) {
 				button = ToMouseButtonFromSDL(event.button.button);
 
 			if(event.type == SDL_MOUSEWHEEL) {
+                if(event.wheel.which == SDL_TOUCH_MOUSEID)
+                {
+                    //if this is from touch screen ignore it
+                    //we will handle this sepparately
+                    Log::msg("We ignored mouse wheel event!");
+                    return;
+                    
+                }
+                
 				if(event.wheel.y > 0)
 					button = WheelUpButton;
 				else
@@ -329,26 +371,6 @@ void Application::_HandleEvent(const void *eventRaw) {
 					_hoverWidget->mouseMotionEvent(&mouseEvent);
 			}
 		}
-	}
-    else if(event.type ==SDL_FINGERMOTION)
-	{
-        Log::msg("Finger motion %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
-        std::cout<<"Finger motion: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y<<"\n";
-	}
-	 else if(event.type ==SDL_FINGERDOWN)
-	{
-        Log::msg("Finger DOWN %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
-        std::cout<<"Finger DOWN: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y<<"\n";
-	}
-	 else if(event.type ==SDL_FINGERUP)
-	{
-        Log::msg("Finger UP %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
-        std::cout<<"Finger UP: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y<<"\n";
-	}
-    else if(event.type ==SDL_MULTIGESTURE)
-	{
-        Log::msg("Finger MULTY number of fingers: %u theta: %f Distance: %f, X: %f, Y: %f ",event.mgesture.numFingers, event.mgesture.dTheta, event.mgesture.dDist, event.mgesture.x, event.mgesture.y );
-        std::cout<<"Finger MULTY: number of fingers:"<<event.mgesture.numFingers<<" Theta: "<<event.mgesture.dTheta<<" Distance: "<<event.mgesture.dDist<<", x: "<<event.mgesture.x<<", y: "<<event.mgesture.y<<"\n";
 	}
 	else if(event.type ==SDL_TEXTINPUT)
 	{
@@ -419,6 +441,75 @@ void Application::_HandleEvent(const void *eventRaw) {
 			}
 		}
 	}
+}
+    
+    
+void Application::keepTrackOfFingerMoves(const SDL_Event &event )
+{
+    if(event.tfinger.fingerId == _fingerMoveOne.tfinger.fingerId)
+    {
+        Log::msg("Update finger one");
+        //update X/Y of finger one
+        _fingerMoveOne.tfinger.x = event.tfinger.x;
+        _fingerMoveOne.tfinger.y = event.tfinger.y;
+    }
+    else if(event.tfinger.fingerId == _fingerMoveTwo.tfinger.fingerId)
+    {
+        Log::msg("Update finger two");
+        //update X/Y of finger two
+        _fingerMoveTwo.tfinger.x = event.tfinger.x;
+        _fingerMoveTwo.tfinger.y = event.tfinger.y;
+    }
+    else
+    {
+        Log::msg("Add new finger-----");
+        //push finger one to finger two and put new finger to first place
+        _fingerMoveTwo.tfinger.x = _fingerMoveOne.tfinger.x;
+        _fingerMoveTwo.tfinger.y = _fingerMoveOne.tfinger.y;
+        _fingerMoveTwo.tfinger.fingerId = _fingerMoveOne.tfinger.fingerId;
+        
+        _fingerMoveOne.tfinger.x = event.tfinger.x;
+        _fingerMoveOne.tfinger.y = event.tfinger.y;
+        _fingerMoveOne.tfinger.fingerId = event.tfinger.fingerId;
+    }
+}
+    
+//
+// returns
+//     1 - vertical;
+//    -1 - horizontal
+//     0 - neither vertical neither horizontal
+//
+int Application::twoFingersGestureDirection()
+{
+    float dx = fabsf(_fingerMoveOne.tfinger.x - _fingerMoveTwo.tfinger.x );
+    float dy = fabsf(_fingerMoveOne.tfinger.y - _fingerMoveTwo.tfinger.y );
+    
+    if(dx>0)
+    {
+        float angle = atanf(dy/dx);
+        angle = (angle/M_PI)*180;
+        if(angle<35)
+        {
+            Log::msg("Angle %f, horizontal.", angle);
+            return -1;
+        }
+        else if(angle>55)
+        {
+            Log::msg("Angle %f, vertical.", angle);
+            return 1;
+        }
+        else
+        {
+            Log::msg("Angle %f, neither vertical neither horizontal.", angle);
+            return 0;
+        }
+    }
+    else
+    {
+        Log::msg("Angle vertical dx = 0");
+        return 1;
+    }
 }
 
 void Application::createWindow(int w, int h) {

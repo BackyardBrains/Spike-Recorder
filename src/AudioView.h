@@ -96,6 +96,7 @@ protected:
 	void mousePressEvent(Widgets::MouseEvent *event);
 	void mouseMotionEvent(Widgets::MouseEvent *event);
 	void mouseReleaseEvent(Widgets::MouseEvent *event);
+    void twoFingersPinchEvent(const  SDL_Event &event, int pinchDirection);
 
 	int determineThreshHover(int x, int y, int thresholdPos, int *yoffset);
 	int determineGainControlHover(int x, int y);
