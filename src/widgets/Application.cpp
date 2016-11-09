@@ -9,6 +9,7 @@
 #include <bass.h>
 #include <cassert>
 #include <iostream>
+#include <sstream>
 
 namespace BackyardBrains {
 
@@ -332,17 +333,28 @@ void Application::_HandleEvent(const void *eventRaw) {
 	}
     else if(event.type ==SDL_FINGERMOTION)
 	{
-        Log::msg("Finger motion %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
+	    std::stringstream msg;
+        msg << "Finger motion: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y;
+        Log::msg( msg.str().c_str() );
+        //Log::msg("Finger motion %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
         std::cout<<"Finger motion: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y<<"\n";
 	}
 	 else if(event.type ==SDL_FINGERDOWN)
 	{
-        Log::msg("Finger DOWN %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
+	     std::stringstream msg;
+        msg << "Finger DOWN: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y;
+        Log::msg( msg.str().c_str() );
+
+        //Log::msg("Finger DOWN %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
         std::cout<<"Finger DOWN: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y<<"\n";
 	}
 	 else if(event.type ==SDL_FINGERUP)
 	{
-        Log::msg("Finger UP %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
+	     std::stringstream msg;
+        msg << "Finger UP %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y;
+        Log::msg( msg.str().c_str() );
+
+        //Log::msg("Finger UP %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
         std::cout<<"Finger UP: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y<<"\n";
 	}
     else if(event.type ==SDL_MULTIGESTURE)
