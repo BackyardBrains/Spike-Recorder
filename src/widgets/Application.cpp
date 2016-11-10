@@ -187,13 +187,13 @@ void Application::_HandleEvent(const void *eventRaw) {
     else if(event.type ==SDL_FINGERDOWN)
     {
 
-      //  Log::msg("Finger DOWN %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
+        Log::msg("Finger DOWN %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
         keepTrackOfFingerMoves(event);
         std::cout<<"Finger DOWN: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y<<"\n";
     }
     else if(event.type ==SDL_FINGERUP)
     {
-       // Log::msg("Finger UP %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
+        Log::msg("Finger UP %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
         std::cout<<"Finger UP: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y<<"\n";
     }
     else if(event.type ==SDL_MULTIGESTURE)
@@ -215,7 +215,7 @@ void Application::_HandleEvent(const void *eventRaw) {
 		// update our internal button state tracking
 		if (event.type == SDL_MOUSEMOTION)
         {
-            
+            _lastMouseClickWasOnTouchscreen = event.motion.which == SDL_TOUCH_MOUSEID;//check if user is using touchscreen
             // Log::msg("Mouse motion which: %d x: %f y: %f", event.motion.which, event.motion.x, event.motion.y );
            // std::cout<<"MOUSE motion  which:"<<event.motion.which<<" x: "<<event.motion.x<<" ,y: "<<event.motion.y<<"\n";
             if(weAreInTwoFingersGesture && event.motion.which == SDL_TOUCH_MOUSEID)
@@ -228,12 +228,14 @@ void Application::_HandleEvent(const void *eventRaw) {
         }
 		else if (event.type == SDL_MOUSEBUTTONDOWN)
         {
-           // Log::msg("Mouse button down which: %d x: %f y: %f", event.button.which, event.button.x, event.button.y );
+            _lastMouseClickWasOnTouchscreen = event.button.which == SDL_TOUCH_MOUSEID;
+            Log::msg("Mouse button down which: %d x: %f y: %f", event.button.which, event.button.x, event.button.y );
             std::cout<<"MOUSE button DOWN which:"<<event.button.which<<" x: "<<event.button.x<<" ,y: "<<event.button.y<<"\n";
 			_buttonState |= ToMouseButtonFromSDL(event.button.button);
         }
-		else if (event.type == SDL_MOUSEWHEEL) {
-          
+		else if (event.type == SDL_MOUSEWHEEL)
+        {
+            _lastMouseClickWasOnTouchscreen = event.button.which == SDL_TOUCH_MOUSEID;
             Log::msg("Mouse wheel which: %d x: %f y: %f", event.wheel.which, event.wheel.x, event.wheel.y );
 			/*if(event.wheel.y > 0)
 				_buttonState |= WheelUpButton;
@@ -242,9 +244,10 @@ void Application::_HandleEvent(const void *eventRaw) {
 		}
 		else // if (event.type == SDL_MOUSEBUTTONUP)
         {
-            //  Log::msg("Mouse button UP which: %d x: %f y: %f", event.button.which, event.button.x, event.button.y );
+            _lastMouseClickWasOnTouchscreen = event.button.which == SDL_TOUCH_MOUSEID;
+              Log::msg("Mouse button UP which: %d x: %f y: %f", event.button.which, event.button.x, event.button.y );
             std::cout<<"MOUSE button UP which:"<<event.button.which<<" x: "<<event.button.x<<" ,y: "<<event.button.y<<"\n";
-        
+
 			_buttonState &= ~ToMouseButtonFromSDL(event.button.button);
         }
 
