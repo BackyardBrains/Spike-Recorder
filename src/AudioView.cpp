@@ -439,7 +439,13 @@ static void drawtextbgbox(const std::string &s, int x, int y, Widgets::Alignment
 
 void AudioView::drawGainControls() {
 	if(_channels.size() == 0)
+    {
 		return;
+    }
+    if(Widgets::Application::getInstance()->areWeOnTouchscreen())
+    {
+        return;
+    }
 	int y = _channels[selectedChannel()].pos*height();
 	Widgets::TextureGL::get("data/gaindown.bmp")->bind();
 	Widgets::Painter::drawTexRect(Widgets::Rect(GAINCONTROL_XOFF-GAINCONTROL_RAD,y+GAINCONTROL_YOFF-GAINCONTROL_RAD,2*GAINCONTROL_RAD,2*GAINCONTROL_RAD));
@@ -518,7 +524,25 @@ void AudioView::drawAudio() {
 		drawData(data, i, samples, xoff, yoff, screenw);
 
 		Widgets::TextureGL::get("data/pin.bmp")->bind();
-		Widgets::Painter::drawTexRect(Widgets::Rect(MOVEPIN_SIZE/2, _channels[i].pos*height()-MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
+        if(Widgets::Application::getInstance()->areWeOnTouchscreen())
+        {
+            if(selectedChannel() == i)
+            {
+                Widgets::Painter::drawTexRect(Widgets::Rect(MOVEPIN_SIZE/2, _channels[i].pos*height()-MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
+            }
+            else
+            {
+                Widgets::Painter::drawTexRect(Widgets::Rect(MOVEPIN_SIZE/2, _channels[i].pos*height()-MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
+                Widgets::Painter::setColor(Widgets::Colors::background);
+                Widgets::Painter::drawTexRect(Widgets::Rect(MOVEPIN_SIZE/2 +3, _channels[i].pos*height()-MOVEPIN_SIZE/2+4, MOVEPIN_SIZE-8, MOVEPIN_SIZE-8));
+                Widgets::Painter::setColor(COLORS[_channels[i].colorIdx]);
+            }
+        }
+        else
+        {
+            Widgets::Painter::drawTexRect(Widgets::Rect(MOVEPIN_SIZE/2, _channels[i].pos*height()-MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
+        }
+		
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		if(_rulerEnd != _rulerStart) {
@@ -768,7 +792,15 @@ void AudioView::advance() {
 
 int AudioView::determineGainControlHover(int x, int y) {
 	if(_channels.size() == 0)
+    {
 		return 0;
+    }
+    
+    if(Widgets::Application::getInstance()->areWeOnTouchscreen())
+    {
+        return 0;
+    }
+    
 	int xx = GAINCONTROL_XOFF-x;
 	int dy = _channels[selectedChannel()].pos*height()-y;
 	xx *= xx;
@@ -790,7 +822,12 @@ int AudioView::determineSliderHover(int x, int y, int *yoffset) {
 	for(unsigned int i = 0; i < _channels.size(); i++) {
 		int dy = y - height()*_channels[i].pos;
 		int yy = dy*dy;
-		if(xx + yy < MOVEPIN_SIZE*MOVEPIN_SIZE*0.25f) {
+        float sensitivityCoefficient = 0.25f;
+        if(Widgets::Application::getInstance()->areWeOnTouchscreen())
+        {
+            sensitivityCoefficient*=8;
+        }
+		if(xx + yy < MOVEPIN_SIZE*MOVEPIN_SIZE*sensitivityCoefficient) {
 			if(yoffset)
 				*yoffset = dy;
 			return i;
@@ -808,8 +845,12 @@ int AudioView::determineThreshHover(int x, int y, int threshPos, int *yoffset) {
 
 	int yy = dy*dy;
 	xx *= xx;
-
-	if(xx + yy < MOVEPIN_SIZE*MOVEPIN_SIZE*0.25f) {
+    float sensitivityCoefficient = 0.25f;
+    if(Widgets::Application::getInstance()->areWeOnTouchscreen())
+    {
+        sensitivityCoefficient*=8;
+    }
+	if(xx + yy < MOVEPIN_SIZE*MOVEPIN_SIZE*sensitivityCoefficient) {
 		if(yoffset)
 			*yoffset = dy;
 		return 1;

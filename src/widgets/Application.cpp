@@ -250,7 +250,31 @@ void Application::_HandleEvent(const void *eventRaw) {
 
 			_buttonState &= ~ToMouseButtonFromSDL(event.button.button);
         }
-
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+       // _lastMouseClickWasOnTouchscreen = true;//debug purpose
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 		// TODO generate events if the event.motion.state magically changed things
 		// TODO keep track of the keyboard modifiers state
 
