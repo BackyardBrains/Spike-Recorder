@@ -843,32 +843,32 @@ void AudioView::twoFingersPinchEvent(const  SDL_Event &event, int pinchDirection
     else if(pinchDirection == -1)//horizontal
     {
         int x=event.mgesture.x*width();
-        float coeficient = 1.0f-event.mgesture.dDist*4.0f;
-        
+        float coeficient = 1.0f-event.mgesture.dDist*10.0f;
+
         if(coeficient<1.0f)
         {
-        
+
                 if(!_manager.threshMode() || x < width()-DATA_XOFF) {//do not react on right handle in threshold mode
-                    
-                    
+
+
                     //calculate offset of buffer after zoom in normal mode
                     double positionOfCursorInPercOfScreen = (((double)(x- DATA_XOFF))/(double)screenWidth());
                     int positionOfSampleUnderCursor = _channelOffset  - (sampleCount(screenWidth(), scaleWidth()) - sampleCount(screenWidth(), scaleWidth()) *positionOfCursorInPercOfScreen);
                     int numberOfSamplesOnLeftInNewScale = sampleCount(screenWidth(), scaleWidth()/coeficient)*positionOfCursorInPercOfScreen;
-                    
+
                     int positionOfRightSideOfNewScreen = positionOfSampleUnderCursor - numberOfSamplesOnLeftInNewScale + sampleCount(screenWidth(), scaleWidth()/coeficient);
-                    
-                    
-                    
+
+
+
                     //calculate offset of buffer after zoom in file mode
                     //calculate index of sample under cursor
                     int sampleIndexInFile = _manager.pos() - sampleCount(screenWidth(), scaleWidth()) + positionOfCursorInPercOfScreen*sampleCount(screenWidth(), scaleWidth());
-                    
+
                     //calculate what will be sample index of sample in righthand edge of the screen (playing head)
                     //so that our sample under mouse cursor don't change position
                     int positionForFile = sampleIndexInFile - numberOfSamplesOnLeftInNewScale + sampleCount(screenWidth(), scaleWidth()/coeficient);
-                    
-                    
+
+
                     // std::cout<<"offset: "<<_channelOffset<<" position: "<<_manager.pos()<<"\n";
                     _timeScale = std::max(1.f/_manager.sampleRate(), _timeScale*coeficient);
                     _manager.saveTimeScaleForAudioInput(_timeScale);//save preference for this input type
@@ -890,9 +890,9 @@ void AudioView::twoFingersPinchEvent(const  SDL_Event &event, int pinchDirection
                             {
                                 setOffset(positionForFile);
                             }
-                            
+
                         }
-                        
+
                     }
                 }
         }
@@ -914,24 +914,24 @@ void AudioView::twoFingersPinchEvent(const  SDL_Event &event, int pinchDirection
                         {
                             setOffset(_manager.pos() + centeroff);
                         }
-                        
-                        
+
+
                     }
                 }
             }
         }
 
-        
-        
-        
-        
+
+
+
+
        /* Log::msg("Audio view horizontal");
         _timeScale = std::max(1.f/_manager.sampleRate(), _timeScale*(1.0f-event.mgesture.dDist*4.0f));
         _manager.saveTimeScaleForAudioInput(_timeScale);*/
     }
-    
+
 }
-    
+
 
 void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 	int x = event->pos().x;
@@ -1133,10 +1133,10 @@ void AudioView::mouseMotionEvent(Widgets::MouseEvent *event) {
 		float newGain = _prevGain*std::fabs((height()*_channels[_clickedGain].pos-event->pos().y)/(float)_clickedPixelOffset);
 		int doffset = (width()*_prevDragX-event->pos().x)/(float)scaleWidth()*_manager.sampleRate();
 		setOffset(_prevDragOffset+doffset);
+        Log::msg("Change offset %d", doffset);
 
-
-        _channels[_clickedGain].setGain(newGain);
-        _manager.saveGainForAudioInput(newGain);
+        //_channels[_clickedGain].setGain(newGain);
+        //_manager.saveGainForAudioInput(newGain);
 
 		event->accept();
 	}

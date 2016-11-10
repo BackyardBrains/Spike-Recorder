@@ -69,13 +69,13 @@ private:
 	void removeClosed(WidgetList &w);
 
 	std::string _windowTitle;
-    
+
     //used to keep track of multifingers gestures
     SDL_Event _fingerMoveOne;
     SDL_Event _fingerMoveTwo;
     void keepTrackOfFingerMoves(const SDL_Event &event );
     int twoFingersGestureDirection();
-
+    bool weAreInTwoFingersGesture = false; //true during 2 fingers gesture
 };
 
 } // namespace Widgets

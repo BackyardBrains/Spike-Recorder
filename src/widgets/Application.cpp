@@ -186,7 +186,7 @@ void Application::_HandleEvent(const void *eventRaw) {
     }
     else if(event.type ==SDL_FINGERDOWN)
     {
-        
+
         Log::msg("Finger DOWN %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
         keepTrackOfFingerMoves(event);
         std::cout<<"Finger DOWN: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y<<"\n";
@@ -200,6 +200,7 @@ void Application::_HandleEvent(const void *eventRaw) {
     {
         if(event.mgesture.numFingers==2)
         {
+            weAreInTwoFingersGesture = true;
             if(_hoverWidget)
             {
                 _hoverWidget->twoFingersPinchEvent(event, twoFingersGestureDirection());
@@ -208,12 +209,17 @@ void Application::_HandleEvent(const void *eventRaw) {
         Log::msg("Finger MULTY number of fingers: %u theta: %f Distance: %f, X: %f, Y: %f ",event.mgesture.numFingers, event.mgesture.dTheta, event.mgesture.dDist, event.mgesture.x, event.mgesture.y );
         std::cout<<"Finger MULTY: number of fingers:"<<event.mgesture.numFingers<<" Theta: "<<event.mgesture.dTheta<<" Distance: "<<event.mgesture.dDist<<", x: "<<event.mgesture.x<<", y: "<<event.mgesture.y<<"\n";
     }
-    
-    
+
+
     if (event.type == SDL_MOUSEMOTION || event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP || event.type == SDL_MOUSEWHEEL ) {
 		// update our internal button state tracking
 		if (event.type == SDL_MOUSEMOTION)
         {
+            if(weAreInTwoFingersGesture && event.motion.which == SDL_TOUCH_MOUSEID)
+            {
+                //we dont want to move anything while pinching
+                return;
+            }
              Log::msg("Mouse motion which: %d x: %f y: %f", event.motion.which, event.motion.x, event.motion.y );
 			_buttonState = ToMouseButtonsFromSDL(event.motion.state);
         }
@@ -309,9 +315,9 @@ void Application::_HandleEvent(const void *eventRaw) {
                     //we will handle this sepparately
                     Log::msg("We ignored mouse wheel event!");
                     return;
-                    
+
                 }
-                
+
 				if(event.wheel.y > 0)
 					button = WheelUpButton;
 				else
@@ -442,8 +448,8 @@ void Application::_HandleEvent(const void *eventRaw) {
 		}
 	}
 }
-    
-    
+
+
 void Application::keepTrackOfFingerMoves(const SDL_Event &event )
 {
     if(event.tfinger.fingerId == _fingerMoveOne.tfinger.fingerId)
@@ -463,17 +469,18 @@ void Application::keepTrackOfFingerMoves(const SDL_Event &event )
     else
     {
         Log::msg("Add new finger-----");
+        weAreInTwoFingersGesture = false;
         //push finger one to finger two and put new finger to first place
         _fingerMoveTwo.tfinger.x = _fingerMoveOne.tfinger.x;
         _fingerMoveTwo.tfinger.y = _fingerMoveOne.tfinger.y;
         _fingerMoveTwo.tfinger.fingerId = _fingerMoveOne.tfinger.fingerId;
-        
+
         _fingerMoveOne.tfinger.x = event.tfinger.x;
         _fingerMoveOne.tfinger.y = event.tfinger.y;
         _fingerMoveOne.tfinger.fingerId = event.tfinger.fingerId;
     }
 }
-    
+
 //
 // returns
 //     1 - vertical;
@@ -484,7 +491,7 @@ int Application::twoFingersGestureDirection()
 {
     float dx = fabsf(_fingerMoveOne.tfinger.x - _fingerMoveTwo.tfinger.x );
     float dy = fabsf(_fingerMoveOne.tfinger.y - _fingerMoveTwo.tfinger.y );
-    
+
     if(dx>0)
     {
         float angle = atanf(dy/dx);
