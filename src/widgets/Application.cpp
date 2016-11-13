@@ -251,7 +251,7 @@ void Application::_HandleEvent(const void *eventRaw) {
 
 			_buttonState &= ~ToMouseButtonFromSDL(event.button.button);
         }
-        
+
 		// TODO generate events if the event.motion.state magically changed things
 		// TODO keep track of the keyboard modifiers state
 
@@ -391,34 +391,34 @@ void Application::_HandleEvent(const void *eventRaw) {
 	}
     else if(event.type ==SDL_FINGERMOTION)
 	{
-	    std::stringstream msg;
-        msg << "Finger motion: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y;
-        Log::msg( msg.str().c_str() );
+	  //  std::stringstream msg;
+       // msg << "Finger motion: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y;
+       // Log::msg( msg.str().c_str() );
         //Log::msg("Finger motion %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
-        std::cout<<"Finger motion: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y<<"\n";
+       // std::cout<<"Finger motion: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y<<"\n";
 	}
 	 else if(event.type ==SDL_FINGERDOWN)
 	{
-	     std::stringstream msg;
-        msg << "Finger DOWN: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y;
-        Log::msg( msg.str().c_str() );
+	   //  std::stringstream msg;
+      //  msg << "Finger DOWN: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y;
+      //  Log::msg( msg.str().c_str() );
 
         //Log::msg("Finger DOWN %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
-        std::cout<<"Finger DOWN: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y<<"\n";
+      //  std::cout<<"Finger DOWN: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y<<"\n";
 	}
 	 else if(event.type ==SDL_FINGERUP)
 	{
-	     std::stringstream msg;
-        msg << "Finger UP %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y;
-        Log::msg( msg.str().c_str() );
+	  //   std::stringstream msg;
+      //  msg << "Finger UP %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y;
+      //  Log::msg( msg.str().c_str() );
 
         //Log::msg("Finger UP %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
-        std::cout<<"Finger UP: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y<<"\n";
+      //  std::cout<<"Finger UP: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y<<"\n";
 	}
     else if(event.type ==SDL_MULTIGESTURE)
 	{
-        Log::msg("Finger MULTY number of fingers: %u theta: %f Distance: %f, X: %f, Y: %f ",event.mgesture.numFingers, event.mgesture.dTheta, event.mgesture.dDist, event.mgesture.x, event.mgesture.y );
-        std::cout<<"Finger MULTY: number of fingers:"<<event.mgesture.numFingers<<" Theta: "<<event.mgesture.dTheta<<" Distance: "<<event.mgesture.dDist<<", x: "<<event.mgesture.x<<", y: "<<event.mgesture.y<<"\n";
+      //  Log::msg("Finger MULTY number of fingers: %u theta: %f Distance: %f, X: %f, Y: %f ",event.mgesture.numFingers, event.mgesture.dTheta, event.mgesture.dDist, event.mgesture.x, event.mgesture.y );
+     //   std::cout<<"Finger MULTY: number of fingers:"<<event.mgesture.numFingers<<" Theta: "<<event.mgesture.dTheta<<" Distance: "<<event.mgesture.dDist<<", x: "<<event.mgesture.x<<", y: "<<event.mgesture.y<<"\n";
 	}
 	else if(event.type ==SDL_TEXTINPUT)
 	{
