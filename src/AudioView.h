@@ -96,13 +96,15 @@ protected:
 	void mousePressEvent(Widgets::MouseEvent *event);
 	void mouseMotionEvent(Widgets::MouseEvent *event);
 	void mouseReleaseEvent(Widgets::MouseEvent *event);
+    void twoFingersPinchEvent(const  SDL_Event &event, int pinchDirection);
+
 
 	int determineThreshHover(int x, int y, int thresholdPos, int *yoffset);
 	int determineGainControlHover(int x, int y);
-    
+
     void setTimeScale(float newTimesScale);
     void mousePressEventFromAnalysisView(Widgets::MouseEvent *event);
-    
+
 private:
 	int _clickedGain;
 	float _prevGain;
@@ -137,11 +139,11 @@ private:
 	float thresholdPos();
 
 	void advance();
-    
-    
+
+
     void loadAndApplyAudioInputConfig();//load setings for zoom and timescale
     bool analysisViewIsActive = false;
-    
+
 
 };
 

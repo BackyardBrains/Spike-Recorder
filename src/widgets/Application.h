@@ -36,6 +36,8 @@ public:
 
 	static const BitmapFontGL *font();
 	static Application *getInstance();
+
+	bool areWeOnTouchscreen(){return _lastMouseClickWasOnTouchscreen;}
 protected:
 	void createWindow(int w, int h);
 private:
@@ -70,6 +72,13 @@ private:
 
 	std::string _windowTitle;
 
+    //used to keep track of multifingers gestures
+    SDL_Event _fingerMoveOne;
+    SDL_Event _fingerMoveTwo;
+    void keepTrackOfFingerMoves(const SDL_Event &event );
+    int twoFingersGestureDirection();
+    bool weAreInTwoFingersGesture = false; //true during 2 fingers gesture
+    bool _lastMouseClickWasOnTouchscreen = false; //useful to change UI when user uses touchscreen
 };
 
 } // namespace Widgets

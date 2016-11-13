@@ -317,6 +317,9 @@ void Widget::keyReleaseEvent(KeyboardEvent *event) {
 
 void Widget::keyDownEvent(const  SDL_Event &event){
 }
+    
+void Widget::twoFingersPinchEvent(const  SDL_Event &event, int pinchDirection){
+}
 
 Widget::WidgetVector &Widget::children() {
 	return _children;
