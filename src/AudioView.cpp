@@ -873,10 +873,10 @@ void AudioView::mousePressEventFromAnalysisView(Widgets::MouseEvent *event)
 
 void AudioView::twoFingersPinchEvent(const  SDL_Event &event, int pinchDirection)
 {
-    Log::msg("Audio view two finger");
+   // Log::msg("Audio view two finger");
     if(pinchDirection == 1)//vertical
     {
-        Log::msg("Audio view vertical");
+      //  Log::msg("Audio view vertical");
         float newGain = _channels[selectedChannel()].gain*(1.0f+event.mgesture.dDist*4.0f);
         _channels[selectedChannel()].setGain(newGain);
         _manager.saveGainForAudioInput(newGain);
@@ -1174,7 +1174,7 @@ void AudioView::mouseMotionEvent(Widgets::MouseEvent *event) {
 		float newGain = _prevGain*std::fabs((height()*_channels[_clickedGain].pos-event->pos().y)/(float)_clickedPixelOffset);
 		int doffset = (width()*_prevDragX-event->pos().x)/(float)scaleWidth()*_manager.sampleRate();
 		setOffset(_prevDragOffset+doffset);
-        Log::msg("Change offset %d", doffset);
+        //Log::msg("Change offset %d", doffset);
 
         //_channels[_clickedGain].setGain(newGain);
         //_manager.saveGainForAudioInput(newGain);

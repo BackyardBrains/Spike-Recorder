@@ -187,14 +187,14 @@ void Application::_HandleEvent(const void *eventRaw) {
     else if(event.type ==SDL_FINGERDOWN)
     {
 
-        Log::msg("Finger DOWN %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
+       // Log::msg("Finger DOWN %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
         keepTrackOfFingerMoves(event);
-        std::cout<<"Finger DOWN: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y<<"\n";
+       // std::cout<<"Finger DOWN: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y<<"\n";
     }
     else if(event.type ==SDL_FINGERUP)
     {
-        Log::msg("Finger UP %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
-        std::cout<<"Finger UP: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y<<"\n";
+       // Log::msg("Finger UP %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
+       // std::cout<<"Finger UP: "<<event.tfinger.fingerId<<", x: "<<event.tfinger.x<<", y: "<<event.tfinger.y<<"\n";
     }
     else if(event.type ==SDL_MULTIGESTURE)
     {
@@ -207,7 +207,7 @@ void Application::_HandleEvent(const void *eventRaw) {
             }
         }
        // Log::msg("Finger MULTY number of fingers: %u theta: %f Distance: %f, X: %f, Y: %f ",event.mgesture.numFingers, event.mgesture.dTheta, event.mgesture.dDist, event.mgesture.x, event.mgesture.y );
-        std::cout<<"Finger MULTY: number of fingers:"<<event.mgesture.numFingers<<" Theta: "<<event.mgesture.dTheta<<" Distance: "<<event.mgesture.dDist<<", x: "<<event.mgesture.x<<", y: "<<event.mgesture.y<<"\n";
+      //  std::cout<<"Finger MULTY: number of fingers:"<<event.mgesture.numFingers<<" Theta: "<<event.mgesture.dTheta<<" Distance: "<<event.mgesture.dDist<<", x: "<<event.mgesture.x<<", y: "<<event.mgesture.y<<"\n";
     }
 
 
@@ -229,14 +229,14 @@ void Application::_HandleEvent(const void *eventRaw) {
 		else if (event.type == SDL_MOUSEBUTTONDOWN)
         {
             _lastMouseClickWasOnTouchscreen = event.button.which == SDL_TOUCH_MOUSEID;
-            Log::msg("Mouse button down which: %d x: %f y: %f", event.button.which, event.button.x, event.button.y );
-            std::cout<<"MOUSE button DOWN which:"<<event.button.which<<" x: "<<event.button.x<<" ,y: "<<event.button.y<<"\n";
+          //  Log::msg("Mouse button down which: %d x: %f y: %f", event.button.which, event.button.x, event.button.y );
+          //  std::cout<<"MOUSE button DOWN which:"<<event.button.which<<" x: "<<event.button.x<<" ,y: "<<event.button.y<<"\n";
 			_buttonState |= ToMouseButtonFromSDL(event.button.button);
         }
 		else if (event.type == SDL_MOUSEWHEEL)
         {
             _lastMouseClickWasOnTouchscreen = event.button.which == SDL_TOUCH_MOUSEID;
-            Log::msg("Mouse wheel which: %d x: %f y: %f", event.wheel.which, event.wheel.x, event.wheel.y );
+          //  Log::msg("Mouse wheel which: %d x: %f y: %f", event.wheel.which, event.wheel.x, event.wheel.y );
 			/*if(event.wheel.y > 0)
 				_buttonState |= WheelUpButton;
 			if(event.wheel.y < 0)
@@ -245,35 +245,11 @@ void Application::_HandleEvent(const void *eventRaw) {
 		else // if (event.type == SDL_MOUSEBUTTONUP)
         {
             _lastMouseClickWasOnTouchscreen = event.button.which == SDL_TOUCH_MOUSEID;
-              Log::msg("Mouse button UP which: %d x: %f y: %f", event.button.which, event.button.x, event.button.y );
-            std::cout<<"MOUSE button UP which:"<<event.button.which<<" x: "<<event.button.x<<" ,y: "<<event.button.y<<"\n";
+           //   Log::msg("Mouse button UP which: %d x: %f y: %f", event.button.which, event.button.x, event.button.y );
+           // std::cout<<"MOUSE button UP which:"<<event.button.which<<" x: "<<event.button.x<<" ,y: "<<event.button.y<<"\n";
 
 			_buttonState &= ~ToMouseButtonFromSDL(event.button.button);
         }
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-       // _lastMouseClickWasOnTouchscreen = true;//debug purpose
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         
 		// TODO generate events if the event.motion.state magically changed things
 		// TODO keep track of the keyboard modifiers state
@@ -347,7 +323,7 @@ void Application::_HandleEvent(const void *eventRaw) {
                 {
                     //if this is from touch screen ignore it
                     //we will handle this sepparately
-                    Log::msg("We ignored mouse wheel event!");
+                   // Log::msg("We ignored mouse wheel event!");
                     return;
 
                 }
@@ -416,7 +392,7 @@ void Application::_HandleEvent(const void *eventRaw) {
 	{
         if(_widgetInFocus!=NULL)
         {
-            std::cout<<"----- Text: "<<event.edit.text<<"Start: "<<event.edit.start<<" Length "<<event.edit.length<<"\n";
+          //  std::cout<<"----- Text: "<<event.edit.text<<"Start: "<<event.edit.start<<" Length "<<event.edit.length<<"\n";
             _widgetInFocus->textInputEvent(event);
         }
 	}
@@ -424,7 +400,7 @@ void Application::_HandleEvent(const void *eventRaw) {
 	{
         if(_widgetInFocus!=NULL)
         {
-            std::cout<<"Text: "<<event.edit.text<<"Start: "<<event.edit.start<<" Length "<<event.edit.length<<"\n";
+           // std::cout<<"Text: "<<event.edit.text<<"Start: "<<event.edit.start<<" Length "<<event.edit.length<<"\n";
             _widgetInFocus->textEditingEvent(event);
         }
 	}
@@ -532,23 +508,23 @@ int Application::twoFingersGestureDirection()
         angle = (angle/M_PI)*180;
         if(angle<35)
         {
-            Log::msg("Angle %f, horizontal.", angle);
+            //Log::msg("Angle %f, horizontal.", angle);
             return -1;
         }
         else if(angle>55)
         {
-            Log::msg("Angle %f, vertical.", angle);
+           // Log::msg("Angle %f, vertical.", angle);
             return 1;
         }
         else
         {
-            Log::msg("Angle %f, neither vertical neither horizontal.", angle);
+           // Log::msg("Angle %f, neither vertical neither horizontal.", angle);
             return 0;
         }
     }
     else
     {
-        Log::msg("Angle vertical dx = 0");
+       // Log::msg("Angle vertical dx = 0");
         return 1;
     }
 }
@@ -558,14 +534,14 @@ void Application::createWindow(int w, int h) {
 
 	int rc = SDL_CreateWindowAndRenderer(w,h,SDL_WINDOW_RESIZABLE|SDL_WINDOW_OPENGL,&sdlWindow,&sdlRenderer);
 	if(rc < 0) {
-		Log::fatal("SDL failed to create window: %d",SDL_GetError());
+		//Log::fatal("SDL failed to create window: %d",SDL_GetError());
 	}
 
 	SDL_GL_SetSwapInterval(1);
 
 	sdlGLContext = SDL_GL_CreateContext(sdlWindow);
 	if(sdlGLContext == 0) {
-		Log::fatal("SDL failed to create GL context: %d",SDL_GetError());
+		//Log::fatal("SDL failed to create GL context: %d",SDL_GetError());
 	}
 	SDL_GetWindowSize(sdlWindow,&w,&h);
 
