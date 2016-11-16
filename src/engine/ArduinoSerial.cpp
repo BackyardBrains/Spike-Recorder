@@ -625,7 +625,7 @@ namespace BackyardBrains {
 
     int ArduinoSerial::maxSamplingRate()
     {
-        return 20000;
+        return 10000;
     }
 
     int ArduinoSerial::maxNumberOfChannels()
