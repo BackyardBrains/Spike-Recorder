@@ -168,7 +168,7 @@ bool RecordingManager::initHIDUSB()
     {
         bindVirtualDevice(i);
     }
-    
+
     setCalibrationCoeficient(0.005f);
 
     //_player.stop();
@@ -649,7 +649,7 @@ void RecordingManager::initRecordingDevices() {
     {
         saveInputConfigSettings();
     }
-    
+
     resetCalibrationCoeficient();
 
 	clear();
@@ -1531,10 +1531,7 @@ void RecordingManager::advanceHidMode(uint32_t samples)
             } else {
                 memset(buf, 0, samplesRead*sizeof(int16_t));
             }
-
             _player.push(buf, samplesRead*sizeof(int16_t));
-
-
         } else {
             _player.setPos(_pos, bytesPerSample, 1);
             //std::cout<<"\nSet position: "<<_pos;

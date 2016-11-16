@@ -368,14 +368,14 @@ namespace BackyardBrains {
                 //update head position after writting walue
                 //so that we always have whole frame when reading
                 ref->mainHead = indexOfHead;
-                int tempMainHead = mainHead;
-                if(tempMainHead>mainTail)
+                int tempMainHead2 = ref->mainHead;
+                if(tempMainHead2>mainTail)
                 {
-                    tempHeadAndTailDifference =(tempMainHead-mainTail)/_numberOfChannels;
+                    tempHeadAndTailDifference =(tempMainHead2-mainTail)/ref->numberOfChannels();
                 }
                 else
                 {
-                    tempHeadAndTailDifference = ((_numberOfChannels*SIZE_OF_MAIN_CIRCULAR_BUFFER-mainTail)+tempMainHead)/_numberOfChannels;
+                    tempHeadAndTailDifference = ((ref->numberOfChannels()*SIZE_OF_MAIN_CIRCULAR_BUFFER-mainTail)+tempMainHead2)/ref->numberOfChannels();
                 }
             }
         }
@@ -402,6 +402,7 @@ namespace BackyardBrains {
         }
         numberOfFrames = 0;
     }
+
 
 
     //
@@ -516,6 +517,7 @@ namespace BackyardBrains {
 
                         if(areWeAtTheEndOfFrame() || obufferIndex>1000)
                         {
+                         //   std::cout<<"We brake at areWeAtTheEndOfFrame!!!!\n";
                             break;
                         }
                         else
@@ -565,8 +567,9 @@ namespace BackyardBrains {
 
        if(mainTail>tempMainHead)
        {
+          // std::cout<<"Head: "<<tempMainHead<<" tail "<<mainTail<<"\n";
            memcpy ( obuffer, &mainCircularBuffer[mainTail], sizeof(int32_t)*(maxSamples-mainTail));
-           memcpy ( &obuffer[maxSamples-mainTail], mainCircularBuffer, sizeof(int16_t)*(tempMainHead));
+           memcpy ( &obuffer[maxSamples-mainTail], mainCircularBuffer, sizeof(int32_t)*(tempMainHead));
            frames = ((maxSamples-mainTail)+tempMainHead)/_numberOfChannels;
 
        }
