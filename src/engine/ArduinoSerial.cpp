@@ -294,7 +294,7 @@ namespace BackyardBrains {
 		memcpy(&port_cfg_orig, &port_cfg, sizeof(COMMCONFIG));
 	}
 	// http://msdn2.microsoft.com/en-us/library/aa363188(VS.85).aspx
-        port_cfg.dcb.BaudRate = 230400;
+        port_cfg.dcb.BaudRate = 230400; //for high speed 2Mbit/s communication just change this number to 2000000
 	port_cfg.dcb.fBinary = TRUE;
 	port_cfg.dcb.fParity = FALSE;
 	port_cfg.dcb.fOutxCtsFlow = FALSE;
