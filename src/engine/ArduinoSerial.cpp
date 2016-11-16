@@ -42,6 +42,9 @@
 #include <sys/select.h>
 #include <sys/time.h>
 #include <time.h>
+//used for patch for nonstandard bauds
+#define IOSSIOSPEED _IOW('T', 2, speed_t)
+
 
 #elif _WIN32
 #include <windows.h>
@@ -193,15 +196,55 @@ namespace BackyardBrains {
         // disable parity generation and 2 stop bits
         options.c_cflag &= ~(PARENB | CSTOPB);
 
-        //cfsetispeed(&options, B115200);
-        //cfsetospeed(&options, B115200);
-
+        
+        //traditional setup of baud rates
+        //------------------------ traditional setup of baud rates for Mac and Linux --------------
         cfsetispeed(&options, B230400);
         cfsetospeed(&options, B230400);
-
         // set the new port options
         tcsetattr(fd, TCSANOW, &options);
-#endif
+        //------------------------ traditional setup of baud rates for Mac and Linux --------------
+        
+        //--------------------------- Patch for Mac for nonstandard bauds --------------------------
+        /*speed_t speed = 2000000; // Set 2Mbaud
+        if (ioctl(fd, IOSSIOSPEED, &speed) == -1) {
+            std::cout<<"Error setting speed";
+        }*/
+        
+        
+        
+        /*
+         
+         Explanation from blog post:
+         http://stackoverflow.com/questions/9366249/boostasioserialport-alternative-that-supports-non-standard-baud-rates
+         
+         If you only want to use ioctl and termios you can do:
+         
+         #define IOSSIOSPEED _IOW('T', 2, speed_t)
+         int new_baud = static_cast<int> (baudrate_);
+         ioctl (fd_, IOSSIOSPEED, &new_baud, 1);
+         And it will let you set the baud rate to any value in OS X, but that is OS specific. for Linux you need to do:
+         
+         struct serial_struct ser;
+         ioctl (fd_, TIOCGSERIAL, &ser);
+         // set custom divisor
+         ser.custom_divisor = ser.baud_base / baudrate_;
+         // update flags
+         ser.flags &= ~ASYNC_SPD_MASK;
+         ser.flags |= ASYNC_SPD_CUST;
+         
+         if (ioctl (fd_, TIOCSSERIAL, ser) < 0)
+         {
+         // error
+         }
+         For any other OS your gonna have to go read some man pages or it might not even work at all, its very OS dependent.
+        
+        */
+        
+        
+        
+        //--------------------------- Patch for Mac for nonstandard bauds --------------------------
+        #endif
 
 #ifdef _WIN32
 
@@ -582,7 +625,7 @@ namespace BackyardBrains {
 
     int ArduinoSerial::maxSamplingRate()
     {
-        return 10000;
+        return 20000;
     }
 
     int ArduinoSerial::maxNumberOfChannels()
