@@ -1151,13 +1151,14 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
                         const int thresh = _virtualDevices[_selectedVDevice].threshold;
 
                         if(_triggers.empty() || i - _triggers.front() > _sampleRate/10) {
-                            if((thresh > 0 && s.at(i) > thresh) || (thresh <= 0 && s.at(i) < thresh)) {
+                            if((thresh > 0 && s.at(i) >= thresh && lastSampleForThreshold<thresh) || (thresh <= 0 && s.at(i) < thresh && lastSampleForThreshold> thresh)) {
                                 _triggers.push_front(i);
                                 triggerd = true;
                                 if(_triggers.size() > (unsigned int)_threshAvgCount)
                                     _triggers.pop_back();
                             }
                         }
+                        lastSampleForThreshold = s.at(i);//keep last sample
                     }
                 }
                 if(triggerd)
@@ -1304,12 +1305,13 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
                         const int thresh = _virtualDevices[_selectedVDevice].threshold;
 
                         if(_triggers.empty() || ntrigger - _triggers.front() > _sampleRate/10) {
-                            if((thresh > 0 && channels[chan][i] > thresh) || (thresh <= 0 && channels[chan][i] < thresh)) {
+                            if((thresh > 0 && channels[chan][i] >= thresh && lastSampleForThreshold< thresh) || (thresh <= 0 && channels[chan][i] < thresh && lastSampleForThreshold> thresh)) {
                                 _triggers.push_front(_pos + i);
                                 triggerd = true;
                                 if(_triggers.size() > (unsigned int)_threshAvgCount)//_threshAvgCount == 1
                                     _triggers.pop_back();
                             }
+                            lastSampleForThreshold = channels[chan][i];//keep last sample
                         }
                     }
                 }
@@ -1490,13 +1492,14 @@ void RecordingManager::advanceHidMode(uint32_t samples)
                         const int thresh = _virtualDevices[_selectedVDevice].threshold;
 
                         if(_triggers.empty() || ntrigger - _triggers.front() > _sampleRate/10) {
-                            if((thresh > 0 && channels[chan][i] > thresh) || (thresh <= 0 && channels[chan][i] < thresh)) {
+                            if((thresh > 0 && channels[chan][i] > thresh && lastSampleForThreshold < thresh) || (thresh <= 0 && channels[chan][i] < thresh && lastSampleForThreshold>thresh)) {
                                 _triggers.push_front(_pos + i);
                                 triggerd = true;
                                 if(_triggers.size() > (unsigned int)_threshAvgCount)//_threshAvgCount == 1
                                     _triggers.pop_back();
                             }
                         }
+                         lastSampleForThreshold = channels[chan][i];//keep last sample
                     }
                 }
             }
@@ -1686,13 +1689,14 @@ void RecordingManager::advance(uint32_t samples) {
 
 
 						if(_triggers.empty() || ntrigger - _triggers.front() > _sampleRate/10) {
-							if((thresh > 0 && channels[chan][i] > thresh) || (thresh <= 0 && channels[chan][i] < thresh)) {
+							if((thresh > 0 && channels[chan][i] > thresh && lastSampleForThreshold<thresh) || (thresh <= 0 && channels[chan][i] < thresh && lastSampleForThreshold>thresh)) {
 								_triggers.push_front(oldPos + i);
 								triggerd = true;
 								if(_triggers.size() > (unsigned int)_threshAvgCount)
 									_triggers.pop_back();
 							}
 						}
+                        lastSampleForThreshold = channels[chan][i];
 					}
 				}
 			}

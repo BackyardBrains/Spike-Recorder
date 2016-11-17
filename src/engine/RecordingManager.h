@@ -103,6 +103,7 @@ public:
 	int selectedVDevice() const {return _selectedVDevice;}
     int getThresholdSource();
     void setThresholdSource(int newThresholdSource);
+    
 
 
 	std::vector<SpikeTrain> &spikeTrains() { return _spikeTrains; }
@@ -306,6 +307,9 @@ private:
 	Player _player;
 
 	int _thresholdSource = 0;//signal is the default one (1,2,3,4 ... are events)
+    ///used to keep last sample for threshold so that we can detect crossing of
+    //threshold
+    int lastSampleForThreshold = 0;
 
 	int _serialPortIndex;
 	ArduinoSerial _arduinoSerial;
