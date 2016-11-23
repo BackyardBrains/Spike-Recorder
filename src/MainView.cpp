@@ -102,16 +102,16 @@ MainView::MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder
 	_pauseButton->setHoverTex(Widgets::TextureGL::get("data/pausehigh.bmp"));
 	_pauseButton->setSizeHint(Widgets::Size(64,64));
 
-    
+
     _alphaFeedbackButton = new Widgets::PushButton(this);
     _alphaFeedbackButton->setNormalTex(Widgets::TextureGL::get("data/speakeroff.bmp"));
     _alphaFeedbackButton->setSizeHint(Widgets::Size(50,50));
     _alphaFeedbackButton->clicked.connect(this, &MainView::alphaFeedbackPressed);
     _alphaFeedbackButton->setVisible(false);
      alphaFeedbackAcive = false;
-    
-    
-    
+
+
+
 	Widgets::PushButton * const backwardButton = new Widgets::PushButton(this);
 	backwardButton->setNormalTex(Widgets::TextureGL::get("data/backward.bmp"));
 	backwardButton->setHoverTex(Widgets::TextureGL::get("data/backwardhigh.bmp"));
@@ -224,7 +224,7 @@ void MainView::pausePressed() {
 void MainView::ekgPressed() {
 }
 
-    
+
 void MainView::alphaFeedbackPressed()
 {
     if(alphaFeedbackAcive)
@@ -259,8 +259,8 @@ void MainView::backwardPressed() {
     if(_manager.paused())
         pausePressed();
 }
-    
-    
+
+
 void MainView::threshPressed() {
 	if(!_manager.threshMode()) {
 
@@ -403,12 +403,15 @@ void MainView::filePressed() {
 void MainView::configPressed() {
 
 
-
+    Log::msg("Config pressed, refresh serial port...");
     _manager.refreshSerialPorts();
+    Log::msg("Create config view...");
 	ConfigView *c = new ConfigView(_manager, *_audioView);
+	Log::msg("Set mouse track...");
 	c->setMouseTracking(true);
 	c->setDeleteOnClose(true);
 	c->setGeometry(rect());
+	Log::msg("Add Config Window...");
 	Widgets::Application::getInstance()->addWindow(c);
 
 
@@ -615,7 +618,7 @@ void MainView::paintEvent()
         {
             _manager.alphaWavePower = _anaman.fft.lowPassAlphaWaves;
             _manager.turnAlphaFeedbackON();
-        
+
         }
         else
         {
@@ -627,7 +630,7 @@ void MainView::paintEvent()
         _manager.turnAlphaFeedbackOFF();
         _alphaFeedbackButton->setVisible(false);
     }
-  
+
     if(_manager.hidMode())
     {
         _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.bmp"));
@@ -698,7 +701,7 @@ void MainView::keyPressEvent(Widgets::KeyboardEvent *e) {
                 {
                     backwardPressed();
                 }
-                
+
             }
         }
     }

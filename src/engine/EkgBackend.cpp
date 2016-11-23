@@ -23,7 +23,7 @@ void EkgBackend::beat() {
 	// Using SDL_GetTicks is dirty, but I don’t know if RecordingManager positions are reliable for this.
 	unsigned int time = SDL_GetTicks();
 	float nfreq = 1000.f/(time-_lastTime);
-	_frequency += 0.3*(nfreq-_frequency); // exponential moving average. this may need tweaking
+	_frequency = nfreq;//0.3*(nfreq-_frequency); // exponential moving average. this may need tweaking
 	_lastTime = time;
 }
 
