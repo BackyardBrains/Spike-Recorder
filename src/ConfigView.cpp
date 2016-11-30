@@ -3,7 +3,7 @@
 #include "engine/BASSErrors.h"
 #include "widgets/Painter.h"
 #include "widgets/Color.h"
-#include "widgets/BoxLayout.h"
+
 #include "widgets/PushButton.h"
 #include "widgets/TextureGL.h"
 #include "widgets/Application.h"
@@ -24,7 +24,18 @@
 namespace BackyardBrains {
 
 ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *parent) : Widget(parent), _manager(mngr), _audioView(audioView) {
-    Log::msg("Create close button...");
+    SetupScreen();
+}
+
+//----------------------------------- START OF CONFIG ----------------------------------------------
+//--------------------------------------------------------------------------------------------------
+
+void ConfigView::SetupScreen()
+{
+    //weAreOnTouchScreen = Widgets::Application::getInstance()->areWeOnTouchscreen();
+
+
+        Log::msg("Create close button...");
 	Widgets::PushButton *closeButton = new Widgets::PushButton(this);
 	closeButton->clicked.connect(this, &ConfigView::closePressed);
 	closeButton->setNormalTex(Widgets::TextureGL::get("data/configcrossed.bmp"));
@@ -63,7 +74,16 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 			_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
 		else
 			_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
-		_muteCKBox->setSizeHint(Widgets::Size(19,19));
+
+        if(weAreOnTouchScreen)
+        {
+            _muteCKBox->setSizeHint(Widgets::Size(40,40));
+        }
+        else
+        {
+            _muteCKBox->setSizeHint(Widgets::Size(19,19));
+        }
+
 		_muteCKBox->clicked.connect(this, &ConfigView::mutePressed);
         Log::msg("Add mute label to box");
 		mutehbox->addWidget(muteLabel);
@@ -257,10 +277,10 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 	}
 
     Log::msg("Set selection");
-	for(int i = 0; i < audioView.channelCount(); i++)
+	for(int i = 0; i < _audioView.channelCount(); i++)
     {
         Log::msg("Set selection n");
-        _clrs[audioView.channelVirtualDevice(i)]->setSelection(audioView.channelColor(i));
+        _clrs[_audioView.channelVirtualDevice(i)]->setSelection(_audioView.channelColor(i));
     }
 
 
@@ -527,7 +547,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 	gvbox->update();
 
     Log::msg("Create vbox and hbox");
-	Widgets::BoxLayout *vbox = new Widgets::BoxLayout(Widgets::Vertical, this);
+	vbox = new Widgets::BoxLayout(Widgets::Vertical, this);
 	Widgets::BoxLayout *hbox = new Widgets::BoxLayout(Widgets::Horizontal);
 	hbox->addSpacing(10);
 	Log::msg("Add close button");
@@ -543,8 +563,11 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 	vbox->addWidget(group, Widgets::AlignCenter);
 
 	vbox->update();
+
     Log::msg("End function");
 }
+//----------------------------------- END OF CONFIG ------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 void ConfigView::paintEvent() {
 	Widgets::Color bg = Widgets::Colors::background;
@@ -760,6 +783,11 @@ void ConfigView::highFilterTIValueChanged(std::string newString)
 // Enable/disable 50Hz filter checkbox pressed
 //
 void ConfigView::fiftyHzPressed() {
+
+    weAreOnTouchScreen = !weAreOnTouchScreen;
+    vbox->removeAll();
+    SetupScreen();
+
     Log::msg("fiftyHzPressed");
     if(_manager.fiftyHzFilterEnabled())
     {

@@ -29,6 +29,7 @@ public:
 	Size sizeHint() const;
 
 	void update();
+	void removeAll();
 
 	void clear();
 private:

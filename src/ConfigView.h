@@ -6,6 +6,7 @@
 #include "DropDownList.h"
 #include "widgets/RangeSelector.h"
 #include "widgets/TextInput.h"
+#include "widgets/BoxLayout.h"
 
 #if defined(_WIN32)
     #include "BYBFirmwareVO.h"
@@ -53,7 +54,8 @@ private:
     Widgets::TextInput * lowValueTI;
     Widgets::TextInput * highValueTI;
     Widgets::RangeSelector *rangeSelector;
-
+    Widgets::BoxLayout *vbox;
+    bool weAreOnTouchScreen = false;
 	std::vector<SignalCatcher> _catchers;
 	std::vector<ColorDropDownList *> _clrs;
 
@@ -81,7 +83,7 @@ private:
         void hidConnectPressed();
     #endif
 
-
+    void SetupScreen();
 	void paintEvent();
 
     void connectPressed();

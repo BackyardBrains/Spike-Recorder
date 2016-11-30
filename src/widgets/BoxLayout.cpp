@@ -15,6 +15,10 @@ BoxLayout::~BoxLayout()
 	{
 		LayoutItem * const item = _items.back();
 		_items.pop_back();
+		if(item->widget())
+        {
+            delete item->widget();
+        }
 		item->setParentItem(NULL);
 		delete item;
 	}
@@ -113,6 +117,18 @@ Size BoxLayout::sizeHint() const
 	return _overallHint;
 }
 
+
+void BoxLayout::removeAll()
+{
+    while (!_items.empty())
+	{
+		LayoutItem * const item = _items.back();
+		_items.pop_back();
+		item->setParentItem(NULL);
+		delete item;
+	}
+}
+
 void BoxLayout::update()
 {
 	static int level = 0;
@@ -129,8 +145,8 @@ void BoxLayout::update()
 	{
 		if ((*it)->layout())
 			(*it)->layout()->update();
-    
-        
+
+
 		expdir |= (*it)->expandingDirections();
 		const Size minS = (*it)->minimumSize();
 		const Size maxS = (*it)->maximumSize();
