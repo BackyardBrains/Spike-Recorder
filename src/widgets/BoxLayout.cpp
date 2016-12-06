@@ -124,6 +124,10 @@ void BoxLayout::removeAll()
 	{
 		LayoutItem * const item = _items.back();
 		_items.pop_back();
+        if(item->widget())
+        {
+            delete item->widget();
+        }
 		item->setParentItem(NULL);
 		delete item;
 	}

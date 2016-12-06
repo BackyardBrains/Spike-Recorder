@@ -10,7 +10,7 @@ namespace Widgets  {
         class RangeSelector : public Widget
         {
             public:
-                RangeSelector( Widget *parent = NULL);
+                RangeSelector( Widget *parent = NULL, int heightOfComponent = 40);
                 ~RangeSelector();
 
                 int minimum() const;
@@ -51,8 +51,6 @@ namespace Widgets  {
                 Rect _HighSliderRect() const;
                 Rect _LowSliderRect() const;
 
-                TextInput * lowValueTI;
-                TextInput * highValueTI;
 
                 int _highSliderClickedPixelOffset;
                 int _highDraggingSliderOffset;
@@ -67,6 +65,8 @@ namespace Widgets  {
 
                 ClickArea _clickState;
                 int _ValueToSliderOffset(int val) const;
+                int baseHeight = 20;//half the height of component (height of slider)
+                int sliderMinSize = 8;//width of dragging pins (depends on heightOfComponent)
 
         };
 

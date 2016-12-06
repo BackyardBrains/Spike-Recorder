@@ -11,6 +11,9 @@
 		1C7EA2531D380C0200D5FCD7 /* libbass.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C7EA2521D380C0200D5FCD7 /* libbass.dylib */; };
 		1C7EA2541D380C0800D5FCD7 /* libbass.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1C7EA2521D380C0200D5FCD7 /* libbass.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		1C7EA2551D380C0C00D5FCD7 /* libbass.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1C7EA2521D380C0200D5FCD7 /* libbass.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		1CC7E1F81DF1C1E100841669 /* HorizontalColorPicker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CC7E1F61DF1C1E100841669 /* HorizontalColorPicker.cpp */; };
+		1CC7E1FB1DF2CB9100841669 /* TouchDropDownList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CC7E1F91DF2CB9100841669 /* TouchDropDownList.cpp */; };
+		1CC7E1FE1DF7089500841669 /* HorizontalNumberPicker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CC7E1FC1DF7089500841669 /* HorizontalNumberPicker.cpp */; };
 		240506621CCBEC6A00E8FCEE /* CalibrationWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 240506601CCBEC6A00E8FCEE /* CalibrationWindow.cpp */; };
 		24079F321AB0CBE700820291 /* icon_128x128.png in Resources */ = {isa = PBXBuildFile; fileRef = 24079F281AB0CBE700820291 /* icon_128x128.png */; };
 		24079F331AB0CBE700820291 /* icon_128x128@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 24079F291AB0CBE700820291 /* icon_128x128@2x.png */; };
@@ -122,6 +125,12 @@
 		1C11473D1D8EE07500BDA6DA /* AudioInputConfig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioInputConfig.cpp; sourceTree = "<group>"; };
 		1C11473E1D8EE07500BDA6DA /* AudioInputConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioInputConfig.h; sourceTree = "<group>"; };
 		1C7EA2521D380C0200D5FCD7 /* libbass.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libbass.dylib; sourceTree = "<group>"; };
+		1CC7E1F61DF1C1E100841669 /* HorizontalColorPicker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HorizontalColorPicker.cpp; sourceTree = "<group>"; };
+		1CC7E1F71DF1C1E100841669 /* HorizontalColorPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HorizontalColorPicker.h; sourceTree = "<group>"; };
+		1CC7E1F91DF2CB9100841669 /* TouchDropDownList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TouchDropDownList.cpp; path = src/widgets/TouchDropDownList.cpp; sourceTree = SOURCE_ROOT; };
+		1CC7E1FA1DF2CB9100841669 /* TouchDropDownList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TouchDropDownList.h; path = src/widgets/TouchDropDownList.h; sourceTree = SOURCE_ROOT; };
+		1CC7E1FC1DF7089500841669 /* HorizontalNumberPicker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HorizontalNumberPicker.cpp; sourceTree = "<group>"; };
+		1CC7E1FD1DF7089500841669 /* HorizontalNumberPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HorizontalNumberPicker.h; sourceTree = "<group>"; };
 		240506601CCBEC6A00E8FCEE /* CalibrationWindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CalibrationWindow.cpp; path = src/CalibrationWindow.cpp; sourceTree = SOURCE_ROOT; };
 		240506611CCBEC6A00E8FCEE /* CalibrationWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CalibrationWindow.h; path = src/CalibrationWindow.h; sourceTree = SOURCE_ROOT; };
 		24079F281AB0CBE700820291 /* icon_128x128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_128x128.png; sourceTree = "<group>"; };
@@ -563,6 +572,8 @@
 		248E58B41AAE19570011707F /* widgets */ = {
 			isa = PBXGroup;
 			children = (
+				1CC7E1F61DF1C1E100841669 /* HorizontalColorPicker.cpp */,
+				1CC7E1F71DF1C1E100841669 /* HorizontalColorPicker.h */,
 				24E3E9141CB80A8000267CF3 /* TextInput.cpp */,
 				24E3E9151CB80A8000267CF3 /* TextInput.h */,
 				245BF6FE1CAAA06E004BEA8C /* RangeSelector.cpp */,
@@ -589,6 +600,8 @@
 				248E58C81AAE19570011707F /* LayoutItem.h */,
 				248E58C91AAE19570011707F /* LoadTexture.cpp */,
 				248E58CA1AAE19570011707F /* LoadTexture.h */,
+				1CC7E1F91DF2CB9100841669 /* TouchDropDownList.cpp */,
+				1CC7E1FA1DF2CB9100841669 /* TouchDropDownList.h */,
 				248E58CB1AAE19570011707F /* native */,
 				248E58D11AAE19570011707F /* Painter.cpp */,
 				248E58D21AAE19570011707F /* Painter.h */,
@@ -611,6 +624,8 @@
 				248E58DF1AAE19570011707F /* util.h */,
 				248E58E01AAE19570011707F /* Widget.cpp */,
 				248E58E11AAE19570011707F /* Widget.h */,
+				1CC7E1FC1DF7089500841669 /* HorizontalNumberPicker.cpp */,
+				1CC7E1FD1DF7089500841669 /* HorizontalNumberPicker.h */,
 			);
 			name = widgets;
 			path = src/widgets;
@@ -758,6 +773,7 @@
 				248E58E31AAE19570011707F /* AnalysisView.cpp in Sources */,
 				248E59021AAE19570011707F /* PushButton.cpp in Sources */,
 				248E58E81AAE19570011707F /* FileRecorder.cpp in Sources */,
+				1CC7E1FE1DF7089500841669 /* HorizontalNumberPicker.cpp in Sources */,
 				248E58FB1AAE19570011707F /* LayoutItem.cpp in Sources */,
 				248E58F61AAE19570011707F /* BoxLayout.cpp in Sources */,
 				248E58EC1AAE19570011707F /* FFTView.cpp in Sources */,
@@ -765,6 +781,7 @@
 				248E58E21AAE19570011707F /* AnalysisAudioView.cpp in Sources */,
 				24D572A41C8772E5007F4DEB /* EkgBackend.cpp in Sources */,
 				248E58E91AAE19570011707F /* Player.cpp in Sources */,
+				1CC7E1FB1DF2CB9100841669 /* TouchDropDownList.cpp in Sources */,
 				248E58E41AAE19570011707F /* AudioView.cpp in Sources */,
 				248E58F71AAE19570011707F /* DropDownList.cpp in Sources */,
 				248E58E51AAE19570011707F /* ColorDropDownList.cpp in Sources */,
@@ -773,6 +790,7 @@
 				248E58EE1AAE19570011707F /* main.cpp in Sources */,
 				24E8E6EB1BD95DD9003386A6 /* tinyxml2.cpp in Sources */,
 				248E58FC1AAE19570011707F /* LoadTexture.cpp in Sources */,
+				1CC7E1F81DF1C1E100841669 /* HorizontalColorPicker.cpp in Sources */,
 				248E58E61AAE19570011707F /* ConfigView.cpp in Sources */,
 				1C11473F1D8EE07500BDA6DA /* AudioInputConfig.cpp in Sources */,
 				2421F09C1ACFDF5100927F19 /* Plot.cpp in Sources */,

@@ -602,6 +602,13 @@ void Application::createWindow(int w, int h) {
 
 }
 
+void Application::getWindowSize(int *w, int *h)
+{
+    SDL_GetWindowSize(sdlWindow,w,h);
+
+}
+    
+    
 void Application::_SetHoverWidget(Widget *widget) {
 	if (widget != _hoverWidget) {
 		if (_hoverWidget)

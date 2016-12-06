@@ -7,6 +7,8 @@
 #include "widgets/RangeSelector.h"
 #include "widgets/TextInput.h"
 #include "widgets/BoxLayout.h"
+#include "HorizontalColorPicker.h"
+#include "TouchDropDownList.h"
 
 #if defined(_WIN32)
     #include "BYBFirmwareVO.h"
@@ -21,6 +23,7 @@ namespace Widgets {
 class RecordingManager;
 class AudioView;
 class ColorDropDownList;
+class HorizontalColorPicker;
 
 class ConfigView : public Widgets::Widget {
 public:
@@ -43,6 +46,10 @@ private:
         void setNumOfChannelsHandler(int selectionNum) {
             _parent->setSerialNumberOfChannels(selectionNum+1);
         }
+        
+        void setNumOfChannelsForTouchHandler(int selectionNum) {
+            _parent->setSerialNumberOfChannels(selectionNum);
+        }
 	private:
 		int _virtualDevice;
 		ConfigView *_parent;
@@ -55,10 +62,12 @@ private:
     Widgets::TextInput * highValueTI;
     Widgets::RangeSelector *rangeSelector;
     Widgets::BoxLayout *vbox;
-    bool weAreOnTouchScreen = false;
+    Widgets::BoxLayout *gvbox;
+    
 	std::vector<SignalCatcher> _catchers;
 	std::vector<ColorDropDownList *> _clrs;
-
+    std::vector<HorizontalColorPicker *> _hclrs;
+    
 	void colorChanged(int virtualDevice, int coloridx);
     void serialPortChanged(int virtualDevice, int portidx);
     void setSerialNumberOfChannels(int numberOfChannels);
@@ -66,6 +75,7 @@ private:
 	RecordingManager &_manager;
 	AudioView &_audioView;
     DropDownList *serialPortWidget;
+    TouchDropDownList * touchSerialPortWidget;
     DropDownList * numberOfChannelsWidget;
     Widgets::PushButton *_connectButton;
 
@@ -84,6 +94,11 @@ private:
     #endif
 
     void SetupScreen();
+    void cleanWholeScreenAndResetup();
+    bool weAreOnTouchScreen = false;
+    bool changeScreenType = false;
+    
+    
 	void paintEvent();
 
     void connectPressed();

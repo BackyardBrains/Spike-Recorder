@@ -12,9 +12,10 @@ static const int INITIAL_HEIGHT = 20;
 static const int MINIMAL_WIDTH = 20;
 static const uint64_t CURSOR_TIMER_PERIOD_MS = 700;
 
-TextInput::TextInput(Widget *parent,int initialWidth) : Widget(parent)
+TextInput::TextInput(Widget *parent,int initialWidth, int initialHeight) : Widget(parent)
 {
     //int initialWidth = 200;
+    _initialHeight = initialHeight;
     enableFocus();
     _cursor = 0;
     _textSelected = false;
@@ -28,7 +29,13 @@ TextInput::TextInput(Widget *parent,int initialWidth) : Widget(parent)
     {
         initialWidth = MINIMAL_WIDTH;
     }
-    setSizeHint(Size(initialWidth, INITIAL_HEIGHT));
+    
+    if(_initialHeight<INITIAL_HEIGHT)
+    {
+        _initialHeight = INITIAL_HEIGHT;
+    }
+    
+    setSizeHint(Size(initialWidth, _initialHeight));
 }
 
 TextInput::~TextInput()
@@ -74,7 +81,7 @@ void TextInput::paintEvent()
     if(_textSelected && hasFocus())
     {
         Widgets::Painter::setColor(Widgets::Colors::selectedstate);
-		drawtextbgbox(titles.str(), 4, 4, Widgets::AlignLeft);
+		drawtextbgbox(titles.str(), 4, _initialHeight/2 - Widgets::Application::font()->characterHeight()/2+1, Widgets::AlignLeft);
 		Widgets::Painter::setColor(Widgets::Colors::black);
     }
     else
@@ -85,7 +92,7 @@ void TextInput::paintEvent()
     if(lengthToShow>0)
     {
 
-        Widgets::Application::font()->draw(cstr,4, 4, AlignLeft);
+        Widgets::Application::font()->draw(cstr,4, _initialHeight/2 - Widgets::Application::font()->characterHeight()/2+1, AlignLeft);
     }
 
     if(hasFocus())
@@ -102,7 +109,7 @@ void TextInput::drawCursor()
     if( SDL_GetTicks()-_cursorTimerMs<CURSOR_TIMER_PERIOD_MS)
     {
         Widgets::Painter::setColor(Widgets::Colors::white);
-        Widgets::Painter::drawRect(Widgets::Rect(w+4, 4, 1, Widgets::Application::font()->characterHeight()));
+        Widgets::Painter::drawRect(Widgets::Rect(w+4, _initialHeight/2 - Widgets::Application::font()->characterHeight()/2 +1, 1, Widgets::Application::font()->characterHeight()));
     }
      if( SDL_GetTicks()-_cursorTimerMs>2*CURSOR_TIMER_PERIOD_MS)
      {

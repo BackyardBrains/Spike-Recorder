@@ -38,6 +38,7 @@ public:
 	static Application *getInstance();
 
 	bool areWeOnTouchscreen(){return _lastMouseClickWasOnTouchscreen;}
+    void getWindowSize(int *w, int *h);
 protected:
 	void createWindow(int w, int h);
 private:

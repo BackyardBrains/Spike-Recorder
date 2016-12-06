@@ -10,7 +10,7 @@ namespace Widgets {
     class TextInput : public Widget
     {
         public:
-            TextInput( Widget *parent = NULL,int initialWidth = 200);
+            TextInput( Widget *parent = NULL,int initialWidth = 200, int initialHeight = 20);
             virtual ~TextInput();
 
             bool selected(){return _selected;}
@@ -47,6 +47,8 @@ namespace Widgets {
 
             void drawtextbgbox(const std::string &s, int x, int y, Widgets::Alignment a);
             void drawCursor();
+        
+            int _initialHeight = 20;
         private:
     };
 

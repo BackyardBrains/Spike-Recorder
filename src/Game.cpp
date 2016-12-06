@@ -67,7 +67,15 @@ void Game::loadResources() {
 	Widgets::TextureGL::load("data/plotviewdown.bmp");
 	Widgets::TextureGL::load("data/plotviewdownhigh.bmp");
 	Widgets::TextureGL::load("data/disconnected.bmp");
-	Widgets::TextureGL::load("data/connected.bmp");
+	Widgets::TextureGL::load("data/connected-high.bmp");
+    Widgets::TextureGL::load("data/disconnected-high.bmp");
+    Widgets::TextureGL::load("data/connected.bmp");
+    
+    Widgets::TextureGL::load("data/bdisconnected.bmp");
+    Widgets::TextureGL::load("data/bconnected-high.bmp");
+    Widgets::TextureGL::load("data/bdisconnected-high.bmp");
+    Widgets::TextureGL::load("data/bconnected.bmp");
+    
     Widgets::TextureGL::load("data/usbcon.bmp");
     Widgets::TextureGL::load("data/usbconhigh.bmp");
     Widgets::TextureGL::load("data/usbdiscon.bmp");
