@@ -19,8 +19,8 @@
 #include <bass.h>
 #include <sstream>
 #include "CalibrationWindow.h"
-#include "HorizontalColorPicker.h"
-#include "HorizontalNumberPicker.h"
+#include "widgets/HorizontalColorPicker.h"
+#include "widgets/HorizontalNumberPicker.h"
 
 
 namespace BackyardBrains {
@@ -34,7 +34,7 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 
 void ConfigView::SetupScreen()
 {
-    //weAreOnTouchScreen = Widgets::Application::getInstance()->areWeOnTouchscreen();
+    weAreOnTouchScreen = Widgets::Application::getInstance()->areWeOnTouchscreen();
 
 
         Log::msg("Create close button...");
@@ -50,7 +50,7 @@ void ConfigView::SetupScreen()
     Log::msg("Make colors");
 	std::vector<Widgets::Color> c(AudioView::COLORS, AudioView::COLORS+AudioView::COLOR_NUM);
 	Log::msg("Access virtual devices");
-    
+
     if(weAreOnTouchScreen)
     {
         _hclrs.resize(_manager.virtualDevices().size());
@@ -68,13 +68,13 @@ void ConfigView::SetupScreen()
 	gvbox = new Widgets::BoxLayout(Widgets::Vertical, group);
 
 
-    
+
     int chckBoxSize = 19;
     if(weAreOnTouchScreen)
     {
         chckBoxSize = 40;
     }
-    
+
 
     //-------------- Mute check box ----------------------------------------
 
@@ -93,9 +93,9 @@ void ConfigView::SetupScreen()
 		else
 			_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
 
-       
+
         _muteCKBox->setSizeHint(Widgets::Size(chckBoxSize,chckBoxSize));
-        
+
 
 		_muteCKBox->clicked.connect(this, &ConfigView::mutePressed);
         Log::msg("Add mute label to box");
@@ -139,13 +139,13 @@ void ConfigView::SetupScreen()
 		filterMainLabel->updateSize();
 
         Log::msg("Create text inputs");
-        
+
         int heightOfTextInput = 20;
         if(weAreOnTouchScreen)
         {
             heightOfTextInput= 30;
         }
-        
+
         lowValueTI = new Widgets::TextInput(group, 50, heightOfTextInput);
         lowValueTI->textEditingEnded.connect(this, &ConfigView::lowFilterTIValueChanged);
         highValueTI = new Widgets::TextInput(group, 50, heightOfTextInput);
@@ -279,15 +279,15 @@ void ConfigView::SetupScreen()
 
     //----------- Color chooser for channels --------------------------------
 
-    
+
     if(weAreOnTouchScreen)
     {
         Log::msg("Color chooser start -------");
         for(unsigned int i = 0; i < _manager.virtualDevices().size(); i++) {
             Log::msg("Create dropdown");
             _hclrs[i] = new HorizontalColorPicker(group);
-            
-            
+
+
             _hclrs[i]->setContent(c);
             Log::msg("Signal catcher");
             _catchers.push_back(SignalCatcher(i, this));
@@ -313,11 +313,11 @@ void ConfigView::SetupScreen()
         Log::msg("Color chooser start -------");
         for(unsigned int i = 0; i < _manager.virtualDevices().size(); i++) {
             Log::msg("Create dropdown");
-            
-            
+
+
             _clrs[i] = new ColorDropDownList(group);
-            
-            
+
+
             _clrs[i]->setContent(c);
             Log::msg("Signal catcher");
             _catchers.push_back(SignalCatcher(i, this));
@@ -338,7 +338,7 @@ void ConfigView::SetupScreen()
         }
     }
 
-    
+
     Log::msg("Set selection");
 	for(int i = 0; i < _audioView.channelCount(); i++)
     {
@@ -371,7 +371,7 @@ void ConfigView::SetupScreen()
         {
             name2->setText("Select port:");
         }
-        
+
         name2->updateSize();
         Log::msg("Add widget label");
         gvbox->addSpacing(0);
@@ -383,37 +383,37 @@ void ConfigView::SetupScreen()
         Log::msg("Create box layout");
         Widgets::BoxLayout *serialHbox = new Widgets::BoxLayout(Widgets::Horizontal);
         Log::msg("Create dropdown");
-        
-        
-        
+
+
+
         if(weAreOnTouchScreen)
         {
             touchSerialPortWidget = new TouchDropDownList(group);
-            
+
             touchSerialPortWidget->clear();
-            
+
             std::list<std::string> sps =  _manager.serailPortsList();
             std::list<std::string>::iterator it;
-            
+
             for(it = sps.begin();it!=sps.end();it++)
             {
-                
+
                 touchSerialPortWidget->addItem(it->c_str());
             }
-           
+
             touchSerialPortWidget->setSelection(_manager.serialPortIndex());
             _catchers.push_back(SignalCatcher(_catchers.size(), this));
-            
+
             touchSerialPortWidget->indexChanged.connect(&_catchers[_catchers.size()-1], &SignalCatcher::catchPort);
-            
+
             touchSerialPortWidget->setDisabled(_manager.serialMode());
-            
+
             serialHbox->addWidget(touchSerialPortWidget,Widgets::AlignVCenter);
             serialHbox->addSpacing(5);
         }
         else
         {
-        
+
             serialPortWidget = new DropDownList(group);
             Log::msg("Clear serial");
             serialPortWidget->clear();
@@ -437,8 +437,8 @@ void ConfigView::SetupScreen()
             serialHbox->addWidget(serialPortWidget, Widgets::AlignVCenter);
 
             serialHbox->addSpacing(5);
-            
-            
+
+
         }
 
 
@@ -474,7 +474,7 @@ void ConfigView::SetupScreen()
             }
         }
         Log::msg("Set size for button");
-        
+
         if(weAreOnTouchScreen)
         {
             _connectButton->setSizeHint(Widgets::Size(100,40));
@@ -484,8 +484,8 @@ void ConfigView::SetupScreen()
             _connectButton->setSizeHint(Widgets::Size(100,32));
            // _connectButton->setSizeHint(Widgets::Size(80,40));
         }
-        
-        
+
+
         Log::msg("Add button to serial H box");
         serialHbox->addWidget(_connectButton, Widgets::AlignVCenter);
         serialHbox->update();
@@ -513,7 +513,7 @@ void ConfigView::SetupScreen()
                 {
                     numChannelsLabel->setText("Number of channels:");
                 }
-            
+
                 numChannelsLabel->updateSize();
                 Log::msg("Add label to box");
                 numberOfChannelsHbox->addWidget(numChannelsLabel, Widgets::AlignVCenter);
@@ -521,13 +521,13 @@ void ConfigView::SetupScreen()
 
                 if(weAreOnTouchScreen)
                 {
-                    
+
                     HorizontalNumberPicker * horizontalNumberPicker = new HorizontalNumberPicker(group);
                     horizontalNumberPicker->setLimits(1, 6);
                     horizontalNumberPicker->setSelection(_manager.numberOfSerialChannels());
-                    
+
                     _catchers.push_back(SignalCatcher(_catchers.size(), this));
-  
+
                     horizontalNumberPicker->selectionChanged.connect(&_catchers[_catchers.size()-1], &SignalCatcher::setNumOfChannelsForTouchHandler);
                     //horizontalNumberPicker->setDisabled(!_manager.serialMode());
                     numberOfChannelsHbox->addWidget(horizontalNumberPicker);
@@ -634,44 +634,56 @@ void ConfigView::SetupScreen()
                     {
                         //Add dropbox
                         Log::msg("Firmware available add dropbox");
-                        firmwaresWidget = new DropDownList(group,400,30);
-                        firmwaresWidget->clear();
-                        Log::msg("Get list");
-                        std::list<BYBFirmwareVO> fps =  _manager.firmwareList();
-                        Log::msg("Iterate");
-                        for( listBYBFirmwareVO::iterator ti = fps.begin();
-                            ti != fps.end();
-                            ti ++)
+
+                        if(weAreOnTouchScreen)
                         {
-                            Log::msg("Crete stream");
-                            std::stringstream sstm;
-                             sstm <<((BYBFirmwareVO)(*ti)).description << " (V" << ((BYBFirmwareVO)(*ti)).version <<")";
-                            Log::msg("Add item");
-                            firmwaresWidget->addItem(sstm.str().c_str() );
+                                    touchFirmwareListWidget = new TouchDropDownList(group);
+                                    touchFirmwareListWidget->clear();
+                                    std::list<BYBFirmwareVO> fps =  _manager.firmwareList();
+                                    for( listBYBFirmwareVO::iterator ti = fps.begin();
+                                        ti != fps.end();
+                                        ti ++)
+                                    {
+                                        std::stringstream sstm;
+                                         sstm <<((BYBFirmwareVO)(*ti)).description << " (V" << ((BYBFirmwareVO)(*ti)).version <<")";
+                                        touchFirmwareListWidget->addItem(sstm.str().c_str());
+                                    }
+
+                                    touchFirmwareListWidget->setSelection(0);
+                                    selectedFirmware = new BYBFirmwareVO();
+                                    selectedFirmware->URL = std::string((_manager.firmwareList().front()).URL);
+                                    selectedFirmware->filepath = std::string((_manager.firmwareList().front()).filepath);
+                                    selectedFirmware->id = (_manager.firmwareList().front()).id;
+                                    touchFirmwareListWidget->setDisabled(false);
+                                    _catchers.push_back(SignalCatcher(_catchers.size(), this));
+                                    touchFirmwareListWidget->indexChanged.connect(&_catchers[_catchers.size()-1], &SignalCatcher::catchFirmwareSelection);
+                                    updateSelectionHbox->addWidget(touchFirmwareListWidget,Widgets::AlignVCenter);
+
                         }
+                        else
+                        {
+                                    firmwaresWidget = new DropDownList(group,400,30);
+                                    firmwaresWidget->clear();
+                                    std::list<BYBFirmwareVO> fps =  _manager.firmwareList();
+                                    for( listBYBFirmwareVO::iterator ti = fps.begin();
+                                        ti != fps.end();
+                                        ti ++)
+                                    {
+                                        std::stringstream sstm;
+                                         sstm <<((BYBFirmwareVO)(*ti)).description << " (V" << ((BYBFirmwareVO)(*ti)).version <<")";
+                                        firmwaresWidget->addItem(sstm.str().c_str() );
+                                    }
 
-
-                        Log::msg("Set selection");
-                        firmwaresWidget->setSelection(0);
-
-                        Log::msg("Set selected firmware");
-                        selectedFirmware = new BYBFirmwareVO();
-                        selectedFirmware->URL = std::string((_manager.firmwareList().front()).URL);
-                        Log::msg("Set filepath");
-                        selectedFirmware->filepath = std::string((_manager.firmwareList().front()).filepath);
-                        selectedFirmware->id = (_manager.firmwareList().front()).id;
-                        Log::msg("set disabled");
-                        firmwaresWidget->setDisabled(false);
-
-
-
-                        Log::msg("Catcher");
-                        _catchers.push_back(SignalCatcher(_catchers.size(), this));
-                        Log::msg("Wire up firmware selection");
-                        firmwaresWidget->indexChanged.connect(&_catchers[_catchers.size()-1], &SignalCatcher::catchFirmwareSelection);
-
-                        Log::msg("Add widget");
-                        updateSelectionHbox->addWidget(firmwaresWidget);
+                                    firmwaresWidget->setSelection(0);
+                                    selectedFirmware = new BYBFirmwareVO();
+                                    selectedFirmware->URL = std::string((_manager.firmwareList().front()).URL);
+                                    selectedFirmware->filepath = std::string((_manager.firmwareList().front()).filepath);
+                                    selectedFirmware->id = (_manager.firmwareList().front()).id;
+                                    firmwaresWidget->setDisabled(false);
+                                    _catchers.push_back(SignalCatcher(_catchers.size(), this));
+                                    firmwaresWidget->indexChanged.connect(&_catchers[_catchers.size()-1], &SignalCatcher::catchFirmwareSelection);
+                                    updateSelectionHbox->addWidget(firmwaresWidget, Widgets::AlignVCenter);
+                        }
 
                         Log::msg("Create button for update");
                         //Button for update HID device
@@ -679,12 +691,23 @@ void ConfigView::SetupScreen()
 
                         _updateButton->clicked.connect(this, &ConfigView::firmwareUpdatePressed);
                         Log::msg("Set image for update button");
-                        _updateButton->setNormalTex(Widgets::TextureGL::get("data/disconnected.bmp"));
-                        _updateButton->setHoverTex(Widgets::TextureGL::get("data/disconnected.bmp"));
-                        _updateButton->setSizeHint(Widgets::Size(26,26));
+                        if(weAreOnTouchScreen)
+                        {
+                             _updateButton->setNormalTex(Widgets::TextureGL::get("data/bupdate.bmp"));
+                            _updateButton->setHoverTex(Widgets::TextureGL::get("data/bupdate-high.bmp"));
+                            _updateButton->setSizeHint(Widgets::Size(100,40));
+                        }
+                        else
+                        {
+                           _updateButton->setNormalTex(Widgets::TextureGL::get("data/update.bmp"));
+                            _updateButton->setHoverTex(Widgets::TextureGL::get("data/update-high.bmp"));
+                            _updateButton->setSizeHint(Widgets::Size(100,32));
+                        }
+
+
                         Log::msg("Add button widget");
                         updateSelectionHbox->addSpacing(5);
-                        updateSelectionHbox->addWidget(_updateButton);
+                        updateSelectionHbox->addWidget(_updateButton, Widgets::AlignVCenter);
                         updateSelectionHbox->update();
                     }
 
@@ -732,7 +755,12 @@ void ConfigView::SetupScreen()
 //--------------------------------------------------------------------------------------------------
 
 void ConfigView::paintEvent() {
-    
+
+    if(weAreOnTouchScreenOld != Widgets::Application::getInstance()->areWeOnTouchscreen())
+    {
+        changeScreenType = true;
+        weAreOnTouchScreenOld = Widgets::Application::getInstance()->areWeOnTouchscreen();
+    }
     if(changeScreenType)
     {
         cleanWholeScreenAndResetup();
@@ -844,7 +872,7 @@ void ConfigView::connectPressed()
     }
     else
     {
-        
+
         bool connected = false;
         if(weAreOnTouchScreen)
         {
@@ -854,8 +882,8 @@ void ConfigView::connectPressed()
         {
             connected = _manager.initSerial(serialPortWidget->item(serialPortWidget->selection()).c_str());
         }
-        
-        
+
+
         if(!connected)
         {
             Log::error("Can't init serial port.");
@@ -896,7 +924,7 @@ void ConfigView::connectPressed()
         }
     }
     close();
-    
+
     if(weAreOnTouchScreen)
     {
         touchSerialPortWidget->setDisabled(_manager.serialMode());
@@ -980,7 +1008,7 @@ void ConfigView::highFilterTIValueChanged(std::string newString)
     rangeSelector->updateHighLogValue(highValueTI->getInt());
     highValueTI->setInt(rangeSelector->getHighValue());
 }
-    
+
 void ConfigView::cleanWholeScreenAndResetup()
 {
     changeScreenType = false;
@@ -996,8 +1024,8 @@ void ConfigView::cleanWholeScreenAndResetup()
 //
 void ConfigView::fiftyHzPressed() {
 
-    
-    changeScreenType = true;
+
+    //changeScreenType = true;
     Log::msg("fiftyHzPressed");
     if(_manager.fiftyHzFilterEnabled())
     {
