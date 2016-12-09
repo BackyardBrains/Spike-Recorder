@@ -92,7 +92,7 @@ namespace BackyardBrains {
 
 
 
-        if(_manager.powerStateOnHID()!=0)//if power rail on SB pro is not turned off notify user to turn it off
+       /* if(_manager.powerStateOnHID()!=0)//if power rail on SB pro is not turned off notify user to turn it off
         {
             if(_manager.powerStateOnHID()==1)//power ON
             {
@@ -106,7 +106,7 @@ namespace BackyardBrains {
             testPowerOfDevice();
         }
         else
-        {
+        {*/
             if(!firmwareUpdateStarted)
             {
                 //SB Pro is turned OFF we can start firmware update
@@ -137,7 +137,7 @@ namespace BackyardBrains {
                 closeButton->setVisible(true);
                  infoLabel->setText("Firmware updated successfully!");
             }
-        }
+       // }
     }
 
     //Close view
