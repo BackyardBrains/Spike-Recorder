@@ -1432,33 +1432,40 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 	        }
 	    }
 
-	    //filter data
+	   
+
+        
+        
+        if(highPassFilterEnabled())
+        {
+            for(int chan = 0; chan < channum; chan++) {
+                _devices.begin()->_highPassFilters[chan].filterIntData(channels[chan].data(), samplesRead);
+            }
+        }
+        
+        
+        //filter data
         if(fiftyHzFilterEnabled())
         {
             for(int chan = 0; chan < channum; chan++) {
-	            _devices.begin()->_50HzNotchFilters[chan].filterIntData(channels[chan].data(), samplesRead);
-	        }
+                _devices.begin()->_50HzNotchFilters[chan].filterIntData(channels[chan].data(), samplesRead);
+            }
         }
         else if(sixtyHzFilterEnabled())
         {
             for(int chan = 0; chan < channum; chan++) {
-	            _devices.begin()->_60HzNotchFilters[chan].filterIntData(channels[chan].data(), samplesRead);
-	        }
+                _devices.begin()->_60HzNotchFilters[chan].filterIntData(channels[chan].data(), samplesRead);
+            }
         }
-
-         if(lowPassFilterEnabled())
+        
+        if(lowPassFilterEnabled())
         {
             for(int chan = 0; chan < channum; chan++) {
 	            _devices.begin()->_lowPassFilters[chan].filterIntData(channels[chan].data(), samplesRead);
 	        }
         }
 
-         if(highPassFilterEnabled())
-        {
-            for(int chan = 0; chan < channum; chan++) {
-	            _devices.begin()->_highPassFilters[chan].filterIntData(channels[chan].data(), samplesRead);
-	        }
-        }
+        
 
 	    //DC offset elimination
 	     for (int i = 0; i < samplesRead; i++) {
@@ -1523,18 +1530,31 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 
         //const int nchan = _devices.begin()->channels;
         int bytesPerSample = _devices.begin()->bytespersample;
-        int16_t *buf = new int16_t[samplesRead];
-
+        
+       // int16_t *buf = new int16_t[samplesRead];
+        
+        // this biggerBufferSize is patch for case when HID device
+        //does not send enough samples per second. FOr example when it
+        //sends 9999 instead of 10000. Than we can hear clicking sound
+        //since audio will need all 10000 samples and we will provide less
+        int biggerBufferSize = samples;
+        if(samplesRead>biggerBufferSize)
+        {
+            biggerBufferSize = samplesRead;
+        }
+        int16_t *buf = new int16_t[biggerBufferSize];
+        
+        
         if(_player.volume() > 0) {
 
 
             SampleBuffer *s = sampleBuffer(_selectedVDevice);
             if(s != NULL) {
-                s->getData(buf, _pos, samplesRead);
+                s->getData(buf, _pos, biggerBufferSize);
             } else {
-                memset(buf, 0, samplesRead*sizeof(int16_t));
+                memset(buf, 0, biggerBufferSize*sizeof(int16_t));
             }
-            _player.push(buf, samplesRead*sizeof(int16_t));
+            _player.push(buf, biggerBufferSize*sizeof(int16_t));
         } else {
             _player.setPos(_pos, bytesPerSample, 1);
             //std::cout<<"\nSet position: "<<_pos;
@@ -1781,7 +1801,7 @@ void RecordingManager::enableLowPassFilterWithCornerFreq(float cornerFreq)
         _devices.begin()->_lowPassFilters[chan].setCornerFrequency(cornerFreq);
     }
 
-    if(cornerFreq>((_sampleRate/2)-1))
+    if(cornerFreq>((_sampleRate/2)-2))
     {
         _lowPassFilterEnabled = false;
     }

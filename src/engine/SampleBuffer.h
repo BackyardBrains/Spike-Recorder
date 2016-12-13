@@ -214,11 +214,17 @@ public:
 		for (int64_t i = offset - _pos; i < (offset - _pos + len); i++, j++)
 		{
             //(i < -SIZE) - we already owervrite values
-            //(i >= 0) - asking for future values
-			if (i < -SIZE || (i >= 0))
+			if (i < -SIZE)
             {
 				dst[j] = 0;
 				//std::cout<<"Error - asking for data that does not exist\n";
+            }
+            else if (i >= 0)//(i >= 0) - asking for future values
+            {
+                //we will provide last value if we are asking for future values
+                //in this way we will not have clicking sound in audio
+                //as we would if we are sending zeros for signal with offset
+                dst[j] = _buffer[(_head + -1 + SIZE)%SIZE];
             }
 			else
             {
