@@ -30,6 +30,7 @@ public:
 
 
 	static const Widgets::Color COLORS[];
+	static const Widgets::Color ARDUINO_COLORS[];
 	static const int COLOR_NUM;
 	static const Widgets::Color MARKER_COLORS[];
 	static const int MARKER_COLOR_NUM;

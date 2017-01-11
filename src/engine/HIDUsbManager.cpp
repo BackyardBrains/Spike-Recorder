@@ -600,12 +600,12 @@ namespace BackyardBrains {
         {
             if((!_deviceConnected) )
             {
-                std::cout<<"Call HID exit... \n";
+               // std::cout<<"Call HID exit... \n";
                 hid_exit();
             }
             list.clear();
             struct hid_device_info *devs, *cur_dev;
-            std::cout<<"Scan for HID devices... \n";
+            //std::cout<<"Scan for HID devices... \n";
             devs = hid_enumerate(0x0, 0x0);
            // std::cout<<"HID After scan \n";
             cur_dev = devs;

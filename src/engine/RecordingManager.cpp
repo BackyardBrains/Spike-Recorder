@@ -532,7 +532,7 @@ void RecordingManager::sendEKGImpuls()
     end = end*1000;
 #endif
     double elapsed_secs = double(end - timerEKG) / CLOCKS_PER_SEC;
-    if(elapsed_secs>0.2)
+    if(elapsed_secs>0.1)
     {
 
         timerEKG = end;
@@ -1432,18 +1432,18 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 	        }
 	    }
 
-	   
 
-        
-        
+
+
+
         if(highPassFilterEnabled())
         {
             for(int chan = 0; chan < channum; chan++) {
                 _devices.begin()->_highPassFilters[chan].filterIntData(channels[chan].data(), samplesRead);
             }
         }
-        
-        
+
+
         //filter data
         if(fiftyHzFilterEnabled())
         {
@@ -1457,7 +1457,7 @@ void RecordingManager::advanceHidMode(uint32_t samples)
                 _devices.begin()->_60HzNotchFilters[chan].filterIntData(channels[chan].data(), samplesRead);
             }
         }
-        
+
         if(lowPassFilterEnabled())
         {
             for(int chan = 0; chan < channum; chan++) {
@@ -1465,7 +1465,7 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 	        }
         }
 
-        
+
 
 	    //DC offset elimination
 	     for (int i = 0; i < samplesRead; i++) {
@@ -1530,9 +1530,9 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 
         //const int nchan = _devices.begin()->channels;
         int bytesPerSample = _devices.begin()->bytespersample;
-        
+
        // int16_t *buf = new int16_t[samplesRead];
-        
+
         // this biggerBufferSize is patch for case when HID device
         //does not send enough samples per second. FOr example when it
         //sends 9999 instead of 10000. Than we can hear clicking sound
@@ -1543,8 +1543,8 @@ void RecordingManager::advanceHidMode(uint32_t samples)
             biggerBufferSize = samplesRead;
         }
         int16_t *buf = new int16_t[biggerBufferSize];
-        
-        
+
+
         if(_player.volume() > 0) {
 
 

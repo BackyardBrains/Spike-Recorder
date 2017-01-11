@@ -19,7 +19,6 @@ namespace BackyardBrains {
 
 const Widgets::Color AudioView::COLORS[] = {
 	Widgets::Colors::black,
-    //Widgets::Color(218,218,218),
     Widgets::Color(0,255,28),
     Widgets::Color(255,0,59),
 	Widgets::Color(225,252,90),
@@ -28,18 +27,29 @@ const Widgets::Color AudioView::COLORS[] = {
 	Widgets::Color(0,190,200)
 };
 
+const Widgets::Color AudioView::ARDUINO_COLORS[] = {
+	Widgets::Colors::black,
+    Widgets::Color(25,205,25),//green
+    Widgets::Color(255,255,0),//yellow
+	Widgets::Color(32,178,170),//blue
+	Widgets::Color(220,20,20),//red
+	Widgets::Color(220,220,220),//white
+	Widgets::Color(255,69,0)//orange
+};
+
 const int AudioView::COLOR_NUM = sizeof(AudioView::COLORS)/sizeof(AudioView::COLORS[0]);
 
 const Widgets::Color AudioView::MARKER_COLORS[] = {
+    Widgets::Color(216, 180, 231),
+    Widgets::Color(255, 80, 0),  //orange
 	Widgets::Color(255, 236, 148),
 	Widgets::Color(255, 174, 174),
 	Widgets::Color(176, 229, 124),
 	Widgets::Color(180, 216, 231),
-	Widgets::Color(147, 226, 213),
 	Widgets::Color(193, 218, 214),
 	Widgets::Color(172, 209, 233),
-	Widgets::Color(216, 180, 231),
 	Widgets::Color(174, 255, 174),
+
 	Widgets::Color(255, 236, 255),
 };
 
@@ -74,7 +84,7 @@ void AudioView::updateChannels() {
                     _channels.back().pos = 0.5;
                 }
 				_channels.back().virtualDevice=i;
-                _channels.back().colorIdx=(i+1)%(COLOR_NUM-1);
+                _channels.back().colorIdx=(i+1)%(COLOR_NUM);
 			}
 		} else {
 			// if there is a channel, but the vdevice is not bound, remove it.
@@ -166,7 +176,8 @@ void AudioView::applyMetadata(const MetadataChunk &m) {
 
 
 void AudioView::setChannelColor(int channel, int colorIdx) {
-	_channels.at(channel).colorIdx = std::max(0,std::min(COLOR_NUM-1, colorIdx));
+    int colorP = std::max(0,std::min(COLOR_NUM-1, colorIdx));
+	_channels.at(channel).colorIdx = colorP;
 }
 
 int AudioView::channelColor(int channel) const {
@@ -487,7 +498,14 @@ void AudioView::drawAudio() {
 
 	for(int i = _channels.size() - 1; i >= 0; i--) {
 		float yoff = _channels[i].pos*height();
-		Widgets::Painter::setColor(COLORS[_channels[i].colorIdx]);
+		if(_manager.serialMode())
+        {
+            Widgets::Painter::setColor(ARDUINO_COLORS[_channels[i].colorIdx]);
+        }
+        else
+        {
+            Widgets::Painter::setColor(COLORS[_channels[i].colorIdx]);
+        }
 		std::vector<std::pair<int16_t, int16_t> > data;
 
 		if(!_manager.threshMode()) {
@@ -535,14 +553,23 @@ void AudioView::drawAudio() {
                 Widgets::Painter::drawTexRect(Widgets::Rect(MOVEPIN_SIZE/2, _channels[i].pos*height()-MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
                 Widgets::Painter::setColor(Widgets::Colors::background);
                 Widgets::Painter::drawTexRect(Widgets::Rect(MOVEPIN_SIZE/2 +3, _channels[i].pos*height()-MOVEPIN_SIZE/2+4, MOVEPIN_SIZE-8, MOVEPIN_SIZE-8));
-                Widgets::Painter::setColor(COLORS[_channels[i].colorIdx]);
+
+                if(_manager.serialMode())
+                {
+                    Widgets::Painter::setColor(ARDUINO_COLORS[_channels[i].colorIdx]);
+                }
+                else
+                {
+                    Widgets::Painter::setColor(COLORS[_channels[i].colorIdx]);
+                }
+
             }
         }
         else
         {
             Widgets::Painter::drawTexRect(Widgets::Rect(MOVEPIN_SIZE/2, _channels[i].pos*height()-MOVEPIN_SIZE/2, MOVEPIN_SIZE, MOVEPIN_SIZE));
         }
-		
+
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		if(_rulerEnd != _rulerStart) {
@@ -736,8 +763,18 @@ void AudioView::paintEvent() {
 
 void AudioView::drawThreshold(int screenw) {
 	if(_channels.size() == 0)
+    {
 		return;
-	Widgets::Painter::setColor(COLORS[_channels[selectedChannel()].colorIdx]);
+    }
+
+    if(_manager.serialMode())
+    {
+        Widgets::Painter::setColor(ARDUINO_COLORS[_channels[selectedChannel()].colorIdx]);
+    }
+    else
+    {
+        Widgets::Painter::setColor(COLORS[_channels[selectedChannel()].colorIdx]);
+    }
 
 	if(thresholdPos() > MOVEPIN_SIZE/2 && thresholdPos() < height() - MOVEPIN_SIZE/2) {
 		Widgets::TextureGL::get("data/threshpin.bmp")->bind();
@@ -795,12 +832,12 @@ int AudioView::determineGainControlHover(int x, int y) {
     {
 		return 0;
     }
-    
+
     if(Widgets::Application::getInstance()->areWeOnTouchscreen())
     {
         return 0;
     }
-    
+
 	int xx = GAINCONTROL_XOFF-x;
 	int dy = _channels[selectedChannel()].pos*height()-y;
 	xx *= xx;

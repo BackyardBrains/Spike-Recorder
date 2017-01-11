@@ -8,7 +8,7 @@
 
 #include "ArduinoSerial.h"
 #include <sys/types.h>
-
+#include "Log.h"
 #include <unistd.h>
 #include <sstream>
 #include <stdint.h>
@@ -196,7 +196,7 @@ namespace BackyardBrains {
         // disable parity generation and 2 stop bits
         options.c_cflag &= ~(PARENB | CSTOPB);
 
-        
+
         //traditional setup of baud rates
         //------------------------ traditional setup of baud rates for Mac and Linux --------------
         cfsetispeed(&options, B230400);
@@ -204,27 +204,27 @@ namespace BackyardBrains {
         // set the new port options
         tcsetattr(fd, TCSANOW, &options);
         //------------------------ traditional setup of baud rates for Mac and Linux --------------
-        
+
         //--------------------------- Patch for Mac for nonstandard bauds --------------------------
         /*speed_t speed = 2000000; // Set 2Mbaud
         if (ioctl(fd, IOSSIOSPEED, &speed) == -1) {
             std::cout<<"Error setting speed";
         }*/
-        
-        
-        
+
+
+
         /*
-         
+
          Explanation from blog post:
          http://stackoverflow.com/questions/9366249/boostasioserialport-alternative-that-supports-non-standard-baud-rates
-         
+
          If you only want to use ioctl and termios you can do:
-         
+
          #define IOSSIOSPEED _IOW('T', 2, speed_t)
          int new_baud = static_cast<int> (baudrate_);
          ioctl (fd_, IOSSIOSPEED, &new_baud, 1);
          And it will let you set the baud rate to any value in OS X, but that is OS specific. for Linux you need to do:
-         
+
          struct serial_struct ser;
          ioctl (fd_, TIOCGSERIAL, &ser);
          // set custom divisor
@@ -232,17 +232,17 @@ namespace BackyardBrains {
          // update flags
          ser.flags &= ~ASYNC_SPD_MASK;
          ser.flags |= ASYNC_SPD_CUST;
-         
+
          if (ioctl (fd_, TIOCSSERIAL, ser) < 0)
          {
          // error
          }
          For any other OS your gonna have to go read some man pages or it might not even work at all, its very OS dependent.
-        
+
         */
-        
-        
-        
+
+
+
         //--------------------------- Patch for Mac for nonstandard bauds --------------------------
         #endif
 
@@ -276,8 +276,8 @@ namespace BackyardBrains {
 	} else {
 		printf("error with GetDefaultCommConfig\n");
 	}
-	port_handle = CreateFile(name_createfile, GENERIC_READ | GENERIC_WRITE,
-	   0, 0, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
+	port_handle = CreateFile(name_createfile, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
+	//port_handle = CreateFile(name_createfile, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, NULL, NULL);
 	if (port_handle == INVALID_HANDLE_VALUE) {
 		win32_err(buf);
 		//error_msg =  "Unable to open " + _portName + ", " + buf;
@@ -445,22 +445,27 @@ namespace BackyardBrains {
 	if (ov.hEvent == NULL) return -1;
 	ov.Internal = ov.InternalHigh = 0;
 	ov.Offset = ov.OffsetHigh = 0;
+
 	if (ReadFile(port_handle, buffer, num_request, &num_read, &ov)) {
 		// this should usually be the result, since we asked for
 		// data we knew was already buffered
 		//printf("Read, immediate complete, num_read=%lu\n", num_read);
 		size = num_read;
+        std::cout <<num_request<<" -- " <<num_request-num_read<<"\n";
 	} else {
 		if (GetLastError() == ERROR_IO_PENDING) {
 			if (GetOverlappedResult(port_handle, &ov, &num_read, TRUE)) {
-				//printf("Read, delayed, num_read=%lu\n", num_read);
+				printf("Read, delayed, num_read=%lu\n", num_read);
+				std::cout<<" -----------------" <<num_request<<" -- " <<num_request-num_read<<"\n";
 				size = num_read;
 			} else {
-				//printf("Read, delayed error\n");
+				printf("Read, delayed error\n");
+				std::cout<<" Read, delayed error------------------\n";
 				size = -1;
 			}
 		} else {
-			//printf("Read, error\n");
+			printf("Read, error\n");
+			std::cout<<"Read, error~~~~~~~~~~~~~~~~~~~~\n";
 			size = -1;
 		}
 	}
@@ -475,7 +480,8 @@ namespace BackyardBrains {
         {
             circularBuffer[cBufHead++] = buffer[i];
             uint MSB  = ((uint)(buffer[i])) & 0xFF;
-            //std::cout<<"M: " << MSB<<"\n";
+          //  std::cout<<"M: " << MSB<<"\n";
+
             if(cBufHead>=SIZE_OF_CIRC_BUFFER)
             {
                 cBufHead = 0;
@@ -488,15 +494,19 @@ namespace BackyardBrains {
         }
         uint LSB;
         uint MSB;
-
+        bool logData = false;
         bool haveData = true;
+        bool weAlreadyProcessedBeginingOfTheFrame;
+        int numberOfParsedChannels;
             while (haveData)
             {
 
                 MSB  = ((uint)(circularBuffer[cBufTail])) & 0xFF;
+
                 if(MSB > 127)//if we are at the begining of frame
                 {
-
+                    weAlreadyProcessedBeginingOfTheFrame = false;
+                    numberOfParsedChannels = 0;
                     if(checkIfHaveWholeFrame())
                     {
                         //std::cout<<"Inside serial "<< numberOfFrames<<"\n";
@@ -507,7 +517,18 @@ namespace BackyardBrains {
                            // std::cout<<"Tail: "<<cBufTail<<"\n";
                            //  MSB  = ((uint)(circularBuffer[cBufTail])) & 0xFF;
                             //std::cout<< cBufTail<<" -M "<<MSB<<"\n";
+
+
+                            MSB  = ((uint)(circularBuffer[cBufTail])) & 0xFF;
+                            if(weAlreadyProcessedBeginingOfTheFrame && MSB>127)
+                            {
+                                //we have begining of the frame inside frame
+                                //something is wrong
+                                numberOfFrames--;
+                                break;//continue as if we have new frame
+                            }
                             MSB  = ((uint)(circularBuffer[cBufTail])) & 0x7F;
+                            weAlreadyProcessedBeginingOfTheFrame = true;
 
                             cBufTail++;
                             if(cBufTail>=SIZE_OF_CIRC_BUFFER)
@@ -526,9 +547,23 @@ namespace BackyardBrains {
 
                             MSB = MSB<<7;
                             writeInteger = LSB | MSB;
+                            if(writeInteger>300)
+                            {
+                                logData = true;
+                            }
 
-                            //std::cout<< obufferIndex<<" - "<<MSB<<":"<<LSB<<"\n";
+
+                            numberOfParsedChannels++;
+                            if(numberOfParsedChannels>numberOfChannels())
+                            {
+                                //we have more data in frame than we need
+                                //something is wrong with this frame
+                                numberOfFrames--;
+                                break;//continue as if we have new frame
+                            }
                             obuffer[obufferIndex++] = writeInteger*30;
+
+
                             if(areWeAtTheEndOfFrame())
                             {
                                 break;
@@ -567,7 +602,54 @@ namespace BackyardBrains {
 
             }
 
+/*
 
+Receiving buffer on PC:
+ 128
+-- 30
+-- 128
+-- 112 p
+-- 58  :
+-- 48  0
+-- 59  ;
+-- 10  \n
+-- 5
+-- 30
+-- 128
+-- 29
+
+
+Transmission buffer on PC (receiving on Arduino):
+Data ~5 frames before
+128
+24
+128
+24
+128
+
+
+
+
+*/
+
+
+
+
+
+
+        if(logData)
+        {
+
+            Log::msg("--------------------- Start -------------------");
+             for(int i=0;i<size;i++)
+            {
+                uint TEMP  = ((uint)(buffer[i])) & 0xFF;
+                Log::msg("%d",TEMP);
+                //std::cout<<"M: " << TEMP<<"\n";
+
+            }
+            Log::msg("--------------------- END -------------------");
+        }
         return numberOfFrames;
     }
 
@@ -660,8 +742,9 @@ namespace BackyardBrains {
     {
         std::stringstream sstm;
         sstm << "p:" << eventType<<";\n";
-        writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
 
+        writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
+        std::cout<<" 888888888 - after function"<<sstm.str()<<"\n";
     }
 
 
@@ -710,20 +793,25 @@ namespace BackyardBrains {
             if (ov.hEvent == NULL) return -1;
             ov.Internal = ov.InternalHigh = 0;
             ov.Offset = ov.OffsetHigh = 0;
-            if (WriteFile(port_handle, ptr, len, &num_written, &ov)) {
+           if (WriteFile(port_handle, ptr, len, &num_written, &ov)) {
+
                 //printf("Write, immediate complete, num_written=%lu\n", num_written);
                 r = num_written;
+                std::cout<<" 888888888 - " <<len<<" -- " <<num_written-len<<"\n";
             } else {
                 if (GetLastError() == ERROR_IO_PENDING) {
                     if (GetOverlappedResult(port_handle, &ov, &num_written, TRUE)) {
                         //printf("Write, delayed, num_written=%lu\n", num_written);
                         r = num_written;
+                        std::cout<<" 888888888 - " <<"Write, delayed, num_written" <<num_written-len<<"\n";
                     } else {
                         //printf("Write, delayed error\n");
+                        std::cout<<" 888888888 - " <<"Write, delayed,error" <<num_written-len<<"\n";
                         r = -1;
                     }
                 } else {
                     //printf("Write, error\n");
+                    std::cout<<" 888888888 - " <<"Write,error" <<num_written-len<<"\n";
                     r = -1;
                 }
             };
@@ -988,7 +1076,7 @@ static const char *devnames[] = {
 
 
 
- 
+
 
 
 

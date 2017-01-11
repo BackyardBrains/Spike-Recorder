@@ -48,7 +48,8 @@ void ConfigView::SetupScreen()
 	topLabel->setText("Config");
 	topLabel->updateSize();
     Log::msg("Make colors");
-	std::vector<Widgets::Color> c(AudioView::COLORS, AudioView::COLORS+AudioView::COLOR_NUM);
+	std::vector<Widgets::Color> colorSet(AudioView::COLORS, AudioView::COLORS+AudioView::COLOR_NUM);
+	std::vector<Widgets::Color> arduinoColorSet(AudioView::ARDUINO_COLORS, AudioView::ARDUINO_COLORS+AudioView::COLOR_NUM);
 	Log::msg("Access virtual devices");
 
     if(weAreOnTouchScreen)
@@ -287,8 +288,15 @@ void ConfigView::SetupScreen()
             Log::msg("Create dropdown");
             _hclrs[i] = new HorizontalColorPicker(group);
 
+            if(_manager.serialMode())
+            {
+                _hclrs[i]->setContent(arduinoColorSet);
+            }
+            else
+            {
+                _hclrs[i]->setContent(colorSet);
+            }
 
-            _hclrs[i]->setContent(c);
             Log::msg("Signal catcher");
             _catchers.push_back(SignalCatcher(i, this));
             _hclrs[i]->selectionChanged.connect(&_catchers[i], &SignalCatcher::catchColor);
@@ -317,8 +325,15 @@ void ConfigView::SetupScreen()
 
             _clrs[i] = new ColorDropDownList(group);
 
+            if(_manager.serialMode())
+            {
+                _clrs[i]->setContent(arduinoColorSet);
+            }
+            else
+            {
+                _clrs[i]->setContent(colorSet);
+            }
 
-            _clrs[i]->setContent(c);
             Log::msg("Signal catcher");
             _catchers.push_back(SignalCatcher(i, this));
             _clrs[i]->selectionChanged.connect(&_catchers[i], &SignalCatcher::catchColor);
