@@ -614,9 +614,19 @@ void MainView::paintEvent()
     if(_fftView->active() && _manager.serialMode())
     {
         _alphaFeedbackButton->setVisible(true);
+
+        _manager.alphaWavePower = _anaman.fft.lowPassAlphaWaves;
+
+        if(SDL_GetTicks() - timerForAlphaWaveMessages>150)
+        {
+            timerForAlphaWaveMessages = SDL_GetTicks();
+            _manager.sendAlphaWavePowerToSerial();
+        }
+
+
         if(alphaFeedbackAcive)
         {
-            _manager.alphaWavePower = _anaman.fft.lowPassAlphaWaves;
+
             _manager.turnAlphaFeedbackON();
 
         }

@@ -6,6 +6,7 @@
 #include "Log.h"
 #include <sstream>
 #include <cstdlib>
+#include <SDL.h>
 
 #if defined(_WIN32)
     #include <unistd.h>
@@ -532,7 +533,7 @@ void RecordingManager::sendEKGImpuls()
     end = end*1000;
 #endif
     double elapsed_secs = double(end - timerEKG) / CLOCKS_PER_SEC;
-    if(elapsed_secs>0.1)
+    if(elapsed_secs>0.5)
     {
 
         timerEKG = end;
@@ -1223,7 +1224,13 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 
 
 	//get interleaved data for all channels
+
+
+
 	int samplesRead = _arduinoSerial.readPort(buffer);
+    //	uint32_t numTicksAfter = SDL_GetTicks();
+	//std::cout<<"Time: "<<SDL_GetTicks()<< " It takes: " <<SDL_GetTicks() - numTicksBefore<<" Samples read: "<<samplesRead<<"\n";
+	//numTicksBefore = SDL_GetTicks();
     if(_paused)
     {
         delete[] channels;
@@ -1342,7 +1349,7 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
         if(alphaFeedbackActive)
         {
             int16_t *buf = new int16_t[samples];
-            //std::cout<<alphaWavePower<<"\n";
+
             //648044
             //200
 
@@ -1849,6 +1856,12 @@ void RecordingManager::turnAlphaFeedbackOFF()
 {
     alphaFeedbackActive = false;
   //  _player.setVolume(0);
+}
+
+void RecordingManager::sendAlphaWavePowerToSerial()
+{
+        std::cout<<(int)(uint8_t)((alphaWavePower/1000000)*255)<<"\n";
+        _arduinoSerial.sendPotentiometerMessage((uint8_t)((alphaWavePower/1000000)*255));
 }
 
 #pragma mark - Bind/Unbind device

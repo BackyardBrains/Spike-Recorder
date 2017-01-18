@@ -36,7 +36,7 @@ private:
 	Widgets::PushButton *_analysisButton;
 	Widgets::PushButton *_usbButton;
 	Widgets::PushButton *threshButton;
-    
+
     Widgets::PushButton *_alphaFeedbackButton;
     void alphaFeedbackPressed();
     bool alphaFeedbackAcive;
@@ -69,7 +69,7 @@ private:
 
     void paintEvent();
     clock_t timerUSB;
-
+    int timerForAlphaWaveMessages = 0;
     void triggerEvent();
 
     void drawTimeLabelsForFile();

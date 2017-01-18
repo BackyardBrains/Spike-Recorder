@@ -294,7 +294,8 @@ namespace BackyardBrains {
 		memcpy(&port_cfg_orig, &port_cfg, sizeof(COMMCONFIG));
 	}
 	// http://msdn2.microsoft.com/en-us/library/aa363188(VS.85).aspx
-        port_cfg.dcb.BaudRate = 230400; //for high speed 2Mbit/s communication just change this number to 2000000
+    port_cfg.dcb.BaudRate = 230400; //for high speed 2Mbit/s communication just change this number to 2000000
+
 	port_cfg.dcb.fBinary = TRUE;
 	port_cfg.dcb.fParity = FALSE;
 	port_cfg.dcb.fOutxCtsFlow = FALSE;
@@ -325,7 +326,7 @@ namespace BackyardBrains {
 	}
 	// http://msdn2.microsoft.com/en-us/library/aa363190(VS.85).aspx
 	// setting to all zeros means timeouts are not used
-	//timeouts.ReadIntervalTimeout		= 0;
+
 	timeouts.ReadIntervalTimeout		= MAXDWORD;
 	timeouts.ReadTotalTimeoutMultiplier	= 0;
 	timeouts.ReadTotalTimeoutConstant	= 0;
@@ -364,8 +365,7 @@ namespace BackyardBrains {
     int ArduinoSerial::readPort(int16_t * obuffer)
     {
 
-
-        char buffer[4024];
+        char buffer[8024];
 
         int writeInteger = 0;
         int obufferIndex = 0;
@@ -433,14 +433,28 @@ namespace BackyardBrains {
 	OVERLAPPED ov;
 	int count = 4000;
 
-	if (!ClearCommError(port_handle, &errmask, &st)) return -1;
+	if (!ClearCommError(port_handle, &errmask, &st))
+    {
+        return -1;
+    }
 	//printf("Read, %d requested, %lu buffered\n", count, st.cbInQue);
-	if (st.cbInQue <= 0) return 0;
+	if (st.cbInQue <= 0)
+    {
+        return 0;
+    }
+
 	// now do a ReadFile, now that we know how much we can read
 	// a blocking (non-overlapped) read would be simple, but win32
 	// is all-or-nothing on async I/O and we must have it enabled
 	// because it's the only way to get a timeout for WaitCommEvent
+
+
 	num_request = ((DWORD)count < st.cbInQue) ? (DWORD)count : st.cbInQue;
+
+
+
+
+
 	ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 	if (ov.hEvent == NULL) return -1;
 	ov.Internal = ov.InternalHigh = 0;
@@ -451,21 +465,22 @@ namespace BackyardBrains {
 		// data we knew was already buffered
 		//printf("Read, immediate complete, num_read=%lu\n", num_read);
 		size = num_read;
-        std::cout <<num_request<<" -- " <<num_request-num_read<<"\n";
+
+       // std::cout <<num_request<<" -- " <<num_request-num_read<<"\n";
 	} else {
 		if (GetLastError() == ERROR_IO_PENDING) {
 			if (GetOverlappedResult(port_handle, &ov, &num_read, TRUE)) {
 				printf("Read, delayed, num_read=%lu\n", num_read);
-				std::cout<<" -----------------" <<num_request<<" -- " <<num_request-num_read<<"\n";
+				//std::cout<<" -----------------" <<num_request<<" -- " <<num_request-num_read<<"\n";
 				size = num_read;
 			} else {
 				printf("Read, delayed error\n");
-				std::cout<<" Read, delayed error------------------\n";
+				//std::cout<<" Read, delayed error------------------\n";
 				size = -1;
 			}
 		} else {
 			printf("Read, error\n");
-			std::cout<<"Read, error~~~~~~~~~~~~~~~~~~~~\n";
+			//std::cout<<"Read, error~~~~~~~~~~~~~~~~~~~~\n";
 			size = -1;
 		}
 	}
@@ -475,7 +490,7 @@ namespace BackyardBrains {
 
 #endif // defined
 
-       //std::cout<<"------------------ Size: "<<size<<"\n";
+      // std::cout<<"------------------ Size: "<<size<<"\n";
         for(int i=0;i<size;i++)
         {
             circularBuffer[cBufHead++] = buffer[i];
@@ -547,10 +562,10 @@ namespace BackyardBrains {
 
                             MSB = MSB<<7;
                             writeInteger = LSB | MSB;
-                            if(writeInteger>300)
-                            {
-                                logData = true;
-                            }
+                          //  if(writeInteger>300)
+                          //  {
+                          //      logData = true;
+                          //  }
 
 
                             numberOfParsedChannels++;
@@ -637,7 +652,7 @@ Data ~5 frames before
 
 
 
-        if(logData)
+      /*  if(logData)
         {
 
             Log::msg("--------------------- Start -------------------");
@@ -649,7 +664,8 @@ Data ~5 frames before
 
             }
             Log::msg("--------------------- END -------------------");
-        }
+        }*/
+
         return numberOfFrames;
     }
 
@@ -742,9 +758,16 @@ Data ~5 frames before
     {
         std::stringstream sstm;
         sstm << "p:" << eventType<<";\n";
-
         writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
-        std::cout<<" 888888888 - after function"<<sstm.str()<<"\n";
+
+    }
+
+    void ArduinoSerial::sendPotentiometerMessage(uint8_t value)
+    {
+        std::stringstream sstm;
+        sstm << "a:" << (uint8_t)value<<";\n";
+        writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
+
     }
 
 
@@ -797,13 +820,13 @@ Data ~5 frames before
 
                 //printf("Write, immediate complete, num_written=%lu\n", num_written);
                 r = num_written;
-                std::cout<<" 888888888 - " <<len<<" -- " <<num_written-len<<"\n";
+              //  std::cout<<" 888888888 - " <<len<<" -- " <<num_written-len<<"\n";
             } else {
                 if (GetLastError() == ERROR_IO_PENDING) {
                     if (GetOverlappedResult(port_handle, &ov, &num_written, TRUE)) {
                         //printf("Write, delayed, num_written=%lu\n", num_written);
                         r = num_written;
-                        std::cout<<" 888888888 - " <<"Write, delayed, num_written" <<num_written-len<<"\n";
+                      //  std::cout<<" 888888888 - " <<"Write, delayed, num_written" <<num_written-len<<"\n";
                     } else {
                         //printf("Write, delayed error\n");
                         std::cout<<" 888888888 - " <<"Write, delayed,error" <<num_written-len<<"\n";
@@ -811,7 +834,7 @@ Data ~5 frames before
                     }
                 } else {
                     //printf("Write, error\n");
-                    std::cout<<" 888888888 - " <<"Write,error" <<num_written-len<<"\n";
+                  //  std::cout<<" 888888888 - " <<"Write,error" <<num_written-len<<"\n";
                     r = -1;
                 }
             };

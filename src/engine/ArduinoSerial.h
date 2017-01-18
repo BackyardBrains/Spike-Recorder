@@ -54,6 +54,7 @@ namespace BackyardBrains {
         std::string errorString;
         bool portOpened();
         void sendEventMessage(int eventType);
+        void sendPotentiometerMessage(uint8_t value);
     private:
         char circularBuffer[SIZE_OF_CIRC_BUFFER];
         int cBufHead;

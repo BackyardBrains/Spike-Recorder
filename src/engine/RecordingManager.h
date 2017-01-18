@@ -103,7 +103,7 @@ public:
 	int selectedVDevice() const {return _selectedVDevice;}
     int getThresholdSource();
     void setThresholdSource(int newThresholdSource);
-    
+
 
 
 	std::vector<SpikeTrain> &spikeTrains() { return _spikeTrains; }
@@ -146,6 +146,7 @@ public:
     void scanForHIDDevices();
     void scanUSBDevices();
     void sendEKGImpuls();
+    void sendAlphaWavePowerToSerial();
     int currentAddOnBoard();
     bool isRTRepeating();
     void swapRTRepeating();
@@ -261,7 +262,7 @@ private:
 	void closeHid();
 	SampleBuffer *sampleBuffer(int virtualDeviceIndex);
 
-
+    uint32_t numTicksBefore = 0;
     bool systemIsCalibrated;
     float calibrationCoeficient;
 
