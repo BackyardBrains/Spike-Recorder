@@ -129,8 +129,9 @@ void SpikeSorter::findSpikes(const std::string &filename, int channel, int holdo
     int16_t peakvalNegative = 0;
     int64_t peakposPositive = 0;
     int64_t peakposNegative = 0;
-    std::vector<std::pair<int64_t, int16_t> > posspikes, negspikes;
     
+    std::vector<std::pair<int64_t, int16_t> > posspikes, negspikes;
+    long long testMaxSize = posspikes.max_size();
 	while(left > 0) {
 		DWORD bytesread = BASS_ChannelGetData(handle, buffer, std::min(left,(int64_t)BUFSIZE));
 		if(bytesread == (DWORD)-1) {
@@ -142,21 +143,61 @@ void SpikeSorter::findSpikes(const std::string &filename, int channel, int holdo
 
         const int nsamples = bytesread/info.chans/bytespersample;
         
+        //calculate mean value for this part of a signal
+        //this can be potential issue with signal that has floating mean value
+        long long sumForMean = 0;
+        for(int i = 0; i < nsamples; i++) {
+            sumForMean += convert_bytedepth(&buffer[(i*info.chans+channel)*bytespersample], bytespersample);
+        }
+        meanValue = sumForMean/nsamples;
         
+        
+        int tempDifference = 0;
         // looking for positive peaks
         for(int i = 0; i < nsamples; i++) {
             const int16_t val = convert_bytedepth(&buffer[(i*info.chans+channel)*bytespersample], bytespersample) - meanValue;
             
             if(triggerPositive) {
                 if(val < 0) {
-                    triggerPositive = 0;
-                    posspikes.push_back(std::make_pair(peakposPositive, peakvalPositive+meanValue));
+                     triggerPositive = 0;
+                    
+                    //if signal crosses back to zerro
+                    //(actualy it crosses mean value since "val" has zero mean value)
+                    if(posspikes.size()>0)
+                    {
+                        //check if there is another peak already detected that is too close to this one
+                        tempDifference = peakposPositive - posspikes[posspikes.size()-1].first;
+                        if(tempDifference<holdoff)//check if peaks are closser in time than "holdoff"
+                        {
+                            //if new peak has greater amplitude keep new one and delete last one
+                            if(posspikes[posspikes.size()-1].second<(peakvalPositive+meanValue))
+                            {
+                                posspikes.pop_back();
+                                posspikes.push_back(std::make_pair(peakposPositive, peakvalPositive+meanValue));
+                            }
+                            
+                        }
+                        else
+                        {
+                            //if new peak is not too close to last one just add new one
+                            posspikes.push_back(std::make_pair(peakposPositive, peakvalPositive+meanValue));
+                        }
+                    }
+                    else
+                    {
+                        //if this is first detected peak just add the peak to array
+                        posspikes.push_back(std::make_pair(peakposPositive, peakvalPositive+meanValue));
+                    }
                     
                 } else if(val > peakvalPositive) {
+                    //if we found sample that has greater value than last potential peak
+                    //save the amplitude and position
                     peakvalPositive = val;
                     peakposPositive = pos+i;
                 }
             } else if(val > threshold) {
+                //if we crossed sensitivity (STD) threshold
+                //start searching for positive peak
                 triggerPositive = 1;
                 peakvalPositive = val;
                 peakposPositive = pos+i;
@@ -171,7 +212,29 @@ void SpikeSorter::findSpikes(const std::string &filename, int channel, int holdo
             if(triggerNegative) {
                 if(val > 0) {
                     triggerNegative = 0;
-                    negspikes.push_back(std::make_pair(peakposNegative, peakvalNegative+meanValue));
+                    
+                    if(negspikes.size()>0)
+                        
+                    {
+                        tempDifference = peakposNegative - negspikes[negspikes.size()-1].first;
+                        if(tempDifference<holdoff)
+                        {
+                            if(negspikes[negspikes.size()-1].second>(peakvalNegative+meanValue))
+                            {
+                                negspikes.pop_back();
+                                negspikes.push_back(std::make_pair(peakposNegative, peakvalNegative+meanValue));
+                            }
+                        }
+                        else
+                        {
+                            negspikes.push_back(std::make_pair(peakposNegative, peakvalNegative+meanValue));
+                        }
+                        
+                    }
+                    else
+                    {
+                        negspikes.push_back(std::make_pair(peakposNegative, peakvalNegative+meanValue));
+                    }
                     
                 } else if(val < peakvalNegative) {
                     peakvalNegative = val;
@@ -184,31 +247,37 @@ void SpikeSorter::findSpikes(const std::string &filename, int channel, int holdo
             }
         }
         
-        
-        
-        
-
 		pos += bytesread/info.chans/bytespersample;
 		left -= bytesread;
 	}
     
     
     
+    //Spike sorting that:
+    //first detect spikes
+    //than sort the spikes according to amplitude
+    //than eliminate all spikes that are in holdoff interval
+    //
+    // It is better alghorithm but it is commented because it is slow!
     
+    /*
     
-    
-    
-    
+    unsigned long tempSizeBigSpikes = posspikes.size()-1;
+    unsigned long tempSizeSmallSpikes = posspikes.size();
+    int indexOfTempValue;
     std::sort(posspikes.begin(),posspikes.end(), sortPositive);
-    for(int indexOfGreatValue = 0;indexOfGreatValue<posspikes.size()-1;indexOfGreatValue++)
+    for(int indexOfGreatValue = 0;indexOfGreatValue<tempSizeBigSpikes;indexOfGreatValue++)
     {
         
-        for(int indexOfTempValue = indexOfGreatValue+1;indexOfTempValue<posspikes.size();indexOfTempValue++)
+        for(indexOfTempValue = indexOfGreatValue+1;indexOfTempValue<tempSizeSmallSpikes;indexOfTempValue++)
         {
+            
             if(std::abs((float)posspikes[indexOfGreatValue].first - posspikes[indexOfTempValue].first)<holdoff)
             {
                 posspikes.erase(posspikes.begin()+indexOfTempValue);
                 indexOfTempValue--;
+                tempSizeBigSpikes = posspikes.size()-1;
+                tempSizeSmallSpikes = posspikes.size();
             }
         }
     }
@@ -216,24 +285,30 @@ void SpikeSorter::findSpikes(const std::string &filename, int channel, int holdo
     
     
     
-    
+    tempSizeBigSpikes = negspikes.size()-1;
+    tempSizeSmallSpikes = negspikes.size();
     
     std::sort(negspikes.begin(),negspikes.end(), sortNegative);
-    for(int indexOfGreatValue = 0;indexOfGreatValue<negspikes.size()-1;indexOfGreatValue++)
+    for(int indexOfGreatValue = 0;indexOfGreatValue<tempSizeBigSpikes;indexOfGreatValue++)
     {
         
-        for(int indexOfTempValue = indexOfGreatValue+1;indexOfTempValue<negspikes.size();indexOfTempValue++)
+        for(indexOfTempValue = indexOfGreatValue+1;indexOfTempValue<tempSizeSmallSpikes;indexOfTempValue++)
         {
             if(std::abs((float)negspikes[indexOfGreatValue].first - negspikes[indexOfTempValue].first)<holdoff)
             {
                 negspikes.erase(negspikes.begin()+indexOfTempValue);
                 indexOfTempValue--;
+                tempSizeBigSpikes = negspikes.size()-1;
+                tempSizeSmallSpikes = negspikes.size();
             }
         }
     }
     std::sort(negspikes.begin(),negspikes.end(), sortSpikesBack);
    
+    */
     
+    
+    //Combine negative and positive spikes in one array "_allSpikeTrains"
     
     std::vector<std::pair<int64_t, int16_t> >::iterator itp = posspikes.begin(), itn = negspikes.begin();
 

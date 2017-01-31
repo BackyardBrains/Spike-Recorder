@@ -713,6 +713,7 @@
 					248E586C1AAE0CF60011707F = {
 						CreatedOnToolsVersion = 6.1;
 						DevelopmentTeam = MLGRKD657P;
+						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.Sandbox = {
 								enabled = 1;
@@ -927,9 +928,10 @@
 				CLANG_LINK_OBJC_RUNTIME = YES;
 				CODE_SIGN_ENTITLEMENTS = SpikeRecorder.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "3rd Party Mac Developer Application: Backyard Brains (MLGRKD657P)";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = MLGRKD657P;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -972,10 +974,11 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_LINK_OBJC_RUNTIME = YES;
 				CODE_SIGN_ENTITLEMENTS = SpikeRecorder.entitlements;
-				CODE_SIGN_IDENTITY = "Mac Developer";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "3rd Party Mac Developer Application: Backyard Brains (MLGRKD657P)";
+				CODE_SIGN_IDENTITY = "Developer ID Application: Backyard Brains (MLGRKD657P)";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application: Backyard Brains (MLGRKD657P)";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = MLGRKD657P;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
