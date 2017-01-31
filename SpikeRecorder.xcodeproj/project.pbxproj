@@ -974,8 +974,8 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_LINK_OBJC_RUNTIME = YES;
 				CODE_SIGN_ENTITLEMENTS = SpikeRecorder.entitlements;
-				CODE_SIGN_IDENTITY = "Developer ID Application: Backyard Brains (MLGRKD657P)";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application: Backyard Brains (MLGRKD657P)";
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = MLGRKD657P;

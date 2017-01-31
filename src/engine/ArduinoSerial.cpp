@@ -766,7 +766,7 @@ Data ~5 frames before
     {
         std::stringstream sstm;
         sstm << "a:" << (uint8_t)value<<";\n";
-        writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
+       // writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
 
     }
 
