@@ -2,8 +2,8 @@
 #include <sstream>
 #include "RecordingManager.h"
 
-#define BYB_VID 0x2047
-#define BYB_PID 0x3e0
+#define BYB_VID 0x2E73//0x2047
+#define BYB_PID 0x1//0x3e0
 
 #define SIZE_OF_MAIN_CIRCULAR_BUFFER 40000
 
