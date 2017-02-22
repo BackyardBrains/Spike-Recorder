@@ -356,6 +356,27 @@ namespace BackyardBrains {
 
         return fd;
     }
+    
+    void ArduinoSerial::checkAllPortsForArduino()
+    {
+        getAllPortsList();
+       
+        std::list<std::string>::iterator list_it;
+        for(list_it = list.begin(); list_it!= list.end(); list_it++)
+        {
+            std::cout<<list_it->c_str()<<"\n";
+            if(openPort(list_it->c_str()) != -1)
+            {
+                //check if it is our Arduino board
+                
+                
+            }
+            
+        }
+            
+        
+    
+    }
 
     const char * ArduinoSerial::currentPortName()
     {

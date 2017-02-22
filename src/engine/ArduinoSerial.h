@@ -55,6 +55,7 @@ namespace BackyardBrains {
         bool portOpened();
         void sendEventMessage(int eventType);
         void sendPotentiometerMessage(uint8_t value);
+        void checkAllPortsForArduino();
     private:
         char circularBuffer[SIZE_OF_CIRC_BUFFER];
         int cBufHead;
