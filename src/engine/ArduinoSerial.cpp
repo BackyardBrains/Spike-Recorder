@@ -1081,7 +1081,8 @@ static const char *devnames[] = {
 	if (ret) {
 		printf("Detect Serial using QueryDosDeviceA: ");
 		for (p = buffer; *p; p += strlen(p) + 1) {
-			printf(":  %s", p);
+            Log::msg(":  %s", p);
+			printf(":  %s\n", p);
 			if (strncmp(p, "COM", 3)) continue;
 			 std::stringstream sstm;
             sstm << p << ":";
