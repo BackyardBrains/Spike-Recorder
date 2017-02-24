@@ -94,7 +94,6 @@ class HIDUsbManager
         void executeOneMessage(std::string typeOfMessage, std::string valueOfMessage, int offsetin);
         void executeContentOfMessageBuffer(int offset);
         int escapeSequenceDetectorIndex;
-        int watchDogTimerForEscapeSequence;
         bool weAreInsideEscapeSequence;
         char messagesBuffer[SIZE_OF_MESSAGES_BUFFER];//contains payload inside escape sequence
         int messageBufferIndex;

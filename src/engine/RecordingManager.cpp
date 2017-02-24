@@ -225,6 +225,7 @@ void RecordingManager::scanForHIDDevices()
     {
        std::cout<<"Error while scanning HID devices\n";
     }
+    
 
 }
 
@@ -242,6 +243,8 @@ void RecordingManager::scanUSBDevices()
         {
                 std::cout<<"Present ...\n";
         }
+        
+       // _arduinoSerial.checkAllPortsForArduino();
        // std::cout<<"Elapsed: "<<timerUSB<<"\n";
     }
 
@@ -1227,7 +1230,7 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 
 
 
-	int samplesRead = _arduinoSerial.readPort(buffer);
+	int samplesRead = _arduinoSerial.getNewSamples(buffer);
     //	uint32_t numTicksAfter = SDL_GetTicks();
 	//std::cout<<"Time: "<<SDL_GetTicks()<< " It takes: " <<SDL_GetTicks() - numTicksBefore<<" Samples read: "<<samplesRead<<"\n";
 	//numTicksBefore = SDL_GetTicks();
