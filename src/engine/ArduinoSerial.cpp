@@ -59,14 +59,14 @@
 namespace BackyardBrains {
 
     ArduinoSerial::ArduinoSerial() : _portOpened(false) {
-        
+
         escapeSequence[0] = 255;
         escapeSequence[1] = 255;
         escapeSequence[2] = 1;
         escapeSequence[3] = 1;
         escapeSequence[4] = 128;
         escapeSequence[5] = 255;
-        
+
         endOfescapeSequence[0] = 255;
         endOfescapeSequence[1] = 255;
         endOfescapeSequence[2] = 1;
@@ -77,12 +77,12 @@ namespace BackyardBrains {
         scanningThread = std::thread(&ArduinoSerial::scanPortsThreadFunction, this, this);
         scanningThread.detach();
     }
-    
-    
+
+
 //---------------------------------- Port scanning and opening ------------------------------
 #pragma mark - Port scanning and opening
-    
-    
+
+
 //
 // Thread that scans if we have Arduino attached to computer
 //
@@ -95,16 +95,16 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
 
                 usleep(500000);
         #else
-                sleep(500)
+                Sleep(700);
         #endif
-        
+
        // ref->checkAllPortsForArduino();
     }
 }
-    
-    
-    
-    
+
+
+
+
 #if defined(__linux__)
     // All linux serial port device names.  Hopefully all of them anyway.  This
     // is a long list, but each entry takes only a few bytes and a quick strcmp()
@@ -164,16 +164,16 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
     };
 #define NUM_DEVNAMES (sizeof(devnames) / sizeof(const char *))
 #endif
-    
-    
+
+
 #ifdef __APPLE__
-    
+
     void ArduinoSerial::macos_ports(io_iterator_t  * PortIterator)
     {
         io_object_t modemService;
         CFTypeRef nameCFstring;
         char s[MAXPATHLEN];
-        
+
         while ((modemService = IOIteratorNext(*PortIterator))) {
             nameCFstring = IORegistryEntryCreateCFProperty(modemService,
                                                            CFSTR(kIOCalloutDeviceKey), kCFAllocatorDefault, 0);
@@ -187,15 +187,15 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
             IOObjectRelease(modemService);
         }
     }
-    
+
 #endif // __APPLE__
-    
-    
+
+
     // Return a list of all serial ports
     void ArduinoSerial::getAllPortsList()
     {
         list.clear();
-        
+
 #if defined(__linux__)
         // This is ugly guessing, but Linux doesn't seem to provide anything else.
         // If there really is an API to discover serial devices on Linux, please
@@ -211,7 +211,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
         char s[512];
         int fd, bits;
         termios mytios;
-        
+
         dir = opendir("/dev/");
         if (dir == NULL) return ;
         for (i=0; i<NUM_DEVNAMES; i++) len[i] = strlen(devnames[i]);
@@ -266,7 +266,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
         }
         closedir(dir);
 #elif defined(__APPLE__)
-        
+
         // adapted from SerialPortSample.c, by Apple
         // http://developer.apple.com/samplecode/SerialPortSample/listing2.html
         // and also testserial.c, by Keyspan
@@ -300,7 +300,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
         macos_ports(&serialPortIterator);
         IOObjectRelease(serialPortIterator);
 #elif defined(_WIN32)
-        
+
         // http://msdn.microsoft.com/en-us/library/aa365461(VS.85).aspx
         // page with 7 ways - not all of them work!
         // http://www.naughter.com/enumser.html
@@ -312,7 +312,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
         char *buffer, *p;
         //DWORD size = QUERYDOSDEVICE_BUFFER_SIZE;
         DWORD ret;
-        
+
         buffer = (char *)malloc(QUERYDOSDEVICE_BUFFER_SIZE);
         if (buffer == NULL) return;
         memset(buffer, 0, QUERYDOSDEVICE_BUFFER_SIZE);
@@ -320,8 +320,9 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
         if (ret) {
             printf("Detect Serial using QueryDosDeviceA: ");
             for (p = buffer; *p; p += strlen(p) + 1) {
-                printf(":  %s", p);
+                //printf(":  %s", p);
                 if (strncmp(p, "COM", 3)) continue;
+                printf("\nFound port  %s\n", p);
                 std::stringstream sstm;
                 sstm << p << ":";
                 list.push_back(sstm.str().c_str());
@@ -342,24 +343,24 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
                     std::stringstream sstm;
                     sstm << "COM" << i;
                     list.push_back(sstm.str().c_str());
-                    
+
                     //list.Add(name);
                     printf(":  %s", buf);
                 }
             }
         }
         free(buffer);
-        
-        
+
+
 #endif // defined
-        
+
         list.sort();
         return;
     }
-    
 
-    
-    
+
+
+
 
     int ArduinoSerial::openPort(const char *portName)
     {
@@ -429,7 +430,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
         if (errno == EACCES)
         {
             std::cout<<"Unable to access "<< portName<< ", insufficient permission";
-            
+
         }
         else if (errno == EISDIR)
         {
@@ -563,8 +564,11 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
 		snprintf(name_createfile, sizeof(name_createfile), "%s", _portName.c_str());
 		snprintf(name_commconfig, sizeof(name_commconfig), "%s", _portName.c_str());
 	}
+
 	len = sizeof(COMMCONFIG);
-	if (GetDefaultCommConfig(name_commconfig, &cfg, &len)) {
+	//Stanislav commented this out since it was freezing app for 100ms and
+	//it did some weard things with windows (refreshing file list in dev tool and disabling language selector in tray bar)
+	/*if (GetDefaultCommConfig(name_commconfig, &cfg, &len)) {
 		// this prevents unintentionally raising DTR when opening
 		// might only work on COM1 to COM9
 		got_default_cfg = 1;
@@ -575,6 +579,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
 	} else {
 		printf("error with GetDefaultCommConfig\n");
 	}
+*/
 	port_handle = CreateFile(name_createfile, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
 	//port_handle = CreateFile(name_createfile, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, NULL, NULL);
 	if (port_handle == INVALID_HANDLE_VALUE) {
@@ -583,6 +588,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
 		return -1;
 	}
 	len = sizeof(COMMCONFIG);
+
 	if (!GetCommConfig(port_handle, &port_cfg, &len)) {
 		CloseHandle(port_handle);
 		win32_err(buf);
@@ -592,6 +598,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
 	if (!got_default_cfg) {
 		memcpy(&port_cfg_orig, &port_cfg, sizeof(COMMCONFIG));
 	}
+
 	// http://msdn2.microsoft.com/en-us/library/aa363188(VS.85).aspx
     port_cfg.dcb.BaudRate = 230400; //for high speed 2Mbit/s communication just change this number to 2000000
 
@@ -625,7 +632,6 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
 	}
 	// http://msdn2.microsoft.com/en-us/library/aa363190(VS.85).aspx
 	// setting to all zeros means timeouts are not used
-
 	timeouts.ReadIntervalTimeout		= MAXDWORD;
 	timeouts.ReadTotalTimeoutMultiplier	= 0;
 	timeouts.ReadTotalTimeoutConstant	= 0;
@@ -650,7 +656,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
         escapeSequenceDetectorIndex = 0;
         weAreInsideEscapeSequence = false;
         messageBufferIndex =0;
-        
+
         _portOpened = true;
 
 
@@ -660,51 +666,56 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
 
         return fd;
     }
-    
-    
-    
-    
-    
+
+
+
+
+
     void ArduinoSerial::checkAllPortsForArduino()
     {
         if(!_portOpened)
         {
             std::cout<<"\nCheck for Arduino boards \n";
             getAllPortsList();
-           
+
             std::list<std::string>::iterator list_it;
             for(list_it = list.begin(); list_it!= list.end(); list_it++)
             {
                 std::cout<<"\nTry Port: "<<list_it->c_str()<<"\n";
+               /* std::size_t found=list_it->find("COM1");
+                if (found!=std::string::npos)
+                {
+                    continue;
+                }*/
                 if(openPort(list_it->c_str()) != -1)
                 {
                     //check if it is our Arduino board
                     hardwareType.clear();
                     char buffer[8024];
                     std::cout<<"Port: "<<list_it->c_str()<<" Sucess\n";
-                    
+
                     time_t firstSeconds, secondSeconds;
-                    
+
                     firstSeconds = time(NULL);
-                    
+
                     while(time(NULL)-firstSeconds<2)
                     {
                        // std::cout<<"Port: "<<list_it->c_str()<<" read\n";
-                        
-                        
+
+
                         //askForBoardType();
                         askForBoardType();
                         #if defined(__APPLE__) || defined(__linux__)
-                                                
+
                                                 usleep(100000);
                         #else
-                                                sleep(100)
+                                                Sleep(100);
                         #endif
-                        
-                        
+
+
                         int bytesRead = readPort(buffer);
-                        
-                        
+
+
                         for(int i=0;i<bytesRead;i++)
                         {
                             if(weAreInsideEscapeSequence)
@@ -714,18 +725,18 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
                             }
                             testEscapeSequence(((unsigned int) buffer[i]) & 0xFF,  (i/2)/_numberOfChannels);
                         }
-                        
+
                         if(hardwareType.length()>0)
                         {
                             //found Arduino board that responded
                             std::cout<<"Found Arduino !!!!!!!\n";
                             break;
                         }
-                        
-                        
-                        
-                        
-                       
+
+
+
+
+
                     }
                     std::cout<<"Close Port: "<<list_it->c_str()<<"\n";
                     closeSerial();
@@ -734,50 +745,53 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
                 {
                     std::cout<<"\nPort: "<<list_it->c_str()<<" Failed!\n";
                 }
-                
+
             }
+
+
+
         }
-        
+
     }
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
     // Close the port
     void ArduinoSerial::closeSerial(void)
     {
-        
+
         if(_portOpened)
         {
             setNumberOfChannelsAndSamplingRate(1, maxSamplingRate());
 #if defined(__linux__) || defined(__APPLE__)
             // does this really work properly (and is it thread safe) on Linux??
             //tcflush(fd, TCIOFLUSH);
-            
+
             close(fd);
 #elif defined(_WIN32)
             //SetCommConfig(port_handle, &port_cfg_orig, sizeof(COMMCONFIG));
             CloseHandle(port_handle);
 #endif
             _portOpened = false;
-            
+
         }
     }
-    
 
-    
-    
-    
+
+
+
+
 //---------------------------------- Reading and processing ------------------------------
 #pragma mark - Reading and processing
 
-    
+
     int ArduinoSerial::readPort(char * buffer)
     {
-        
+
         ssize_t size = -1;
 #if defined(__APPLE__) || defined(__linux__)
         // Initialize file descriptor sets
@@ -790,10 +804,10 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
         struct timeval timeout;
         timeout.tv_sec = 0;
         timeout.tv_usec = 60000;
-        
-        
-        
-        
+
+
+
+
         if (select(fd + 1, &read_fds, &write_fds, &except_fds, &timeout) == 1)
         {
             size = read(fd, buffer, 4000);
@@ -806,7 +820,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
                 triedToConfigureAgain = true;
                 //setNumberOfChannelsAndSamplingRate(_numberOfChannels, maxSamplingRate());
             }
-            
+
         }
         if (size < 0)
         {
@@ -827,10 +841,10 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
             std::cout<<"Serial read error: 3\n";
         }
 #endif
-        
+
 #if defined(_WIN32)
-        
-        
+
+
         // first, we'll find out how many bytes have been received
         // and are currently waiting for us in the receive buffer.
         //   http://msdn.microsoft.com/en-us/library/ms885167.aspx
@@ -840,7 +854,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
         DWORD errmask=0, num_read, num_request;
         OVERLAPPED ov;
         int count = 4000;
-        
+
         if (!ClearCommError(port_handle, &errmask, &st))
         {
             return -1;
@@ -850,30 +864,30 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
         {
             return 0;
         }
-        
+
         // now do a ReadFile, now that we know how much we can read
         // a blocking (non-overlapped) read would be simple, but win32
         // is all-or-nothing on async I/O and we must have it enabled
         // because it's the only way to get a timeout for WaitCommEvent
-        
-        
+
+
         num_request = ((DWORD)count < st.cbInQue) ? (DWORD)count : st.cbInQue;
-        
-        
-        
-        
-        
+
+
+
+
+
         ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
         if (ov.hEvent == NULL) return -1;
         ov.Internal = ov.InternalHigh = 0;
         ov.Offset = ov.OffsetHigh = 0;
-        
+
         if (ReadFile(port_handle, buffer, num_request, &num_read, &ov)) {
             // this should usually be the result, since we asked for
             // data we knew was already buffered
             //printf("Read, immediate complete, num_read=%lu\n", num_read);
             size = num_read;
-            
+
             // std::cout <<num_request<<" -- " <<num_request-num_read<<"\n";
         } else {
             if (GetLastError() == ERROR_IO_PENDING) {
@@ -893,13 +907,13 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
             }
         }
         CloseHandle(ov.hEvent);
-        
+
 #endif // defined
-        
+
         return (int)size;
     }
-    
-    
+
+
     //
     // Read port and process frames into samples
     //
@@ -910,7 +924,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
         int numberOfSamples =  processDataIntoSamples(buffer, bytesRead, obuffer);
         return numberOfSamples;
     }
-    
+
     //
     // Process raw data from serial port
     // Extract frames and extract samples from frames
@@ -921,8 +935,8 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
         int obufferIndex = 0;
         int writeInteger = 0;
         // std::cout<<"------------------ Size: "<<size<<"\n";
-        
-        
+
+
         for(int i=0;i<size;i++)
         {
             if(weAreInsideEscapeSequence)
@@ -935,7 +949,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
                 circularBuffer[cBufHead++] = buffer[i];
                  //uint debugMSB  = ((uint)(buffer[i])) & 0xFF;
                  // std::cout<<"M: " << debugMSB<<"\n";
-                
+
                 if(cBufHead>=SIZE_OF_CIRC_BUFFER)
                 {
                     cBufHead = 0;
@@ -954,9 +968,9 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
         int numberOfParsedChannels;
         while (haveData)
         {
-            
+
             MSB  = ((uint)(circularBuffer[cBufTail])) & 0xFF;
-            
+
             if(MSB > 127)//if we are at the begining of frame
             {
                 weAlreadyProcessedBeginingOfTheFrame = false;
@@ -971,8 +985,8 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
                         // std::cout<<"Tail: "<<cBufTail<<"\n";
                         //  MSB  = ((uint)(circularBuffer[cBufTail])) & 0xFF;
                         //std::cout<< cBufTail<<" -M "<<MSB<<"\n";
-                        
-                        
+
+
                         MSB  = ((uint)(circularBuffer[cBufTail])) & 0xFF;
                         if(weAlreadyProcessedBeginingOfTheFrame && MSB>127)
                         {
@@ -983,7 +997,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
                         }
                         MSB  = ((uint)(circularBuffer[cBufTail])) & 0x7F;
                         weAlreadyProcessedBeginingOfTheFrame = true;
-                        
+
                         cBufTail++;
                         if(cBufTail>=SIZE_OF_CIRC_BUFFER)
                         {
@@ -998,15 +1012,15 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
                         }
                         // std::cout<< cBufTail<<" -L "<<LSB<<"\n";
                         LSB  = ((uint)(circularBuffer[cBufTail])) & 0x7F;
-                        
+
                         MSB = MSB<<7;
                         writeInteger = LSB | MSB;
                         //  if(writeInteger>300)
                         //  {
                         //      logData = true;
                         //  }
-                        
-                        
+
+
                         numberOfParsedChannels++;
                         if(numberOfParsedChannels>numberOfChannels())
                         {
@@ -1016,8 +1030,8 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
                             break;//continue as if we have new frame
                         }
                         obuffer[obufferIndex++] = writeInteger*30;
-                        
-                        
+
+
                         if(areWeAtTheEndOfFrame())
                         {
                             break;
@@ -1052,15 +1066,15 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
                 haveData = false;
                 break;
             }
-            
-            
+
+
         }
-        
+
         return numberOfFrames;
     }
-    
-    
-   
+
+
+
 
     bool ArduinoSerial::checkIfNextByteExist()
     {
@@ -1113,8 +1127,8 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
         }
         return false;
     }
-    
-    
+
+
     //
     // Detect start-of-message escape sequence and end-of-message sequence
     // and set up weAreInsideEscapeSequence.
@@ -1122,12 +1136,12 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
     //
     void ArduinoSerial::testEscapeSequence(unsigned int newByte, int offset)
     {
-        
-        
-        
+
+
+
         if(weAreInsideEscapeSequence)
         {
-            
+
             if(messageBufferIndex>=SIZE_OF_MESSAGES_BUFFER)
             {
                 weAreInsideEscapeSequence = false; //end of escape sequence
@@ -1148,7 +1162,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
             {
                 escapeSequenceDetectorIndex = 0;
             }
-            
+
         }
         else
         {
@@ -1164,7 +1178,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
                     }
                     messageBufferIndex = 0;//prepare for receiving message
                     escapeSequenceDetectorIndex = 0;//prepare for detecting end of esc. sequence
-                    
+
                     //rewind writing head and effectively delete escape sequence from data
                     for(int i=0;i<ESCAPE_SEQUENCE_LENGTH;i++)
                     {
@@ -1181,11 +1195,11 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
                 escapeSequenceDetectorIndex = 0;
             }
         }
-        
+
     }
-    
-    
-    
+
+
+
     //
     // Parse and check what we need to do with message that we received
     // from microcontroller
@@ -1201,9 +1215,9 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
         }
         int endOfMessage = 0;
         int startOfMessage = 0;
-        
-        
-        
+
+
+
         while(stillProcessing)
         {
             //std::cout<<"----- MB Arduino: "<< currentPositionInString<<"     :"<<messagesBuffer<<"\n";
@@ -1214,7 +1228,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
                 {
                     if(message[k]==':')
                     {
-                        
+
                         std::string typeOfMessage(message, k);
                         std::string valueOfMessage(message+k+1, (endOfMessage-startOfMessage)-k-1);
                         executeOneMessage(typeOfMessage, valueOfMessage, offset);
@@ -1224,47 +1238,47 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
                 startOfMessage = endOfMessage+1;
                 currentPositionInString++;
                 endOfMessage++;
-                
+
             }
             else
             {
                 message[currentPositionInString-startOfMessage] = messagesBuffer[currentPositionInString];
                 currentPositionInString++;
                 endOfMessage++;
-                
+
             }
-            
+
             if(currentPositionInString>=SIZE_OF_MESSAGES_BUFFER)
             {
                 stillProcessing = false;
             }
         }
-        
+
         //free(message);
-        
+
     }
-    
-    
+
+
     void ArduinoSerial::executeOneMessage(std::string typeOfMessage, std::string valueOfMessage, int offsetin)
     {
         std::cout<<"\nMESSAGE Arduino: "<<typeOfMessage<<" - "<<valueOfMessage<<"\n";
-      
+
         if(typeOfMessage == "HWT")
         {
             hardwareType = valueOfMessage;
         }
-        
+
         /*if(typeOfMessage == "EVNT")
         {
             int mnum = (int)((unsigned int)valueOfMessage[0]-48);
             int64_t offset = 0;
             _manager->addMarker(std::string(1, mnum+'0'), offset+offsetin);
-            
+
         }*/
     }
-    
-    
-    
+
+
+
     //---------------------------------- Getters/parameters ------------------------------
 #pragma mark - Getters/parameters
     const char * ArduinoSerial::currentPortName()
@@ -1297,7 +1311,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
 
 //---------------------------------- Messages - Write ------------------------------------------------------
 #pragma mark - Messages - Write
-    
+
     void ArduinoSerial::setNumberOfChannelsAndSamplingRate(int numberOfChannels, int samplingRate)
     {
         _numberOfChannels = numberOfChannels;
@@ -1325,13 +1339,13 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
 
     }
 
-    
+
     void ArduinoSerial::askForBoardType()
     {
         std::stringstream sstm;
         sstm << "b:;\n";
          writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
-        
+
     }
 
     int ArduinoSerial::writeToPort(const void *ptr, int len)
