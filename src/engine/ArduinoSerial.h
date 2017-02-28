@@ -14,6 +14,8 @@
 #define SIZE_OF_MESSAGES_BUFFER 64
 #define ESCAPE_SEQUENCE_LENGTH 6
 
+
+
 #include <iostream>
 #include <fcntl.h>
 #include <list>
@@ -42,14 +44,40 @@
 
 namespace BackyardBrains {
 
+    enum SerialDevice {
+        unknown = 0,
+        muscle = 1,
+        plant = 2,
+        heart = 3
+    };
+    
+    
     class ArduinoSerial {
     public:
+        enum SerialDevice {
+            unknown = 0,
+            muscle = 1,
+            plant = 2,
+            heart = 3
+        };
+        struct SerialPort
+        {
+            SerialPort()
+            {
+                deviceType = ArduinoSerial::SerialDevice::unknown;
+            }
+            std::string portName;
+            SerialDevice deviceType;
+        };
+        
+        
         ArduinoSerial();
-        int openPort(const char *portName);
+        int openSerialDevice(const char *portName);
         int readPort(char * buffer);
         int getNewSamples(int16_t * obuffer);
         int processDataIntoSamples(char * buffer, int size, int16_t * obuffer);
         std::list<std::string> list;
+        std::list<SerialPort> ports;
         void getAllPortsList();
         void closeSerial(void);
         void setNumberOfChannelsAndSamplingRate(int numberOfChannels, int samplingRate);
@@ -62,14 +90,21 @@ namespace BackyardBrains {
         bool portOpened();
         void sendEventMessage(int eventType);
         void sendPotentiometerMessage(uint8_t value);
-        void checkAllPortsForArduino();
+        void checkAllPortsForArduino(ArduinoSerial * workingArduinoRef);
         void askForBoardType();
         //std::string firmwareVersion;
         //std::string hardwareVersion;
         std::string hardwareType;
+        SerialPort currentPort;
+        void startScanningForArduinos(ArduinoSerial * refToWorkingArduinoSerial);
+        static bool openPortLock;
     private:
+        int openPort(const char *portName);
         std::thread scanningThread;
-        void scanPortsThreadFunction(ArduinoSerial * ref);
+        void scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSerial * workingArduinoRef);
+        int openSerialDeviceWithoutLock(const char *portName);
+        void refreshPortsDataList();
+        void setDeviceTypeToCurrentPort(SerialDevice deviceType);
         
         char circularBuffer[SIZE_OF_CIRC_BUFFER];
         int cBufHead;
@@ -108,7 +143,8 @@ namespace BackyardBrains {
         bool _portOpened;
         bool triedToConfigureAgain;
     };
-
+    
+    
 }
 
 #endif /* defined(__SpikeRecorder__BYBArduino__) */

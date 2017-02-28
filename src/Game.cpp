@@ -85,7 +85,20 @@ void Game::loadResources() {
     Widgets::TextureGL::load("data/usbcon.bmp");
     Widgets::TextureGL::load("data/usbconhigh.bmp");
     Widgets::TextureGL::load("data/usbdiscon.bmp");
-	Widgets::TextureGL::load("data/heart.bmp");
+    
+    Widgets::TextureGL::load("data/plantcon.bmp");
+    Widgets::TextureGL::load("data/plantconhigh.bmp");
+    Widgets::TextureGL::load("data/plantdiscon.bmp");
+ 
+    Widgets::TextureGL::load("data/musclecon.bmp");
+    Widgets::TextureGL::load("data/muscleconhigh.bmp");
+    Widgets::TextureGL::load("data/musclediscon.bmp");
+ 
+    Widgets::TextureGL::load("data/heartcon.bmp");
+    Widgets::TextureGL::load("data/heartconhigh.bmp");
+    Widgets::TextureGL::load("data/heartdiscon.bmp");
+
+    Widgets::TextureGL::load("data/heart.bmp");
 	Widgets::TextureGL::load("data/speaker.bmp");
 	Widgets::TextureGL::load("data/speakeroff.bmp");
 	Widgets::TextureGL::load("data/bncconn.bmp");

@@ -58,6 +58,8 @@
 
 namespace BackyardBrains {
 
+    bool ArduinoSerial::openPortLock = false;
+    
     ArduinoSerial::ArduinoSerial() : _portOpened(false) {
 
         escapeSequence[0] = 255;
@@ -74,8 +76,7 @@ namespace BackyardBrains {
         endOfescapeSequence[4] = 129;
         endOfescapeSequence[5] = 255;
         //start thread that will periodicaly read HID
-        scanningThread = std::thread(&ArduinoSerial::scanPortsThreadFunction, this, this);
-        scanningThread.detach();
+       
     }
 
 
@@ -83,10 +84,18 @@ namespace BackyardBrains {
 #pragma mark - Port scanning and opening
 
 
+void ArduinoSerial::startScanningForArduinos(ArduinoSerial * refToWorkingArduinoSerial)
+{
+    
+    scanningThread = std::thread(&ArduinoSerial::scanPortsThreadFunction, this, this, refToWorkingArduinoSerial);
+    scanningThread.detach();
+}
+    
+    
 //
 // Thread that scans if we have Arduino attached to computer
 //
-void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
+void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSerial * workingArduinoRef)
 {
 
     while(1)
@@ -98,7 +107,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
                 Sleep(700);
         #endif
 
-       // ref->checkAllPortsForArduino();
+        selfRef->checkAllPortsForArduino(workingArduinoRef);
     }
 }
 
@@ -180,7 +189,10 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
             if (nameCFstring) {
                 if (CFStringGetCString((const __CFString *)nameCFstring,
                                        s, sizeof(s), kCFStringEncodingASCII)) {
-                    list.push_back(s);
+                    if(strstr(s,"Bluetooth")==NULL)
+                    {
+                        list.push_back(s);
+                    }
                 }
                 CFRelease(nameCFstring);
             }
@@ -355,27 +367,94 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
 #endif // defined
 
         list.sort();
+        refreshPortsDataList();
+        
         return;
     }
 
+    
+    
+    void ArduinoSerial::refreshPortsDataList()
+    {
+    
+        std::list<std::string>::iterator list_it;
+        std::list<SerialPort>::iterator portsIterator;
+        
+        //Add new to list of ports
+        
+        for(list_it = list.begin(); list_it!= list.end(); list_it++)
+        {
+            bool portAlreadyInPortList = false;
+            for(portsIterator = ports.begin(); portsIterator!= ports.end(); portsIterator++)
+            {
+                std::size_t found=list_it->find(portsIterator->portName);
+                if (found!=std::string::npos)
+                {
+                    portAlreadyInPortList = true;
+                    break;
+                }
+            }
+            
+            if(portAlreadyInPortList == false)
+            {
+                SerialPort newPort;
+                newPort.portName = *list_it;
+                newPort.deviceType = ArduinoSerial::unknown;
+                ports.push_back(newPort);
+            }
+        }
+        
+        //remove nonexisting from list of ports
+        for(portsIterator = ports.begin(); portsIterator!= ports.end(); portsIterator++)
+        {
+            bool portFoundInList = false;
+            for(list_it = list.begin(); list_it!= list.end(); list_it++)
+            {
 
+                std::size_t found=list_it->find(portsIterator->portName);
+                if (found!=std::string::npos)
+                {
+                    portFoundInList = true;
+                    break;
+                }
+            }
+            
+            if(portFoundInList == false)
+            {
+                portsIterator = ports.erase(portsIterator);
+                portsIterator--;
+            }
+        }
+    }
+    
+    
+    void ArduinoSerial::setDeviceTypeToCurrentPort(SerialDevice deviceType)
+    {
+        
+        std::list<SerialPort>::iterator portsIterator;
 
-
-
+        for(portsIterator = ports.begin(); portsIterator!= ports.end(); portsIterator++)
+        {
+            std::size_t found=portsIterator->portName.find(_portName);
+            if (found!=std::string::npos)
+            {
+                portsIterator->deviceType = deviceType;
+                currentPort.deviceType = deviceType;
+                currentPort.portName = portsIterator->portName;
+                break;
+            }
+        }
+    }
+    
+    
+    
     int ArduinoSerial::openPort(const char *portName)
     {
-
-
-        _portName = std::string(portName);
-        _portOpened = false;
-        triedToConfigureAgain = false;
-        closeSerial();
-        fd = 0;
-        _numberOfChannels = 1;
+        int portDescriptor;
 #if defined(__APPLE__) || defined(__linux__)
         struct termios options;
-
-        fd = open(portName, O_RDWR | O_NOCTTY | O_NDELAY);//O_SHLOCK
+        
+        portDescriptor = open(portName, O_RDWR | O_NOCTTY | O_NDELAY);//O_SHLOCK
         std::cout<<"Sleep start\n";
         usleep(300000);
         std::cout<<"Sleep end\n";
@@ -383,38 +462,38 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
 #endif
 #ifdef __APPLE__
         std::stringstream sstm;
-
-        if (fd < 0) {
+        
+        if (portDescriptor < 0) {
             sstm << "Unable to open " << portName << ", " << strerror(errno);
             errorString = sstm.str();
             std::cout<<"Unable to open "<<portName<<", "<<strerror(errno)<<"\n";
             return -1;
         }
-        if (ioctl(fd, TIOCEXCL) == -1) {
-            close(fd);
+        if (ioctl(portDescriptor, TIOCEXCL) == -1) {
+            close(portDescriptor);
             sstm << "Unable to get exclussive access to port " << portName;;
             errorString = sstm.str();
             std::cout<<"Unable to get exclussive access to port "<<portName<<"\n";
             return -1;
         }
-        if (ioctl(fd, TIOCMGET, &bits) < 0) {
-            close(fd);
+        if (ioctl(portDescriptor, TIOCMGET, &bits) < 0) {
+            close(portDescriptor);
             sstm <<"Unable to query serial port signals on " << portName;
             errorString = sstm.str();
             std::cout<<"Unable to query serial port signals on "<<portName<<"\n";
             return -1;
         }
         bits &= ~(TIOCM_DTR | TIOCM_RTS);
-        if (ioctl(fd, TIOCMSET, &bits) < 0) {
-            close(fd);
+        if (ioctl(portDescriptor, TIOCMSET, &bits) < 0) {
+            close(portDescriptor);
             sstm <<"Unable to control serial port signals on " << portName;
             errorString = sstm.str();
             std::cout<<"Unable to control serial port signals on "<<portName<<"\n";
             return -1;
         }
         struct termios settings_orig;
-        if (tcgetattr(fd, &settings_orig) < 0) {
-            close(fd);
+        if (tcgetattr(portDescriptor, &settings_orig) < 0) {
+            close(portDescriptor);
             sstm <<"Unable to access baud rate on port " << portName;
             errorString = sstm.str();
             std::cout<<"Unable to access baud rate on port "<<portName<<"\n";
@@ -422,279 +501,325 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
         }
 #endif
 #ifdef __linux__
- // struct serial_struct kernel_serial_settings;
-    struct termios settings_orig;
-    //struct termios settings;
-    if (fd < 0)
-    {
-        if (errno == EACCES)
+        // struct serial_struct kernel_serial_settings;
+        struct termios settings_orig;
+        //struct termios settings;
+        if (portDescriptor < 0)
         {
-            std::cout<<"Unable to access "<< portName<< ", insufficient permission";
-
+            if (errno == EACCES)
+            {
+                std::cout<<"Unable to access "<< portName<< ", insufficient permission";
+                
+            }
+            else if (errno == EISDIR)
+            {
+                std::cout<< "Unable to open " << portName <<
+                ", Object is a directory, not a serial port";
+            }
+            else if (errno == ENODEV || errno == ENXIO)
+            {
+                std::cout<< "Unable to open " << portName <<
+                ", Serial port hardware not installed";
+            }
+            else if (errno == ENOENT)
+            {
+                std::cout<< "Unable to open " << portName <<
+                ", Device name does not exist";
+            }
+            else
+            {
+                std::cout<< "Unable to open " << portName; //<<
+                
+            }
+            return -1;
         }
-        else if (errno == EISDIR)
+        if (ioctl(portDescriptor, TIOCMGET, &bits) < 0)
         {
-            std::cout<< "Unable to open " << portName <<
-                     ", Object is a directory, not a serial port";
+            close(portDescriptor);
+            std::cout<< "Unable to query serial port signals";
+            return -1;
         }
-        else if (errno == ENODEV || errno == ENXIO)
+        bits &= ~(TIOCM_DTR | TIOCM_RTS);
+        if (ioctl(portDescriptor, TIOCMSET, &bits) < 0)
         {
-            std::cout<< "Unable to open " << portName <<
-                     ", Serial port hardware not installed";
+            close(portDescriptor);
+            std::cout<< "Unable to control serial port signals";
+            return -1;
         }
-        else if (errno == ENOENT)
+        if (tcgetattr(portDescriptor, &settings_orig) != 0)
         {
-            std::cout<< "Unable to open " << portName <<
-                     ", Device name does not exist";
+            close(portDescriptor);
+            std::cout<< "Unable to query serial port settings (perhaps not a serial port)";
+            return -1;
         }
-        else
-        {
-            std::cout<< "Unable to open " << portName; //<<
-
-        }
-        return -1;
-    }
-    if (ioctl(fd, TIOCMGET, &bits) < 0)
-    {
-        close(fd);
-        std::cout<< "Unable to query serial port signals";
-        return -1;
-    }
-    bits &= ~(TIOCM_DTR | TIOCM_RTS);
-    if (ioctl(fd, TIOCMSET, &bits) < 0)
-    {
-        close(fd);
-        std::cout<< "Unable to control serial port signals";
-        return -1;
-    }
-    if (tcgetattr(fd, &settings_orig) != 0)
-    {
-        close(fd);
-        std::cout<< "Unable to query serial port settings (perhaps not a serial port)";
-        return -1;
-    }
-    /*memset(&settings, 0, sizeof(settings));
-    settings.c_iflag = IGNBRK | IGNPAR;
-    settings.c_cflag = CS8 | CREAD | HUPCL | CLOCAL;
-    Set_baud(baud_rate);
-    if (ioctl(port_fd, TIOCGSERIAL, &kernel_serial_settings) == 0) {
-    	kernel_serial_settings.flags |= ASYNC_LOW_LATENCY;
-    	ioctl(port_fd, TIOCSSERIAL, &kernel_serial_settings);
-    }
-    tcflush(port_fd, TCIFLUSH);*/
+        /*memset(&settings, 0, sizeof(settings));
+         settings.c_iflag = IGNBRK | IGNPAR;
+         settings.c_cflag = CS8 | CREAD | HUPCL | CLOCAL;
+         Set_baud(baud_rate);
+         if (ioctl(port_fd, TIOCGSERIAL, &kernel_serial_settings) == 0) {
+         kernel_serial_settings.flags |= ASYNC_LOW_LATENCY;
+         ioctl(port_fd, TIOCSSERIAL, &kernel_serial_settings);
+         }
+         tcflush(port_fd, TCIFLUSH);*/
 #endif
 #if defined(__APPLE__) || defined(__linux__)
-        if (fd == -1)
+        if (portDescriptor == -1)
         {
             std::cout<<"Can't open serial port\n";
             return -1;
         }
-        fcntl(fd, F_SETFL, 0);    // clear all flags on descriptor, enable direct I/O
-        tcgetattr(fd, &options);   // read serial port options
+        fcntl(portDescriptor, F_SETFL, 0);    // clear all flags on descriptor, enable direct I/O
+        tcgetattr(portDescriptor, &options);   // read serial port options
         // enable receiver, set 8 bit data, ignore control lines
         options.c_cflag |= (CLOCAL | CREAD | CS8);
         // disable parity generation and 2 stop bits
         options.c_cflag &= ~(PARENB | CSTOPB);
-
-
+        
+        
         //traditional setup of baud rates
         //------------------------ traditional setup of baud rates for Mac and Linux --------------
         cfsetispeed(&options, B230400);
         cfsetospeed(&options, B230400);
         // set the new port options
-        tcsetattr(fd, TCSANOW, &options);
+        tcsetattr(portDescriptor, TCSANOW, &options);
         //------------------------ traditional setup of baud rates for Mac and Linux --------------
-
+        
         //--------------------------- Patch for Mac for nonstandard bauds --------------------------
         /*speed_t speed = 2000000; // Set 2Mbaud
-        if (ioctl(fd, IOSSIOSPEED, &speed) == -1) {
-            std::cout<<"Error setting speed";
-        }*/
-
-
-
+         if (ioctl(portDescriptor, IOSSIOSPEED, &speed) == -1) {
+         std::cout<<"Error setting speed";
+         }*/
+        
+        
+        
         /*
-
+         
          Explanation from blog post:
          http://stackoverflow.com/questions/9366249/boostasioserialport-alternative-that-supports-non-standard-baud-rates
-
+         
          If you only want to use ioctl and termios you can do:
-
+         
          #define IOSSIOSPEED _IOW('T', 2, speed_t)
          int new_baud = static_cast<int> (baudrate_);
-         ioctl (fd_, IOSSIOSPEED, &new_baud, 1);
+         ioctl (portDescriptor_, IOSSIOSPEED, &new_baud, 1);
          And it will let you set the baud rate to any value in OS X, but that is OS specific. for Linux you need to do:
-
+         
          struct serial_struct ser;
-         ioctl (fd_, TIOCGSERIAL, &ser);
+         ioctl (portDescriptor_, TIOCGSERIAL, &ser);
          // set custom divisor
          ser.custom_divisor = ser.baud_base / baudrate_;
          // update flags
          ser.flags &= ~ASYNC_SPD_MASK;
          ser.flags |= ASYNC_SPD_CUST;
-
-         if (ioctl (fd_, TIOCSSERIAL, ser) < 0)
+         
+         if (ioctl (portDescriptor_, TIOCSSERIAL, ser) < 0)
          {
          // error
          }
          For any other OS your gonna have to go read some man pages or it might not even work at all, its very OS dependent.
-
-        */
-
-
-
+         
+         */
+        
+        
+        
         //--------------------------- Patch for Mac for nonstandard bauds --------------------------
-        #endif
-
+#endif
+        
 #ifdef _WIN32
-
-	COMMCONFIG cfg;
-	COMMTIMEOUTS timeouts;
-	int got_default_cfg=0, port_num;
-	char buf[1024], name_createfile[64], name_commconfig[64], *p;
-	DWORD len;
-
-	snprintf(buf, sizeof(buf), "%s", _portName.c_str());
-	p = strstr(buf, "COM");
-	if (p && sscanf(p + 3, "%d", &port_num) == 1) {
-		printf("port_num = %d\n", port_num);
-		snprintf(name_createfile, sizeof(name_createfile), "\\\\.\\COM%d", port_num);
-		snprintf(name_commconfig, sizeof(name_commconfig), "COM%d", port_num);
-	} else {
-		snprintf(name_createfile, sizeof(name_createfile), "%s", _portName.c_str());
-		snprintf(name_commconfig, sizeof(name_commconfig), "%s", _portName.c_str());
-	}
-
-	len = sizeof(COMMCONFIG);
-	//Stanislav commented this out since it was freezing app for 100ms and
-	//it did some weard things with windows (refreshing file list in dev tool and disabling language selector in tray bar)
-	/*if (GetDefaultCommConfig(name_commconfig, &cfg, &len)) {
-		// this prevents unintentionally raising DTR when opening
-		// might only work on COM1 to COM9
-		got_default_cfg = 1;
-		memcpy(&port_cfg_orig, &cfg, sizeof(COMMCONFIG));
-		cfg.dcb.fDtrControl = DTR_CONTROL_DISABLE;
-		cfg.dcb.fRtsControl = RTS_CONTROL_DISABLE;
-		SetDefaultCommConfig(name_commconfig, &cfg, sizeof(COMMCONFIG));
-	} else {
-		printf("error with GetDefaultCommConfig\n");
-	}
-*/
-	port_handle = CreateFile(name_createfile, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
-	//port_handle = CreateFile(name_createfile, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, NULL, NULL);
-	if (port_handle == INVALID_HANDLE_VALUE) {
-		win32_err(buf);
-		//error_msg =  "Unable to open " + _portName + ", " + buf;
-		return -1;
-	}
-	len = sizeof(COMMCONFIG);
-
-	if (!GetCommConfig(port_handle, &port_cfg, &len)) {
-		CloseHandle(port_handle);
-		win32_err(buf);
-		//error_msg = "Unable to read communication config on " + _portName + ", " + buf;
-		return -1;
-	}
-	if (!got_default_cfg) {
-		memcpy(&port_cfg_orig, &port_cfg, sizeof(COMMCONFIG));
-	}
-
-	// http://msdn2.microsoft.com/en-us/library/aa363188(VS.85).aspx
-    port_cfg.dcb.BaudRate = 230400; //for high speed 2Mbit/s communication just change this number to 2000000
-
-	port_cfg.dcb.fBinary = TRUE;
-	port_cfg.dcb.fParity = FALSE;
-	port_cfg.dcb.fOutxCtsFlow = FALSE;
-	port_cfg.dcb.fOutxDsrFlow = FALSE;
-	port_cfg.dcb.fDtrControl = DTR_CONTROL_DISABLE;
-	port_cfg.dcb.fDsrSensitivity = FALSE;
-	port_cfg.dcb.fTXContinueOnXoff = TRUE;	// ???
-	port_cfg.dcb.fOutX = FALSE;
-	port_cfg.dcb.fInX = FALSE;
-	port_cfg.dcb.fErrorChar = FALSE;
-	port_cfg.dcb.fNull = FALSE;
-	port_cfg.dcb.fRtsControl = RTS_CONTROL_DISABLE;
-	port_cfg.dcb.fAbortOnError = FALSE;
-	port_cfg.dcb.ByteSize = 8;
-	port_cfg.dcb.Parity = NOPARITY;
-	port_cfg.dcb.StopBits = ONESTOPBIT;
-	if (!SetCommConfig(port_handle, &port_cfg, sizeof(COMMCONFIG))) {
-		CloseHandle(port_handle);
-		win32_err(buf);
-		//error_msg = "Unable to write communication config to " + name + ", " + buf;
-		return -1;
-	}
-	if (!EscapeCommFunction(port_handle, CLRDTR | CLRRTS)) {
-		CloseHandle(port_handle);
-		win32_err(buf);
-		//error_msg = "Unable to control serial port signals on " + name + ", " + buf;
-		return -1;
-	}
-	// http://msdn2.microsoft.com/en-us/library/aa363190(VS.85).aspx
-	// setting to all zeros means timeouts are not used
-	timeouts.ReadIntervalTimeout		= MAXDWORD;
-	timeouts.ReadTotalTimeoutMultiplier	= 0;
-	timeouts.ReadTotalTimeoutConstant	= 0;
-	timeouts.WriteTotalTimeoutMultiplier	= 0;
-	timeouts.WriteTotalTimeoutConstant	= 0;
-	if (!SetCommTimeouts(port_handle, &timeouts)) {
-		CloseHandle(port_handle);
-		win32_err(buf);
-		//error_msg = "Unable to write timeout settings to " + name + ", " + buf;
-		return -1;
-	}
-
+        
+        COMMCONFIG cfg;
+        COMMTIMEOUTS timeouts;
+        int got_default_cfg=0, port_num;
+        char buf[1024], name_createfile[64], name_commconfig[64], *p;
+        DWORD len;
+        
+        snprintf(buf, sizeof(buf), "%s", _portName.c_str());
+        p = strstr(buf, "COM");
+        if (p && sscanf(p + 3, "%d", &port_num) == 1) {
+            printf("port_num = %d\n", port_num);
+            snprintf(name_createfile, sizeof(name_createfile), "\\\\.\\COM%d", port_num);
+            snprintf(name_commconfig, sizeof(name_commconfig), "COM%d", port_num);
+        } else {
+            snprintf(name_createfile, sizeof(name_createfile), "%s", _portName.c_str());
+            snprintf(name_commconfig, sizeof(name_commconfig), "%s", _portName.c_str());
+        }
+        
+        len = sizeof(COMMCONFIG);
+        //Stanislav commented this out since it was freezing app for 100ms and
+        //it did some weard things with windows (refreshing file list in dev tool and disabling language selector in tray bar)
+        /*if (GetDefaultCommConfig(name_commconfig, &cfg, &len)) {
+         // this prevents unintentionally raising DTR when opening
+         // might only work on COM1 to COM9
+         got_default_cfg = 1;
+         memcpy(&port_cfg_orig, &cfg, sizeof(COMMCONFIG));
+         cfg.dcb.fDtrControl = DTR_CONTROL_DISABLE;
+         cfg.dcb.fRtsControl = RTS_CONTROL_DISABLE;
+         SetDefaultCommConfig(name_commconfig, &cfg, sizeof(COMMCONFIG));
+         } else {
+         printf("error with GetDefaultCommConfig\n");
+         }
+         */
+        port_handle = CreateFile(name_createfile, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
+        //port_handle = CreateFile(name_createfile, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, NULL, NULL);
+        if (port_handle == INVALID_HANDLE_VALUE) {
+            win32_err(buf);
+            //error_msg =  "Unable to open " + _portName + ", " + buf;
+            return -1;
+        }
+        len = sizeof(COMMCONFIG);
+        
+        if (!GetCommConfig(port_handle, &port_cfg, &len)) {
+            CloseHandle(port_handle);
+            win32_err(buf);
+            //error_msg = "Unable to read communication config on " + _portName + ", " + buf;
+            return -1;
+        }
+        if (!got_default_cfg) {
+            memcpy(&port_cfg_orig, &port_cfg, sizeof(COMMCONFIG));
+        }
+        
+        // http://msdn2.microsoft.com/en-us/library/aa363188(VS.85).aspx
+        port_cfg.dcb.BaudRate = 230400; //for high speed 2Mbit/s communication just change this number to 2000000
+        
+        port_cfg.dcb.fBinary = TRUE;
+        port_cfg.dcb.fParity = FALSE;
+        port_cfg.dcb.fOutxCtsFlow = FALSE;
+        port_cfg.dcb.fOutxDsrFlow = FALSE;
+        port_cfg.dcb.fDtrControl = DTR_CONTROL_DISABLE;
+        port_cfg.dcb.fDsrSensitivity = FALSE;
+        port_cfg.dcb.fTXContinueOnXoff = TRUE;	// ???
+        port_cfg.dcb.fOutX = FALSE;
+        port_cfg.dcb.fInX = FALSE;
+        port_cfg.dcb.fErrorChar = FALSE;
+        port_cfg.dcb.fNull = FALSE;
+        port_cfg.dcb.fRtsControl = RTS_CONTROL_DISABLE;
+        port_cfg.dcb.fAbortOnError = FALSE;
+        port_cfg.dcb.ByteSize = 8;
+        port_cfg.dcb.Parity = NOPARITY;
+        port_cfg.dcb.StopBits = ONESTOPBIT;
+        if (!SetCommConfig(port_handle, &port_cfg, sizeof(COMMCONFIG))) {
+            CloseHandle(port_handle);
+            win32_err(buf);
+            //error_msg = "Unable to write communication config to " + name + ", " + buf;
+            return -1;
+        }
+        if (!EscapeCommFunction(port_handle, CLRDTR | CLRRTS)) {
+            CloseHandle(port_handle);
+            win32_err(buf);
+            //error_msg = "Unable to control serial port signals on " + name + ", " + buf;
+            return -1;
+        }
+        // http://msdn2.microsoft.com/en-us/library/aa363190(VS.85).aspx
+        // setting to all zeros means timeouts are not used
+        timeouts.ReadIntervalTimeout		= MAXDWORD;
+        timeouts.ReadTotalTimeoutMultiplier	= 0;
+        timeouts.ReadTotalTimeoutConstant	= 0;
+        timeouts.WriteTotalTimeoutMultiplier	= 0;
+        timeouts.WriteTotalTimeoutConstant	= 0;
+        if (!SetCommTimeouts(port_handle, &timeouts)) {
+            CloseHandle(port_handle);
+            win32_err(buf);
+            //error_msg = "Unable to write timeout settings to " + name + ", " + buf;
+            return -1;
+        }
+        
 #endif // _WIN32
-
-        circularBuffer[0] = '\n';
-
-        cBufHead = 0;
-        cBufTail = 0;
-
-        serialCounter = 0;
-
-        escapeSequenceDetectorIndex = 0;
-        weAreInsideEscapeSequence = false;
-        messageBufferIndex =0;
-
-        _portOpened = true;
-
-
-        setNumberOfChannelsAndSamplingRate(1, maxSamplingRate());
-        //askForBoardType();
-
-
-        return fd;
+        
+        
+        
+        return portDescriptor;
     }
 
 
 
 
-
-    void ArduinoSerial::checkAllPortsForArduino()
+    int ArduinoSerial::openSerialDevice(const char *portName)
     {
-        if(!_portOpened)
-        {
+        while(ArduinoSerial::openPortLock==true){}
+        ArduinoSerial::openPortLock = true;
+        
+        int fd  = openSerialDeviceWithoutLock(portName);
+        
+        ArduinoSerial::openPortLock = false;
+        return fd;
+    }
+
+
+    
+    int ArduinoSerial::openSerialDeviceWithoutLock(const char *portName)
+    {
+        
+        _portName = std::string(portName);
+        _portOpened = false;
+        
+        
+        fd = 0;
+        _numberOfChannels = 1;
+        fd = openPort(portName);
+        
+        
+        
+        circularBuffer[0] = '\n';
+        
+        cBufHead = 0;
+        cBufTail = 0;
+        
+        serialCounter = 0;
+        
+        escapeSequenceDetectorIndex = 0;
+        weAreInsideEscapeSequence = false;
+        messageBufferIndex =0;
+        
+        _portOpened = true;
+        
+        
+        setNumberOfChannelsAndSamplingRate(1, maxSamplingRate());
+        //askForBoardType();
+        
+        return fd;
+    }
+    
+
+
+
+    void ArduinoSerial::checkAllPortsForArduino(ArduinoSerial * workingArduinoRef)
+    {
+       
             std::cout<<"\nCheck for Arduino boards \n";
             getAllPortsList();
 
-            std::list<std::string>::iterator list_it;
-            for(list_it = list.begin(); list_it!= list.end(); list_it++)
+            std::list<SerialPort>::iterator list_it;
+            for(list_it = ports.begin(); list_it!= ports.end(); list_it++)
             {
-                std::cout<<"\nTry Port: "<<list_it->c_str()<<"\n";
-               /* std::size_t found=list_it->find("COM1");
-                if (found!=std::string::npos)
+                std::cout<<"\nTry Port: "<<list_it->portName.c_str()<<"\n";
+                
+                
+                while(ArduinoSerial::openPortLock==true){}
+                ArduinoSerial::openPortLock = true;
+                std::size_t found=list_it->portName.find(workingArduinoRef->currentPortName());
+                
+                if (found!=std::string::npos && workingArduinoRef->portOpened())
                 {
+                    ArduinoSerial::openPortLock = false;
+                    workingArduinoRef->currentPort.portName = workingArduinoRef->currentPortName();
+                    workingArduinoRef->currentPort.deviceType = list_it->deviceType;
+                    std::cout<<"Port: "<<list_it->portName.c_str()<<" Already opened by another thread.\n";
                     continue;
-                }*/
-                if(openPort(list_it->c_str()) != -1)
+                }
+                if (list_it->deviceType != SerialDevice::unknown)
+                {
+                    ArduinoSerial::openPortLock = false;
+                    std::cout<<"Port: "<<list_it->portName.c_str()<<" Already checked\n";
+                    continue;
+                }
+                if(openSerialDeviceWithoutLock(list_it->portName.c_str()) != -1)
                 {
                     //check if it is our Arduino board
                     hardwareType.clear();
                     char buffer[8024];
-                    std::cout<<"Port: "<<list_it->c_str()<<" Sucess\n";
+                    std::cout<<"Port: "<<list_it->portName.c_str()<<" Sucess\n";
 
-                    time_t firstSeconds, secondSeconds;
+                    time_t firstSeconds;
 
                     firstSeconds = time(NULL);
 
@@ -732,25 +857,22 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
                             std::cout<<"Found Arduino !!!!!!!\n";
                             break;
                         }
-
-
-
-
-
                     }
-                    std::cout<<"Close Port: "<<list_it->c_str()<<"\n";
+                    std::cout<<"Close Port: "<<list_it->portName.c_str()<<"\n";
                     closeSerial();
                 }
                 else
                 {
-                    std::cout<<"\nPort: "<<list_it->c_str()<<" Failed!\n";
+                    std::cout<<"\nPort: "<<list_it->portName.c_str()<<" Failed!\n";
                 }
+                
+                ArduinoSerial::openPortLock = false;
 
             }
 
 
 
-        }
+        
 
     }
 
@@ -763,17 +885,15 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
     // Close the port
     void ArduinoSerial::closeSerial(void)
     {
-
+        currentPort.deviceType = ArduinoSerial::unknown;
+        currentPort.portName = "";
         if(_portOpened)
         {
             setNumberOfChannelsAndSamplingRate(1, maxSamplingRate());
 #if defined(__linux__) || defined(__APPLE__)
-            // does this really work properly (and is it thread safe) on Linux??
-            //tcflush(fd, TCIOFLUSH);
-
             close(fd);
 #elif defined(_WIN32)
-            //SetCommConfig(port_handle, &port_cfg_orig, sizeof(COMMCONFIG));
+            
             CloseHandle(port_handle);
 #endif
             _portOpened = false;
@@ -815,12 +935,6 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
         else
         {
             std::cout<<"Serial read error: Timeout\n";
-            if(!triedToConfigureAgain)
-            {
-                triedToConfigureAgain = true;
-                //setNumberOfChannelsAndSamplingRate(_numberOfChannels, maxSamplingRate());
-            }
-
         }
         if (size < 0)
         {
@@ -1266,6 +1380,29 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * ref)
         if(typeOfMessage == "HWT")
         {
             hardwareType = valueOfMessage;
+            
+            std::size_t found=hardwareType.find("PLANTSS");
+            if (found!=std::string::npos)
+            {
+                setDeviceTypeToCurrentPort(ArduinoSerial::plant);
+            }
+            else
+            {
+                std::size_t found=hardwareType.find("MUSCLESS");
+                if (found!=std::string::npos)
+                {
+                    setDeviceTypeToCurrentPort(ArduinoSerial::muscle);
+                }
+                else
+                {
+                    std::size_t found=hardwareType.find("HEARTSS");
+                    if (found!=std::string::npos)
+                    {
+                        setDeviceTypeToCurrentPort(ArduinoSerial::heart);
+                    }
+
+                }
+            }
         }
 
         /*if(typeOfMessage == "EVNT")

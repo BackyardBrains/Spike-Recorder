@@ -3,7 +3,7 @@
 
 #include "widgets/Widget.h"
 #include <ctime>
-
+#include "ArduinoSerial.h"
 namespace BackyardBrains {
 
 class RecordingManager;
@@ -36,6 +36,13 @@ private:
 	Widgets::PushButton *_analysisButton;
 	Widgets::PushButton *_usbButton;
 	Widgets::PushButton *threshButton;
+    Widgets::PushButton *_plantSSButton;
+    Widgets::PushButton *_muscleSSButton;
+    Widgets::PushButton *_heartSSButton;
+
+    void plantPressed();
+    void musclePressed();
+    void heartPressed();
 
     Widgets::PushButton *_alphaFeedbackButton;
     void alphaFeedbackPressed();
@@ -74,7 +81,7 @@ private:
 
     void drawTimeLabelsForFile();
 
-
+    void connectToFirstShieldOfType(ArduinoSerial::SerialDevice deviceType);
 };
 
 }

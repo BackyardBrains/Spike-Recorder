@@ -64,6 +64,8 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
     alphaWavePower = 0;
 
 	initRecordingDevices();
+    
+    _portScanningArduinoSerial.startScanningForArduinos(&_arduinoSerial);
 }
 
 RecordingManager::~RecordingManager() {
@@ -423,7 +425,7 @@ bool RecordingManager::initSerial(const char *portName)
     saveInputConfigSettings();
     if(!_arduinoSerial.portOpened())
     {
-        if(_arduinoSerial.openPort(portName) == -1)
+        if(_arduinoSerial.openSerialDevice(portName) == -1)
         {
             _serialMode = false;
             serialError = _arduinoSerial.errorString;
@@ -1234,6 +1236,33 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
     //	uint32_t numTicksAfter = SDL_GetTicks();
 	//std::cout<<"Time: "<<SDL_GetTicks()<< " It takes: " <<SDL_GetTicks() - numTicksBefore<<" Samples read: "<<samplesRead<<"\n";
 	//numTicksBefore = SDL_GetTicks();
+    
+    if(samplesRead == -1)
+    {
+        //check if port is still active if not disconnect
+        
+        
+        std::list<ArduinoSerial::SerialPort> sps =  serailPorts();
+        std::list<ArduinoSerial::SerialPort>::iterator it;
+        std::size_t found;
+        bool foundPort = false;
+        for(it = sps.begin();it!=sps.end();it++)
+        {
+            found  = getCurrentPort().portName.find(it->portName);
+            if (found!=std::string::npos)
+            {
+                foundPort = true;
+            }
+        }
+        
+        if(!foundPort)
+        {
+            setSerialNumberOfChannels(1);
+            disconnectFromSerial();
+            return;
+        }
+    }
+    
     if(_paused)
     {
         delete[] channels;
