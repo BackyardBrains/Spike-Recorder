@@ -59,7 +59,7 @@
 namespace BackyardBrains {
 
     bool ArduinoSerial::openPortLock = false;
-    
+
     ArduinoSerial::ArduinoSerial() : _portOpened(false) {
 
         escapeSequence[0] = 255;
@@ -76,7 +76,7 @@ namespace BackyardBrains {
         endOfescapeSequence[4] = 129;
         endOfescapeSequence[5] = 255;
         //start thread that will periodicaly read HID
-       
+
     }
 
 
@@ -86,12 +86,12 @@ namespace BackyardBrains {
 
 void ArduinoSerial::startScanningForArduinos(ArduinoSerial * refToWorkingArduinoSerial)
 {
-    
+
     scanningThread = std::thread(&ArduinoSerial::scanPortsThreadFunction, this, this, refToWorkingArduinoSerial);
     scanningThread.detach();
 }
-    
-    
+
+
 //
 // Thread that scans if we have Arduino attached to computer
 //
@@ -106,7 +106,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         #else
                 Sleep(700);
         #endif
-
+        Log::msg("New cycle in thread");
         selfRef->checkAllPortsForArduino(workingArduinoRef);
     }
 }
@@ -368,20 +368,20 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
         list.sort();
         refreshPortsDataList();
-        
+
         return;
     }
 
-    
-    
+
+
     void ArduinoSerial::refreshPortsDataList()
     {
-    
+
         std::list<std::string>::iterator list_it;
         std::list<SerialPort>::iterator portsIterator;
-        
+
         //Add new to list of ports
-        
+
         for(list_it = list.begin(); list_it!= list.end(); list_it++)
         {
             bool portAlreadyInPortList = false;
@@ -394,7 +394,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                     break;
                 }
             }
-            
+
             if(portAlreadyInPortList == false)
             {
                 SerialPort newPort;
@@ -403,7 +403,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                 ports.push_back(newPort);
             }
         }
-        
+
         //remove nonexisting from list of ports
         for(portsIterator = ports.begin(); portsIterator!= ports.end(); portsIterator++)
         {
@@ -418,7 +418,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                     break;
                 }
             }
-            
+
             if(portFoundInList == false)
             {
                 portsIterator = ports.erase(portsIterator);
@@ -426,11 +426,11 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             }
         }
     }
-    
-    
+
+
     void ArduinoSerial::setDeviceTypeToCurrentPort(SerialDevice deviceType)
     {
-        
+
         std::list<SerialPort>::iterator portsIterator;
 
         for(portsIterator = ports.begin(); portsIterator!= ports.end(); portsIterator++)
@@ -445,15 +445,15 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             }
         }
     }
-    
-    
-    
+
+
+
     int ArduinoSerial::openPort(const char *portName)
     {
         int portDescriptor;
 #if defined(__APPLE__) || defined(__linux__)
         struct termios options;
-        
+
         portDescriptor = open(portName, O_RDWR | O_NOCTTY | O_NDELAY);//O_SHLOCK
         std::cout<<"Sleep start\n";
         usleep(300000);
@@ -462,7 +462,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 #endif
 #ifdef __APPLE__
         std::stringstream sstm;
-        
+
         if (portDescriptor < 0) {
             sstm << "Unable to open " << portName << ", " << strerror(errno);
             errorString = sstm.str();
@@ -509,7 +509,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             if (errno == EACCES)
             {
                 std::cout<<"Unable to access "<< portName<< ", insufficient permission";
-                
+
             }
             else if (errno == EISDIR)
             {
@@ -529,7 +529,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             else
             {
                 std::cout<< "Unable to open " << portName; //<<
-                
+
             }
             return -1;
         }
@@ -574,8 +574,8 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         options.c_cflag |= (CLOCAL | CREAD | CS8);
         // disable parity generation and 2 stop bits
         options.c_cflag &= ~(PARENB | CSTOPB);
-        
-        
+
+
         //traditional setup of baud rates
         //------------------------ traditional setup of baud rates for Mac and Linux --------------
         cfsetispeed(&options, B230400);
@@ -583,27 +583,27 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         // set the new port options
         tcsetattr(portDescriptor, TCSANOW, &options);
         //------------------------ traditional setup of baud rates for Mac and Linux --------------
-        
+
         //--------------------------- Patch for Mac for nonstandard bauds --------------------------
         /*speed_t speed = 2000000; // Set 2Mbaud
          if (ioctl(portDescriptor, IOSSIOSPEED, &speed) == -1) {
          std::cout<<"Error setting speed";
          }*/
-        
-        
-        
+
+
+
         /*
-         
+
          Explanation from blog post:
          http://stackoverflow.com/questions/9366249/boostasioserialport-alternative-that-supports-non-standard-baud-rates
-         
+
          If you only want to use ioctl and termios you can do:
-         
+
          #define IOSSIOSPEED _IOW('T', 2, speed_t)
          int new_baud = static_cast<int> (baudrate_);
          ioctl (portDescriptor_, IOSSIOSPEED, &new_baud, 1);
          And it will let you set the baud rate to any value in OS X, but that is OS specific. for Linux you need to do:
-         
+
          struct serial_struct ser;
          ioctl (portDescriptor_, TIOCGSERIAL, &ser);
          // set custom divisor
@@ -611,28 +611,28 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
          // update flags
          ser.flags &= ~ASYNC_SPD_MASK;
          ser.flags |= ASYNC_SPD_CUST;
-         
+
          if (ioctl (portDescriptor_, TIOCSSERIAL, ser) < 0)
          {
          // error
          }
          For any other OS your gonna have to go read some man pages or it might not even work at all, its very OS dependent.
-         
+
          */
-        
-        
-        
+
+
+
         //--------------------------- Patch for Mac for nonstandard bauds --------------------------
 #endif
-        
+
 #ifdef _WIN32
-        
+
         COMMCONFIG cfg;
         COMMTIMEOUTS timeouts;
         int got_default_cfg=0, port_num;
         char buf[1024], name_createfile[64], name_commconfig[64], *p;
         DWORD len;
-        
+
         snprintf(buf, sizeof(buf), "%s", _portName.c_str());
         p = strstr(buf, "COM");
         if (p && sscanf(p + 3, "%d", &port_num) == 1) {
@@ -643,7 +643,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             snprintf(name_createfile, sizeof(name_createfile), "%s", _portName.c_str());
             snprintf(name_commconfig, sizeof(name_commconfig), "%s", _portName.c_str());
         }
-        
+
         len = sizeof(COMMCONFIG);
         //Stanislav commented this out since it was freezing app for 100ms and
         //it did some weard things with windows (refreshing file list in dev tool and disabling language selector in tray bar)
@@ -667,7 +667,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             return -1;
         }
         len = sizeof(COMMCONFIG);
-        
+
         if (!GetCommConfig(port_handle, &port_cfg, &len)) {
             CloseHandle(port_handle);
             win32_err(buf);
@@ -677,10 +677,10 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         if (!got_default_cfg) {
             memcpy(&port_cfg_orig, &port_cfg, sizeof(COMMCONFIG));
         }
-        
+
         // http://msdn2.microsoft.com/en-us/library/aa363188(VS.85).aspx
         port_cfg.dcb.BaudRate = 230400; //for high speed 2Mbit/s communication just change this number to 2000000
-        
+
         port_cfg.dcb.fBinary = TRUE;
         port_cfg.dcb.fParity = FALSE;
         port_cfg.dcb.fOutxCtsFlow = FALSE;
@@ -722,11 +722,11 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             //error_msg = "Unable to write timeout settings to " + name + ", " + buf;
             return -1;
         }
-        
+        return (int)port_handle;
 #endif // _WIN32
-        
-        
-        
+
+
+
         return portDescriptor;
     }
 
@@ -737,79 +737,82 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
     {
         while(ArduinoSerial::openPortLock==true){}
         ArduinoSerial::openPortLock = true;
-        
+
         int fd  = openSerialDeviceWithoutLock(portName);
-        
+
         ArduinoSerial::openPortLock = false;
         return fd;
     }
 
 
-    
+
     int ArduinoSerial::openSerialDeviceWithoutLock(const char *portName)
     {
-        
+
         _portName = std::string(portName);
         _portOpened = false;
-        
-        
+
+
         fd = 0;
         _numberOfChannels = 1;
+
         fd = openPort(portName);
-        
-        
-        
+
         circularBuffer[0] = '\n';
-        
+
         cBufHead = 0;
         cBufTail = 0;
-        
+
         serialCounter = 0;
-        
+
         escapeSequenceDetectorIndex = 0;
         weAreInsideEscapeSequence = false;
         messageBufferIndex =0;
-        
+
         _portOpened = true;
-        
-        
+
+
         setNumberOfChannelsAndSamplingRate(1, maxSamplingRate());
         //askForBoardType();
-        
+
         return fd;
     }
-    
+
 
 
 
     void ArduinoSerial::checkAllPortsForArduino(ArduinoSerial * workingArduinoRef)
     {
-       
+
             std::cout<<"\nCheck for Arduino boards \n";
+
             getAllPortsList();
 
             std::list<SerialPort>::iterator list_it;
             for(list_it = ports.begin(); list_it!= ports.end(); list_it++)
             {
                 std::cout<<"\nTry Port: "<<list_it->portName.c_str()<<"\n";
-                
-                
+
+
                 while(ArduinoSerial::openPortLock==true){}
                 ArduinoSerial::openPortLock = true;
+
                 std::size_t found=list_it->portName.find(workingArduinoRef->currentPortName());
-                
+
                 if (found!=std::string::npos && workingArduinoRef->portOpened())
                 {
                     ArduinoSerial::openPortLock = false;
                     workingArduinoRef->currentPort.portName = workingArduinoRef->currentPortName();
                     workingArduinoRef->currentPort.deviceType = list_it->deviceType;
                     std::cout<<"Port: "<<list_it->portName.c_str()<<" Already opened by another thread.\n";
+
                     continue;
                 }
                 if (list_it->deviceType != SerialDevice::unknown)
                 {
                     ArduinoSerial::openPortLock = false;
                     std::cout<<"Port: "<<list_it->portName.c_str()<<" Already checked\n";
+
                     continue;
                 }
                 if(openSerialDeviceWithoutLock(list_it->portName.c_str()) != -1)
@@ -855,24 +858,27 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                         {
                             //found Arduino board that responded
                             std::cout<<"Found Arduino !!!!!!!\n";
+
                             break;
                         }
                     }
                     std::cout<<"Close Port: "<<list_it->portName.c_str()<<"\n";
+
                     closeSerial();
                 }
                 else
                 {
                     std::cout<<"\nPort: "<<list_it->portName.c_str()<<" Failed!\n";
+
                 }
-                
+
                 ArduinoSerial::openPortLock = false;
 
             }
 
 
 
-        
+
 
     }
 
@@ -893,7 +899,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 #if defined(__linux__) || defined(__APPLE__)
             close(fd);
 #elif defined(_WIN32)
-            
+
             CloseHandle(port_handle);
 #endif
             _portOpened = false;
@@ -1380,7 +1386,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         if(typeOfMessage == "HWT")
         {
             hardwareType = valueOfMessage;
-            
+
             std::size_t found=hardwareType.find("PLANTSS");
             if (found!=std::string::npos)
             {

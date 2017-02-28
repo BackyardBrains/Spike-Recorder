@@ -64,7 +64,7 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
     alphaWavePower = 0;
 
 	initRecordingDevices();
-    
+
     _portScanningArduinoSerial.startScanningForArduinos(&_arduinoSerial);
 }
 
@@ -227,7 +227,7 @@ void RecordingManager::scanForHIDDevices()
     {
        std::cout<<"Error while scanning HID devices\n";
     }
-    
+
 
 }
 
@@ -245,7 +245,7 @@ void RecordingManager::scanUSBDevices()
         {
                 std::cout<<"Present ...\n";
         }
-        
+
        // _arduinoSerial.checkAllPortsForArduino();
        // std::cout<<"Elapsed: "<<timerUSB<<"\n";
     }
@@ -1236,12 +1236,12 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
     //	uint32_t numTicksAfter = SDL_GetTicks();
 	//std::cout<<"Time: "<<SDL_GetTicks()<< " It takes: " <<SDL_GetTicks() - numTicksBefore<<" Samples read: "<<samplesRead<<"\n";
 	//numTicksBefore = SDL_GetTicks();
-    
+
     if(samplesRead == -1)
     {
         //check if port is still active if not disconnect
-        
-        
+
+
         std::list<ArduinoSerial::SerialPort> sps =  serailPorts();
         std::list<ArduinoSerial::SerialPort>::iterator it;
         std::size_t found;
@@ -1254,7 +1254,7 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
                 foundPort = true;
             }
         }
-        
+
         if(!foundPort)
         {
             setSerialNumberOfChannels(1);
@@ -1262,7 +1262,7 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
             return;
         }
     }
-    
+
     if(_paused)
     {
         delete[] channels;

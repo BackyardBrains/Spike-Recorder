@@ -75,8 +75,8 @@ MainView::MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder
 	_usbButton->setVisible(false);
 	_usbButton->setRightPadding(5);
 	_usbButton->setSizeHint(Widgets::Size(0,0));
-    
-    
+
+
     _plantSSButton = new Widgets::PushButton(this);
     _plantSSButton->setNormalTex(Widgets::TextureGL::get("data/plantcon.bmp"));
     _plantSSButton->setHoverTex(Widgets::TextureGL::get("data/plantconhigh.bmp"));
@@ -84,8 +84,8 @@ MainView::MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder
     _plantSSButton->setVisible(false);
     _plantSSButton->setRightPadding(5);
     _plantSSButton->setSizeHint(Widgets::Size(0,0));
-    
-    
+
+
     _muscleSSButton = new Widgets::PushButton(this);
     _muscleSSButton->setNormalTex(Widgets::TextureGL::get("data/musclecon.bmp"));
     _muscleSSButton->setHoverTex(Widgets::TextureGL::get("data/muscleconhigh.bmp"));
@@ -93,8 +93,8 @@ MainView::MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder
     _muscleSSButton->setVisible(false);
     _muscleSSButton->setRightPadding(5);
     _muscleSSButton->setSizeHint(Widgets::Size(0,0));
-    
-    
+
+
     _heartSSButton = new Widgets::PushButton(this);
     _heartSSButton->setNormalTex(Widgets::TextureGL::get("data/heartcon.bmp"));
     _heartSSButton->setHoverTex(Widgets::TextureGL::get("data/heartconhigh.bmp"));
@@ -102,7 +102,7 @@ MainView::MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder
     _heartSSButton->setVisible(false);
     _heartSSButton->setRightPadding(5);
     _heartSSButton->setSizeHint(Widgets::Size(0,0));
-    
+
 	_recordButton = new Widgets::PushButton(this);
 	_recordButton->setNormalTex(Widgets::TextureGL::get("data/rec.bmp"));
 	_recordButton->setHoverTex(Widgets::TextureGL::get("data/rechigh.bmp"));
@@ -466,9 +466,9 @@ void MainView::analysisPressed() {
     {
         connectToFirstShieldOfType(ArduinoSerial::plant);
     }
-    
-    
-    
+
+
+
     void MainView::musclePressed()
     {
         connectToFirstShieldOfType(ArduinoSerial::muscle);
@@ -477,23 +477,23 @@ void MainView::analysisPressed() {
     {
         connectToFirstShieldOfType(ArduinoSerial::heart);
     }
-    
-    
-    
+
+
+
     void MainView::connectToFirstShieldOfType(ArduinoSerial::SerialDevice deviceType)
     {
         std::list<ArduinoSerial::SerialPort> sps =  _manager.serailPorts();
         std::list<ArduinoSerial::SerialPort>::iterator it;
-
+        int portIndex = 0;
         for(it = sps.begin();it!=sps.end();it++)
         {
             if(it->deviceType == deviceType)
             {
                 //we found first shield of right device type
-                
+
                 std::size_t found;
                 found  = _manager.getCurrentPort().portName.find(it->portName);
-                
+
                 if (found!=std::string::npos)
                 {
                     //if we just want to turn off current shield
@@ -510,8 +510,9 @@ void MainView::analysisPressed() {
                     _manager.setSerialNumberOfChannels(1);
                     _manager.disconnectFromSerial();
                 }
-                
+
                 bool connected = _manager.initSerial(it->portName.c_str());
+                _manager.changeSerialPort(portIndex);
                 if(!connected)
                 {
                     Log::error("Can't init serial port.");
@@ -519,20 +520,21 @@ void MainView::analysisPressed() {
                     if(strlen(error) == 0) {
                         error = "Error: Cannot init serial port.";
                     }
-                    
+
                     Widgets::ErrorBox *box = new Widgets::ErrorBox(error);
                     box->setGeometry(Widgets::Rect(this->width()/2-250, this->height()/2-40, 500, 80));
                     Widgets::Application::getInstance()->addPopup(box);
                 }
                 break;
             }
+            portIndex++;
         }
 
-    
-    
-    
+
+
+
     }
-    
+
 void MainView::usbPressed()
 {
     //connect/diconnect
@@ -712,15 +714,15 @@ void MainView::paintEvent()
         _usbButton->setVisible(false);
         _usbButton->setSizeHint(Widgets::Size(0,0));
     }
-    
-    
+
+
     std::list<ArduinoSerial::SerialPort> sps =  _manager.serailPorts();
     std::list<ArduinoSerial::SerialPort>::iterator it;
     int tempIndex = 0;
     bool plantExis = false;
     bool muscleExist = false;
     bool heartExis = false;
-    
+
     for(it = sps.begin();it!=sps.end();it++)
     {
         if(it->deviceType == ArduinoSerial::plant)
@@ -736,10 +738,10 @@ void MainView::paintEvent()
             heartExis = true;
         }
     }
-    
+
     if(plantExis)
     {
-        
+
         if(_manager.serialMode() && _manager.getCurrentPort().deviceType == ArduinoSerial::plant)
         {
             _plantSSButton->setNormalTex(Widgets::TextureGL::get("data/plantdiscon.bmp"));
@@ -772,8 +774,8 @@ void MainView::paintEvent()
             _muscleSSButton->setNormalTex(Widgets::TextureGL::get("data/musclecon.bmp"));
             _muscleSSButton->setHoverTex(Widgets::TextureGL::get("data/muscleconhigh.bmp"));
         }
-        
-        
+
+
         _muscleSSButton->setSizeHint(Widgets::Size(53,48));
         _muscleSSButton->setVisible(true);
         Widgets::Application::getInstance()->updateLayout();
@@ -783,7 +785,7 @@ void MainView::paintEvent()
         _muscleSSButton->setVisible(false);
         _muscleSSButton->setSizeHint(Widgets::Size(0,0));
     }
-    
+
     if(heartExis)
     {
         if(_manager.serialMode() && _manager.getCurrentPort().deviceType == ArduinoSerial::heart)
@@ -796,9 +798,9 @@ void MainView::paintEvent()
             _heartSSButton->setNormalTex(Widgets::TextureGL::get("data/heartcon.bmp"));
             _heartSSButton->setHoverTex(Widgets::TextureGL::get("data/heartconhigh.bmp"));
         }
-        
-        
-        
+
+
+
         _heartSSButton->setSizeHint(Widgets::Size(53,48));
         _heartSSButton->setVisible(true);
         Widgets::Application::getInstance()->updateLayout();
@@ -809,7 +811,7 @@ void MainView::paintEvent()
         _heartSSButton->setSizeHint(Widgets::Size(0,0));
     }
 
-    
+
     if(_fftView->active() && _manager.serialMode())
     {
         _alphaFeedbackButton->setVisible(true);

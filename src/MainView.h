@@ -3,7 +3,7 @@
 
 #include "widgets/Widget.h"
 #include <ctime>
-#include "ArduinoSerial.h"
+#include "engine/ArduinoSerial.h"
 namespace BackyardBrains {
 
 class RecordingManager;

@@ -435,7 +435,7 @@ void ConfigView::SetupScreen()
                                 touchSerialPortWidget->addItem("Heart And Brain SpikerShield");
                             }
                         }
-                    
+
                     }
                 }
             }
@@ -457,19 +457,10 @@ void ConfigView::SetupScreen()
             Log::msg("Clear serial");
             serialPortWidget->clear();
             Log::msg("Get list of serials");
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
+
             std::list<ArduinoSerial::SerialPort> sps =  _manager.serailPorts();
             std::list<ArduinoSerial::SerialPort>::iterator it;
-            
+
             for(it = sps.begin();it!=sps.end();it++)
             {
                 if(it->deviceType == ArduinoSerial::unknown)
@@ -495,11 +486,11 @@ void ConfigView::SetupScreen()
                                 serialPortWidget->addItem("Heart And Brain SpikerShield");
                             }
                         }
-                        
+
                     }
                 }
             }
-            
+
             Log::msg("Set selection serial");
             serialPortWidget->setSelection(_manager.serialPortIndex());
             _catchers.push_back(SignalCatcher(_catchers.size(), this));
@@ -948,7 +939,7 @@ void ConfigView::connectPressed()
     {
 
         bool connected = false;
-        
+
         int selectionIndex = 0;
         if(weAreOnTouchScreen)
         {
@@ -958,9 +949,9 @@ void ConfigView::connectPressed()
         {
             selectionIndex = serialPortWidget->selection();
         }
-        
-        
-       
+
+
+
         std::list<ArduinoSerial::SerialPort> sps =  _manager.serailPorts();
         std::list<ArduinoSerial::SerialPort>::iterator it;
         int tempIndex = 0;
@@ -972,7 +963,7 @@ void ConfigView::connectPressed()
             }
             tempIndex++;
         }
-        
+
 
         if(!connected)
         {
