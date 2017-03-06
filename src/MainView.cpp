@@ -549,6 +549,12 @@ void MainView::usbPressed()
     }
     else
     {
+        if(_manager.serialMode())
+        {
+            _manager.setSerialNumberOfChannels(1);
+            _manager.disconnectFromSerial();
+        }
+        
         if(_manager.fileMode()) { // end file mode when in file mode
             delete _anaView;
             _manager.initRecordingDevices();
@@ -559,6 +565,8 @@ void MainView::usbPressed()
             _audioView->setOffset(0);
         }
 
+        
+        
         if(_manager.paused())
         {
             _manager.setPaused(false);

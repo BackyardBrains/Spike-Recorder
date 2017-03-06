@@ -1852,7 +1852,7 @@ void RecordingManager::enableLowPassFilterWithCornerFreq(float cornerFreq)
 
 void RecordingManager::enableHighPassFilterWithCornerFreq(float cornerFreq)
 {
-    startRemovingMeanValue();
+    
     _highCornerFreq = cornerFreq;
     if(cornerFreq<0)
     {
@@ -1875,6 +1875,7 @@ void RecordingManager::enableHighPassFilterWithCornerFreq(float cornerFreq)
     else
     {
         _highPassFilterEnabled = true;
+       // startRemovingMeanValue();
     }
 }
 
