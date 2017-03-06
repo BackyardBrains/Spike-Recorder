@@ -929,6 +929,12 @@ void ConfigView::paintEvent() {
 void ConfigView::connectPressed()
 {
     Log::msg("Connect pressed");
+
+    if(_manager.hidMode())
+    {
+        _manager.disconnectFromHID();
+    }
+
     if(_manager.serialMode())
     {
         _manager.setSerialNumberOfChannels(1);

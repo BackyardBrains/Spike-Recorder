@@ -243,11 +243,8 @@ void RecordingManager::scanUSBDevices()
         scanForHIDDevices();
         if((_hidDevicePresent = (_hidUsbManager.list.size()>0)))
         {
-                std::cout<<"Present ...\n";
+                std::cout<<"USB Present ...\n";
         }
-
-       // _arduinoSerial.checkAllPortsForArduino();
-       // std::cout<<"Elapsed: "<<timerUSB<<"\n";
     }
 
 
@@ -1852,7 +1849,7 @@ void RecordingManager::enableLowPassFilterWithCornerFreq(float cornerFreq)
 
 void RecordingManager::enableHighPassFilterWithCornerFreq(float cornerFreq)
 {
-    
+
     _highCornerFreq = cornerFreq;
     if(cornerFreq<0)
     {

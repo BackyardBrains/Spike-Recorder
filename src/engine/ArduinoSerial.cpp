@@ -13,6 +13,8 @@
 #include <sstream>
 #include <stdint.h>
 
+#define NUMBER_OF_TIMES_TO_SCAN_UNKNOWN_PORT 10
+
 #if defined(__linux__)
     #include <sys/uio.h>
     #include <sys/types.h>
@@ -757,7 +759,10 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         _numberOfChannels = 1;
 
         fd = openPort(portName);
-
+        if(fd==-1)
+        {
+            return -1;
+        }
         circularBuffer[0] = '\n';
 
         cBufHead = 0;
@@ -770,7 +775,6 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         messageBufferIndex =0;
 
         _portOpened = true;
-
 
         setNumberOfChannelsAndSamplingRate(1, maxSamplingRate());
         //askForBoardType();
@@ -815,6 +819,15 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
                     continue;
                 }
+                if(list_it->numOfTrials>NUMBER_OF_TIMES_TO_SCAN_UNKNOWN_PORT)
+                {
+                    ArduinoSerial::openPortLock = false;
+                    std::cout<<"Port: "<<list_it->portName.c_str()<<" checked 10 times\n";
+
+                    continue;
+                }
+                list_it->numOfTrials++;
+
                 if(openSerialDeviceWithoutLock(list_it->portName.c_str()) != -1)
                 {
                     //check if it is our Arduino board

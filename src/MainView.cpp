@@ -485,6 +485,15 @@ void MainView::analysisPressed() {
         std::list<ArduinoSerial::SerialPort> sps =  _manager.serailPorts();
         std::list<ArduinoSerial::SerialPort>::iterator it;
         int portIndex = 0;
+
+        if(_manager.hidMode())
+        {
+            _manager.disconnectFromHID();
+            _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.bmp"));
+            _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.bmp"));
+
+        }
+
         for(it = sps.begin();it!=sps.end();it++)
         {
             if(it->deviceType == deviceType)
@@ -554,7 +563,7 @@ void MainView::usbPressed()
             _manager.setSerialNumberOfChannels(1);
             _manager.disconnectFromSerial();
         }
-        
+
         if(_manager.fileMode()) { // end file mode when in file mode
             delete _anaView;
             _manager.initRecordingDevices();
@@ -565,8 +574,8 @@ void MainView::usbPressed()
             _audioView->setOffset(0);
         }
 
-        
-        
+
+
         if(_manager.paused())
         {
             _manager.setPaused(false);

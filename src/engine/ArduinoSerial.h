@@ -50,8 +50,8 @@ namespace BackyardBrains {
         plant = 2,
         heart = 3
     };
-    
-    
+
+
     class ArduinoSerial {
     public:
         enum SerialDevice {
@@ -65,12 +65,14 @@ namespace BackyardBrains {
             SerialPort()
             {
                 deviceType = ArduinoSerial::SerialDevice::unknown;
+                numOfTrials = 0;
             }
             std::string portName;
             SerialDevice deviceType;
+            int numOfTrials;
         };
-        
-        
+
+
         ArduinoSerial();
         int openSerialDevice(const char *portName);
         int readPort(char * buffer);
@@ -105,7 +107,7 @@ namespace BackyardBrains {
         int openSerialDeviceWithoutLock(const char *portName);
         void refreshPortsDataList();
         void setDeviceTypeToCurrentPort(SerialDevice deviceType);
-        
+
         char circularBuffer[SIZE_OF_CIRC_BUFFER];
         int cBufHead;
         int cBufTail;
@@ -118,7 +120,7 @@ namespace BackyardBrains {
         bool checkIfNextByteExist();
         bool areWeAtTheEndOfFrame();
         bool checkIfHaveWholeFrame();
-        
+
         void testEscapeSequence(unsigned int newByte, int offset);
         void executeContentOfMessageBuffer(int offset);
         void executeOneMessage(std::string typeOfMessage, std::string valueOfMessage, int offsetin);
@@ -130,7 +132,7 @@ namespace BackyardBrains {
         int messageBufferIndex;
         unsigned int escapeSequence[ESCAPE_SEQUENCE_LENGTH];
         unsigned int endOfescapeSequence[ESCAPE_SEQUENCE_LENGTH];
-        
+
         #ifdef __APPLE__
             void macos_ports(io_iterator_t  * PortIterator);
 
@@ -143,8 +145,8 @@ namespace BackyardBrains {
         bool _portOpened;
         bool triedToConfigureAgain;
     };
-    
-    
+
+
 }
 
 #endif /* defined(__SpikeRecorder__BYBArduino__) */
