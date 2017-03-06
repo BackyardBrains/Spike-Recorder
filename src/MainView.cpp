@@ -493,6 +493,19 @@ void MainView::analysisPressed() {
             _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.bmp"));
 
         }
+        if(_manager.serialMode())
+        {
+            if(_manager.getCurrentPort().deviceType == deviceType)
+            {
+
+                //if we are connected to serial and device type is the same as this one
+                //just disconnect!
+                _manager.setSerialNumberOfChannels(1);
+                _manager.disconnectFromSerial();
+                return;
+            }
+        }
+
 
         for(it = sps.begin();it!=sps.end();it++)
         {
