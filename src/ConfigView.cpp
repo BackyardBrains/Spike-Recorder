@@ -407,13 +407,37 @@ void ConfigView::SetupScreen()
 
             touchSerialPortWidget->clear();
 
-            std::list<std::string> sps =  _manager.serailPortsList();
-            std::list<std::string>::iterator it;
+            std::list<ArduinoSerial::SerialPort> sps =  _manager.serailPorts();
+            std::list<ArduinoSerial::SerialPort>::iterator it;
 
             for(it = sps.begin();it!=sps.end();it++)
             {
+                if(it->deviceType == ArduinoSerial::unknown)
+                {
+                    touchSerialPortWidget->addItem(it->portName.c_str());
+                }
+                else
+                {
+                    if(it->deviceType == ArduinoSerial::plant)
+                    {
+                        touchSerialPortWidget->addItem("Plant SpikerShield");
+                    }
+                    else
+                    {
+                        if(it->deviceType == ArduinoSerial::muscle)
+                        {
+                            touchSerialPortWidget->addItem("Muscle SpikerShield");
+                        }
+                        else
+                        {
+                            if(it->deviceType == ArduinoSerial::heart)
+                            {
+                                touchSerialPortWidget->addItem("Heart And Brain SpikerShield");
+                            }
+                        }
 
-                touchSerialPortWidget->addItem(it->c_str());
+                    }
+                }
             }
 
             touchSerialPortWidget->setSelection(_manager.serialPortIndex());
@@ -433,14 +457,40 @@ void ConfigView::SetupScreen()
             Log::msg("Clear serial");
             serialPortWidget->clear();
             Log::msg("Get list of serials");
-            std::list<std::string> sps =  _manager.serailPortsList();
-            std::list<std::string>::iterator it;
-            Log::msg("Iterate through serials");
+
+            std::list<ArduinoSerial::SerialPort> sps =  _manager.serailPorts();
+            std::list<ArduinoSerial::SerialPort>::iterator it;
+
             for(it = sps.begin();it!=sps.end();it++)
             {
-                Log::msg("Serial n");
-                serialPortWidget->addItem(it->c_str());
+                if(it->deviceType == ArduinoSerial::unknown)
+                {
+                    serialPortWidget->addItem(it->portName.c_str());
+                }
+                else
+                {
+                    if(it->deviceType == ArduinoSerial::plant)
+                    {
+                        serialPortWidget->addItem("Plant SpikerShield");
+                    }
+                    else
+                    {
+                        if(it->deviceType == ArduinoSerial::muscle)
+                        {
+                            serialPortWidget->addItem("Muscle SpikerShield");
+                        }
+                        else
+                        {
+                            if(it->deviceType == ArduinoSerial::heart)
+                            {
+                                serialPortWidget->addItem("Heart And Brain SpikerShield");
+                            }
+                        }
+
+                    }
+                }
             }
+
             Log::msg("Set selection serial");
             serialPortWidget->setSelection(_manager.serialPortIndex());
             _catchers.push_back(SignalCatcher(_catchers.size(), this));
@@ -879,6 +929,12 @@ void ConfigView::paintEvent() {
 void ConfigView::connectPressed()
 {
     Log::msg("Connect pressed");
+
+    if(_manager.hidMode())
+    {
+        _manager.disconnectFromHID();
+    }
+
     if(_manager.serialMode())
     {
         _manager.setSerialNumberOfChannels(1);
@@ -889,13 +945,29 @@ void ConfigView::connectPressed()
     {
 
         bool connected = false;
+
+        int selectionIndex = 0;
         if(weAreOnTouchScreen)
         {
-            connected = _manager.initSerial(touchSerialPortWidget->item(touchSerialPortWidget->selection()).c_str());
+            selectionIndex = touchSerialPortWidget->selection();
         }
         else
         {
-            connected = _manager.initSerial(serialPortWidget->item(serialPortWidget->selection()).c_str());
+            selectionIndex = serialPortWidget->selection();
+        }
+
+
+
+        std::list<ArduinoSerial::SerialPort> sps =  _manager.serailPorts();
+        std::list<ArduinoSerial::SerialPort>::iterator it;
+        int tempIndex = 0;
+        for(it = sps.begin();it!=sps.end();it++)
+        {
+            if(tempIndex == selectionIndex)
+            {
+                connected = _manager.initSerial(it->portName.c_str());
+            }
+            tempIndex++;
         }
 
 

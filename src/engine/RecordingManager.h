@@ -96,6 +96,8 @@ public:
     void addTrigger(int64_t position);
 	bool fileMode() const {return _fileMode;}
     std::list<std::string> serailPortsList() const {return _arduinoSerial.list;}
+    std::list<ArduinoSerial::SerialPort> serailPorts() const {return _portScanningArduinoSerial.ports;}
+    ArduinoSerial::SerialPort getCurrentPort() const {return _arduinoSerial.currentPort;}
 	const std::string &fileName() const { return _filename; }
 	int64_t fileLength(); // file mode only
 	const char *fileMetadataString(); // file mode only
@@ -169,7 +171,7 @@ public:
 
     bool highPassFilterEnabled() {return _highPassFilterEnabled;}
     void enableHighPassFilterWithCornerFreq(float cornerFreq);
-    void disableHighPassFilter(){_highPassFilterEnabled = false;startRemovingMeanValue();}
+    void disableHighPassFilter(){_highPassFilterEnabled = false;}
     int highCornerFrequency(){return (int)_highCornerFreq;}
     int lowCornerFrequency(){return (int)_lowCornerFreq;}
 
@@ -314,6 +316,7 @@ private:
 
 	int _serialPortIndex;
 	ArduinoSerial _arduinoSerial;
+    ArduinoSerial _portScanningArduinoSerial;
 	int _numOfSerialChannels;
 
 	HIDUsbManager _hidUsbManager;
