@@ -11,9 +11,12 @@
 
 
 #define INPUT_TYPE_STANDARD_AUDIO 0
-#define INPUT_TYPE_ARDUINO 1
-#define INPUT_TYPE_SB_PRO 2
-#define INPUT_TYPE_FILE 3
+#define INPUT_TYPE_SB_PRO 1
+#define INPUT_TYPE_FILE 2
+#define INPUT_TYPE_PLANTSS 3
+#define INPUT_TYPE_MUSCLESS 4
+#define INPUT_TYPE_HEARTSS 5
+#define INPUT_TYPE_ARDUINO_UNKOWN 6
 
 #include <stdio.h>
 namespace BackyardBrains {

@@ -2217,16 +2217,48 @@ void RecordingManager::initInputConfigPersistance()
     audioInputConfigArray[INPUT_TYPE_STANDARD_AUDIO].timeScale = 0.1f;
     audioInputConfigArray[INPUT_TYPE_STANDARD_AUDIO].initialized = true;
 
-    //arduino
-    audioInputConfigArray[INPUT_TYPE_ARDUINO].inputType = INPUT_TYPE_ARDUINO;
-    audioInputConfigArray[INPUT_TYPE_ARDUINO].filter50Hz = false;
-    audioInputConfigArray[INPUT_TYPE_ARDUINO].filter60Hz = false;
-    audioInputConfigArray[INPUT_TYPE_ARDUINO].filterLowPass = 5000;
-    audioInputConfigArray[INPUT_TYPE_ARDUINO].filterHighPass = 0.0f;
-    audioInputConfigArray[INPUT_TYPE_ARDUINO].gain = 0.5f;
-    audioInputConfigArray[INPUT_TYPE_ARDUINO].timeScale = 0.1f;
-    audioInputConfigArray[INPUT_TYPE_ARDUINO].initialized = true;
-
+    //arduino unknown
+    audioInputConfigArray[INPUT_TYPE_ARDUINO_UNKOWN].inputType = INPUT_TYPE_ARDUINO_UNKOWN;
+    audioInputConfigArray[INPUT_TYPE_ARDUINO_UNKOWN].filter50Hz = false;
+    audioInputConfigArray[INPUT_TYPE_ARDUINO_UNKOWN].filter60Hz = false;
+    audioInputConfigArray[INPUT_TYPE_ARDUINO_UNKOWN].filterLowPass = 5000;
+    audioInputConfigArray[INPUT_TYPE_ARDUINO_UNKOWN].filterHighPass = 0.0f;
+    audioInputConfigArray[INPUT_TYPE_ARDUINO_UNKOWN].gain = 0.5f;
+    audioInputConfigArray[INPUT_TYPE_ARDUINO_UNKOWN].timeScale = 0.1f;
+    audioInputConfigArray[INPUT_TYPE_ARDUINO_UNKOWN].initialized = true;
+    
+    
+    //arduino Plant
+    audioInputConfigArray[INPUT_TYPE_PLANTSS].inputType = INPUT_TYPE_PLANTSS;
+    audioInputConfigArray[INPUT_TYPE_PLANTSS].filter50Hz = false;
+    audioInputConfigArray[INPUT_TYPE_PLANTSS].filter60Hz = true;
+    audioInputConfigArray[INPUT_TYPE_PLANTSS].filterLowPass = 11.0f;
+    audioInputConfigArray[INPUT_TYPE_PLANTSS].filterHighPass = 1.0f;
+    audioInputConfigArray[INPUT_TYPE_PLANTSS].gain = 0.5f;
+    audioInputConfigArray[INPUT_TYPE_PLANTSS].timeScale = 0.1f;
+    audioInputConfigArray[INPUT_TYPE_PLANTSS].initialized = true;
+    
+    
+    //arduino EMG
+    audioInputConfigArray[INPUT_TYPE_MUSCLESS].inputType = INPUT_TYPE_MUSCLESS;
+    audioInputConfigArray[INPUT_TYPE_MUSCLESS].filter50Hz = false;
+    audioInputConfigArray[INPUT_TYPE_MUSCLESS].filter60Hz = false;
+    audioInputConfigArray[INPUT_TYPE_MUSCLESS].filterLowPass = 300.0f;
+    audioInputConfigArray[INPUT_TYPE_MUSCLESS].filterHighPass = 0.0f;
+    audioInputConfigArray[INPUT_TYPE_MUSCLESS].gain = 0.5f;
+    audioInputConfigArray[INPUT_TYPE_MUSCLESS].timeScale = 1.0f;
+    audioInputConfigArray[INPUT_TYPE_MUSCLESS].initialized = true;
+    
+    //arduino Heart and Brain
+    audioInputConfigArray[INPUT_TYPE_HEARTSS].inputType = INPUT_TYPE_HEARTSS;
+    audioInputConfigArray[INPUT_TYPE_HEARTSS].filter50Hz = false;
+    audioInputConfigArray[INPUT_TYPE_HEARTSS].filter60Hz = false;
+    audioInputConfigArray[INPUT_TYPE_HEARTSS].filterLowPass = 150.0f;
+    audioInputConfigArray[INPUT_TYPE_HEARTSS].filterHighPass = 1.0f;
+    audioInputConfigArray[INPUT_TYPE_HEARTSS].gain = 0.5f;
+    audioInputConfigArray[INPUT_TYPE_HEARTSS].timeScale = 1.0f;
+    audioInputConfigArray[INPUT_TYPE_HEARTSS].initialized = true;
+    
     //HID - SpikerBox Pro
     audioInputConfigArray[INPUT_TYPE_SB_PRO].inputType = INPUT_TYPE_SB_PRO;
     audioInputConfigArray[INPUT_TYPE_SB_PRO].filter50Hz = false;
@@ -2273,7 +2305,24 @@ int RecordingManager::getCurrentInputType()
     }
     else if(serialMode())
     {
-        return INPUT_TYPE_ARDUINO;
+        
+        switch(_arduinoSerial.currentPort.deviceType) {
+            case ArduinoSerial::unknown:
+                return INPUT_TYPE_ARDUINO_UNKOWN;
+                break;
+            case ArduinoSerial::plant:
+                return INPUT_TYPE_PLANTSS;
+                break;
+            case ArduinoSerial::heart:
+                return INPUT_TYPE_HEARTSS;
+                break;
+            case ArduinoSerial::muscle:
+                return INPUT_TYPE_MUSCLESS;
+                break;
+            default:
+                return INPUT_TYPE_ARDUINO_UNKOWN;
+                break;
+        }
     }
     else if(fileMode())
     {

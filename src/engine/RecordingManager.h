@@ -292,7 +292,7 @@ private:
 	std::string _filename;
 
     //it keeps last zoom and filter configs for each type of inputs
-    AudioInputConfig audioInputConfigArray[4];
+    AudioInputConfig audioInputConfigArray[7];
     void initInputConfigPersistance();
     void saveInputConfigSettings();
     AudioInputConfig * getInputConfigForType(int inputType);

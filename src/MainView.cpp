@@ -506,6 +506,13 @@ void MainView::analysisPressed() {
             }
         }
 
+        if(_manager.fileMode()) { // end file mode when in file mode
+            _recordButton->setVisible(true);
+            _analysisButton->setVisible(false);
+            _audioView->setOffset(0);
+        } else {
+            _audioView->setOffset(0);
+        }
 
         for(it = sps.begin();it!=sps.end();it++)
         {
@@ -553,7 +560,8 @@ void MainView::analysisPressed() {
         }
 
 
-
+        if(_manager.paused())
+            pausePressed();
 
     }
 
