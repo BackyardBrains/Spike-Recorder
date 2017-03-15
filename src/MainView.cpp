@@ -485,7 +485,7 @@ void MainView::analysisPressed() {
         std::list<ArduinoSerial::SerialPort> sps =  _manager.serailPorts();
         std::list<ArduinoSerial::SerialPort>::iterator it;
         int portIndex = 0;
-
+        std::cout<<"\n connectToFirstShieldOfType\n";
         if(_manager.hidMode())
         {
             _manager.disconnectFromHID();
@@ -497,7 +497,7 @@ void MainView::analysisPressed() {
         {
             if(_manager.getCurrentPort().deviceType == deviceType)
             {
-
+                std::cout<<"1 disconnect \n";
                 //if we are connected to serial and device type is the same as this one
                 //just disconnect!
                 _manager.setSerialNumberOfChannels(1);
@@ -513,7 +513,7 @@ void MainView::analysisPressed() {
         } else {
             _audioView->setOffset(0);
         }
-
+        
         for(it = sps.begin();it!=sps.end();it++)
         {
             if(it->deviceType == deviceType)
@@ -528,6 +528,7 @@ void MainView::analysisPressed() {
                     //if we just want to turn off current shield
                     if(_manager.serialMode())
                     {
+                        std::cout<<"2 disconnect \n";
                         _manager.setSerialNumberOfChannels(1);
                         _manager.disconnectFromSerial();
                     }
@@ -536,6 +537,7 @@ void MainView::analysisPressed() {
                 //if we want to turn on some different shield
                 if(_manager.serialMode())
                 {
+                    std::cout<<"3 disconnect \n";
                     _manager.setSerialNumberOfChannels(1);
                     _manager.disconnectFromSerial();
                 }

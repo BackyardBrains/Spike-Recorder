@@ -741,7 +741,23 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         ArduinoSerial::openPortLock = true;
 
         int fd  = openSerialDeviceWithoutLock(portName);
+        
+        //update current port
+        
+        std::list<SerialPort>::iterator portsIterator;
+        
+        for(portsIterator = ports.begin(); portsIterator!= ports.end(); portsIterator++)
+        {
+            std::size_t found=portsIterator->portName.find(portName);
+            if (found!=std::string::npos)
+            {
+                currentPort.deviceType = portsIterator->deviceType;
+                currentPort.portName = portsIterator->portName;
+                break;
+            }
+        }
 
+        //unlock port connection
         ArduinoSerial::openPortLock = false;
         return fd;
     }
@@ -763,6 +779,9 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         {
             return -1;
         }
+        
+        
+        
         circularBuffer[0] = '\n';
 
         cBufHead = 0;
@@ -885,12 +904,13 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
                 }
 
+                workingArduinoRef->refreshPortList(ports);
                 ArduinoSerial::openPortLock = false;
 
             }
 
 
-
+        
 
 
     }
@@ -918,6 +938,32 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             _portOpened = false;
 
         }
+    }
+    
+    //
+    // Replace current ports list with new one
+    //
+    void ArduinoSerial::refreshPortList(std::list<SerialPort> newPorts)
+    {
+        ports.clear();
+        
+        std::list<SerialPort>::iterator portsIterator;
+        
+        //Add new to list of ports
+        
+        for(portsIterator = newPorts.begin(); portsIterator!= newPorts.end(); portsIterator++)
+        {
+                SerialPort newPort;
+                newPort.portName = portsIterator->portName;
+                newPort.deviceType = portsIterator->deviceType;
+                ports.push_back(newPort);
+        }
+
+        
+        
+        
+        
+       
     }
 
 

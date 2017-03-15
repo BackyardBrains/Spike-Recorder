@@ -103,6 +103,7 @@ namespace BackyardBrains {
     private:
         int openPort(const char *portName);
         std::thread scanningThread;
+        void refreshPortList(std::list<SerialPort> newPorts);
         void scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSerial * workingArduinoRef);
         int openSerialDeviceWithoutLock(const char *portName);
         void refreshPortsDataList();
