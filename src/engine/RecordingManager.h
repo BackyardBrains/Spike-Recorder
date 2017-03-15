@@ -20,6 +20,7 @@
     #include "FirmwareUpdater.h"
     #include "BYBFirmwareVO.h"
     #include "BSLFirmwareUpdater.h"
+    #define LOCATION_OF_FIRMWARES "./firmwares"
 #endif
 
 namespace BackyardBrains {
@@ -331,6 +332,7 @@ private:
         FirmwareUpdater _xmlFirmwareUpdater;
         BSLFirmwareUpdater _bslFirmwareUpdater;
         std::list<BYBFirmwareVO> _currentFirmwares;
+        std::vector<BYBFirmwareVO> getAllFirmwaresFromLocal();
     #endif
 
     double _alphaAudioTime = 0;

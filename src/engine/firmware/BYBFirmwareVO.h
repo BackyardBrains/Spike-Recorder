@@ -1,6 +1,8 @@
 #ifndef BYBFIRMWAREVO_H
 #define BYBFIRMWAREVO_H
 #include <string>
+#define REMOTE_FIRMWARE 0
+#define LOCAL_FIRMWARE 1
 namespace BackyardBrains {
 class BYBFirmwareVO
 {
@@ -13,6 +15,7 @@ class BYBFirmwareVO
         std::string URL;
         std::string filepath;
         std::string hardware;
+        int location;
     protected:
     private:
 };

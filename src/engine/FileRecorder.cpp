@@ -61,6 +61,8 @@ static void put16(uint16_t num, FILE *f) {
 }
 
 static void padbyte(FILE *f) {
+    //if it is even number of bytes add one zero
+    //and make odd
 	if(ftell(f)&1)
 		fputc(0, f);
 }
@@ -98,10 +100,13 @@ bool FileRecorder::start(const std::string &filename) {
 }
 
 void FileRecorder::stop(const MetadataChunk *meta) {
+	//get number of bytes
 	uint32_t size = ftell(_file);
 
+    //make odd number of bytes if it is even
 	padbyte(_file);
 
+    //write metadata to file (num of channels)
 	if(meta != NULL)
 		writeMetadata(meta);
 
@@ -391,7 +396,7 @@ bool FileRecorder::recording() const {
 float FileRecorder::recordTime() const {
 	if(_file == NULL || _nchan == 0)
 		return 0.f;
-	
+
 	return (ftell(_file)-44)/(float)_nchan/sizeof(int16_t)/_manager.sampleRate();
 }
 
