@@ -275,13 +275,65 @@ void RecordingManager::scanUSBDevices()
                             tempBYBFirmware.type = ((BYBFirmwareVO)(*ti)).type;
                             tempBYBFirmware.id = ((BYBFirmwareVO)(*ti)).id;
                             tempBYBFirmware.hardware = ((BYBFirmwareVO)(*ti)).hardware;
+                            tempBYBFirmware.location = REMOTE_FIRMWARE;
                             _currentFirmwares.push_back(tempBYBFirmware);
                         }
                     }
 
                 }
+
+
+            std::vector<BYBFirmwareVO> tempLocalFirmwares =  getAllFirmwaresFromLocal();
+            for (int i=0;i<tempLocalFirmwares.size();i++)
+            {
+                _currentFirmwares.push_back(tempLocalFirmwares[i]);
+            }
+
             return _currentFirmwares;
          }
+
+        //
+        // serach for .txt files in SpikeRecorder/Firmwares directory
+        // and make array of firmware objects BYBFirmwareVO
+        //
+        std::vector<BYBFirmwareVO> RecordingManager::getAllFirmwaresFromLocal()
+        {
+            std::string folder = LOCATION_OF_FIRMWARES;
+            std::vector<BYBFirmwareVO> localFirmwares;
+            std::string search_path = folder + "/*.txt";
+
+            WIN32_FIND_DATA fd;
+            HANDLE hFind = ::FindFirstFile(search_path.c_str(), &fd);
+            if(hFind != INVALID_HANDLE_VALUE) {
+                     std::cout<<"\nFound firmware:\n";
+                do {
+                    // read all (real) files in current folder
+                    // , delete '!' read other 2 default folder . and ..
+                    if(! (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ) {
+                        std::stringstream descriptionOfFirmware;
+                        descriptionOfFirmware <<"Local firmware ("<< fd.cFileName<<")";
+                        BYBFirmwareVO tempBYBFirmware;
+
+                        tempBYBFirmware.description = descriptionOfFirmware.str();
+                        tempBYBFirmware.URL =fd.cFileName;
+                        std::string tempFirmwareFilepath = folder + "/"+fd.cFileName;
+                        tempBYBFirmware.filepath =tempFirmwareFilepath;
+                        //tempBYBFirmware.version = ((BYBFirmwareVO)(*ti)).version;
+                        //tempBYBFirmware.type = ((BYBFirmwareVO)(*ti)).type;
+                        //tempBYBFirmware.id = ((BYBFirmwareVO)(*ti)).id;
+                        //tempBYBFirmware.hardware = ((BYBFirmwareVO)(*ti)).hardware;
+                        tempBYBFirmware.location = LOCAL_FIRMWARE;
+
+                        localFirmwares.push_back(tempBYBFirmware);
+
+                    }
+                    std::cout<<fd.cFileName<<"\n";
+                }while(::FindNextFile(hFind, &fd));
+                ::FindClose(hFind);
+            }
+            return localFirmwares;
+        }
+
 
         //
         // Check if we downloaded list of firmwares from server
@@ -290,10 +342,10 @@ void RecordingManager::scanUSBDevices()
         bool  RecordingManager::firmwareAvailable()
         {
 
-            std::list<BYBFirmwareVO> tempCurrentFirmwares;
+                std::list<BYBFirmwareVO> tempCurrentFirmwares;
 
-            //first check if there are firmwares that have same hardware version and hardware type
-            for( std::list<BYBFirmwareVO>::iterator ti = _xmlFirmwareUpdater.firmwares.begin();
+                //first check if there are firmwares that have same hardware version and hardware type
+                for( std::list<BYBFirmwareVO>::iterator ti = _xmlFirmwareUpdater.firmwares.begin();
                     ti != _xmlFirmwareUpdater.firmwares.end();
                     ti ++)
                 {
@@ -317,12 +369,20 @@ void RecordingManager::scanUSBDevices()
                             tempBYBFirmware.type = ((BYBFirmwareVO)(*ti)).type;
                             tempBYBFirmware.id = ((BYBFirmwareVO)(*ti)).id;
                             tempBYBFirmware.hardware = ((BYBFirmwareVO)(*ti)).hardware;
+                            tempBYBFirmware.location = REMOTE_FIRMWARE;
                             tempCurrentFirmwares.push_back(tempBYBFirmware);
                         }
                     }
 
                 }
-            return tempCurrentFirmwares.size()>0;
+
+                std::vector<BYBFirmwareVO> tempLocalFirmwares =  getAllFirmwaresFromLocal();
+                for (int i=0;i<tempLocalFirmwares.size();i++)
+                {
+                    _currentFirmwares.push_back(tempLocalFirmwares[i]);
+                }
+
+                return tempCurrentFirmwares.size()>0;
         }
 
         //
@@ -364,12 +424,18 @@ void RecordingManager::scanUSBDevices()
         int RecordingManager::prepareForHIDFirmwareUpdate(BYBFirmwareVO * firmwareToUpdate)
         {
                  //download selected firmware from BYB server
-                if(_xmlFirmwareUpdater.downloadFirmware(firmwareToUpdate))
-                {
-                    //if we have error while downloading the selected firmware
-                    return 1;
-                }
-
+                 if(firmwareToUpdate->location == REMOTE_FIRMWARE)
+                 {
+                    if(_xmlFirmwareUpdater.downloadFirmware(firmwareToUpdate))
+                    {
+                        //if we have error while downloading the selected firmware
+                        return 1;
+                    }
+                 }
+                 if(firmwareToUpdate->location == LOCAL_FIRMWARE)
+                 {
+                    CopyFile(firmwareToUpdate->filepath.c_str(), "newfirmware.txt", FALSE);
+                 }
                 _firmwareUpdateStage = 1;
                 _hidUsbManager.askForStateOfPowerRail();
                 shouldStartFirmwareUpdatePresentation = true;//this will open the firmware update view

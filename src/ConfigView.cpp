@@ -632,36 +632,6 @@ void ConfigView::SetupScreen()
 
 
         #if defined(_WIN32)
-            /* Widgets::BoxLayout *hidHbox = new Widgets::BoxLayout(Widgets::Horizontal);
-            //USB  label
-            Widgets::Label *nameUSB = new Widgets::Label(group);
-            nameUSB->setText("Connect to USB device ");
-            nameUSB->updateSize();
-            hidHbox->addSpacing(0);
-            hidHbox->addWidget(nameUSB, Widgets::AlignLeft);
-            hidHbox->addSpacing(5);
-
-            //Button for connect to HID device
-            _hidButton = new Widgets::PushButton(group);
-
-            _hidButton->clicked.connect(this, &ConfigView::hidConnectPressed);
-            if(_manager.hidMode())
-            {
-                _hidButton->setNormalTex(Widgets::TextureGL::get("data/connected.bmp"));
-                _hidButton->setHoverTex(Widgets::TextureGL::get("data/connected-high.bmp"));
-            }
-            else
-            {
-                _hidButton->setNormalTex(Widgets::TextureGL::get("data/disconnected.bmp"));
-                _hidButton->setHoverTex(Widgets::TextureGL::get("data/disconnected-high.bmp"));
-            }
-            _hidButton->setSizeHint(Widgets::Size(52,26));
-
-            hidHbox->addWidget(_hidButton);
-            hidHbox->update();
-            gvbox->addSpacing(20);
-            gvbox->addLayout(hidHbox);*/
-
 
         //--------------   Update firmware code (works only under Windows)----------------------
 
@@ -710,7 +680,14 @@ void ConfigView::SetupScreen()
                                         ti ++)
                                     {
                                         std::stringstream sstm;
-                                         sstm <<((BYBFirmwareVO)(*ti)).description << " (V" << ((BYBFirmwareVO)(*ti)).version <<")";
+                                        if(((BYBFirmwareVO)(*ti)).location == REMOTE_FIRMWARE)
+                                        {
+                                            sstm <<((BYBFirmwareVO)(*ti)).description << " (V" << ((BYBFirmwareVO)(*ti)).version <<")";
+                                        }
+                                        else
+                                        {
+                                            sstm <<((BYBFirmwareVO)(*ti)).description;
+                                        }
                                         touchFirmwareListWidget->addItem(sstm.str().c_str());
                                     }
 
@@ -735,7 +712,14 @@ void ConfigView::SetupScreen()
                                         ti ++)
                                     {
                                         std::stringstream sstm;
-                                         sstm <<((BYBFirmwareVO)(*ti)).description << " (V" << ((BYBFirmwareVO)(*ti)).version <<")";
+                                        if(((BYBFirmwareVO)(*ti)).location == REMOTE_FIRMWARE)
+                                        {
+                                            sstm <<((BYBFirmwareVO)(*ti)).description << " (V" << ((BYBFirmwareVO)(*ti)).version <<")";
+                                        }
+                                        else
+                                        {
+                                            sstm <<((BYBFirmwareVO)(*ti)).description;
+                                        }
                                         firmwaresWidget->addItem(sstm.str().c_str() );
                                     }
 
@@ -891,6 +875,7 @@ void ConfigView::paintEvent() {
                     selectedFirmware->URL = std::string((*ti).URL);
                     selectedFirmware->filepath = std::string((*ti).filepath);
                     selectedFirmware->id = (*ti).id;
+                    selectedFirmware->location = (*ti).location;
                     break;
                 }
                 i++;
