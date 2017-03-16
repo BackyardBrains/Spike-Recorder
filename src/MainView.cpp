@@ -464,6 +464,7 @@ void MainView::analysisPressed() {
 
     void MainView::plantPressed()
     {
+        Log::msg("plantPressed function");
         connectToFirstShieldOfType(ArduinoSerial::plant);
     }
 
@@ -471,10 +472,12 @@ void MainView::analysisPressed() {
 
     void MainView::musclePressed()
     {
+        Log::msg("musclePressed function");
         connectToFirstShieldOfType(ArduinoSerial::muscle);
     }
     void MainView::heartPressed()
     {
+        Log::msg("heartPressed function");
         connectToFirstShieldOfType(ArduinoSerial::heart);
     }
 
