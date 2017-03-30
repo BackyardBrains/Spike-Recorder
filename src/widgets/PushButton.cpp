@@ -61,7 +61,10 @@ void PushButton::mousePressEvent(MouseEvent *event)
 void PushButton::mouseReleaseEvent(MouseEvent *event)
 {
 	if(event->button() == LeftButton && _hover)
+    {
 		clicked.emit();
+        clickedWithRef(event, this);
+    }
 }
 
 void PushButton::mouseMotionEvent(MouseEvent *event)

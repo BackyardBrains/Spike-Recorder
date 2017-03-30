@@ -19,6 +19,7 @@ public:
  	void setSize(Size newSize);
     void setRightPadding(int padding);
 	sigslot::signal0<> clicked;
+    sigslot::signal2<MouseEvent *, PushButton* > clickedWithRef;
 private:
 	void paintEvent();
 	void mousePressEvent(MouseEvent *event);

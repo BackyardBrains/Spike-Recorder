@@ -97,6 +97,48 @@ void Game::loadResources() {
     Widgets::TextureGL::load("data/heartcon.bmp");
     Widgets::TextureGL::load("data/heartconhigh.bmp");
     Widgets::TextureGL::load("data/heartdiscon.bmp");
+    
+    Widgets::TextureGL::load("data/conne1.bmp");
+    Widgets::TextureGL::load("data/conne2.bmp");
+    Widgets::TextureGL::load("data/conne3.bmp");
+    Widgets::TextureGL::load("data/conne4.bmp");
+    Widgets::TextureGL::load("data/conne5.bmp");
+    Widgets::TextureGL::load("data/conne6.bmp");
+    
+    Widgets::TextureGL::load("data/dconne1.bmp");
+    Widgets::TextureGL::load("data/dconne2.bmp");
+    Widgets::TextureGL::load("data/dconne3.bmp");
+    Widgets::TextureGL::load("data/dconne4.bmp");
+    Widgets::TextureGL::load("data/dconne5.bmp");
+    Widgets::TextureGL::load("data/dconne6.bmp");
+    
+    Widgets::TextureGL::load("data/connm1.bmp");
+    Widgets::TextureGL::load("data/connm2.bmp");
+    Widgets::TextureGL::load("data/connm3.bmp");
+    Widgets::TextureGL::load("data/connm4.bmp");
+    Widgets::TextureGL::load("data/connm5.bmp");
+    Widgets::TextureGL::load("data/connm6.bmp");
+    
+    Widgets::TextureGL::load("data/dconnm1.bmp");
+    Widgets::TextureGL::load("data/dconnm2.bmp");
+    Widgets::TextureGL::load("data/dconnm3.bmp");
+    Widgets::TextureGL::load("data/dconnm4.bmp");
+    Widgets::TextureGL::load("data/dconnm5.bmp");
+    Widgets::TextureGL::load("data/dconnm6.bmp");
+    
+    Widgets::TextureGL::load("data/connp1.bmp");
+    Widgets::TextureGL::load("data/connp2.bmp");
+    Widgets::TextureGL::load("data/connp3.bmp");
+    Widgets::TextureGL::load("data/connp4.bmp");
+    Widgets::TextureGL::load("data/connp5.bmp");
+    Widgets::TextureGL::load("data/connp6.bmp");
+    
+    Widgets::TextureGL::load("data/dconnp1.bmp");
+    Widgets::TextureGL::load("data/dconnp2.bmp");
+    Widgets::TextureGL::load("data/dconnp3.bmp");
+    Widgets::TextureGL::load("data/dconnp4.bmp");
+    Widgets::TextureGL::load("data/dconnp5.bmp");
+    Widgets::TextureGL::load("data/dconnp6.bmp");
 
     Widgets::TextureGL::load("data/heart.bmp");
 	Widgets::TextureGL::load("data/speaker.bmp");

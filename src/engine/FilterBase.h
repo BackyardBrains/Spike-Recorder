@@ -11,8 +11,8 @@ namespace BackyardBrains {
             FilterBase();
             void initWithSamplingRate(float sr);
             void setCoefficients();
-            void filterIntData(int16_t * data, int32_t numFrames);
-            void filterContiguousData( float * data, uint32_t numFrames);
+            void filterIntData(int16_t * data, int32_t numFrames,bool flush = false);
+            void filterContiguousData( float * data, uint32_t numFrames, bool flush =false);
         protected:
         
             void intermediateVariables(float Fc, float Q);
@@ -23,6 +23,7 @@ namespace BackyardBrains {
             float omega, omegaS, omegaC, alpha;
             float coefficients[5];
             float a0, a1, a2, b0, b1, b2;
+            int flushFilterValues;
         private:
     };
 

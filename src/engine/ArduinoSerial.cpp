@@ -1233,7 +1233,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                             numberOfFrames--;
                             break;//continue as if we have new frame
                         }
-                        obuffer[obufferIndex++] = writeInteger*30;
+                        obuffer[obufferIndex++] = (writeInteger-512)*30;
 
 
                         if(areWeAtTheEndOfFrame())

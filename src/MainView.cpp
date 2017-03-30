@@ -1,7 +1,6 @@
 #include "MainView.h"
 #include "widgets/Application.h"
 #include "widgets/PushButton.h"
-#include "widgets/BoxLayout.h"
 #include "widgets/TextureGL.h"
 #include "widgets/ScrollBar.h"
 #include "widgets/Painter.h"
@@ -77,36 +76,11 @@ MainView::MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder
 	_usbButton->setSizeHint(Widgets::Size(0,0));
 
 
-    _plantSSButton = new Widgets::PushButton(this);
-    _plantSSButton->setNormalTex(Widgets::TextureGL::get("data/plantcon.bmp"));
-    _plantSSButton->setHoverTex(Widgets::TextureGL::get("data/plantconhigh.bmp"));
-    _plantSSButton->clicked.connect(this, &MainView::plantPressed);
-    _plantSSButton->setVisible(false);
-    _plantSSButton->setRightPadding(5);
-    _plantSSButton->setSizeHint(Widgets::Size(0,0));
-
-
-    _muscleSSButton = new Widgets::PushButton(this);
-    _muscleSSButton->setNormalTex(Widgets::TextureGL::get("data/musclecon.bmp"));
-    _muscleSSButton->setHoverTex(Widgets::TextureGL::get("data/muscleconhigh.bmp"));
-    _muscleSSButton->clicked.connect(this, &MainView::musclePressed);
-    _muscleSSButton->setVisible(false);
-    _muscleSSButton->setRightPadding(5);
-    _muscleSSButton->setSizeHint(Widgets::Size(0,0));
-
-
-    _heartSSButton = new Widgets::PushButton(this);
-    _heartSSButton->setNormalTex(Widgets::TextureGL::get("data/heartcon.bmp"));
-    _heartSSButton->setHoverTex(Widgets::TextureGL::get("data/heartconhigh.bmp"));
-    _heartSSButton->clicked.connect(this, &MainView::heartPressed);
-    _heartSSButton->setVisible(false);
-    _heartSSButton->setRightPadding(5);
-    _heartSSButton->setSizeHint(Widgets::Size(0,0));
-
 	_recordButton = new Widgets::PushButton(this);
 	_recordButton->setNormalTex(Widgets::TextureGL::get("data/rec.bmp"));
 	_recordButton->setHoverTex(Widgets::TextureGL::get("data/rechigh.bmp"));
 	_recordButton->clicked.connect(this, &MainView::recordPressed);
+    
 
 	_fftButton = new Widgets::PushButton(this);
 	_fftButton->setNormalTex(Widgets::TextureGL::get("data/fft.bmp"));
@@ -175,10 +149,15 @@ MainView::MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder
 	topBar->addWidget(_fftButton);
     //topBar->addSpacing(5);
     topBar->addWidget(_usbButton);
-    topBar->addWidget(_plantSSButton);
-    topBar->addWidget(_muscleSSButton);
-    topBar->addWidget(_heartSSButton);
-	//topBar->addSpacing(5);
+    
+    
+    shieldsButtonBoxLayout = new Widgets::BoxLayout(Widgets::Horizontal);
+    //shieldsButtonBoxLayout->addWidget(_plantSSButton);
+    //shieldsButtonBoxLayout->addWidget(_muscleSSButton);
+    //shieldsButtonBoxLayout->addWidget(_heartSSButton);
+    topBar->addLayout(shieldsButtonBoxLayout);
+    
+    //topBar->addSpacing(5);
 	topBar->addWidget(_analysisButton);
     topBar->addSpacing(5);
 	topBar->addWidget(_threshavgGroup, Widgets::AlignVCenter);
@@ -462,27 +441,129 @@ void MainView::analysisPressed() {
 		pausePressed();
 }
 
-    void MainView::plantPressed()
+    void MainView::plantPressed(Widgets::MouseEvent *mouseEv, Widgets::PushButton* buttonInst)
     {
         Log::msg("plantPressed function");
-        connectToFirstShieldOfType(ArduinoSerial::plant);
+        connectToShieldForButton(buttonInst);
+        //connectToFirstShieldOfType(ArduinoSerial::plant);
     }
 
-
-
-    void MainView::musclePressed()
+    void MainView::musclePressed(Widgets::MouseEvent *mouseEv, Widgets::PushButton* buttonInst)
     {
         Log::msg("musclePressed function");
-        connectToFirstShieldOfType(ArduinoSerial::muscle);
+        connectToShieldForButton(buttonInst);
+        //connectToFirstShieldOfType(ArduinoSerial::muscle);
     }
-    void MainView::heartPressed()
+    void MainView::heartPressed(Widgets::MouseEvent *mouseEv, Widgets::PushButton* buttonInst)
     {
         Log::msg("heartPressed function");
-        connectToFirstShieldOfType(ArduinoSerial::heart);
+        connectToShieldForButton(buttonInst);
+        //connectToFirstShieldOfType(ArduinoSerial::heart);
     }
 
+    void MainView::connectToShieldForButton(Widgets::PushButton* buttonInst)
+    {
+        std::list<SerialPortIndicator> ::iterator buttonsIterator;
+        std::cout<<"\n connectToShieldForButton\n";
+        //find port name
+        bool foundButton = false;
+        ArduinoSerial::SerialPort selectedPort;
+        
+        for(buttonsIterator = shieldButtons.begin();buttonsIterator!=shieldButtons.end();buttonsIterator++)
+        {
+            if(buttonsIterator->button == buttonInst)
+            {
+                selectedPort = buttonsIterator->serialPort;
+                foundButton = true;
+            }
+           
+        }
+    
+        if(foundButton == false)
+        {
+            return;
+        }
+        
+        //find index of port in list
+        std::list<ArduinoSerial::SerialPort> sps =  _manager.serailPorts();
+        std::list<ArduinoSerial::SerialPort>::iterator it;
+        int portIndex = 0;
+        for(it = sps.begin();it!=sps.end();it++)
+        {
+            std::size_t found;
+            found  = it->portName.find(selectedPort.portName);
+            
+            if (found!=std::string::npos)
+            {
+                break;
+            }
+            
+        }
+        
+        //end HID mode if in HID mode
+        if(_manager.hidMode())
+        {
+            _manager.disconnectFromHID();
+            _usbButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.bmp"));
+            _usbButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.bmp"));
+            
+        }
+        
+        // end file mode when in file mode
+        if(_manager.fileMode()) {
+            _recordButton->setVisible(true);
+            _analysisButton->setVisible(false);
+            _audioView->setOffset(0);
+        } else {
+            _audioView->setOffset(0);
+        }
+        
+        
+        //if we are in serial mode already disconnect from current serial port
+        if(_manager.serialMode())
+        {
+           
+                std::cout<<"1 disconnect \n";
 
+                std::size_t found;
+                found  = _manager.getCurrentPort().portName.find(selectedPort.portName);
+            
+                _manager.setSerialNumberOfChannels(1);
+                _manager.disconnectFromSerial();
+                
+                //if current serial port was one that we clicked than we don;t have
+                //to do anything else, just return from function
+                if (found!=std::string::npos)
+                {
+                    return;
+                }
+            
+        }
+        
+        bool connected = _manager.initSerial(selectedPort.portName.c_str());
+        _manager.changeSerialPort(portIndex);
+        if(!connected)
+        {
+            Log::error("Can't init serial port.");
+            const char *error = _manager.serialError.c_str();
+            if(strlen(error) == 0) {
+                error = "Error: Cannot init serial port.";
+            }
+            
+            Widgets::ErrorBox *box = new Widgets::ErrorBox(error);
+            box->setGeometry(Widgets::Rect(this->width()/2-250, this->height()/2-40, 500, 80));
+            Widgets::Application::getInstance()->addPopup(box);
+        }
+        
 
+        
+        if(_manager.paused())
+            pausePressed();
+    }
+
+    
+    
+    
     void MainView::connectToFirstShieldOfType(ArduinoSerial::SerialDevice deviceType)
     {
         std::list<ArduinoSerial::SerialPort> sps =  _manager.serailPorts();
@@ -505,6 +586,7 @@ void MainView::analysisPressed() {
                 //just disconnect!
                 _manager.setSerialNumberOfChannels(1);
                 _manager.disconnectFromSerial();
+                
                 return;
             }
         }
@@ -761,100 +843,376 @@ void MainView::paintEvent()
 
     std::list<ArduinoSerial::SerialPort> sps =  _manager.serailPorts();
     std::list<ArduinoSerial::SerialPort>::iterator it;
-    int tempIndex = 0;
-    bool plantExis = false;
-    bool muscleExist = false;
-    bool heartExis = false;
 
-    for(it = sps.begin();it!=sps.end();it++)
+
+    std::list<ArduinoSerial::SerialPort>::iterator serialPortsIterator;
+    std::list<SerialPortIndicator> ::iterator buttonsIterator;
+    
+    bool thereWasChange = false;
+    
+    
+    //first check if we have button for all serial ports
+    //and refresh serial port data
+    
+    bool foundButtonForPort;
+    for(serialPortsIterator = sps.begin();serialPortsIterator!=sps.end();serialPortsIterator++)
     {
-        if(it->deviceType == ArduinoSerial::plant)
+        if(serialPortsIterator->deviceType == ArduinoSerial::unknown)
         {
-            plantExis = true;
+            continue;
         }
-        if(it->deviceType == ArduinoSerial::muscle)
+        foundButtonForPort = false;
+        for(buttonsIterator = shieldButtons.begin();buttonsIterator!=shieldButtons.end();buttonsIterator++)
         {
-            muscleExist = true;
+            std::size_t found;
+            found  = serialPortsIterator->portName.find(buttonsIterator->serialPort.portName);
+            if (found!=std::string::npos)
+            {
+                foundButtonForPort = true;
+                buttonsIterator->serialPort =  *serialPortsIterator;
+                break;
+            }
+            
         }
-        if(it->deviceType == ArduinoSerial::heart)
+        //make button if we do not have it
+        if(foundButtonForPort == false)
         {
-            heartExis = true;
+            thereWasChange = true;
+            SerialPortIndicator newButtonData;
+            newButtonData.serialPort = *serialPortsIterator;
+            shieldButtons.push_back(newButtonData);
         }
     }
-
-    if(plantExis)
+    
+    
+    
+    //than we remove buttons that do not have serial port anymore
+    bool foundPortForButton;
+    
+    for(buttonsIterator = shieldButtons.begin();buttonsIterator!=shieldButtons.end();buttonsIterator++)
     {
+        foundPortForButton = false;
+        for(serialPortsIterator = sps.begin();serialPortsIterator!=sps.end();serialPortsIterator++)
+        {
+            std::size_t found;
+            found  = serialPortsIterator->portName.find(buttonsIterator->serialPort.portName);
+            if (found!=std::string::npos)
+            {
+                foundPortForButton = true;
+                break;
+            }
+        }
+        
+        if(foundPortForButton==false)
+        {
+            buttonsIterator = shieldButtons.erase(buttonsIterator);
+            buttonsIterator--;
+            thereWasChange = true;
+        }
+    }
+    
+    int numberOfMuscle = 0;
+    int numberOfHeart = 0;
+    int numberOfPlant = 0;
+    for(buttonsIterator = shieldButtons.begin();buttonsIterator!=shieldButtons.end();buttonsIterator++)
+    {
+       
+        
+        if (buttonsIterator->serialPort.deviceType == ArduinoSerial::plant)
+        {
+            numberOfPlant++;
+        }
+        else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::muscle)
+        {
+            numberOfMuscle++;
+        }
+        else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::heart)
+        {
+            numberOfHeart++;
+        }
+       
+    }
+    
+    
+    //Now we have sinchronized port and button list
+    //check if we had changes and update screen
+    
+    int currentPlant = 0;
+    int currentMuscle = 0;
+    int currentHeart = 0;
+    if(thereWasChange)
+    {
+        shieldsButtonBoxLayout->removeAll();
+        for(buttonsIterator = shieldButtons.begin();buttonsIterator!=shieldButtons.end();buttonsIterator++)
+        {
+            Widgets::PushButton * newButton = new Widgets::PushButton(this);
+            newButton->setRightPadding(5);
+            newButton->setSizeHint(Widgets::Size(53,48));
+            newButton->setVisible(true);
+            
+            if(buttonsIterator->serialPort.deviceType == ArduinoSerial::plant)
+            {
+                currentPlant++;
+                if(currentPlant>6)
+                {
+                    numberOfPlant = 1;
+                }
 
-        if(_manager.serialMode() && _manager.getCurrentPort().deviceType == ArduinoSerial::plant)
-        {
-            _plantSSButton->setNormalTex(Widgets::TextureGL::get("data/plantdiscon.bmp"));
-            _plantSSButton->setHoverTex(Widgets::TextureGL::get("data/plantdiscon.bmp"));
+                if(numberOfPlant>1)
+                {
+                    std::stringstream s;
+                  
+                    std::size_t found;
+                    found  = _manager.getCurrentPort().portName.find(buttonsIterator->serialPort.portName);
+                    if (found!=std::string::npos)
+                    {
+                        s << "data/dconnp"<<currentPlant<<".bmp";
+                    }
+                    else
+                    {
+                        s << "data/connp"<<currentPlant<<".bmp";
+                    }
+                    newButton->setNormalTex(Widgets::TextureGL::get(s.str().c_str()));
+                    newButton->setHoverTex(Widgets::TextureGL::get(s.str().c_str()));
+                
+                }
+                else
+                {
+                    newButton->setNormalTex(Widgets::TextureGL::get("data/plantcon.bmp"));
+                    newButton->setHoverTex(Widgets::TextureGL::get("data/plantconhigh.bmp"));
+                    
+                }
+                newButton->clickedWithRef.connect(this, &MainView::plantPressed);
+            }
+            else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::muscle)
+            {
+                currentMuscle++;
+                
+                if(currentMuscle>6)
+                {
+                    numberOfMuscle = 1;
+                }
+                
+                if(numberOfMuscle>1)
+                {
+                    std::stringstream s;
+                    
+                    std::size_t found;
+                    found  = _manager.getCurrentPort().portName.find(buttonsIterator->serialPort.portName);
+                    if (found!=std::string::npos)
+                    {
+                        s << "data/dconnm"<<currentMuscle<<".bmp";
+                    }
+                    else
+                    {
+                        s << "data/connm"<<currentMuscle<<".bmp";
+                    }
+                    newButton->setNormalTex(Widgets::TextureGL::get(s.str().c_str()));
+                    newButton->setHoverTex(Widgets::TextureGL::get(s.str().c_str()));
+                    
+                }
+                else
+                {
+                    newButton->setNormalTex(Widgets::TextureGL::get("data/musclecon.bmp"));
+                    newButton->setHoverTex(Widgets::TextureGL::get("data/muscleconhigh.bmp"));
+                    
+                }
+
+                newButton->clickedWithRef.connect(this, &MainView::musclePressed);
+            }
+            else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::heart)
+            {
+                currentHeart++;
+                
+                
+                if(currentHeart>6)
+                {
+                    numberOfHeart = 1;
+                }
+                
+                if(numberOfHeart>1)
+                {
+                    std::stringstream s;
+                    
+                    std::size_t found;
+                    found  = _manager.getCurrentPort().portName.find(buttonsIterator->serialPort.portName);
+                    if (found!=std::string::npos)
+                    {
+                        s << "data/dconne"<<currentHeart<<".bmp";
+                    }
+                    else
+                    {
+                        s << "data/conne"<<currentHeart<<".bmp";
+                    }
+                    newButton->setNormalTex(Widgets::TextureGL::get(s.str().c_str()));
+                    newButton->setHoverTex(Widgets::TextureGL::get(s.str().c_str()));
+                    
+                }
+                else
+                {
+                    newButton->setNormalTex(Widgets::TextureGL::get("data/heartcon.bmp"));
+                    newButton->setHoverTex(Widgets::TextureGL::get("data/heartconhigh.bmp"));
+                    
+                }
+
+                newButton->clickedWithRef.connect(this, &MainView::heartPressed);
+            }
+            buttonsIterator->button = newButton;
+            shieldsButtonBoxLayout->addWidget(newButton);
         }
-        else
-        {
-            _plantSSButton->setNormalTex(Widgets::TextureGL::get("data/plantcon.bmp"));
-            _plantSSButton->setHoverTex(Widgets::TextureGL::get("data/plantconhigh.bmp"));
-        }
-        _plantSSButton->setSizeHint(Widgets::Size(53,48));
-        _plantSSButton->setVisible(true);
+        
         Widgets::Application::getInstance()->updateLayout();
     }
-    else
+    else//if there was not change just update icons on button
     {
-        _plantSSButton->setVisible(false);
-        _plantSSButton->setSizeHint(Widgets::Size(0,0));
-    }
-
-    if(muscleExist)
-    {
-        if(_manager.serialMode() && _manager.getCurrentPort().deviceType == ArduinoSerial::muscle)
+    
+        //refresh icons
+        for(buttonsIterator = shieldButtons.begin();buttonsIterator!=shieldButtons.end();buttonsIterator++)
         {
-            _muscleSSButton->setNormalTex(Widgets::TextureGL::get("data/musclediscon.bmp"));
-            _muscleSSButton->setHoverTex(Widgets::TextureGL::get("data/musclediscon.bmp"));
+            bool buttonIsActive = false;
+            std::size_t found;
+            found  = _manager.getCurrentPort().portName.find(buttonsIterator->serialPort.portName);
+            if (found!=std::string::npos)
+            {
+                buttonIsActive = true;
+            }
+            
+            
+            if(buttonsIterator->serialPort.deviceType == ArduinoSerial::plant)
+            {
+                currentPlant++;
+                if(currentPlant>6)
+                {
+                    numberOfPlant = 1;
+                }
+                
+                if(numberOfPlant>1)
+                {
+                    std::stringstream s;
+                    
+                    
+                    if (buttonIsActive)
+                    {
+                        s << "data/dconnp"<<currentPlant<<".bmp";
+                    }
+                    else
+                    {
+                        s << "data/connp"<<currentPlant<<".bmp";
+                    }
+                    buttonsIterator->button->setNormalTex(Widgets::TextureGL::get(s.str().c_str()));
+                    buttonsIterator->button->setHoverTex(Widgets::TextureGL::get(s.str().c_str()));
+                    
+                }
+                else
+                {
+                    if(buttonIsActive)
+                    {
+                        buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/plantdiscon.bmp"));
+                        buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/plantdiscon.bmp"));
+                        
+                    }
+                    else
+                    {
+                        buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/plantcon.bmp"));
+                        buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/plantconhigh.bmp"));
+                    }
+                    
+                }
+                
+            }
+            else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::muscle)
+            {
+                currentMuscle++;
+                
+                if(currentMuscle>6)
+                {
+                    numberOfMuscle = 1;
+                }
+                
+                if(numberOfMuscle>1)
+                {
+                    std::stringstream s;
+                    
+               
+                    if (buttonIsActive)
+                    {
+                        s << "data/dconnm"<<currentMuscle<<".bmp";
+                    }
+                    else
+                    {
+                        s << "data/connm"<<currentMuscle<<".bmp";
+                    }
+                    buttonsIterator->button->setNormalTex(Widgets::TextureGL::get(s.str().c_str()));
+                    buttonsIterator->button->setHoverTex(Widgets::TextureGL::get(s.str().c_str()));
+                    
+                }
+                else
+                {
+                    if(buttonIsActive)
+                    {
+                        buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/musclediscon.bmp"));
+                        buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/musclediscon.bmp"));
+                    }
+                    else
+                    {
+                        buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/musclecon.bmp"));
+                        buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/muscleconhigh.bmp"));
+                    }
+                }
+                
+                
+            }
+            else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::heart)
+            {
+                currentHeart++;
+                
+                
+                if(currentHeart>6)
+                {
+                    numberOfHeart = 1;
+                }
+                
+                if(numberOfHeart>1)
+                {
+                    std::stringstream s;
+                    
+   
+                    if (buttonIsActive)
+                    {
+                        s << "data/dconne"<<currentHeart<<".bmp";
+                    }
+                    else
+                    {
+                        s << "data/conne"<<currentHeart<<".bmp";
+                    }
+                    buttonsIterator->button->setNormalTex(Widgets::TextureGL::get(s.str().c_str()));
+                    buttonsIterator->button->setHoverTex(Widgets::TextureGL::get(s.str().c_str()));
+                    
+                }
+                else
+                {
+                    if(buttonIsActive)
+                    {
+                        buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/heartdiscon.bmp"));
+                        buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/heartdiscon.bmp"));
+                    }
+                    else
+                    {
+                        buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/heartcon.bmp"));
+                        buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/heartconhigh.bmp"));
+                    }
+                }
+                
+            }
+            
+        
         }
-        else
-        {
-            _muscleSSButton->setNormalTex(Widgets::TextureGL::get("data/musclecon.bmp"));
-            _muscleSSButton->setHoverTex(Widgets::TextureGL::get("data/muscleconhigh.bmp"));
-        }
-
-
-        _muscleSSButton->setSizeHint(Widgets::Size(53,48));
-        _muscleSSButton->setVisible(true);
-        Widgets::Application::getInstance()->updateLayout();
     }
-    else
-    {
-        _muscleSSButton->setVisible(false);
-        _muscleSSButton->setSizeHint(Widgets::Size(0,0));
-    }
-
-    if(heartExis)
-    {
-        if(_manager.serialMode() && _manager.getCurrentPort().deviceType == ArduinoSerial::heart)
-        {
-            _heartSSButton->setNormalTex(Widgets::TextureGL::get("data/heartdiscon.bmp"));
-            _heartSSButton->setHoverTex(Widgets::TextureGL::get("data/heartdiscon.bmp"));
-        }
-        else
-        {
-            _heartSSButton->setNormalTex(Widgets::TextureGL::get("data/heartcon.bmp"));
-            _heartSSButton->setHoverTex(Widgets::TextureGL::get("data/heartconhigh.bmp"));
-        }
-
-
-
-        _heartSSButton->setSizeHint(Widgets::Size(53,48));
-        _heartSSButton->setVisible(true);
-        Widgets::Application::getInstance()->updateLayout();
-    }
-    else
-    {
-        _heartSSButton->setVisible(false);
-        _heartSSButton->setSizeHint(Widgets::Size(0,0));
-    }
-
-
+    
+    
+    
+    
+    
     if(_fftView->active() && _manager.serialMode())
     {
         _alphaFeedbackButton->setVisible(true);

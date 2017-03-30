@@ -1369,7 +1369,7 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
          if(highPassFilterEnabled())
         {
             for(int chan = 0; chan < channum; chan++) {
-	            _devices.begin()->_highPassFilters[chan].filterIntData(channels[chan].data(), samplesRead);
+	            _devices.begin()->_highPassFilters[chan].filterIntData(channels[chan].data(), samplesRead, true);
 	        }
         }
 
@@ -1398,7 +1398,7 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 
             for(int i = 0; i < samplesRead; i++) {
 
-                channels[chan][i] -= dcBias;//substract DC offset from channels data
+                //channels[chan][i] -= dcBias;//substract DC offset from channels data
                 if(_thresholdSource == 0)//if we trigger on signal
                 {
                     //add position of data samples that are greater than threshold to FIFO list _triggers
@@ -2318,7 +2318,7 @@ void RecordingManager::initInputConfigPersistance()
     //arduino Heart and Brain
     audioInputConfigArray[INPUT_TYPE_HEARTSS].inputType = INPUT_TYPE_HEARTSS;
     audioInputConfigArray[INPUT_TYPE_HEARTSS].filter50Hz = false;
-    audioInputConfigArray[INPUT_TYPE_HEARTSS].filter60Hz = false;
+    audioInputConfigArray[INPUT_TYPE_HEARTSS].filter60Hz = true;
     audioInputConfigArray[INPUT_TYPE_HEARTSS].filterLowPass = 150.0f;
     audioInputConfigArray[INPUT_TYPE_HEARTSS].filterHighPass = 1.0f;
     audioInputConfigArray[INPUT_TYPE_HEARTSS].gain = 0.5f;

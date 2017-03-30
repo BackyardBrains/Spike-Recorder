@@ -32,22 +32,34 @@ void FilterBase::setCoefficients()
     coefficients[2] = b2;
     coefficients[3] = a1;
     coefficients[4] = a2;
+    flushFilterValues = 60;
 }
 
 //
 // Filter integer data buffer
 //
-void FilterBase::filterIntData(int16_t * data, int32_t numFrames)
+void FilterBase::filterIntData(int16_t * data, int32_t numFrames, bool flush)
 {
     float *tempFloatBuffer = (float*) std::malloc(numFrames * sizeof(float));
     for(int32_t i=numFrames-1;i>=0;i--)
     {
         tempFloatBuffer[i] = (float) data[i];
     }
-    filterContiguousData(tempFloatBuffer, numFrames);
-    for(int32_t i=numFrames-1;i>=0;i--)
+    filterContiguousData(tempFloatBuffer, numFrames, flush);
+    if(flushFilterValues>0 && flush)
     {
-        data[i] = (int16_t) tempFloatBuffer[i];
+        flushFilterValues--;
+        for(int32_t i=numFrames-1;i>=0;i--)
+        {
+            data[i] = 0;
+        }
+    }
+    else
+    {
+        for(int32_t i=numFrames-1;i>=0;i--)
+        {
+            data[i] = (int16_t) tempFloatBuffer[i];
+        }
     }
     free(tempFloatBuffer);
 }
@@ -55,7 +67,7 @@ void FilterBase::filterIntData(int16_t * data, int32_t numFrames)
 //
 // Filter single channel data
 //
-void FilterBase::filterContiguousData( float * data, uint32_t numFrames)
+void FilterBase::filterContiguousData( float * data, uint32_t numFrames, bool flush)
 {
     // Provide buffer for processing
     float *tInputBuffer = (float*) std::malloc((numFrames + 2) * sizeof(float));
@@ -74,7 +86,7 @@ void FilterBase::filterContiguousData( float * data, uint32_t numFrames)
     {
         tOutputBuffer[n] = tInputBuffer[n]*coefficients[0]+ tInputBuffer[n-1]*coefficients[1]+tInputBuffer[n-2]*coefficients[2] - tOutputBuffer[n-1]*coefficients[3]- tOutputBuffer[n-2]*coefficients[4];
     }
-
+    
     // Copy the data
     memcpy(data, tOutputBuffer, numFrames * sizeof(float));
     memcpy(gInputKeepBuffer, &(tInputBuffer[numFrames]), 2 * sizeof(float));

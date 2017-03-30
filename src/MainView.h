@@ -4,6 +4,7 @@
 #include "widgets/Widget.h"
 #include <ctime>
 #include "engine/ArduinoSerial.h"
+#include "widgets/BoxLayout.h"
 namespace BackyardBrains {
 
 class RecordingManager;
@@ -21,11 +22,28 @@ namespace Widgets {
 class MainView : public Widgets::Widget {
 public:
 	MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder &fileRec, Widget *parent = NULL);
+    
+    struct SerialPortIndicator
+    {
+        ArduinoSerial::SerialPort serialPort;
+        bool connected;
+        Widgets::PushButton * button;
+        SerialPortIndicator()
+        {
+            button = NULL;
+            connected = false;
+        }
+    };
+    
 	~MainView();
 private:
 	RecordingManager &_manager;
 	AnalysisManager &_anaman;
 	FileRecorder &_fileRec;
+    
+    std::list<SerialPortIndicator> shieldButtons;
+    
+    
 	Widgets::PushButton *_pauseButton;
 	Widgets::PushButton *_ekgButton;
 	Widgets::PushButton *_configButton;
@@ -36,13 +54,15 @@ private:
 	Widgets::PushButton *_analysisButton;
 	Widgets::PushButton *_usbButton;
 	Widgets::PushButton *threshButton;
-    Widgets::PushButton *_plantSSButton;
-    Widgets::PushButton *_muscleSSButton;
-    Widgets::PushButton *_heartSSButton;
+    
+    Widgets::BoxLayout * shieldsButtonBoxLayout;
+   // Widgets::PushButton *_plantSSButton;
+   // Widgets::PushButton *_muscleSSButton;
+   // Widgets::PushButton *_heartSSButton;
 
-    void plantPressed();
-    void musclePressed();
-    void heartPressed();
+    void plantPressed(Widgets::MouseEvent *mouseEv, Widgets::PushButton* buttonInst);
+    void musclePressed(Widgets::MouseEvent *mouseEv, Widgets::PushButton* buttonInst);
+    void heartPressed(Widgets::MouseEvent *mouseEv, Widgets::PushButton* buttonInst);
 
     Widgets::PushButton *_alphaFeedbackButton;
     void alphaFeedbackPressed();
@@ -82,6 +102,7 @@ private:
     void drawTimeLabelsForFile();
 
     void connectToFirstShieldOfType(ArduinoSerial::SerialDevice deviceType);
+    void connectToShieldForButton(Widgets::PushButton* buttonInst);
 };
 
 }
