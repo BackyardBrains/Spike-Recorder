@@ -432,7 +432,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
     void ArduinoSerial::setDeviceTypeToCurrentPort(SerialDevice deviceType)
     {
-        
+
         std::list<SerialPort>::iterator portsIterator;
 
         for(portsIterator = ports.begin(); portsIterator!= ports.end(); portsIterator++)
@@ -750,11 +750,11 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         ArduinoSerial::openPortLock = true;
         Log::msg("openSerialDevice after lock");
         int fd  = openSerialDeviceWithoutLock(portName);
-        
+
         //update current port
-        
+
         std::list<SerialPort>::iterator portsIterator;
-        
+
         for(portsIterator = ports.begin(); portsIterator!= ports.end(); portsIterator++)
         {
             std::size_t found=portsIterator->portName.find(portName);
@@ -790,9 +790,9 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             Log::msg("fail openSerialDeviceWithoutLock");
             return -1;
         }
-        
-        
-        
+
+
+
         circularBuffer[0] = '\n';
 
         cBufHead = 0;
@@ -930,7 +930,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             }
 
 
-        
+
 
 
     }
@@ -959,23 +959,23 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
         }
     }
-    
+
     //
     // Replace current ports list with new one
     //
     void ArduinoSerial::refreshPortList(std::list<SerialPort> newPorts)
     {
         ports.clear();
-        
+
         if(newPorts.size()==0)
         {
             return;
         }
-        
+
         std::list<SerialPort>::iterator portsIterator;
-        
+
         //Add new to list of ports
-        
+
         for(portsIterator = newPorts.begin(); portsIterator!= newPorts.end(); portsIterator++)
         {
                 SerialPort newPort;
@@ -984,11 +984,11 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                 ports.push_back(newPort);
         }
 
-        
-        
-        
-        
-       
+
+
+
+
+
     }
 
 
@@ -1233,7 +1233,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                             numberOfFrames--;
                             break;//continue as if we have new frame
                         }
-                        obuffer[obufferIndex++] = (writeInteger-512)*30;
+                        obuffer[obufferIndex++] = (writeInteger)*30;
 
 
                         if(areWeAtTheEndOfFrame())
