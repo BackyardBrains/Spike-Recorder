@@ -1362,7 +1362,7 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
          if(lowPassFilterEnabled())
         {
             for(int chan = 0; chan < channum; chan++) {
-	            _devices.begin()->_lowPassFilters[chan].filterIntData(channels[chan].data(), samplesRead);
+	            _devices.begin()->_lowPassFilters[chan].filterIntData(channels[chan].data(), samplesRead, true);
 	        }
         }
 
