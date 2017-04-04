@@ -481,6 +481,17 @@ void RecordingManager::swapRTRepeating()
 #pragma mark - Serial device
 //--------------- Serial port functions ---------------------
 
+bool RecordingManager::weShouldDisplayWaveform()
+{
+    if(serialMode())
+    {
+        return !(_devices.begin()->dcBiasNum < _sampleRate*HOW_LONG_FLUSH_IS_ACTIVE);
+    }
+        return true;
+
+}
+    
+    
 bool RecordingManager::initSerial(const char *portName)
 {
 
@@ -1363,9 +1374,9 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
         }
 
         bool flushData = false;
-        if(_devices.begin()->dcBiasNum < _sampleRate*1) {
+        /*if(_devices.begin()->dcBiasNum < _sampleRate*HOW_LONG_FLUSH_IS_ACTIVE) {
             flushData = true;
-        }
+        }*/
         
          if(lowPassFilterEnabled())
         {

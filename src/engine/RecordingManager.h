@@ -23,6 +23,8 @@
     #define LOCATION_OF_FIRMWARES "./firmwares"
 #endif
 
+#define HOW_LONG_FLUSH_IS_ACTIVE 1
+
 namespace BackyardBrains {
 
 class SampleBuffer;
@@ -175,6 +177,8 @@ public:
     void disableHighPassFilter(){_highPassFilterEnabled = false;}
     int highCornerFrequency(){return (int)_highCornerFreq;}
     int lowCornerFrequency(){return (int)_lowCornerFreq;}
+    
+    bool weShouldDisplayWaveform();
 
 
 

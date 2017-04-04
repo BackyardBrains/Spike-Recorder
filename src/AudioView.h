@@ -90,7 +90,7 @@ protected:
 	void drawMarkers();
 	void drawThreshold(int screenw);
 	void drawGainControls();
-	void drawData(std::vector<std::pair<int16_t, int16_t> > &data, int channel, int samples, int x, int y, int width);
+	void drawData(std::vector<std::pair<int16_t, int16_t> > &data, int channel, int samples, int x, int y, int width, int numberOfSamplesToAvoid);
 	void paintEvent();
 	void drawSpikeTrainStatistics();
 

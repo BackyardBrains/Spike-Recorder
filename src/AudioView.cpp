@@ -374,7 +374,7 @@ void AudioView::drawScale() {
 	Widgets::Application::font()->draw(o.str().c_str(), width()-shownscalew/2-20, height()-50+15, Widgets::AlignHCenter);
 }
 
-void AudioView::drawData(std::vector<std::pair<int16_t, int16_t> > &data, int channel, int samples, int x, int y, int width) {
+void AudioView::drawData(std::vector<std::pair<int16_t, int16_t> > &data, int channel, int samples, int x, int y, int width, int numberOfSamplesToAvoid) {
 	float dist = width/(float)(data.size()-1);
 
 	if(fabs(dist-1.f) < 0.003f)
@@ -383,11 +383,14 @@ void AudioView::drawData(std::vector<std::pair<int16_t, int16_t> > &data, int ch
 	float scale = height()*ampScale;
 	glBegin(GL_LINE_STRIP);
     //std::cout<<"Wave gain: "<<_channels[channel].gain<<" scale:"<<scale<<"\n";
+    int xc;
 	for(int j = 0; j < (int)data.size(); j++) {
-		int xc = j*dist+x;
-
-		glVertex3i(xc, -data[j].first*_channels[channel].gain*scale+y, 0);
-		glVertex3i(xc, -data[j].second*_channels[channel].gain*scale+y, 0);
+		 xc = j*dist+x;
+        if((j)>numberOfSamplesToAvoid)
+        {
+            glVertex3i(xc, -data[j].first*_channels[channel].gain*scale+y, 0);
+            glVertex3i(xc, -data[j].second*_channels[channel].gain*scale+y, 0);
+        }
 	}
 	glEnd();
 
@@ -501,13 +504,17 @@ void AudioView::drawAudio() {
 		if(_manager.serialMode())
         {
             Widgets::Painter::setColor(ARDUINO_COLORS[_channels[i].colorIdx]);
+            if(!_manager.weShouldDisplayWaveform())
+            {
+                return;
+            }
         }
         else
         {
             Widgets::Painter::setColor(COLORS[_channels[i].colorIdx]);
         }
 		std::vector<std::pair<int16_t, int16_t> > data;
-
+        int numOfSamplesToAvoid = 0;
 		if(!_manager.threshMode()) {
 			if(_manager.serialMode())
 			{
@@ -516,6 +523,15 @@ void AudioView::drawAudio() {
 				//       - (number of samples that we need to display)
 
 				int pos = _manager.pos()+_channelOffset-samples;
+                
+               if(pos<_manager.sampleRate()*HOW_LONG_FLUSH_IS_ACTIVE)
+               {
+                   numOfSamplesToAvoid =  _manager.sampleRate()*HOW_LONG_FLUSH_IS_ACTIVE-pos ;
+                   
+                  
+                   
+               }
+                
 				int16_t tempData[samples];
 				std::vector< std::pair<int16_t, int16_t> > tempVectorData(samples);
 				_manager.getData(_channels[i].virtualDevice, pos, samples, tempData);
@@ -539,7 +555,7 @@ void AudioView::drawAudio() {
 			data = _manager.getTriggerSamplesEnvelope(_channels[i].virtualDevice, samples, screenw == 0 ? 1 : std::max(samples/screenw,1));
 		}
 
-		drawData(data, i, samples, xoff, yoff, screenw);
+		drawData(data, i, samples, xoff, yoff, screenw,numOfSamplesToAvoid);
 
 		Widgets::TextureGL::get("data/pin.bmp")->bind();
         if(Widgets::Application::getInstance()->areWeOnTouchscreen())

@@ -79,7 +79,7 @@ void AnalysisAudioView::paintEvent() {
     data = _manager.getSamplesEnvelope(_manager.selectedVDevice(), pos, samples, screenWidth() == 0 ? 1 : std::max(samples/screenWidth(),1));
     
 	Widgets::Painter::setColor(Widgets::Colors::widgetbgdark);
-	drawData(data, 0, samples, MOVEPIN_SIZE*1.5f, height()/2.0, screenWidth());
+	drawData(data, 0, samples, MOVEPIN_SIZE*1.5f, height()/2.0, screenWidth(), 0);
 
 	drawMarkers();
 
