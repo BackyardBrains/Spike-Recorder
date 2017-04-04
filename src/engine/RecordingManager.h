@@ -292,13 +292,16 @@ private:
 	bool _hidMode;
 	std::string _filename;
 
-    //it keeps last zoom and filter configs for each type of inputs
-    AudioInputConfig audioInputConfigArray[7];
+    //it keeps last zoom, gain and filter configs for each type of inputs
+    AudioInputConfig audioInputConfigArray[7];//standard audio, file, HID, 3  shields, and unknown shield
+    std::list<AudioInputConfig> arduinoShieldsConfigs;
     void initInputConfigPersistance();
     void saveInputConfigSettings();
     AudioInputConfig * getInputConfigForType(int inputType);
     int getCurrentInputType();
     void loadFilterSettings();
+    void makeNewSerialAudioConfig(std::string nameOfThePort);
+    std::list<AudioInputConfig>::iterator iteratorPointerToCurrentSerialAudioConfig;
 
 	int _sampleRate;
 

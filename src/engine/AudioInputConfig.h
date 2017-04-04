@@ -19,6 +19,7 @@
 #define INPUT_TYPE_ARDUINO_UNKOWN 6
 
 #include <stdio.h>
+#include <string>
 namespace BackyardBrains {
     class AudioInputConfig {
     public:
@@ -30,7 +31,7 @@ namespace BackyardBrains {
         float filterLowPass;
         bool initialized;
         int inputType;
-        
+        std::string uniqueName;
         AudioInputConfig();
         ~AudioInputConfig();
     private:

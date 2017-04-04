@@ -496,7 +496,11 @@ bool RecordingManager::initSerial(const char *portName)
         }
     }
 
-
+    //make audio congfig
+    std::string nameOfThePort = portName;
+    makeNewSerialAudioConfig(nameOfThePort);
+    
+    
     DWORD frequency = _arduinoSerial.maxSamplingRate()/_numOfSerialChannels;
     std::cout<<"Frequency: "<<frequency<<" Chan: "<<_numOfSerialChannels<<" Samp: "<<_arduinoSerial.maxSamplingRate()<<"\n";
     HSTREAM stream = BASS_StreamCreate(frequency, _numOfSerialChannels, BASS_STREAM_DECODE, STREAMPROC_PUSH, NULL);
@@ -1302,9 +1306,8 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 
     if(samplesRead == -1)
     {
+        
         //check if port is still active if not disconnect
-
-
         std::list<ArduinoSerial::SerialPort> sps =  serailPorts();
         std::list<ArduinoSerial::SerialPort>::iterator it;
         std::size_t found;
@@ -2409,69 +2412,212 @@ int RecordingManager::getCurrentInputType()
 
 void RecordingManager::saveInputConfigSettings()
 {
+        //since init for every input type first saves config for previous type and
+        //than it loads config for new type we have to avoid saving the config
+        //first time, before we initialize it first time
        if(!firstTimeInitializationOfSettingsForAudioInput)
        {
             int inputType = getCurrentInputType();
 
-            audioInputConfigArray[inputType].filter50Hz = fiftyHzFilterEnabled();
-            audioInputConfigArray[inputType].filter60Hz = sixtyHzFilterEnabled();
-            audioInputConfigArray[inputType].filterLowPass = lowCornerFrequency();
-            audioInputConfigArray[inputType].filterHighPass = highCornerFrequency();
-            //gain and timescale should be constanly updated by AudioView
-            audioInputConfigArray[inputType].initialized = true;
+            if(serialMode())
+            {
+                
+                
+                
+                std::list<AudioInputConfig>::iterator it;
+                std::size_t found;
+                bool foundPort = false;
+                for(it = arduinoShieldsConfigs.begin();it!=arduinoShieldsConfigs.end();it++)
+                {
+                    found  = getCurrentPort().portName.find(it->uniqueName);
+                    if (found!=std::string::npos)
+                    {
+                        foundPort = true;
+                        it->filter50Hz = fiftyHzFilterEnabled();
+                        it->filter60Hz = sixtyHzFilterEnabled();
+                        it->filterLowPass = lowCornerFrequency();
+                        it->filterHighPass = highCornerFrequency();
+                        //gain and timescale should be constanly updated by AudioView
+                        it->initialized = true;
+                        break;
+                    }
+                }
+
+            }
+            else
+            {
+                audioInputConfigArray[inputType].filter50Hz = fiftyHzFilterEnabled();
+                audioInputConfigArray[inputType].filter60Hz = sixtyHzFilterEnabled();
+                audioInputConfigArray[inputType].filterLowPass = lowCornerFrequency();
+                audioInputConfigArray[inputType].filterHighPass = highCornerFrequency();
+                //gain and timescale should be constanly updated by AudioView
+                audioInputConfigArray[inputType].initialized = true;
+            }
+
        }
         firstTimeInitializationOfSettingsForAudioInput = false;
 }
 
+void RecordingManager::makeNewSerialAudioConfig(std::string nameOfThePort)
+{
+    
+    std::size_t found;
+    bool foundPort = false;
+    for(iteratorPointerToCurrentSerialAudioConfig = arduinoShieldsConfigs.begin();iteratorPointerToCurrentSerialAudioConfig!=arduinoShieldsConfigs.end();iteratorPointerToCurrentSerialAudioConfig++)
+    {
+        found  = getCurrentPort().portName.find(iteratorPointerToCurrentSerialAudioConfig->uniqueName);
+        if (found!=std::string::npos)
+        {
+            foundPort = true;
+            break;
+        }
+    }
+    if(!foundPort)
+    {
+        int audioInputType = INPUT_TYPE_ARDUINO_UNKOWN;
+        switch(_arduinoSerial.currentPort.deviceType) {
+            case ArduinoSerial::unknown:
+                audioInputType =  INPUT_TYPE_ARDUINO_UNKOWN;
+                break;
+            case ArduinoSerial::plant:
+                audioInputType =  INPUT_TYPE_PLANTSS;
+                break;
+            case ArduinoSerial::heart:
+                audioInputType = INPUT_TYPE_HEARTSS;
+                break;
+            case ArduinoSerial::muscle:
+                audioInputType =  INPUT_TYPE_MUSCLESS;
+                break;
+            default:
+                audioInputType = INPUT_TYPE_ARDUINO_UNKOWN;
+                break;
+        }
+        
+        AudioInputConfig newArduinoAudioConfig;
+        newArduinoAudioConfig.uniqueName = nameOfThePort;
+        newArduinoAudioConfig.inputType = audioInputConfigArray[audioInputType].inputType;
+        newArduinoAudioConfig.inputType = audioInputConfigArray[audioInputType].filter50Hz;
+        newArduinoAudioConfig.inputType = audioInputConfigArray[audioInputType].filter60Hz;
+        newArduinoAudioConfig.inputType = audioInputConfigArray[audioInputType].filterLowPass;
+        newArduinoAudioConfig.inputType = audioInputConfigArray[audioInputType].filterHighPass;
+        newArduinoAudioConfig.inputType = audioInputConfigArray[audioInputType].gain;
+        newArduinoAudioConfig.inputType = audioInputConfigArray[audioInputType].timeScale;
+        newArduinoAudioConfig.inputType = audioInputConfigArray[audioInputType].initialized;
+        
+        arduinoShieldsConfigs.push_back(newArduinoAudioConfig);
+        
+        //just to get iteratorPointerToCurrentSerialAudioConfig to point to right one
+        for(iteratorPointerToCurrentSerialAudioConfig = arduinoShieldsConfigs.begin();iteratorPointerToCurrentSerialAudioConfig!=arduinoShieldsConfigs.end();iteratorPointerToCurrentSerialAudioConfig++)
+        {
+            found  = getCurrentPort().portName.find(iteratorPointerToCurrentSerialAudioConfig->uniqueName);
+            if (found!=std::string::npos)
+            {
+                
+                break;
+            }
+        }
+    }
+
+}
 
 void RecordingManager::saveGainForAudioInput(float newGain)
 {
     int inputType = getCurrentInputType();
-    audioInputConfigArray[inputType].gain = newGain;
+    if(serialMode())
+    {
+        iteratorPointerToCurrentSerialAudioConfig->gain = newGain;
+    }
+    else
+    {
+        audioInputConfigArray[inputType].gain = newGain;
+    }
 }
 
 void RecordingManager::saveTimeScaleForAudioInput(float newTimeScale)
 {
     int inputType = getCurrentInputType();
-    audioInputConfigArray[inputType].timeScale = newTimeScale;
+    if(serialMode())
+    {
+        iteratorPointerToCurrentSerialAudioConfig->timeScale = newTimeScale;
+    }
+    else
+    {
+        audioInputConfigArray[inputType].timeScale = newTimeScale;
+    }
 }
 
 float RecordingManager::loadGainForAudioInput()
 {
     int inputType = getCurrentInputType();
+    if(serialMode())
+    {
+       return iteratorPointerToCurrentSerialAudioConfig->gain;
+    }
+    
     return audioInputConfigArray[inputType].gain;
+    
 }
 
 float RecordingManager::loadTimeScaleForAudioInput()
 {
     int inputType = getCurrentInputType();
+    if(serialMode())
+    {
+        return iteratorPointerToCurrentSerialAudioConfig->timeScale;
+    }
     return audioInputConfigArray[inputType].timeScale;
 }
 
 void RecordingManager::loadFilterSettings()
 {
     int inputType = getCurrentInputType();
-    enableHighPassFilterWithCornerFreq(audioInputConfigArray[inputType].filterHighPass);
-    enableLowPassFilterWithCornerFreq(audioInputConfigArray[inputType].filterLowPass);
-
-    if(audioInputConfigArray[inputType].filter60Hz)
+    if(serialMode())
     {
-        enable60HzFilter();
+        enableHighPassFilterWithCornerFreq(iteratorPointerToCurrentSerialAudioConfig->filterHighPass);
+        enableLowPassFilterWithCornerFreq(iteratorPointerToCurrentSerialAudioConfig->filterLowPass);
+        
+        if(iteratorPointerToCurrentSerialAudioConfig->filter60Hz)
+        {
+            enable60HzFilter();
+        }
+        else
+        {
+            disable60HzFilter();
+        }
+        
+        if(iteratorPointerToCurrentSerialAudioConfig->filter50Hz)
+        {
+            enable50HzFilter();
+        }
+        else
+        {
+            disable50HzFilter();
+        }
+        
     }
     else
     {
-        disable60HzFilter();
-    }
+        enableHighPassFilterWithCornerFreq(audioInputConfigArray[inputType].filterHighPass);
+        enableLowPassFilterWithCornerFreq(audioInputConfigArray[inputType].filterLowPass);
 
-    if(audioInputConfigArray[inputType].filter50Hz)
-    {
-        enable50HzFilter();
-    }
-    else
-    {
-        disable50HzFilter();
-    }
+        if(audioInputConfigArray[inputType].filter60Hz)
+        {
+            enable60HzFilter();
+        }
+        else
+        {
+            disable60HzFilter();
+        }
 
+        if(audioInputConfigArray[inputType].filter50Hz)
+        {
+            enable50HzFilter();
+        }
+        else
+        {
+            disable50HzFilter();
+        }
+    }
 }
 
 
