@@ -2299,7 +2299,7 @@ void RecordingManager::initInputConfigPersistance()
     audioInputConfigArray[INPUT_TYPE_PLANTSS].filter50Hz = false;
     audioInputConfigArray[INPUT_TYPE_PLANTSS].filter60Hz = true;
     audioInputConfigArray[INPUT_TYPE_PLANTSS].filterLowPass = 11.0f;
-    audioInputConfigArray[INPUT_TYPE_PLANTSS].filterHighPass = 1.0f;
+    audioInputConfigArray[INPUT_TYPE_PLANTSS].filterHighPass = 0.0f;
     audioInputConfigArray[INPUT_TYPE_PLANTSS].gain = 0.5f;
     audioInputConfigArray[INPUT_TYPE_PLANTSS].timeScale = 0.1f;
     audioInputConfigArray[INPUT_TYPE_PLANTSS].initialized = true;
@@ -2319,7 +2319,7 @@ void RecordingManager::initInputConfigPersistance()
     audioInputConfigArray[INPUT_TYPE_HEARTSS].inputType = INPUT_TYPE_HEARTSS;
     audioInputConfigArray[INPUT_TYPE_HEARTSS].filter50Hz = false;
     audioInputConfigArray[INPUT_TYPE_HEARTSS].filter60Hz = true;
-    audioInputConfigArray[INPUT_TYPE_HEARTSS].filterLowPass = 150.0f;
+    audioInputConfigArray[INPUT_TYPE_HEARTSS].filterLowPass = 30.0f;
     audioInputConfigArray[INPUT_TYPE_HEARTSS].filterHighPass = 1.0f;
     audioInputConfigArray[INPUT_TYPE_HEARTSS].gain = 0.5f;
     audioInputConfigArray[INPUT_TYPE_HEARTSS].timeScale = 1.0f;
