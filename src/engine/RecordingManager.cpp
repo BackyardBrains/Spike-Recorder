@@ -1359,34 +1359,41 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 	        }
         }
 
+        bool flushData = false;
+        if(_devices.begin()->dcBiasNum < _sampleRate*1) {
+            flushData = true;
+        }
+        
          if(lowPassFilterEnabled())
         {
             for(int chan = 0; chan < channum; chan++) {
-	            _devices.begin()->_lowPassFilters[chan].filterIntData(channels[chan].data(), samplesRead, true);
+	            _devices.begin()->_lowPassFilters[chan].filterIntData(channels[chan].data(), samplesRead, flushData);
 	        }
         }
 
          if(highPassFilterEnabled())
         {
             for(int chan = 0; chan < channum; chan++) {
-	            _devices.begin()->_highPassFilters[chan].filterIntData(channels[chan].data(), samplesRead, true);
+	            _devices.begin()->_highPassFilters[chan].filterIntData(channels[chan].data(), samplesRead, flushData);
 	        }
         }
 
-	    //DC offset elimination
-	     for (int i = 0; i < samplesRead; i++) {
-	        for(int chan = 0; chan < channum; chan++) {
-	            //if we are in first 10 seconds interval
-	            //add current sample to summ used to remove DC component
-	            if(_devices.begin()->dcBiasNum < _sampleRate*10) {
-	                _devices.begin()->dcBiasSum[chan] += channels[chan][i];
-	                if(chan == 0)
-	                {
-	                    _devices.begin()->dcBiasNum++;
-	                }
-	            }
-	        }
-	    }
+        if(_devices.begin()->dcBiasNum < _sampleRate*10) {
+                //DC offset elimination
+                 for (int i = 0; i < samplesRead; i++) {
+                    for(int chan = 0; chan < channum; chan++) {
+                        //if we are in first 10 seconds interval
+                        //add current sample to summ used to remove DC component
+                      
+                            _devices.begin()->dcBiasSum[chan] += channels[chan][i];
+                            if(chan == 0)
+                            {
+                                _devices.begin()->dcBiasNum++;
+                            }
+                        
+                    }
+                }
+        }
 
 
 

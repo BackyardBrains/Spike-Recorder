@@ -32,7 +32,6 @@ void FilterBase::setCoefficients()
     coefficients[2] = b2;
     coefficients[3] = a1;
     coefficients[4] = a2;
-    flushFilterValues = 60;
 }
 
 //
@@ -46,9 +45,9 @@ void FilterBase::filterIntData(int16_t * data, int32_t numFrames, bool flush)
         tempFloatBuffer[i] = (float) data[i];
     }
     filterContiguousData(tempFloatBuffer, numFrames, flush);
-    if(flushFilterValues>0 && flush)
+    if(flush)
     {
-        flushFilterValues--;
+        
         for(int32_t i=numFrames-1;i>=0;i--)
         {
             data[i] = 0;
