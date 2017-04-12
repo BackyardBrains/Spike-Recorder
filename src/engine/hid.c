@@ -33,6 +33,11 @@
 
 #include "hidapi.h"
 
+#ifdef __APPLE__
+#include <syslog.h>
+#include <stdarg.h>
+#endif
+
 /* Barrier implementation because Mac OSX doesn't have pthread_barrier.
    It also doesn't have clock_gettime(). So much for POSIX and SUSv2.
    This implementation came from Brent Priddy and was posted on
@@ -418,17 +423,19 @@ struct hid_device_info  HID_API_EXPORT *hid_enumerate(unsigned short vendor_id, 
 	
 	setlocale(LC_ALL,"");
 
+    syslog(LOG_ERR, "hid_enumerate - Init");
 	/* Set up the HID Manager if it hasn't been done */
 	hid_init();
 	
+    syslog(LOG_ERR, "hid_enumerate - List devices");
 	/* Get a list of the Devices */
 	CFSetRef device_set = IOHIDManagerCopyDevices(hid_mgr);
-
+    syslog(LOG_ERR, "hid_enumerate - Make c array");
 	/* Convert the list into a C array so we can iterate easily. */	
 	num_devices = CFSetGetCount(device_set);
 	IOHIDDeviceRef *device_array = calloc(num_devices, sizeof(IOHIDDeviceRef));
 	CFSetGetValues(device_set, (const void **) device_array);
-
+    syslog(LOG_ERR, "hid_enumerate - Before for loop");
 	/* Iterate over each device, making an entry for it. */	
 	for (i = 0; i < num_devices; i++) {
 		unsigned short dev_vid;
@@ -436,7 +443,7 @@ struct hid_device_info  HID_API_EXPORT *hid_enumerate(unsigned short vendor_id, 
 		#define BUF_LEN 256
 		wchar_t buf[BUF_LEN];
 		char cbuf[BUF_LEN];
-
+        syslog(LOG_ERR, "hid_enumerate - Inside loop ");
 		IOHIDDeviceRef dev = device_array[i];
 
         if (!dev) {
@@ -444,7 +451,7 @@ struct hid_device_info  HID_API_EXPORT *hid_enumerate(unsigned short vendor_id, 
         }
 		dev_vid = get_vendor_id(dev);
 		dev_pid = get_product_id(dev);
-
+       
 		/* Check the VID/PID against the arguments */
 		if ((vendor_id == 0x0 && product_id == 0x0) ||
 		    (vendor_id == dev_vid && product_id == dev_pid)) {
@@ -465,6 +472,8 @@ struct hid_device_info  HID_API_EXPORT *hid_enumerate(unsigned short vendor_id, 
 			cur_dev->usage_page = get_int_property(dev, CFSTR(kIOHIDPrimaryUsagePageKey));
 			cur_dev->usage = get_int_property(dev, CFSTR(kIOHIDPrimaryUsageKey));
 
+            
+            
 			/* Fill out the record */
 			cur_dev->next = NULL;
 			len = make_path(dev, cbuf, sizeof(cbuf));
@@ -479,10 +488,13 @@ struct hid_device_info  HID_API_EXPORT *hid_enumerate(unsigned short vendor_id, 
 			cur_dev->manufacturer_string = dup_wcs(buf);
 			get_product_string(dev, buf, BUF_LEN);
 			cur_dev->product_string = dup_wcs(buf);
-			
+			syslog(LOG_ERR, "HID device found %ls",cur_dev->manufacturer_string);
+            syslog(LOG_ERR, "HID device found %ls",cur_dev->product_string);
 			/* VID/PID */
 			cur_dev->vendor_id = dev_vid;
 			cur_dev->product_id = dev_pid;
+            syslog(LOG_ERR, "HID device VID %d",cur_dev->vendor_id);
+            syslog(LOG_ERR, "HID device PID %d",cur_dev->product_id);
 
 			/* Release Number */
 			cur_dev->release_number = get_int_property(dev, CFSTR(kIOHIDVersionNumberKey));

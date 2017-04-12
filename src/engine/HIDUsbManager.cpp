@@ -1,6 +1,7 @@
 #include "HIDUsbManager.h"
 #include <sstream>
 #include "RecordingManager.h"
+#include "Log.h"
 
 #define BYB_VID 0x2E73//0x2047
 #define BYB_PID 0x1//0x3e0
@@ -596,17 +597,21 @@ namespace BackyardBrains {
     //
     void HIDUsbManager::getAllDevicesList()
     {
+        Log::msg("getAllDevicesList");
         try
         {
             if((!_deviceConnected) )
             {
                // std::cout<<"Call HID exit... \n";
+                Log::error("Call HID exit... ");
                 hid_exit();
             }
             list.clear();
             struct hid_device_info *devs, *cur_dev;
             //std::cout<<"Scan for HID devices... \n";
+            Log::msg("Before HID enumerate");
             devs = hid_enumerate(0x0, 0x0);
+            Log::msg("After HID enumerate");
            // std::cout<<"HID After scan \n";
             cur_dev = devs;
             while (cur_dev) {
@@ -617,7 +622,7 @@ namespace BackyardBrains {
                 //     std::cout<<"HID while \n";
                      std::string nameOfHID((char *) cur_dev->product_string);
                    //  std::cout<<"Name took \n";
-
+                    Log::msg("Found our HID push it");
                      list.push_back(nameOfHID);
                    //  std::cout<<"HID name added to list \n";
                   //   std::cout<<"HID device: "<<cur_dev->vendor_id<<", "<<cur_dev->product_string<<"\n";
@@ -629,15 +634,19 @@ namespace BackyardBrains {
                 cur_dev = cur_dev->next;
             }
            //  std::cout<<"Free enumeration \n";
+            Log::msg("Before HID free enumeration");
             hid_free_enumeration(devs);
+            Log::msg("After HID free enumeration");
         }
         catch(std::exception &e)
         {
+            Log::error("Error while scanning VID/PID of devices 2: %s", e.what());
             std::cout<<"Error while scanning VID/PID of devices 2: "<<e.what();
            // hid_free_enumeration(devs);
         }
         catch(...)
         {
+            Log::error("Error while scanning VID/PID of devices");
             std::cout<<"Error while scanning VID/PID of devices";
             //hid_free_enumeration(devs);
         }

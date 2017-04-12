@@ -221,7 +221,7 @@ void RecordingManager::scanForHIDDevices()
     try{
         if(_firmwareUpdateStage<1)
         {
-            _hidUsbManager.getAllDevicesList();
+           // _hidUsbManager.getAllDevicesList();
         }
     }catch(int e)
     {
@@ -240,6 +240,7 @@ void RecordingManager::scanUSBDevices()
     if(elapsed_secs>0.5)
     {
         timerUSB = end;
+        Log::error("Scanning for log");
         scanForHIDDevices();
         if((_hidDevicePresent = (_hidUsbManager.list.size()>0)))
         {
@@ -2319,7 +2320,7 @@ void RecordingManager::initInputConfigPersistance()
     audioInputConfigArray[INPUT_TYPE_PLANTSS].inputType = INPUT_TYPE_PLANTSS;
     audioInputConfigArray[INPUT_TYPE_PLANTSS].filter50Hz = false;
     audioInputConfigArray[INPUT_TYPE_PLANTSS].filter60Hz = true;
-    audioInputConfigArray[INPUT_TYPE_PLANTSS].filterLowPass = 11.0f;
+    audioInputConfigArray[INPUT_TYPE_PLANTSS].filterLowPass = 5.0f;
     audioInputConfigArray[INPUT_TYPE_PLANTSS].filterHighPass = 0.0f;
     audioInputConfigArray[INPUT_TYPE_PLANTSS].gain = 0.5f;
     audioInputConfigArray[INPUT_TYPE_PLANTSS].timeScale = 0.1f;
@@ -2331,7 +2332,7 @@ void RecordingManager::initInputConfigPersistance()
     audioInputConfigArray[INPUT_TYPE_MUSCLESS].filter50Hz = false;
     audioInputConfigArray[INPUT_TYPE_MUSCLESS].filter60Hz = false;
     audioInputConfigArray[INPUT_TYPE_MUSCLESS].filterLowPass = 300.0f;
-    audioInputConfigArray[INPUT_TYPE_MUSCLESS].filterHighPass = 0.0f;
+    audioInputConfigArray[INPUT_TYPE_MUSCLESS].filterHighPass = 1.0f;
     audioInputConfigArray[INPUT_TYPE_MUSCLESS].gain = 0.5f;
     audioInputConfigArray[INPUT_TYPE_MUSCLESS].timeScale = 1.0f;
     audioInputConfigArray[INPUT_TYPE_MUSCLESS].initialized = true;
@@ -2340,7 +2341,7 @@ void RecordingManager::initInputConfigPersistance()
     audioInputConfigArray[INPUT_TYPE_HEARTSS].inputType = INPUT_TYPE_HEARTSS;
     audioInputConfigArray[INPUT_TYPE_HEARTSS].filter50Hz = false;
     audioInputConfigArray[INPUT_TYPE_HEARTSS].filter60Hz = true;
-    audioInputConfigArray[INPUT_TYPE_HEARTSS].filterLowPass = 30.0f;
+    audioInputConfigArray[INPUT_TYPE_HEARTSS].filterLowPass = 5.0f;
     audioInputConfigArray[INPUT_TYPE_HEARTSS].filterHighPass = 1.0f;
     audioInputConfigArray[INPUT_TYPE_HEARTSS].gain = 0.5f;
     audioInputConfigArray[INPUT_TYPE_HEARTSS].timeScale = 1.0f;
@@ -2507,13 +2508,13 @@ void RecordingManager::makeNewSerialAudioConfig(std::string nameOfThePort)
         AudioInputConfig newArduinoAudioConfig;
         newArduinoAudioConfig.uniqueName = nameOfThePort;
         newArduinoAudioConfig.inputType = audioInputConfigArray[audioInputType].inputType;
-        newArduinoAudioConfig.inputType = audioInputConfigArray[audioInputType].filter50Hz;
-        newArduinoAudioConfig.inputType = audioInputConfigArray[audioInputType].filter60Hz;
-        newArduinoAudioConfig.inputType = audioInputConfigArray[audioInputType].filterLowPass;
-        newArduinoAudioConfig.inputType = audioInputConfigArray[audioInputType].filterHighPass;
-        newArduinoAudioConfig.inputType = audioInputConfigArray[audioInputType].gain;
-        newArduinoAudioConfig.inputType = audioInputConfigArray[audioInputType].timeScale;
-        newArduinoAudioConfig.inputType = audioInputConfigArray[audioInputType].initialized;
+        newArduinoAudioConfig.filter50Hz = audioInputConfigArray[audioInputType].filter50Hz;
+        newArduinoAudioConfig.filter60Hz = audioInputConfigArray[audioInputType].filter60Hz;
+        newArduinoAudioConfig.filterLowPass = audioInputConfigArray[audioInputType].filterLowPass;
+        newArduinoAudioConfig.filterHighPass = audioInputConfigArray[audioInputType].filterHighPass;
+        newArduinoAudioConfig.gain = audioInputConfigArray[audioInputType].gain;
+        newArduinoAudioConfig.timeScale = audioInputConfigArray[audioInputType].timeScale;
+        newArduinoAudioConfig.initialized = audioInputConfigArray[audioInputType].initialized;
         
         arduinoShieldsConfigs.push_back(newArduinoAudioConfig);
         
