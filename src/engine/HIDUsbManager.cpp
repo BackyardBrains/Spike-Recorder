@@ -3,8 +3,14 @@
 #include "RecordingManager.h"
 #include "Log.h"
 
-#define BYB_VID 0x2E73//0x2047
-#define BYB_PID 0x1//0x3e0
+//BYB ones
+#define BYB_VID 0x2E73
+#define BYB_PID 0x1
+
+//debug ones
+//#define BYB_VID 0x2047
+//#define BYB_PID 0x3e0
+
 
 #define SIZE_OF_MAIN_CIRCULAR_BUFFER 40000
 
@@ -603,7 +609,7 @@ namespace BackyardBrains {
             if((!_deviceConnected) )
             {
                // std::cout<<"Call HID exit... \n";
-                Log::error("Call HID exit... ");
+                Log::msg("Call HID exit... ");
                 hid_exit();
             }
             list.clear();

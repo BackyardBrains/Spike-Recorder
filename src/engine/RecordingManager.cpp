@@ -221,7 +221,7 @@ void RecordingManager::scanForHIDDevices()
     try{
         if(_firmwareUpdateStage<1)
         {
-           // _hidUsbManager.getAllDevicesList();
+            _hidUsbManager.getAllDevicesList();
         }
     }catch(int e)
     {
@@ -240,7 +240,7 @@ void RecordingManager::scanUSBDevices()
     if(elapsed_secs>0.5)
     {
         timerUSB = end;
-        Log::error("Scanning for log");
+        Log::msg("Scanning for log");
         scanForHIDDevices();
         if((_hidDevicePresent = (_hidUsbManager.list.size()>0)))
         {
