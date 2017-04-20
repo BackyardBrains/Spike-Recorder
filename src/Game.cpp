@@ -13,7 +13,7 @@ Game::Game() : _anaman(_manager), _fileRec(_manager) {
 
 	addWindow(new MainView(_manager, _anaman, _fileRec));
 	createWindow(800,600);
-	setWindowTitle("BYB Spike Recorder");
+	setWindowTitle("BYB Spike Recorder - V1.8.20");
 
 	Log::msg("Starting GUI...");
     roundingDifference = 0;
@@ -85,54 +85,54 @@ void Game::loadResources() {
     Widgets::TextureGL::load("data/usbcon.bmp");
     Widgets::TextureGL::load("data/usbconhigh.bmp");
     Widgets::TextureGL::load("data/usbdiscon.bmp");
-    
+
     Widgets::TextureGL::load("data/plantcon.bmp");
     Widgets::TextureGL::load("data/plantconhigh.bmp");
     Widgets::TextureGL::load("data/plantdiscon.bmp");
- 
+
     Widgets::TextureGL::load("data/musclecon.bmp");
     Widgets::TextureGL::load("data/muscleconhigh.bmp");
     Widgets::TextureGL::load("data/musclediscon.bmp");
- 
+
     Widgets::TextureGL::load("data/heartcon.bmp");
     Widgets::TextureGL::load("data/heartconhigh.bmp");
     Widgets::TextureGL::load("data/heartdiscon.bmp");
-    
+
     Widgets::TextureGL::load("data/conne1.bmp");
     Widgets::TextureGL::load("data/conne2.bmp");
     Widgets::TextureGL::load("data/conne3.bmp");
     Widgets::TextureGL::load("data/conne4.bmp");
     Widgets::TextureGL::load("data/conne5.bmp");
     Widgets::TextureGL::load("data/conne6.bmp");
-    
+
     Widgets::TextureGL::load("data/dconne1.bmp");
     Widgets::TextureGL::load("data/dconne2.bmp");
     Widgets::TextureGL::load("data/dconne3.bmp");
     Widgets::TextureGL::load("data/dconne4.bmp");
     Widgets::TextureGL::load("data/dconne5.bmp");
     Widgets::TextureGL::load("data/dconne6.bmp");
-    
+
     Widgets::TextureGL::load("data/connm1.bmp");
     Widgets::TextureGL::load("data/connm2.bmp");
     Widgets::TextureGL::load("data/connm3.bmp");
     Widgets::TextureGL::load("data/connm4.bmp");
     Widgets::TextureGL::load("data/connm5.bmp");
     Widgets::TextureGL::load("data/connm6.bmp");
-    
+
     Widgets::TextureGL::load("data/dconnm1.bmp");
     Widgets::TextureGL::load("data/dconnm2.bmp");
     Widgets::TextureGL::load("data/dconnm3.bmp");
     Widgets::TextureGL::load("data/dconnm4.bmp");
     Widgets::TextureGL::load("data/dconnm5.bmp");
     Widgets::TextureGL::load("data/dconnm6.bmp");
-    
+
     Widgets::TextureGL::load("data/connp1.bmp");
     Widgets::TextureGL::load("data/connp2.bmp");
     Widgets::TextureGL::load("data/connp3.bmp");
     Widgets::TextureGL::load("data/connp4.bmp");
     Widgets::TextureGL::load("data/connp5.bmp");
     Widgets::TextureGL::load("data/connp6.bmp");
-    
+
     Widgets::TextureGL::load("data/dconnp1.bmp");
     Widgets::TextureGL::load("data/dconnp2.bmp");
     Widgets::TextureGL::load("data/dconnp3.bmp");
