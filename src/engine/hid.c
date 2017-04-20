@@ -317,7 +317,7 @@ static int get_string_property_utf8(IOHIDDeviceRef device, CFStringRef prop, cha
 			(UInt8*)buf,
 			len,
 			&used_buf_len);
-		buf[len-1] = 0x00000000;
+		buf[used_buf_len] = 0x00000000;
 		return used_buf_len;
 	}
 	else
@@ -449,17 +449,21 @@ struct hid_device_info  HID_API_EXPORT *hid_enumerate(unsigned short vendor_id, 
         if (!dev) {
             continue;
         }
+        syslog(LOG_ERR, "hid_enumerate - before getting VID and PID ");
 		dev_vid = get_vendor_id(dev);
 		dev_pid = get_product_id(dev);
-       
+        syslog(LOG_ERR, "HID device VID %d",dev_vid);
+        syslog(LOG_ERR, "HID device PID %d",dev_pid);
 		/* Check the VID/PID against the arguments */
 		if ((vendor_id == 0x0 && product_id == 0x0) ||
 		    (vendor_id == dev_vid && product_id == dev_pid)) {
+            syslog(LOG_ERR, "hid_enumerate - inside If ");
 			struct hid_device_info *tmp;
 			size_t len;
 
 		    	/* VID/PID match. Create the record. */
 			tmp = malloc(sizeof(struct hid_device_info));
+            syslog(LOG_ERR, "hid_enumerate - After malloc ");
 			if (cur_dev) {
 				cur_dev->next = tmp;
 			}
@@ -467,25 +471,31 @@ struct hid_device_info  HID_API_EXPORT *hid_enumerate(unsigned short vendor_id, 
 				root = tmp;
 			}
 			cur_dev = tmp;
-
+            syslog(LOG_ERR, "hid_enumerate - before get kIOHIDPrimaryUsagePageKey ");
 			// Get the Usage Page and Usage for this device.
 			cur_dev->usage_page = get_int_property(dev, CFSTR(kIOHIDPrimaryUsagePageKey));
+            syslog(LOG_ERR, "hid_enumerate - before get kIOHIDPrimaryUsageKey ");
 			cur_dev->usage = get_int_property(dev, CFSTR(kIOHIDPrimaryUsageKey));
 
             
             
 			/* Fill out the record */
+            syslog(LOG_ERR, "hid_enumerate - before get kIOHIDPrimaryUsageKey ");
 			cur_dev->next = NULL;
 			len = make_path(dev, cbuf, sizeof(cbuf));
 			cur_dev->path = strdup(cbuf);
+            syslog(LOG_ERR, "hid_enumerate - 1 ");
 
 			/* Serial Number */
 			get_serial_number(dev, buf, BUF_LEN);
+            syslog(LOG_ERR, "hid_enumerate - 2 ");
 			cur_dev->serial_number = dup_wcs(buf);
-
+            syslog(LOG_ERR, "hid_enumerate - 3 ");
 			/* Manufacturer and Product strings */
 			get_manufacturer_string(dev, buf, BUF_LEN);
+            syslog(LOG_ERR, "hid_enumerate - 4 ");
 			cur_dev->manufacturer_string = dup_wcs(buf);
+            syslog(LOG_ERR, "hid_enumerate - 5 ");
 			get_product_string(dev, buf, BUF_LEN);
 			cur_dev->product_string = dup_wcs(buf);
 			syslog(LOG_ERR, "HID device found %ls",cur_dev->manufacturer_string);

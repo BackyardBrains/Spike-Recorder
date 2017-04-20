@@ -616,7 +616,7 @@ namespace BackyardBrains {
             struct hid_device_info *devs, *cur_dev;
             //std::cout<<"Scan for HID devices... \n";
             Log::msg("Before HID enumerate");
-            devs = hid_enumerate(0x0, 0x0);
+            devs = hid_enumerate(BYB_VID, BYB_PID);
             Log::msg("After HID enumerate");
            // std::cout<<"HID After scan \n";
             cur_dev = devs;
