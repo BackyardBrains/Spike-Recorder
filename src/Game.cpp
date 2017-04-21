@@ -13,7 +13,7 @@ Game::Game() : _anaman(_manager), _fileRec(_manager) {
 
 	addWindow(new MainView(_manager, _anaman, _fileRec));
 	createWindow(800,600);
-	setWindowTitle("BYB Spike Recorder - V1.8.20");
+	setWindowTitle("BYB Spike Recorder - V1.8.21");
 
 	Log::msg("Starting GUI...");
     roundingDifference = 0;
