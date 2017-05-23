@@ -381,7 +381,9 @@ void AudioView::drawData(std::vector<std::pair<int16_t, int16_t> > &data, int ch
 		dist = 1.f; // we don’t want round off artifacts
 
 	float scale = height()*ampScale;
+	glLineWidth(1.0f);
 	glBegin(GL_LINE_STRIP);
+
     //std::cout<<"Wave gain: "<<_channels[channel].gain<<" scale:"<<scale<<"\n";
     int xc;
 	for(int j = 0; j < (int)data.size(); j++) {
@@ -392,7 +394,9 @@ void AudioView::drawData(std::vector<std::pair<int16_t, int16_t> > &data, int ch
             glVertex3i(xc, -data[j].second*_channels[channel].gain*scale+y, 0);
         }
 	}
+
 	glEnd();
+	glLineWidth(1.0f);
 
 }
 
@@ -523,15 +527,15 @@ void AudioView::drawAudio() {
 				//       - (number of samples that we need to display)
 
 				int pos = _manager.pos()+_channelOffset-samples;
-                
+
                if(pos<_manager.sampleRate()*HOW_LONG_FLUSH_IS_ACTIVE)
                {
                    numOfSamplesToAvoid =  _manager.sampleRate()*HOW_LONG_FLUSH_IS_ACTIVE-pos ;
-                   
-                  
-                   
+
+
+
                }
-                
+
 				int16_t tempData[samples];
 				std::vector< std::pair<int16_t, int16_t> > tempVectorData(samples);
 				_manager.getData(_channels[i].virtualDevice, pos, samples, tempData);
