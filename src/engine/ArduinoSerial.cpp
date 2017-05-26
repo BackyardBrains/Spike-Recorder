@@ -1503,6 +1503,22 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                     {
                         setDeviceTypeToCurrentPort(ArduinoSerial::heart);
                     }
+                    else
+                    {
+                        std::size_t found=hardwareType.find("MUSCLESB");
+                        if (found!=std::string::npos)
+                        {
+                            setDeviceTypeToCurrentPort(ArduinoSerial::muscleSBPro);
+                        }
+                        else
+                        {
+                            std::size_t found=hardwareType.find("NEURONSB");
+                            if (found!=std::string::npos)
+                            {
+                                setDeviceTypeToCurrentPort(ArduinoSerial::neuronSBPro);
+                            }
+                        }
+                    }
 
                 }
             }
@@ -1528,6 +1544,11 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
     int ArduinoSerial::maxSamplingRate()
     {
+
+        if(currentPort.deviceType == ArduinoSerial::muscleSBPro || currentPort.deviceType == ArduinoSerial::neuronSBPro)
+        {
+            return 22050;
+        }
         return 10000;
     }
 

@@ -48,7 +48,9 @@ namespace BackyardBrains {
         unknown = 0,
         muscle = 1,
         plant = 2,
-        heart = 3
+        heart = 3,
+        muscleSBPro = 4,
+        neuronSBPro = 5
     };
 
 
@@ -58,7 +60,9 @@ namespace BackyardBrains {
             unknown = 0,
             muscle = 1,
             plant = 2,
-            heart = 3
+            heart = 3,
+            muscleSBPro = 4,
+            neuronSBPro = 5
         };
         struct SerialPort
         {

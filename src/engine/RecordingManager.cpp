@@ -491,8 +491,8 @@ bool RecordingManager::weShouldDisplayWaveform()
         return true;
 
 }
-    
-    
+
+
 bool RecordingManager::initSerial(const char *portName)
 {
 
@@ -511,9 +511,15 @@ bool RecordingManager::initSerial(const char *portName)
     //make audio congfig
     std::string nameOfThePort = portName;
     makeNewSerialAudioConfig(nameOfThePort);
-    
-    
+
+
     DWORD frequency = _arduinoSerial.maxSamplingRate()/_numOfSerialChannels;
+
+    if(_arduinoSerial.currentPort.deviceType == ArduinoSerial::muscleSBPro || _arduinoSerial.currentPort.deviceType == ArduinoSerial::neuronSBPro)
+    {
+        frequency = _arduinoSerial.maxSamplingRate();
+        _numOfSerialChannels = 2;
+    }
     std::cout<<"Frequency: "<<frequency<<" Chan: "<<_numOfSerialChannels<<" Samp: "<<_arduinoSerial.maxSamplingRate()<<"\n";
     HSTREAM stream = BASS_StreamCreate(frequency, _numOfSerialChannels, BASS_STREAM_DECODE, STREAMPROC_PUSH, NULL);
     if(stream == 0) {
@@ -552,7 +558,14 @@ bool RecordingManager::initSerial(const char *portName)
 
         virtualDevice.device = 0;
         virtualDevice.channel = i;
-        virtualDevice.name = "Serial channel";
+        if(_arduinoSerial.currentPort.deviceType == ArduinoSerial::muscleSBPro || _arduinoSerial.currentPort.deviceType == ArduinoSerial::neuronSBPro)
+        {
+        virtualDevice.name = "Spiker Box Pro channel";
+        }
+        else
+        {
+            virtualDevice.name = "Serial channel";
+        }
         virtualDevice.threshold = 100;
         virtualDevice.bound = false;
         _virtualDevices.push_back(virtualDevice);
@@ -1318,7 +1331,7 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 
     if(samplesRead == -1)
     {
-        
+
         //check if port is still active if not disconnect
         std::list<ArduinoSerial::SerialPort> sps =  serailPorts();
         std::list<ArduinoSerial::SerialPort>::iterator it;
@@ -1378,7 +1391,7 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
         /*if(_devices.begin()->dcBiasNum < _sampleRate*HOW_LONG_FLUSH_IS_ACTIVE) {
             flushData = true;
         }*/
-        
+
          if(lowPassFilterEnabled())
         {
             for(int chan = 0; chan < channum; chan++) {
@@ -1399,13 +1412,13 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
                     for(int chan = 0; chan < channum; chan++) {
                         //if we are in first 10 seconds interval
                         //add current sample to summ used to remove DC component
-                      
+
                             _devices.begin()->dcBiasSum[chan] += channels[chan][i];
                             if(chan == 0)
                             {
                                 _devices.begin()->dcBiasNum++;
                             }
-                        
+
                     }
                 }
         }
@@ -2314,8 +2327,8 @@ void RecordingManager::initInputConfigPersistance()
     audioInputConfigArray[INPUT_TYPE_ARDUINO_UNKOWN].gain = 0.5f;
     audioInputConfigArray[INPUT_TYPE_ARDUINO_UNKOWN].timeScale = 0.1f;
     audioInputConfigArray[INPUT_TYPE_ARDUINO_UNKOWN].initialized = true;
-    
-    
+
+
     //arduino Plant
     audioInputConfigArray[INPUT_TYPE_PLANTSS].inputType = INPUT_TYPE_PLANTSS;
     audioInputConfigArray[INPUT_TYPE_PLANTSS].filter50Hz = false;
@@ -2325,8 +2338,8 @@ void RecordingManager::initInputConfigPersistance()
     audioInputConfigArray[INPUT_TYPE_PLANTSS].gain = 0.5f;
     audioInputConfigArray[INPUT_TYPE_PLANTSS].timeScale = 0.1f;
     audioInputConfigArray[INPUT_TYPE_PLANTSS].initialized = true;
-    
-    
+
+
     //arduino EMG
     audioInputConfigArray[INPUT_TYPE_MUSCLESS].inputType = INPUT_TYPE_MUSCLESS;
     audioInputConfigArray[INPUT_TYPE_MUSCLESS].filter50Hz = false;
@@ -2336,7 +2349,7 @@ void RecordingManager::initInputConfigPersistance()
     audioInputConfigArray[INPUT_TYPE_MUSCLESS].gain = 0.5f;
     audioInputConfigArray[INPUT_TYPE_MUSCLESS].timeScale = 1.0f;
     audioInputConfigArray[INPUT_TYPE_MUSCLESS].initialized = true;
-    
+
     //arduino Heart and Brain
     audioInputConfigArray[INPUT_TYPE_HEARTSS].inputType = INPUT_TYPE_HEARTSS;
     audioInputConfigArray[INPUT_TYPE_HEARTSS].filter50Hz = false;
@@ -2346,7 +2359,7 @@ void RecordingManager::initInputConfigPersistance()
     audioInputConfigArray[INPUT_TYPE_HEARTSS].gain = 0.5f;
     audioInputConfigArray[INPUT_TYPE_HEARTSS].timeScale = 1.0f;
     audioInputConfigArray[INPUT_TYPE_HEARTSS].initialized = true;
-    
+
     //HID - SpikerBox Pro
     audioInputConfigArray[INPUT_TYPE_SB_PRO].inputType = INPUT_TYPE_SB_PRO;
     audioInputConfigArray[INPUT_TYPE_SB_PRO].filter50Hz = false;
@@ -2393,7 +2406,7 @@ int RecordingManager::getCurrentInputType()
     }
     else if(serialMode())
     {
-        
+
         switch(_arduinoSerial.currentPort.deviceType) {
             case ArduinoSerial::unknown:
                 return INPUT_TYPE_ARDUINO_UNKOWN;
@@ -2433,9 +2446,9 @@ void RecordingManager::saveInputConfigSettings()
 
             if(serialMode())
             {
-                
-                
-                
+
+
+
                 std::list<AudioInputConfig>::iterator it;
                 std::size_t found;
                 bool foundPort = false;
@@ -2472,7 +2485,7 @@ void RecordingManager::saveInputConfigSettings()
 
 void RecordingManager::makeNewSerialAudioConfig(std::string nameOfThePort)
 {
-    
+
     std::size_t found;
     bool foundPort = false;
     for(iteratorPointerToCurrentSerialAudioConfig = arduinoShieldsConfigs.begin();iteratorPointerToCurrentSerialAudioConfig!=arduinoShieldsConfigs.end();iteratorPointerToCurrentSerialAudioConfig++)
@@ -2504,7 +2517,7 @@ void RecordingManager::makeNewSerialAudioConfig(std::string nameOfThePort)
                 audioInputType = INPUT_TYPE_ARDUINO_UNKOWN;
                 break;
         }
-        
+
         AudioInputConfig newArduinoAudioConfig;
         newArduinoAudioConfig.uniqueName = nameOfThePort;
         newArduinoAudioConfig.inputType = audioInputConfigArray[audioInputType].inputType;
@@ -2515,16 +2528,16 @@ void RecordingManager::makeNewSerialAudioConfig(std::string nameOfThePort)
         newArduinoAudioConfig.gain = audioInputConfigArray[audioInputType].gain;
         newArduinoAudioConfig.timeScale = audioInputConfigArray[audioInputType].timeScale;
         newArduinoAudioConfig.initialized = audioInputConfigArray[audioInputType].initialized;
-        
+
         arduinoShieldsConfigs.push_back(newArduinoAudioConfig);
-        
+
         //just to get iteratorPointerToCurrentSerialAudioConfig to point to right one
         for(iteratorPointerToCurrentSerialAudioConfig = arduinoShieldsConfigs.begin();iteratorPointerToCurrentSerialAudioConfig!=arduinoShieldsConfigs.end();iteratorPointerToCurrentSerialAudioConfig++)
         {
             found  = getCurrentPort().portName.find(iteratorPointerToCurrentSerialAudioConfig->uniqueName);
             if (found!=std::string::npos)
             {
-                
+
                 break;
             }
         }
@@ -2565,9 +2578,9 @@ float RecordingManager::loadGainForAudioInput()
     {
        return iteratorPointerToCurrentSerialAudioConfig->gain;
     }
-    
+
     return audioInputConfigArray[inputType].gain;
-    
+
 }
 
 float RecordingManager::loadTimeScaleForAudioInput()
@@ -2587,7 +2600,7 @@ void RecordingManager::loadFilterSettings()
     {
         enableHighPassFilterWithCornerFreq(iteratorPointerToCurrentSerialAudioConfig->filterHighPass);
         enableLowPassFilterWithCornerFreq(iteratorPointerToCurrentSerialAudioConfig->filterLowPass);
-        
+
         if(iteratorPointerToCurrentSerialAudioConfig->filter60Hz)
         {
             enable60HzFilter();
@@ -2596,7 +2609,7 @@ void RecordingManager::loadFilterSettings()
         {
             disable60HzFilter();
         }
-        
+
         if(iteratorPointerToCurrentSerialAudioConfig->filter50Hz)
         {
             enable50HzFilter();
@@ -2605,7 +2618,7 @@ void RecordingManager::loadFilterSettings()
         {
             disable50HzFilter();
         }
-        
+
     }
     else
     {
