@@ -875,7 +875,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                     Log::msg("checkAllPortsForArduino port opened sucess");
                     //check if it is our Arduino board
                     hardwareType.clear();
-                    char buffer[8024];
+                    char buffer[33024];
                     std::cout<<"Port: "<<list_it->portName.c_str()<<" Sucess\n";
 
                     time_t firstSeconds;
@@ -1030,7 +1030,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
         if (select(fd + 1, &read_fds, &write_fds, &except_fds, &timeout) == 1)
         {
-            size = read(fd, buffer, 4000);
+            size = read(fd, buffer, 32768 );
         }
         else
         {
@@ -1067,7 +1067,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         COMSTAT st;
         DWORD errmask=0, num_read, num_request;
         OVERLAPPED ov;
-        int count = 4000;
+        int count = 32768 ;
 
         if (!ClearCommError(port_handle, &errmask, &st))
         {
@@ -1133,7 +1133,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
     //
     int ArduinoSerial::getNewSamples(int16_t * obuffer)
     {
-        char buffer[8024];
+        char buffer[33024];
         int bytesRead = readPort(buffer);
         int numberOfSamples =  processDataIntoSamples(buffer, bytesRead, obuffer);
         return numberOfSamples;
