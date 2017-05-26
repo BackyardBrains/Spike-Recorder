@@ -1088,14 +1088,14 @@ void MainView::paintEvent()
                 newButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.bmp"));
                 newButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.bmp"));
 
-                newButton->clickedWithRef.connect(this, &MainView::heartPressed);
+                newButton->clickedWithRef.connect(this, &MainView::muscleSBProPressed);
             }
             else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::neuronSBPro)
             {
 
                 newButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.bmp"));
                 newButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.bmp"));
-                newButton->clickedWithRef.connect(this, &MainView::heartPressed);
+                newButton->clickedWithRef.connect(this, &MainView::neuronSBProPressed);
             }
             buttonsIterator->button = newButton;
             shieldsButtonBoxLayout->addWidget(newButton);
@@ -1243,6 +1243,36 @@ void MainView::paintEvent()
                     }
                 }
 
+            }
+            else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::muscleSBPro)
+            {
+                
+
+                    if(buttonIsActive)
+                    {
+                        buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.bmp"));
+                        buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/usbdiscon.bmp"));
+                    }
+                    else
+                    {
+                        buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/usbcon.bmp"));
+                        buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.bmp"));
+                    }
+            }
+            else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::neuronSBPro)
+            {
+                
+                
+                if(buttonIsActive)
+                {
+                    buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.bmp"));
+                    buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/usbdiscon.bmp"));
+                }
+                else
+                {
+                    buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/usbcon.bmp"));
+                    buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.bmp"));
+                }
             }
 
 

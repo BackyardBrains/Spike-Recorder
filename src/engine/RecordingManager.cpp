@@ -611,6 +611,13 @@ void RecordingManager::changeSerialPort(int portIndex)
 void RecordingManager::setSerialNumberOfChannels(int numberOfChannels)
 {
 	std::cout<<"Number of channels on serial: "<<numberOfChannels<<"\n";
+    if(_arduinoSerial.currentPort.deviceType == ArduinoSerial::muscleSBPro || _arduinoSerial.currentPort.deviceType == ArduinoSerial::neuronSBPro)
+    {
+        if(numberOfChannels<2)
+        {
+            numberOfChannels = 2;
+        }
+    }
 	_numOfSerialChannels = numberOfChannels;
 	_arduinoSerial.setNumberOfChannelsAndSamplingRate(numberOfChannels, _arduinoSerial.maxSamplingRate()/numberOfChannels);
 	initSerial(_arduinoSerial.currentPortName());

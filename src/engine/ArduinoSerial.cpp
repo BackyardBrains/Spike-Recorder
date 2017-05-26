@@ -769,7 +769,13 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                 break;
             }
         }
-
+        if(currentPort.deviceType == ArduinoSerial::muscleSBPro || currentPort.deviceType == ArduinoSerial::neuronSBPro)
+        {
+            if(numberOfChannels()<2)
+            {
+                _numberOfChannels = 2;
+            }
+        }
         //unlock port connection
         ArduinoSerial::openPortLock = false;
         return fd;
@@ -787,6 +793,11 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
         fd = 0;
         _numberOfChannels = 1;
+        if(currentPort.deviceType == ArduinoSerial::muscleSBPro || currentPort.deviceType == ArduinoSerial::neuronSBPro)
+        {
+            _numberOfChannels = 2;
+        }
+        
 
         fd = openPort(portName);
         if(fd==-1)
@@ -810,7 +821,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
         _portOpened = true;
 
-        setNumberOfChannelsAndSamplingRate(1, maxSamplingRate());
+        setNumberOfChannelsAndSamplingRate(_numberOfChannels, maxSamplingRate());
         //askForBoardType();
 
         return fd;
@@ -1575,6 +1586,13 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
     void ArduinoSerial::setNumberOfChannelsAndSamplingRate(int numberOfChannels, int samplingRate)
     {
+        if(currentPort.deviceType == ArduinoSerial::muscleSBPro || currentPort.deviceType == ArduinoSerial::neuronSBPro)
+        {
+            if(numberOfChannels<2)
+            {
+                numberOfChannels = 2;
+            }
+        }
         _numberOfChannels = numberOfChannels;
         _samplingRate = samplingRate;
         //"conf s:%d;c:%d;"
