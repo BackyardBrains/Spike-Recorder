@@ -500,7 +500,7 @@ bool RecordingManager::initSerial(const char *portName)
     saveInputConfigSettings();
     if(!_arduinoSerial.portOpened())
     {
-        if(_arduinoSerial.openSerialDevice(portName) == -1)
+        if(_arduinoSerial.openSerialDevice(portName, this) == -1)
         {
             _serialMode = false;
             serialError = _arduinoSerial.errorString;

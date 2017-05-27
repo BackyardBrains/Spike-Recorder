@@ -43,7 +43,7 @@
 #endif
 
 namespace BackyardBrains {
-
+class RecordingManager;
     enum SerialDevice {
         unknown = 0,
         muscle = 1,
@@ -78,7 +78,7 @@ namespace BackyardBrains {
 
 
         ArduinoSerial();
-        int openSerialDevice(const char *portName);
+        int openSerialDevice(const char *portName, RecordingManager * managerin);
         int readPort(char * buffer);
         int getNewSamples(int16_t * obuffer);
         int processDataIntoSamples(char * buffer, int size, int16_t * obuffer);
@@ -105,6 +105,7 @@ namespace BackyardBrains {
         void startScanningForArduinos(ArduinoSerial * refToWorkingArduinoSerial);
         static bool openPortLock;
     private:
+        RecordingManager *_manager;
         int openPort(const char *portName);
         std::thread scanningThread;
         void refreshPortList(std::list<SerialPort> newPorts);

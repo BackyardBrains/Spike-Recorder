@@ -8,6 +8,7 @@
 
 #include "ArduinoSerial.h"
 #include <sys/types.h>
+#include "RecordingManager.h"
 #include "Log.h"
 #include <unistd.h>
 #include <sstream>
@@ -63,6 +64,7 @@ namespace BackyardBrains {
     bool ArduinoSerial::openPortLock = false;
 
     ArduinoSerial::ArduinoSerial() : _portOpened(false) {
+
 
         escapeSequence[0] = 255;
         escapeSequence[1] = 255;
@@ -742,8 +744,9 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
 
 
-    int ArduinoSerial::openSerialDevice(const char *portName)
+    int ArduinoSerial::openSerialDevice(const char *portName, RecordingManager * managerin)
     {
+        _manager = managerin;
         Log::msg("openSerialDevice before lock");
         Log::msg(portName);
         int i;
@@ -797,7 +800,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         {
             _numberOfChannels = 2;
         }
-        
+
 
         fd = openPort(portName);
         if(fd==-1)
@@ -1534,14 +1537,13 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                 }
             }
         }
-
-        /*if(typeOfMessage == "EVNT")
+        else if(typeOfMessage == "EVNT")
         {
             int mnum = (int)((unsigned int)valueOfMessage[0]-48);
             int64_t offset = 0;
             _manager->addMarker(std::string(1, mnum+'0'), offset+offsetin);
 
-        }*/
+        }
     }
 
 
