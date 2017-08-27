@@ -24,6 +24,8 @@
 #endif
 
 #define HOW_LONG_FLUSH_IS_ACTIVE 1
+#define AM_CARRIER_FREQUENCY 5000.0
+#define AM_DEMODULATION_CUTOFF 500.0
 
 namespace BackyardBrains {
 
@@ -347,6 +349,14 @@ private:
 
     bool loadSecondSegmentOfBuffer = false;//used to force loading ofwhole buffer after reseting buffer
 
+    
+    NotchFilter amDetectionNotchFilter;
+    LowPassFilter amDemodulationLowPassFilter[6];
+
+    int16_t * amBuffer;
+    float rmsOfOriginalSignal = 0;
+    float rmsOfNotchedAMSignal = 0;
+    bool weAreReceivingAMSignal = false;
 
 };
 

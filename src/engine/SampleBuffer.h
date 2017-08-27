@@ -30,7 +30,7 @@
 namespace BackyardBrains {
 
 #define NUMBER_OF_SEGMENTS 120
-#define SEGMENT_SIZE 22050
+#define SEGMENT_SIZE 44100
     
     
 class SampleBuffer

@@ -17,7 +17,7 @@
 namespace BackyardBrains {
 
 const int RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX = -2;
-const int RecordingManager::DEFAULT_SAMPLE_RATE = 22050;
+const int RecordingManager::DEFAULT_SAMPLE_RATE = 44100;
 
 RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(false), _fileMode(false), _sampleRate(DEFAULT_SAMPLE_RATE), _selectedVDevice(0), _threshAvgCount(1) {
 	Log::msg("Initializing libbass...");
@@ -778,6 +778,24 @@ void RecordingManager::initRecordingDevices() {
 //	devicesChanged.emit();
 	Log::msg("Found %d recording devices.", _virtualDevices.size());
     loadFilterSettings();
+    amDetectionNotchFilter.initWithSamplingRate(_sampleRate);
+    amDetectionNotchFilter.setCenterFrequency(AM_CARRIER_FREQUENCY);
+    amDetectionNotchFilter.setQ(1.0);
+    
+    for (int k = 0;k<6;k++)
+    {
+        amDemodulationLowPassFilter[k].initWithSamplingRate(_sampleRate);
+        amDemodulationLowPassFilter[k].setCornerFrequency(AM_DEMODULATION_CUTOFF);
+        amDemodulationLowPassFilter[k].setQ(1.0f);
+    
+    }
+
+
+    
+    rmsOfOriginalSignal = 0;
+    rmsOfNotchedAMSignal = 0;
+    weAreReceivingAMSignal = false;
+    amBuffer = (int16_t*) std::malloc( _sampleRate * sizeof(int16_t));
 }
 
 
@@ -1770,9 +1788,55 @@ void RecordingManager::advance(uint32_t samples) {
 	    for (int i = 0; i < samplesRead/channum; i++) {
 	        for(int chan = 0; chan < channum; chan++) {
 	            channels[chan][i] = buffer[i*channum + chan];//sort data to channels
-
+                
+               if(chan ==0)
+               {
+                   rmsOfOriginalSignal = 0.0001*((float)(channels[chan][i]*channels[chan][i]))+0.9999*rmsOfOriginalSignal;
+                   
+               }
 	        }
 	    }
+        
+        int32_t numberOfFramesReceived = samplesRead/channum;
+        int16_t * receivedData = channels[0].data();
+        memcpy(amBuffer, receivedData, numberOfFramesReceived * sizeof(int16_t));
+       
+        amDetectionNotchFilter.filterIntData(amBuffer, numberOfFramesReceived);
+        for(int32_t i=0;i<numberOfFramesReceived;i++)
+        {
+            rmsOfNotchedAMSignal = 0.0001*((float)(amBuffer[i]*amBuffer[i]))+0.9999*rmsOfNotchedAMSignal;
+        }
+        
+        std::cout<<"Notch: "<<sqrtf(rmsOfNotchedAMSignal)<<" - Normal: "<<sqrtf(rmsOfOriginalSignal)<<" - a/b: "<<sqrtf(rmsOfOriginalSignal)/sqrtf(rmsOfNotchedAMSignal)<<"\n";
+        if(sqrtf(rmsOfOriginalSignal)/sqrtf(rmsOfNotchedAMSignal)>5)
+        {
+            weAreReceivingAMSignal = true;
+        }
+        
+        if(weAreReceivingAMSignal)
+        {
+            
+            for (int i = 0; i < samplesRead/channum; i++) {
+                for(int chan = 0; chan < channum; chan++) {
+                    channels[chan][i] = abs(channels[chan][i]);
+                }
+            }
+            
+            int filterIndex = 0;
+            for(int i=0;i<2;i++)
+            {
+                for (int k = 0;k<3;k++)
+                {
+                    amDemodulationLowPassFilter[filterIndex].filterIntData(channels[i].data(), samplesRead/channum);
+                    filterIndex++;
+                }
+            }
+
+        
+            
+        }
+        
+       
 
 	    //filter data
         if(fiftyHzFilterEnabled())
@@ -2035,6 +2099,9 @@ bool RecordingManager::unbindVirtualDevice(int vdevice) {
 RecordingManager::Device::Device(int index, int nchan, int &sampleRate)
 	: type(Device::Audio),index(index), handle(0), enabled(false), dcBiasNum(1), channels(nchan), samplerate(sampleRate), bytespersample(2) {
 
+
+   
+        
 	sampleBuffers.resize(nchan);
 	_50HzNotchFilters.resize(nchan);
 	for(int i=0;i<nchan;i++)
