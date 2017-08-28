@@ -1807,18 +1807,22 @@ void RecordingManager::advance(uint32_t samples) {
             rmsOfNotchedAMSignal = 0.0001*((float)(amBuffer[i]*amBuffer[i]))+0.9999*rmsOfNotchedAMSignal;
         }
         
-        std::cout<<"Notch: "<<sqrtf(rmsOfNotchedAMSignal)<<" - Normal: "<<sqrtf(rmsOfOriginalSignal)<<" - a/b: "<<sqrtf(rmsOfOriginalSignal)/sqrtf(rmsOfNotchedAMSignal)<<"\n";
+        //std::cout<<"Notch: "<<sqrtf(rmsOfNotchedAMSignal)<<" - Normal: "<<sqrtf(rmsOfOriginalSignal)<<" - a/b: "<<sqrtf(rmsOfOriginalSignal)/sqrtf(rmsOfNotchedAMSignal)<<"\n";
         if(sqrtf(rmsOfOriginalSignal)/sqrtf(rmsOfNotchedAMSignal)>5)
         {
             weAreReceivingAMSignal = true;
+        }
+        else
+        {
+            weAreReceivingAMSignal = false;
         }
         
         if(weAreReceivingAMSignal)
         {
             
             for (int i = 0; i < samplesRead/channum; i++) {
-                for(int chan = 0; chan < channum; chan++) {
-                    channels[chan][i] = abs(channels[chan][i]);
+                for(int chan = 0; chan < 1; chan++) {
+                    channels[chan][i] = -1*abs(channels[chan][i]);
                 }
             }
             
@@ -1831,9 +1835,6 @@ void RecordingManager::advance(uint32_t samples) {
                     filterIndex++;
                 }
             }
-
-        
-            
         }
         
        
