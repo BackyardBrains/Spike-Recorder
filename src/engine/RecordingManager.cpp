@@ -781,17 +781,17 @@ void RecordingManager::initRecordingDevices() {
     amDetectionNotchFilter.initWithSamplingRate(_sampleRate);
     amDetectionNotchFilter.setCenterFrequency(AM_CARRIER_FREQUENCY);
     amDetectionNotchFilter.setQ(1.0);
-    
+
     for (int k = 0;k<6;k++)
     {
         amDemodulationLowPassFilter[k].initWithSamplingRate(_sampleRate);
         amDemodulationLowPassFilter[k].setCornerFrequency(AM_DEMODULATION_CUTOFF);
         amDemodulationLowPassFilter[k].setQ(1.0f);
-    
+
     }
 
 
-    
+
     rmsOfOriginalSignal = 0;
     rmsOfNotchedAMSignal = 0;
     weAreReceivingAMSignal = false;
@@ -1788,25 +1788,25 @@ void RecordingManager::advance(uint32_t samples) {
 	    for (int i = 0; i < samplesRead/channum; i++) {
 	        for(int chan = 0; chan < channum; chan++) {
 	            channels[chan][i] = buffer[i*channum + chan];//sort data to channels
-                
+
                if(chan ==0)
                {
                    rmsOfOriginalSignal = 0.0001*((float)(channels[chan][i]*channels[chan][i]))+0.9999*rmsOfOriginalSignal;
-                   
+
                }
 	        }
 	    }
-        
+
         int32_t numberOfFramesReceived = samplesRead/channum;
         int16_t * receivedData = channels[0].data();
         memcpy(amBuffer, receivedData, numberOfFramesReceived * sizeof(int16_t));
-       
+
         amDetectionNotchFilter.filterIntData(amBuffer, numberOfFramesReceived);
         for(int32_t i=0;i<numberOfFramesReceived;i++)
         {
             rmsOfNotchedAMSignal = 0.0001*((float)(amBuffer[i]*amBuffer[i]))+0.9999*rmsOfNotchedAMSignal;
         }
-        
+
         //std::cout<<"Notch: "<<sqrtf(rmsOfNotchedAMSignal)<<" - Normal: "<<sqrtf(rmsOfOriginalSignal)<<" - a/b: "<<sqrtf(rmsOfOriginalSignal)/sqrtf(rmsOfNotchedAMSignal)<<"\n";
         if(sqrtf(rmsOfOriginalSignal)/sqrtf(rmsOfNotchedAMSignal)>5)
         {
@@ -1816,16 +1816,15 @@ void RecordingManager::advance(uint32_t samples) {
         {
             weAreReceivingAMSignal = false;
         }
-        
         if(weAreReceivingAMSignal)
         {
-            
+
             for (int i = 0; i < samplesRead/channum; i++) {
                 for(int chan = 0; chan < 1; chan++) {
                     channels[chan][i] = -1*abs(channels[chan][i]);
                 }
             }
-            
+
             int filterIndex = 0;
             for(int i=0;i<2;i++)
             {
@@ -1836,8 +1835,8 @@ void RecordingManager::advance(uint32_t samples) {
                 }
             }
         }
-        
-       
+
+
 
 	    //filter data
         if(fiftyHzFilterEnabled())
@@ -2101,8 +2100,8 @@ RecordingManager::Device::Device(int index, int nchan, int &sampleRate)
 	: type(Device::Audio),index(index), handle(0), enabled(false), dcBiasNum(1), channels(nchan), samplerate(sampleRate), bytespersample(2) {
 
 
-   
-        
+
+
 	sampleBuffers.resize(nchan);
 	_50HzNotchFilters.resize(nchan);
 	for(int i=0;i<nchan;i++)
