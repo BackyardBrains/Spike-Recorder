@@ -376,7 +376,7 @@ void AudioView::drawScale() {
 
 void AudioView::drawData(std::vector<std::pair<int16_t, int16_t> > &data, int channel, int samples, int x, int y, int width, int numberOfSamplesToAvoid) {
 	float dist = width/(float)(data.size()-1);
-
+    
 	if(fabs(dist-1.f) < 0.003f)
 		dist = 1.f; // we don’t want round off artifacts
 

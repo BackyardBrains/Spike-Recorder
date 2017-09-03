@@ -489,7 +489,10 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             std::cout<<"Unable to query serial port signals on "<<portName<<"\n";
             return -1;
         }
-        bits &= ~(TIOCM_DTR | TIOCM_RTS);
+        //bits &= ~(TIOCM_DTR | TIOCM_RTS);
+        
+//------------ Stanislav changed TIOCM_DTR to HIGH since Leonardo didnt work
+        bits &= ~(TIOCM_RTS);
         if (ioctl(portDescriptor, TIOCMSET, &bits) < 0) {
             close(portDescriptor);
             sstm <<"Unable to control serial port signals on " << portName;
