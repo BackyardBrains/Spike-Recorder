@@ -490,7 +490,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             return -1;
         }
         //bits &= ~(TIOCM_DTR | TIOCM_RTS);
-        
+
 //------------ Stanislav changed TIOCM_DTR to HIGH since Leonardo didnt work
         bits &= ~(TIOCM_RTS);
         if (ioctl(portDescriptor, TIOCMSET, &bits) < 0) {
@@ -550,7 +550,8 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             std::cout<< "Unable to query serial port signals";
             return -1;
         }
-        bits &= ~(TIOCM_DTR | TIOCM_RTS);
+       // bits &= ~(TIOCM_DTR | TIOCM_RTS);
+       bits &= ~( TIOCM_RTS);
         if (ioctl(portDescriptor, TIOCMSET, &bits) < 0)
         {
             close(portDescriptor);
@@ -697,14 +698,14 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         port_cfg.dcb.fParity = FALSE;
         port_cfg.dcb.fOutxCtsFlow = FALSE;
         port_cfg.dcb.fOutxDsrFlow = FALSE;
-        port_cfg.dcb.fDtrControl = DTR_CONTROL_DISABLE;
+        port_cfg.dcb.fDtrControl = DTR_CONTROL_ENABLE;
         port_cfg.dcb.fDsrSensitivity = FALSE;
         port_cfg.dcb.fTXContinueOnXoff = TRUE;	// ???
         port_cfg.dcb.fOutX = FALSE;
         port_cfg.dcb.fInX = FALSE;
         port_cfg.dcb.fErrorChar = FALSE;
         port_cfg.dcb.fNull = FALSE;
-        port_cfg.dcb.fRtsControl = RTS_CONTROL_DISABLE;
+        port_cfg.dcb.fRtsControl = RTS_CONTROL_ENABLE;
         port_cfg.dcb.fAbortOnError = FALSE;
         port_cfg.dcb.ByteSize = 8;
         port_cfg.dcb.Parity = NOPARITY;
