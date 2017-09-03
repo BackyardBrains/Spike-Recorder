@@ -1816,6 +1816,7 @@ void RecordingManager::advance(uint32_t samples) {
         {
             weAreReceivingAMSignal = false;
         }
+
         if(weAreReceivingAMSignal)
         {
 
