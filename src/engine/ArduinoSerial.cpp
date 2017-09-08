@@ -13,6 +13,7 @@
 #include <sstream>
 #include <stdint.h>
 
+
 #define NUMBER_OF_TIMES_TO_SCAN_UNKNOWN_PORT 10
 
 #if defined(__linux__)
@@ -39,6 +40,7 @@
     #include <sys/ioctl.h>
     #include <errno.h>
     #include <paths.h>
+    #include <SerialPortsScan.h>
     #include <termios.h>
     #include <sysexits.h>
     #include <sys/param.h>
@@ -208,7 +210,11 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
     // Return a list of all serial ports
     void ArduinoSerial::getAllPortsList()
     {
+        
+        
+        
         list.clear();
+        
 
 #if defined(__linux__)
         // This is ugly guessing, but Linux doesn't seem to provide anything else.
@@ -281,6 +287,8 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         closedir(dir);
 #elif defined(__APPLE__)
 
+        getListOfSerialPorts(list);
+        
         // adapted from SerialPortSample.c, by Apple
         // http://developer.apple.com/samplecode/SerialPortSample/listing2.html
         // and also testserial.c, by Keyspan
@@ -289,7 +297,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         // neither keyspan nor rxtx properly release memory allocated.
         // more documentation at:
         // http://developer.apple.com/documentation/DeviceDrivers/Conceptual/WorkingWSerial/WWSerial_SerialDevs/chapter_2_section_6.html
-        mach_port_t masterPort;
+       /* mach_port_t masterPort;
         CFMutableDictionaryRef classesToMatch;
         io_iterator_t serialPortIterator;
         if (IOMasterPort(NULL, &masterPort) != KERN_SUCCESS) return;
@@ -312,7 +320,8 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         if (IOServiceGetMatchingServices(masterPort, classesToMatch,
                                          &serialPortIterator) != KERN_SUCCESS) return;
         macos_ports(&serialPortIterator);
-        IOObjectRelease(serialPortIterator);
+        IOObjectRelease(serialPortIterator);*/
+        
 #elif defined(_WIN32)
 
         // http://msdn.microsoft.com/en-us/library/aa365461(VS.85).aspx
