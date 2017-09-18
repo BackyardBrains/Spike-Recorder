@@ -5,6 +5,11 @@ TARGET = SpikeRecorder
 TARGETDIR = SpikeRecorder
 
 OBJECTS = \
+        src/engine/AudioInputConfig.o \
+        src/CalibrationWindow.o \
+        src/widgets/TouchDropDownList.o \
+        src/widgets/HorizontalColorPicker.o \
+        src/widgets/HorizontalNumberPicker.o \
 	src/engine/RecordingManager.o \
 	src/engine/AnalysisManager.o \
 	src/engine/FileRecorder.o \
