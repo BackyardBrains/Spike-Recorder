@@ -13,6 +13,11 @@
 
 #include <list>
 #include <string>
+#include <stdint.h>
+#include <cstdint>
+
+
+
 
 namespace BackyardBrains
 {

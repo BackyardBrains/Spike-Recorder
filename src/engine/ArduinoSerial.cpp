@@ -52,6 +52,7 @@
 
 #elif _WIN32
     #include <windows.h>
+    #include "native/SerialPortsScan.h"
     #define win32_err(s) FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, \
                 GetLastError(), 0, (s), sizeof(s), NULL)
     #define QUERYDOSDEVICE_BUFFER_SIZE 262144
@@ -210,11 +211,11 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
     // Return a list of all serial ports
     void ArduinoSerial::getAllPortsList()
     {
-        
-        
-        
+
+
+
         list.clear();
-        
+
 
 #if defined(__linux__)
         // This is ugly guessing, but Linux doesn't seem to provide anything else.
@@ -288,7 +289,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 #elif defined(__APPLE__)
 
         getListOfSerialPorts(list);
-        
+
         // adapted from SerialPortSample.c, by Apple
         // http://developer.apple.com/samplecode/SerialPortSample/listing2.html
         // and also testserial.c, by Keyspan
@@ -321,8 +322,10 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                          &serialPortIterator) != KERN_SUCCESS) return;
         macos_ports(&serialPortIterator);
         IOObjectRelease(serialPortIterator);*/
-        
+
 #elif defined(_WIN32)
+
+        getListOfSerialPorts(list);
 
         // http://msdn.microsoft.com/en-us/library/aa365461(VS.85).aspx
         // page with 7 ways - not all of them work!
@@ -343,7 +346,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         if (ret) {
             printf("Detect Serial using QueryDosDeviceA: ");
             for (p = buffer; *p; p += strlen(p) + 1) {
-                //printf(":  %s", p);
+                printf(":  %s\n", p);
                 if (strncmp(p, "COM", 3)) continue;
                 printf("\nFound port  %s\n", p);
                 std::stringstream sstm;
