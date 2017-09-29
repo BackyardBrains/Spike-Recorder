@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1C11473F1D8EE07500BDA6DA /* AudioInputConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C11473D1D8EE07500BDA6DA /* AudioInputConfig.cpp */; };
+		1C4060F91F60518900B783F8 /* SerialPortsScanMac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4060F71F60518900B783F8 /* SerialPortsScanMac.cpp */; };
 		1C7EA2531D380C0200D5FCD7 /* libbass.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C7EA2521D380C0200D5FCD7 /* libbass.dylib */; };
 		1C7EA2541D380C0800D5FCD7 /* libbass.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1C7EA2521D380C0200D5FCD7 /* libbass.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		1C7EA2551D380C0C00D5FCD7 /* libbass.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1C7EA2521D380C0200D5FCD7 /* libbass.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -124,6 +125,8 @@
 /* Begin PBXFileReference section */
 		1C11473D1D8EE07500BDA6DA /* AudioInputConfig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioInputConfig.cpp; sourceTree = "<group>"; };
 		1C11473E1D8EE07500BDA6DA /* AudioInputConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioInputConfig.h; sourceTree = "<group>"; };
+		1C4060F71F60518900B783F8 /* SerialPortsScanMac.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SerialPortsScanMac.cpp; sourceTree = "<group>"; };
+		1C4060F81F60518900B783F8 /* SerialPortsScan.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SerialPortsScan.h; sourceTree = "<group>"; };
 		1C7EA2521D380C0200D5FCD7 /* libbass.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libbass.dylib; sourceTree = "<group>"; };
 		1CC7E1F61DF1C1E100841669 /* HorizontalColorPicker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HorizontalColorPicker.cpp; sourceTree = "<group>"; };
 		1CC7E1F71DF1C1E100841669 /* HorizontalColorPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HorizontalColorPicker.h; sourceTree = "<group>"; };
@@ -564,6 +567,8 @@
 			isa = PBXGroup;
 			children = (
 				248E58AF1AAE19570011707F /* PathsMac.cpp */,
+				1C4060F71F60518900B783F8 /* SerialPortsScanMac.cpp */,
+				1C4060F81F60518900B783F8 /* SerialPortsScan.h */,
 			);
 			name = native;
 			path = src/native;
@@ -816,6 +821,7 @@
 				248E58EF1AAE19570011707F /* MainView.cpp in Sources */,
 				24E3E9161CB80A8000267CF3 /* TextInput.cpp in Sources */,
 				248E58F91AAE19570011707F /* ErrorBox.cpp in Sources */,
+				1C4060F91F60518900B783F8 /* SerialPortsScanMac.cpp in Sources */,
 				245BF7001CAAA06E004BEA8C /* RangeSelector.cpp in Sources */,
 				248E58EB1AAE19570011707F /* SpikeSorter.cpp in Sources */,
 				24F40AB81ACEAD1600B3CCE1 /* hid.c in Sources */,
