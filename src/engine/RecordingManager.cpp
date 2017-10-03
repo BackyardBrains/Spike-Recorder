@@ -1447,7 +1447,7 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
                         const int thresh = _virtualDevices[_selectedVDevice].threshold;
 
                         if(_triggers.empty() || ntrigger - _triggers.front() > _sampleRate/10) {
-                            if((thresh > 0 && channels[chan][i] >= thresh && lastSampleForThreshold< thresh) || (thresh <= 0 && channels[chan][i] < thresh && lastSampleForThreshold> thresh)) {
+                            if((thresh > 0 && channels[chan][i] >= thresh && lastSampleForThreshold< thresh) || (thresh <= 0 && channels[chan][i] < thresh && lastSampleForThreshold>= thresh)) {
                                 _triggers.push_front(_pos + i);
                                 triggerd = true;
                                 if(_triggers.size() > (unsigned int)_threshAvgCount)//_threshAvgCount == 1
