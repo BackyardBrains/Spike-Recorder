@@ -421,8 +421,12 @@ void FileRecorder::advance() {
 	}
 
 	for(int i = 0; i < len; i++) {
+        //std::cout<<_buf[i]<<" : "<<_buf[i+_bufsize]<<"\n";
 		for(int j = 0; j < _nchan; j++)
+        {
 			put16(_buf[i+j*_bufsize], _file);
+        }
+    
 	}
 
 	_oldPos = _manager.pos();

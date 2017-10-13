@@ -161,7 +161,7 @@ public:
 		}
 
 		_pos += len;//add to cumulative number of samples (number of samples since begining of the time)
-      //  std::cout<<"Head: "<<_head<<" Pos: "<<_pos<<"\n";
+       // std::cout<<"Head: "<<_head<<" Pos: "<<_pos<<"\n";
 	}
 
     //
@@ -225,6 +225,7 @@ public:
                 //in this way we will not have clicking sound in audio
                 //as we would if we are sending zeros for signal with offset
                 dst[j] = _buffer[(_head + -1 + SIZE)%SIZE];
+                std::cout<<"Old value"<<"\n";
             }
 			else
             {
@@ -355,7 +356,7 @@ public:
 
 	void setPos(int64_t pos)
 	{
-		// qDebug() << "SampleBuffer: SETPOS CALLED";
+       // std::cout<< "SampleBuffer: SETPOS CALLED "<<pos<<"\n";
 		_pos = pos;
 	}
 

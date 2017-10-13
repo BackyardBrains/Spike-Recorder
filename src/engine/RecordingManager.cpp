@@ -1720,7 +1720,8 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 }
 
 void RecordingManager::advance(uint32_t samples) {
-	try{
+	// std::cout<<"Advance ==========================\n";
+    try{
 
 		scanUSBDevices();
 	}
@@ -1766,6 +1767,7 @@ void RecordingManager::advance(uint32_t samples) {
 	len = std::min(samples, len);
 
 	for (int idx = 0; idx < (int)_devices.size(); idx++) {
+        
 		if(!_devices[idx].enabled)
 			continue;
 		const int channum = _devices[idx].channels;
@@ -1884,7 +1886,8 @@ void RecordingManager::advance(uint32_t samples) {
 
 
 		bool triggerd = false;
-
+      //  std::cout<<"Start of add data --------------------------\n";
+       // std::cout<<"Device "<<idx<<"\n";
 		for(int chan = 0; chan < channum; chan++) {
 			int dcBias = _devices[idx].dcBiasSum[chan]/_devices[idx].dcBiasNum;
 
@@ -1909,9 +1912,11 @@ void RecordingManager::advance(uint32_t samples) {
 					}
 				}
 			}
-			if(_devices[idx].sampleBuffers[0].empty()) {
+			if(_devices[idx].sampleBuffers[chan].empty()) {
 				_devices[idx].sampleBuffers[chan].setPos(oldPos);
+                //std::cout<<"Set old position "<<oldPos<<"\n";
 			}
+           // std::cout<<"Channel "<<chan<<"\n";
 			_devices[idx].sampleBuffers[chan].addData(channels[chan].data(), samplesRead/channum);
 		}
 
@@ -1946,7 +1951,9 @@ void RecordingManager::advance(uint32_t samples) {
 	}
 
 	if(newPos > oldPos)
+    {
 		_pos = newPos;
+    }
 
 }
 
@@ -2154,9 +2161,10 @@ bool RecordingManager::Device::enable(int64_t pos) {
 	for(int i = 0; i < (int)dcBiasSum.size(); i++)
 		dcBiasSum[i] = 0;
 
+    int64_t  tempPos = pos;
 	for (int i = 0; i < channels; i++) {
 		sampleBuffers[i].reset();
-		sampleBuffers[i].setPos(pos);
+		sampleBuffers[i].setPos(tempPos);
 	}
 
 	if(type == Device::Audio) {

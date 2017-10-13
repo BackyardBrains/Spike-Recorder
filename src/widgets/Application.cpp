@@ -10,6 +10,7 @@
 #include <cassert>
 #include <iostream>
 #include <sstream>
+#include "SDL_syswm.h" 
 
 namespace BackyardBrains {
 
@@ -96,6 +97,7 @@ void Application::run() {
 	_running = true;
 	Point oldPos;
 	_buttonState = ToMouseButtonsFromSDL(SDL_GetMouseState(&oldPos.x, &oldPos.y));
+    //SDL_EventState(SDL_DROPFILE, SDL_ENABLE);
 	SDL_StartTextInput();
 	while (_running && !_windowStack.empty()) {
 
@@ -477,6 +479,39 @@ void Application::_HandleEvent(const void *eventRaw) {
 	else if (event.type == SDL_QUIT) {
 		_running = false; // TODO generate an event instead of directly shutting down the event loop
 	}
+    
+    
+    /* for drag and drop add this to info.plist
+     
+     <key>CFBundleDocumentTypes</key>
+     <array>
+     <dict>
+     <key>CFBundleTypeRole</key>
+     <string>Viewer</string>
+     <key>LSHandlerRank</key>
+     <string>Alternate</string>
+     <key>LSItemContentTypes</key>
+     <array>
+     <string>public.data</string>
+     </array>
+     </dict>
+     </array>
+     */
+    
+    
+   /* else if(event.type == SDL_DROPFILE)
+    {
+        char* dropped_filedir = event.drop.file;
+        // Shows directory of dropped file
+        SDL_ShowSimpleMessageBox(
+                                 SDL_MESSAGEBOX_INFORMATION,
+                                 "File dropped on window",
+                                 dropped_filedir,
+                                 sdlWindow
+                                 );
+        SDL_free(dropped_filedir);    // Free dropped_filedir memory
+    
+    }*/
 	else if (event.type == SDL_WINDOWEVENT)	{
 		if(event.window.event == SDL_WINDOWEVENT_RESIZED) {
 			int w, h;
