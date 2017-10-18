@@ -61,6 +61,10 @@
 #endif
 
 
+//#define LOG_SCANNING_OF_ARDUINO 1
+
+
+
 namespace BackyardBrains {
 
     bool ArduinoSerial::openPortLock = false;
@@ -111,7 +115,9 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         #else
                 Sleep(700);
         #endif
+        #ifdef LOG_SCANNING_OF_ARDUINO
         Log::msg("New cycle in thread");
+        #endif
         selfRef->checkAllPortsForArduino(workingArduinoRef);
     }
 }
@@ -476,29 +482,38 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 #endif
 #ifdef __APPLE__
         std::stringstream sstm;
+        #ifdef LOG_SCANNING_OF_ARDUINO
         Log::msg("Open port - ");
         Log::msg(portName);
+        #endif
         if (portDescriptor < 0) {
             sstm << "Unable to open " << portName << ", " << strerror(errno);
             errorString = sstm.str();
+            
+            #ifdef LOG_SCANNING_OF_ARDUINO
             std::cout<<"Unable to open "<<portName<<", "<<strerror(errno)<<"\n";
             Log::msg(errorString.c_str());
+            #endif
             return -1;
         }
         if (ioctl(portDescriptor, TIOCEXCL) == -1) {
             close(portDescriptor);
             sstm << "Unable to get exclussive access to port " << portName;;
             errorString = sstm.str();
+            #ifdef LOG_SCANNING_OF_ARDUINO
             Log::msg(errorString.c_str());
             std::cout<<"Unable to get exclussive access to port "<<portName<<"\n";
+            #endif
             return -1;
         }
         if (ioctl(portDescriptor, TIOCMGET, &bits) < 0) {
             close(portDescriptor);
             sstm <<"Unable to query serial port signals on " << portName;
             errorString = sstm.str();
+            #ifdef LOG_SCANNING_OF_ARDUINO
             Log::msg(errorString.c_str());
             std::cout<<"Unable to query serial port signals on "<<portName<<"\n";
+            #endif
             return -1;
         }
         //bits &= ~(TIOCM_DTR | TIOCM_RTS);
@@ -509,8 +524,10 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             close(portDescriptor);
             sstm <<"Unable to control serial port signals on " << portName;
             errorString = sstm.str();
+            #ifdef LOG_SCANNING_OF_ARDUINO
             Log::msg(errorString.c_str());
             std::cout<<"Unable to control serial port signals on "<<portName<<"\n";
+            #endif
             return -1;
         }
         struct termios settings_orig;
@@ -518,8 +535,10 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             close(portDescriptor);
             sstm <<"Unable to access baud rate on port " << portName;
             errorString = sstm.str();
+            #ifdef LOG_SCANNING_OF_ARDUINO
             Log::msg(errorString.c_str());
             std::cout<<"Unable to access baud rate on port "<<portName<<"\n";
+            #endif
             return -1;
         }
 #endif
@@ -589,8 +608,10 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 #if defined(__APPLE__) || defined(__linux__)
         if (portDescriptor == -1)
         {
+            #ifdef LOG_SCANNING_OF_ARDUINO
             std::cout<<"Can't open serial port\n";
             Log::msg("Can't open serial port\n");
+            #endif
             return -1;
         }
         fcntl(portDescriptor, F_SETFL, 0);    // clear all flags on descriptor, enable direct I/O
@@ -760,15 +781,21 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
     int ArduinoSerial::openSerialDevice(const char *portName)
     {
+        #ifdef LOG_SCANNING_OF_ARDUINO
         Log::msg("openSerialDevice before lock");
         Log::msg(portName);
+        #endif
         int i;
         while(ArduinoSerial::openPortLock==true){
+            #ifdef LOG_SCANNING_OF_ARDUINO
             Log::msg("openSerialDevice  lock----");
+            #endif
         }
         ArduinoSerial::openPortLock = true;
         i=1+1;
+        #ifdef LOG_SCANNING_OF_ARDUINO
         Log::msg("openSerialDevice after lock");
+        #endif
         int fd  = openSerialDeviceWithoutLock(portName);
 
         //update current port
@@ -807,7 +834,9 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         fd = openPort(portName);
         if(fd==-1)
         {
+            #ifdef LOG_SCANNING_OF_ARDUINO
             Log::msg("fail openSerialDeviceWithoutLock");
+            #endif
             return -1;
         }
 
@@ -838,20 +867,32 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
     void ArduinoSerial::checkAllPortsForArduino(ArduinoSerial * workingArduinoRef)
     {
 
+            #ifdef LOG_SCANNING_OF_ARDUINO
             std::cout<<"\nCheck for Arduino boards \n";
             Log::msg("checkAllPortsForArduino");
+            #endif
             getAllPortsList();
+            #ifdef LOG_SCANNING_OF_ARDUINO
             Log::msg("checkAllPortsForArduino Before lock");
+            #endif
             int i = 0;
-                while(ArduinoSerial::openPortLock==true){Log::msg("checkAllPortsForArduino lock --");}
+                while(ArduinoSerial::openPortLock==true){
+                    #ifdef LOG_SCANNING_OF_ARDUINO
+                    Log::msg("checkAllPortsForArduino lock --");
+                    #endif
+                }
                 ArduinoSerial::openPortLock = true;
                 i = i+1;
+                #ifdef LOG_SCANNING_OF_ARDUINO
                 Log::msg("checkAllPortsForArduino After lock");
+                #endif
             std::list<SerialPort>::iterator list_it;
             for(list_it = ports.begin(); list_it!= ports.end(); list_it++)
             {
+                #ifdef LOG_SCANNING_OF_ARDUINO
                 std::cout<<"\nTry Port: "<<list_it->portName.c_str()<<"\n";
                 Log::msg("Try port");
+                #endif
                 Log::msg(list_it->portName.c_str());
 
 
@@ -862,38 +903,47 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
                     workingArduinoRef->currentPort.portName = workingArduinoRef->currentPortName();
                     workingArduinoRef->currentPort.deviceType = list_it->deviceType;
+                    #ifdef LOG_SCANNING_OF_ARDUINO
                     std::cout<<"Port: "<<list_it->portName.c_str()<<" Already opened by another thread.\n";
                     Log::msg("checkAllPortsForArduino Already opened by another thread.");
+                    #endif
                    // ArduinoSerial::openPortLock = false;
                     continue;
                 }
                 if (list_it->deviceType != SerialDevice::unknown)
                 {
-
+                    #ifdef LOG_SCANNING_OF_ARDUINO
                     std::cout<<"Port: "<<list_it->portName.c_str()<<" Already checked\n";
                     Log::msg("checkAllPortsForArduino Already checked");
+                    #endif
                    // ArduinoSerial::openPortLock = false;
                     continue;
                 }
                 if(list_it->numOfTrials>NUMBER_OF_TIMES_TO_SCAN_UNKNOWN_PORT)
                 {
-
+                    #ifdef LOG_SCANNING_OF_ARDUINO
                     std::cout<<"Port: "<<list_it->portName.c_str()<<" checked 10 times\n";
                     Log::msg("checkAllPortsForArduino checked 10 times");
+                    #endif
                    // ArduinoSerial::openPortLock = false;
                     continue;
                 }
                 list_it->numOfTrials++;
+                #ifdef LOG_SCANNING_OF_ARDUINO
                 Log::msg("checkAllPortsForArduino now open port");
+                #endif
 
                 if(openSerialDeviceWithoutLock(list_it->portName.c_str()) != -1)
                 {
+                    #ifdef LOG_SCANNING_OF_ARDUINO
                     Log::msg("checkAllPortsForArduino port opened sucess");
+                    #endif
                     //check if it is our Arduino board
                     hardwareType.clear();
                     char buffer[33024];
+                    #ifdef LOG_SCANNING_OF_ARDUINO
                     std::cout<<"Port: "<<list_it->portName.c_str()<<" Sucess\n";
-
+                    #endif
                     time_t firstSeconds;
 
                     firstSeconds = time(NULL);
@@ -929,31 +979,40 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                         if(hardwareType.length()>0)
                         {
                             //found Arduino board that responded
+                            #ifdef LOG_SCANNING_OF_ARDUINO
                             std::cout<<"Found Arduino !!!!!!!\n";
                             Log::msg("checkAllPortsForArduino found arduino");
+                            #endif
 
                             break;
                         }
                     }
+                    #ifdef LOG_SCANNING_OF_ARDUINO
                     std::cout<<"Close Port: "<<list_it->portName.c_str()<<"\n";
                     Log::msg("checkAllPortsForArduino close port");
+                    #endif
 
                     closeSerial();
                 }
                 else
                 {
+                    #ifdef LOG_SCANNING_OF_ARDUINO
                     std::cout<<"\nPort: "<<list_it->portName.c_str()<<" Failed!\n";
                     Log::msg("checkAllPortsForArduino failed");
+                    #endif
                     closeSerial();
                 }
-
+                #ifdef LOG_SCANNING_OF_ARDUINO
                 Log::msg("checkAllPortsForArduino refresh working instance list");
+                #endif
                 workingArduinoRef->refreshPortList(ports);
 
 
 
             }
+            #ifdef LOG_SCANNING_OF_ARDUINO
             Log::msg("checkAllPortsForArduino relaese lock");
+            #endif
              ArduinoSerial::openPortLock = false;
 
 

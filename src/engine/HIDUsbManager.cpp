@@ -16,6 +16,9 @@
 
 #define BOARD_WITH_ADDITIONAL_INPUTS 1
 
+
+//#define LOG_HID_SCANNING 1
+
 namespace BackyardBrains {
 
 
@@ -603,21 +606,29 @@ namespace BackyardBrains {
     //
     void HIDUsbManager::getAllDevicesList()
     {
+        #ifdef LOG_HID_SCANNING
         Log::msg("getAllDevicesList");
+        #endif
         try
         {
             if((!_deviceConnected) )
             {
                // std::cout<<"Call HID exit... \n";
+                #ifdef LOG_HID_SCANNING
                 Log::msg("Call HID exit... ");
+                #endif
                 hid_exit();
             }
             list.clear();
             struct hid_device_info *devs, *cur_dev;
             //std::cout<<"Scan for HID devices... \n";
+            #ifdef LOG_HID_SCANNING
             Log::msg("Before HID enumerate");
+            #endif
             devs = hid_enumerate(BYB_VID, BYB_PID);
+            #ifdef LOG_HID_SCANNING
             Log::msg("After HID enumerate");
+            #endif
            // std::cout<<"HID After scan \n";
             cur_dev = devs;
             while (cur_dev) {
@@ -640,9 +651,13 @@ namespace BackyardBrains {
                 cur_dev = cur_dev->next;
             }
            //  std::cout<<"Free enumeration \n";
+            #ifdef LOG_HID_SCANNING
             Log::msg("Before HID free enumeration");
+            #endif
             hid_free_enumeration(devs);
+            #ifdef LOG_HID_SCANNING
             Log::msg("After HID free enumeration");
+            #endif
         }
         catch(std::exception &e)
         {

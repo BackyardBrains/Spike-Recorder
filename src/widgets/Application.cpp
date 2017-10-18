@@ -10,7 +10,7 @@
 #include <cassert>
 #include <iostream>
 #include <sstream>
-#include "SDL_syswm.h" 
+
 
 namespace BackyardBrains {
 

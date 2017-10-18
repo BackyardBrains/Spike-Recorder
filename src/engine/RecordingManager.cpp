@@ -240,7 +240,9 @@ void RecordingManager::scanUSBDevices()
     if(elapsed_secs>0.5)
     {
         timerUSB = end;
-        Log::msg("Scanning for HID");
+        
+        //Log::msg("Scanning for HID");
+        
         scanForHIDDevices();
         if((_hidDevicePresent = (_hidUsbManager.list.size()>0)))
         {
@@ -778,6 +780,8 @@ void RecordingManager::initRecordingDevices() {
 //	devicesChanged.emit();
 	Log::msg("Found %d recording devices.", _virtualDevices.size());
     loadFilterSettings();
+   
+    //AM detection and demodulation variables
     amDetectionNotchFilter.initWithSamplingRate(_sampleRate);
     amDetectionNotchFilter.setCenterFrequency(AM_CARRIER_FREQUENCY);
     amDetectionNotchFilter.setQ(1.0);
@@ -790,12 +794,10 @@ void RecordingManager::initRecordingDevices() {
 
     }
 
-
-
     rmsOfOriginalSignal = 0;
     rmsOfNotchedAMSignal = 0;
     weAreReceivingAMSignal = false;
-    amBuffer = (int16_t*) std::malloc( _sampleRate * sizeof(int16_t));
+    
 }
 
 
@@ -1801,8 +1803,15 @@ void RecordingManager::advance(uint32_t samples) {
 
         int32_t numberOfFramesReceived = samplesRead/channum;
         int16_t * receivedData = channels[0].data();
+        amBuffer = (int16_t*) std::malloc( _sampleRate * sizeof(int16_t));
+        if(numberOfFramesReceived>_sampleRate)
+        {
+            numberOfFramesReceived = _sampleRate;
+        }
         memcpy(amBuffer, receivedData, numberOfFramesReceived * sizeof(int16_t));
-
+        
+        std::cout<<"Samples read: "<<samplesRead<<"chan num::"<<channum<<"\n";
+        
         amDetectionNotchFilter.filterIntData(amBuffer, numberOfFramesReceived);
         for(int32_t i=0;i<numberOfFramesReceived;i++)
         {
@@ -1838,7 +1847,7 @@ void RecordingManager::advance(uint32_t samples) {
                 }
             }
         }
-
+        free(amBuffer);
 
 
 	    //filter data

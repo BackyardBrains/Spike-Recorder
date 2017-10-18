@@ -32,6 +32,9 @@
 #include <IOKit/serial/IOSerialKeys.h>
 #include <IOKit/IOBSD.h>
 
+
+//#define LOG_USB 1
+
 // Arduino VIDs:
 //0x2341 - Arduino
 //0x2A03 - Arduino
@@ -94,7 +97,9 @@ namespace BackyardBrains {
             {
                 deviceName[0] = '\0';
             }
+            #ifdef LOG_USB
             Log::msg("USB Device found-: %s", deviceName);
+            #endif
             //printf("deviceName:%s\n",deviceName);
             
             IOCFPlugInInterface         **plugInInterface = NULL;
@@ -135,8 +140,9 @@ namespace BackyardBrains {
             kr = (*dev)->GetDeviceVendor(dev, &vendor);
            // kr = (*dev)->GetDeviceProduct(dev, &product);
            
+            #ifdef LOG_USB
             Log::msg("Vendor ID-: %x", (int)vendor);
-            
+            #endif
             bool isItEnabledVID = false;
             for (int i=0;i<NUMBER_OF_VIDS;i++)
             {
@@ -167,7 +173,9 @@ namespace BackyardBrains {
                         CFStringGetCString((const __CFString *)deviceBSDName_cf,s, sizeof(s), kCFStringEncodingASCII);
                                            
                         //printf("Path: %s\n", cs);
+                        #ifdef LOG_USB
                         Log::msg("Path-: %s", s);
+                        #endif
                         listOfPorts.push_back(s);
                     }
             }
