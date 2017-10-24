@@ -107,11 +107,11 @@ void ThresholdPanel::setTriggerButtonImage()
     
 void ThresholdPanel::paintEvent()
 {
-    //if(_manager->serialMode() || _manager->hidMode())
-    //{
+    if(_manager->serialMode() || _manager->hidMode())
+    {
         _ekgButton->setVisible(true);
         _ekgButton->setSizeHint(Widgets::Size(43,32));
-    /*}
+    }
     else
     {
         int state = _switchLayout->selected();
@@ -124,7 +124,7 @@ void ThresholdPanel::paintEvent()
         }
         _ekgButton->setVisible(false);
         
-    }*/
+    }
 }
     
     
