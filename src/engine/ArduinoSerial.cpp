@@ -331,7 +331,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
 #elif defined(_WIN32)
 
-        getListOfSerialPorts(list);
+        //getListOfSerialPorts(list);
 
         // http://msdn.microsoft.com/en-us/library/aa365461(VS.85).aspx
         // page with 7 ways - not all of them work!
@@ -489,7 +489,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         if (portDescriptor < 0) {
             sstm << "Unable to open " << portName << ", " << strerror(errno);
             errorString = sstm.str();
-            
+
             #ifdef LOG_SCANNING_OF_ARDUINO
             std::cout<<"Unable to open "<<portName<<", "<<strerror(errno)<<"\n";
             Log::msg(errorString.c_str());

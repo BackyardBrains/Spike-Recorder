@@ -240,9 +240,9 @@ void RecordingManager::scanUSBDevices()
     if(elapsed_secs>0.5)
     {
         timerUSB = end;
-        
+
         //Log::msg("Scanning for HID");
-        
+
         scanForHIDDevices();
         if((_hidDevicePresent = (_hidUsbManager.list.size()>0)))
         {
@@ -780,7 +780,7 @@ void RecordingManager::initRecordingDevices() {
 //	devicesChanged.emit();
 	Log::msg("Found %d recording devices.", _virtualDevices.size());
     loadFilterSettings();
-   
+
     //AM detection and demodulation variables
     amDetectionNotchFilter.initWithSamplingRate(_sampleRate);
     amDetectionNotchFilter.setCenterFrequency(AM_CARRIER_FREQUENCY);
@@ -797,7 +797,7 @@ void RecordingManager::initRecordingDevices() {
     rmsOfOriginalSignal = 0;
     rmsOfNotchedAMSignal = 0;
     weAreReceivingAMSignal = false;
-    
+
 }
 
 
@@ -1247,15 +1247,16 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 
             if(_thresholdSource==0)
             {
-                bool triggerd;
+                bool triggerd = false;
                 SampleBuffer &s = *sampleBuffer(_selectedVDevice);
 
                 if(_thresholdSource == 0)//if we trigger on signal
                 {
                     for(int64_t i = _pos; i < _pos+samples; i++) {
                         const int thresh = _virtualDevices[_selectedVDevice].threshold;
-
+                        
                         if(_triggers.empty() || i - _triggers.front() > _sampleRate/10) {
+                            
                             if((thresh > 0 && s.at(i) >= thresh && lastSampleForThreshold<thresh) || (thresh <= 0 && s.at(i) < thresh && lastSampleForThreshold> thresh)) {
                                 _triggers.push_front(i);
                                 triggerd = true;
@@ -1769,7 +1770,7 @@ void RecordingManager::advance(uint32_t samples) {
 	len = std::min(samples, len);
 
 	for (int idx = 0; idx < (int)_devices.size(); idx++) {
-        
+
 		if(!_devices[idx].enabled)
 			continue;
 		const int channum = _devices[idx].channels;
@@ -1809,9 +1810,15 @@ void RecordingManager::advance(uint32_t samples) {
             numberOfFramesReceived = _sampleRate;
         }
         memcpy(amBuffer, receivedData, numberOfFramesReceived * sizeof(int16_t));
+<<<<<<< HEAD
         
-        std::cout<<"Samples read: "<<samplesRead<<"chan num::"<<channum<<"\n";
+        //std::cout<<"Samples read: "<<samplesRead<<"chan num::"<<channum<<"\n";
         
+=======
+
+        //std::cout<<"Samples read: "<<samplesRead<<"chan num::"<<channum<<"\n";
+
+>>>>>>> origin/master
         amDetectionNotchFilter.filterIntData(amBuffer, numberOfFramesReceived);
         for(int32_t i=0;i<numberOfFramesReceived;i++)
         {
@@ -2426,7 +2433,7 @@ void RecordingManager::initInputConfigPersistance()
     audioInputConfigArray[INPUT_TYPE_HEARTSS].inputType = INPUT_TYPE_HEARTSS;
     audioInputConfigArray[INPUT_TYPE_HEARTSS].filter50Hz = false;
     audioInputConfigArray[INPUT_TYPE_HEARTSS].filter60Hz = true;
-    audioInputConfigArray[INPUT_TYPE_HEARTSS].filterLowPass = 11.0f;
+    audioInputConfigArray[INPUT_TYPE_HEARTSS].filterLowPass = 50.0f;
     audioInputConfigArray[INPUT_TYPE_HEARTSS].filterHighPass = 1.0f;
     audioInputConfigArray[INPUT_TYPE_HEARTSS].gain = 0.5f;
     audioInputConfigArray[INPUT_TYPE_HEARTSS].timeScale = 1.0f;
