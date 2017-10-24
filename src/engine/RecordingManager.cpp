@@ -1810,15 +1810,7 @@ void RecordingManager::advance(uint32_t samples) {
             numberOfFramesReceived = _sampleRate;
         }
         memcpy(amBuffer, receivedData, numberOfFramesReceived * sizeof(int16_t));
-<<<<<<< HEAD
-        
-        //std::cout<<"Samples read: "<<samplesRead<<"chan num::"<<channum<<"\n";
-        
-=======
 
-        //std::cout<<"Samples read: "<<samplesRead<<"chan num::"<<channum<<"\n";
-
->>>>>>> origin/master
         amDetectionNotchFilter.filterIntData(amBuffer, numberOfFramesReceived);
         for(int32_t i=0;i<numberOfFramesReceived;i++)
         {
