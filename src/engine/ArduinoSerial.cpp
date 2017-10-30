@@ -61,7 +61,7 @@
 #endif
 
 
-//#define LOG_SCANNING_OF_ARDUINO 1
+#define LOG_SCANNING_OF_ARDUINO 1
 
 
 
@@ -352,7 +352,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         if (ret) {
             printf("Detect Serial using QueryDosDeviceA: ");
             for (p = buffer; *p; p += strlen(p) + 1) {
-                printf(":  %s\n", p);
+                //printf(":  %s\n", p);
                 if (strncmp(p, "COM", 3)) continue;
                 printf("\nFound port  %s\n", p);
                 std::stringstream sstm;

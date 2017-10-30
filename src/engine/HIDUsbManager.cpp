@@ -17,7 +17,7 @@
 #define BOARD_WITH_ADDITIONAL_INPUTS 1
 
 
-//#define LOG_HID_SCANNING 1
+#define LOG_HID_SCANNING 1
 
 namespace BackyardBrains {
 
