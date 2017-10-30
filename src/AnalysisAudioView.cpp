@@ -81,7 +81,7 @@ void AnalysisAudioView::paintEvent() {
 	Widgets::Painter::setColor(Widgets::Colors::widgetbgdark);
 	drawData(data, 0, samples, MOVEPIN_SIZE*1.5f, height()/2.0, screenWidth(), 0);
 
-	drawMarkers();
+	drawMarkers(true);
 
 	drawTargetMarkers();
 	drawScale();

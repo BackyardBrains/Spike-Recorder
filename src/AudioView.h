@@ -87,7 +87,7 @@ protected:
 	void drawSpikeTrain();
 	void drawRulerBox();
 	void drawRulerTime();
-	void drawMarkers();
+	void drawMarkers(bool fromAnalysisView);
 	void drawThreshold(int screenw);
 	void drawGainControls();
 	void drawData(std::vector<std::pair<int16_t, int16_t> > &data, int channel, int samples, int x, int y, int width, int numberOfSamplesToAvoid);

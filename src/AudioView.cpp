@@ -400,14 +400,21 @@ void AudioView::drawData(std::vector<std::pair<int16_t, int16_t> > &data, int ch
 
 }
 
-void AudioView::drawMarkers() {
+void AudioView::drawMarkers(bool fromAnalysisView) {
 	int samples = sampleCount(screenWidth(), scaleWidth());
 	int lastx = 0;
 	int lastw = 0;
 	bool lastyoff = 0;
 
 	for(std::list<std::pair<std::string, int64_t> >::const_iterator it = _manager.markers().begin(); it != _manager.markers().end(); it++) {
-		float x = width()+screenWidth()*(it->second-_manager.pos()-_channelOffset)/(float)samples;
+       // int pos = _manager.pos()+_channelOffset-samples;
+        int additionalOffset = 0;
+        if(fromAnalysisView)
+        {
+            additionalOffset = -0.5*screenWidth()-0.5*DATA_XOFF;
+        }
+		float x = width()+additionalOffset+screenWidth()*(it->second-_manager.pos()-_channelOffset)/(float)samples;
+        //float x = width()+screenWidth()*( it->second - (_manager.pos()+_channelOffset))/(float)samples;
 		if(x < DATA_XOFF || x > width())
 			continue;
 		assert(it->first.size() > 0);
@@ -769,7 +776,7 @@ void AudioView::paintEvent() {
     }
     else
     {
-		drawMarkers();
+		drawMarkers(false);
 		drawSpikeTrainStatistics();
     }
 
