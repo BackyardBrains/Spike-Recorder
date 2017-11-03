@@ -500,6 +500,7 @@ bool RecordingManager::initSerial(const char *portName)
 
     resetCalibrationCoeficient();
     saveInputConfigSettings();
+    
     if(!_arduinoSerial.portOpened())
     {
         if(_arduinoSerial.openSerialDevice(portName) == -1)
