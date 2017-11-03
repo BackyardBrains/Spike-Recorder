@@ -731,7 +731,8 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         port_cfg.dcb.fParity = FALSE;
         port_cfg.dcb.fOutxCtsFlow = FALSE;
         port_cfg.dcb.fOutxDsrFlow = FALSE;
-        port_cfg.dcb.fDtrControl = DTR_CONTROL_ENABLE;
+       // port_cfg.dcb.fDtrControl = DTR_CONTROL_ENABLE;
+        port_cfg.dcb.fDtrControl = DTR_CONTROL_DISABLE;
         port_cfg.dcb.fDsrSensitivity = FALSE;
         port_cfg.dcb.fTXContinueOnXoff = TRUE;	// ???
         port_cfg.dcb.fOutX = FALSE;
@@ -739,6 +740,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         port_cfg.dcb.fErrorChar = FALSE;
         port_cfg.dcb.fNull = FALSE;
         port_cfg.dcb.fRtsControl = RTS_CONTROL_ENABLE;
+        //port_cfg.dcb.fRtsControl = RTS_CONTROL_DISABLE;
         port_cfg.dcb.fAbortOnError = FALSE;
         port_cfg.dcb.ByteSize = 8;
         port_cfg.dcb.Parity = NOPARITY;
@@ -1037,6 +1039,16 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 #if defined(__linux__) || defined(__APPLE__)
             close(fd);
 #elif defined(_WIN32)
+
+       //port_cfg.dcb.fRtsControl = RTS_CONTROL_ENABLE;
+        port_cfg.dcb.fRtsControl = RTS_CONTROL_DISABLE;
+        if (!SetCommConfig(port_handle, &port_cfg, sizeof(COMMCONFIG))) {
+            CloseHandle(port_handle);
+            //error_msg = "Unable to write communication config to " + name + ", " + buf;
+        }
+
+
+
 
             CloseHandle(port_handle);
 #endif
