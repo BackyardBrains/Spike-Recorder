@@ -1254,9 +1254,9 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
                 {
                     for(int64_t i = _pos; i < _pos+samples; i++) {
                         const int thresh = _virtualDevices[_selectedVDevice].threshold;
-                        
+
                         if(_triggers.empty() || i - _triggers.front() > _sampleRate/10) {
-                            
+
                             if((thresh > 0 && s.at(i) >= thresh && lastSampleForThreshold<thresh) || (thresh <= 0 && s.at(i) < thresh && lastSampleForThreshold> thresh)) {
                                 _triggers.push_front(i);
                                 triggerd = true;
@@ -2415,8 +2415,8 @@ void RecordingManager::initInputConfigPersistance()
     audioInputConfigArray[INPUT_TYPE_MUSCLESS].inputType = INPUT_TYPE_MUSCLESS;
     audioInputConfigArray[INPUT_TYPE_MUSCLESS].filter50Hz = false;
     audioInputConfigArray[INPUT_TYPE_MUSCLESS].filter60Hz = false;
-    audioInputConfigArray[INPUT_TYPE_MUSCLESS].filterLowPass = 300.0f;
-    audioInputConfigArray[INPUT_TYPE_MUSCLESS].filterHighPass = 1.0f;
+    audioInputConfigArray[INPUT_TYPE_MUSCLESS].filterLowPass = 2500.0f;
+    audioInputConfigArray[INPUT_TYPE_MUSCLESS].filterHighPass = 70.0f;
     audioInputConfigArray[INPUT_TYPE_MUSCLESS].gain = 0.5f;
     audioInputConfigArray[INPUT_TYPE_MUSCLESS].timeScale = 1.0f;
     audioInputConfigArray[INPUT_TYPE_MUSCLESS].initialized = true;
