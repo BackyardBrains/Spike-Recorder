@@ -18,9 +18,8 @@ namespace Widgets  {
                 int maximum() const;
                 void setMaximum(int maxVal);
                 void setRange(int minVal, int maxVal);
-
-                void updateLowLogValue(int val); // don't emit a signal
-                void updateHighLogValue(int val); // don't emit a signal
+                void setLowValue(int val);
+                void setHighValue(int val);
                 int getLowValue();
                 int getHighValue();
                 sigslot::signal1<int> lowValueChanged;
@@ -28,8 +27,7 @@ namespace Widgets  {
             protected:
             private:
 
-                void setLowValue(int val);
-                void setHighValue(int val);
+
                 int lowValue() const;
                 int highValue() const;
                 int _minimum;

@@ -97,27 +97,6 @@ int RangeSelector::lowValue() const
     return _lowValue;
 }
 
-void RangeSelector::setLowValue(int val)
-{
-    const int oldValue = _lowValue;
-	_lowValue = std::max(_minimum, std::min(val, _maximum));
-
-	//if we want to move low value over high value push high value
-	if(_lowValue>_highValue)
-    {
-        setHighValue(_lowValue);
-    }
-
-    int lowLogFreqValue = (int)pow(10,(((double)lowValue())/((double)_maximum)*log10((double)_maximum)));
-	if(_lowValue==0)
-    {
-        lowLogFreqValue = 0;
-    }
-
-	if (_lowValue != oldValue)
-		lowValueChanged.emit(lowLogFreqValue);
-}
-
 int RangeSelector::highValue() const
 {
     return _highValue;
@@ -125,11 +104,7 @@ int RangeSelector::highValue() const
 
 int RangeSelector::getLowValue()
 {
-    if(_lowValue < 1)
-    {
-        return 0;
-    }
-    return (int)pow(10,(((double)lowValue())/((double)_maximum)*log10((double)_maximum)));
+    return _lowValue;
 }
 
 int RangeSelector::getHighValue()
@@ -138,9 +113,23 @@ int RangeSelector::getHighValue()
     {
         return 0;
     }
-    return (int)pow(10,(((double)highValue())/((double)_maximum)*log10((double)_maximum)));
+    return _highValue;
 }
-
+    
+void RangeSelector::setLowValue(int val)
+{
+    const int oldValue = _lowValue;
+    _lowValue = std::max(_minimum, std::min(val, _maximum));
+    
+    //if we want to move low value over high value push high value
+    if(_lowValue>_highValue)
+    {
+        setHighValue(_lowValue);
+    }
+    
+    if (_lowValue != oldValue)
+        lowValueChanged.emit(_lowValue);
+}
 
 void RangeSelector::setHighValue(int val)
 {
@@ -153,63 +142,10 @@ void RangeSelector::setHighValue(int val)
         setLowValue(_highValue);
     }
 
-
-    int highLogFreqValue = (int)pow(10,(((double)highValue())/((double)_maximum)*log10((double)_maximum)));
-	if(_highValue==0)
-    {
-        highLogFreqValue = 0;
-    }
-
 	if (_highValue != oldValue)
-		highValueChanged.emit(highLogFreqValue);
+		highValueChanged.emit(_highValue);
 }
 
-void RangeSelector::updateLowLogValue(int val) // don't emit a signal
-{
-    val = _maximum*(log10((double)val)/log10((double)_maximum)) +1;
-    _lowValue = std::max(_minimum, std::min(val, _maximum));
-
-    
-    int lowLogFreqValue = (int)pow(10,(((double)lowValue())/((double)_maximum)*log10((double)_maximum)));
-    if(_lowValue==0)
-    {
-        lowLogFreqValue = 0;
-    }
-
-    lowValueChanged.emit(lowLogFreqValue);
-    
-    
-	//if we want to move low value over high value push high value
-	if(_lowValue>_highValue)
-    {
-        setHighValue(_lowValue);
-    }
-}
-
-void RangeSelector::updateHighLogValue(int val) // don't emit a signal
-{
-
-    val = _maximum*(log10((double)val)/log10((double)_maximum)) +1;
-
-    _highValue = std::max(_minimum, std::min(val, _maximum));
-
-    
-    int highLogFreqValue = (int)pow(10,(((double)highValue())/((double)_maximum)*log10((double)_maximum)));
-    if(_highValue==0)
-    {
-        highLogFreqValue = 0;
-    }
-
-    highValueChanged.emit(highLogFreqValue);
-    
-    
-    
-	//if we want to move high value below low value push low value
-	if(_lowValue>_highValue)
-    {
-        setLowValue(_highValue);
-    }
-}
 
 void RangeSelector::paintEvent()
 {
@@ -219,13 +155,15 @@ void RangeSelector::paintEvent()
 
     //----- draw log10 scale --------------
     double maximumOnLogScale = log10((double)_maximum);
+    //strechCoeficient converts log number to pixels
+    double strechCoeficient = ((double)width())/maximumOnLogScale;
     for(int i=0;i<((int)maximumOnLogScale)+1;i++)
     {
         for(int k=1;k<10;k++)
         {
             double frequencyMark = k*pow(10,i);
 
-            int positionInPixels = width()*(log10(frequencyMark)/maximumOnLogScale);
+            int positionInPixels =strechCoeficient*log10(frequencyMark);
             if(positionInPixels>width())
             {
                 break;
@@ -277,14 +215,10 @@ void RangeSelector::mousePressEvent(MouseEvent *event)
         if(_HighSliderRect().contains(event->pos()))
         {
             _clickState = CLICKED_HIGH_SLIDER;
-            _highSliderClickedPixelOffset = event->pos().x - _HighSliderRect().x;
-            _highDraggingSliderOffset = _ValueToSliderOffset(_highValue);
         }
         else if(_LowSliderRect().contains(event->pos()))
         {
             _clickState = CLICKED_LOW_SLIDER;
-            _lowSliderClickedPixelOffset = event->pos().x - _LowSliderRect().x;
-            _lowDraggingSliderOffset = _ValueToSliderOffset(_lowValue);
         }
 
 	}
@@ -294,31 +228,20 @@ void RangeSelector::mouseMotionEvent(MouseEvent *event)
 {
 if (event->buttons() == LeftButton)
 	{
+        double position = (double)event->pos().x;
+
+        double maxLog = log10(_maximum);
+        double logValue = maxLog*(position/((double)width()));
 		switch (_clickState)
 		{
 			case CLICKED_HIGH_SLIDER:
 			{
-			    //std::cout<<"Coef: "<<(1-(abs(event->pos().y-2*baseHeight)/400.0))<<"\n";
-				const int newSliderOffset = (event->pos().x - _highSliderClickedPixelOffset);
-				const int scrollRange = std::max(0, _GutterLength() - _SliderLength()); // TODO is the +1 right?
-				_highDraggingSliderOffset = std::max(0, std::min(scrollRange, newSliderOffset)); // TODO is the -1 right?
-
-				const int valueInterval = _maximum - _minimum;
-				const int calculatedRelativeValAfter = scrollRange ? ((valueInterval*_highDraggingSliderOffset+scrollRange/2)/scrollRange) : 0;
-
-				setHighValue(_minimum + calculatedRelativeValAfter);
+                setHighValue(pow(10.0, logValue));
 			}
 			break;
 			case CLICKED_LOW_SLIDER:
 			{
-                const int newSliderOffset = event->pos().x - _lowSliderClickedPixelOffset;
-				const int scrollRange = std::max(0, _GutterLength() - _SliderLength()); // TODO is the +1 right?
-				_lowDraggingSliderOffset = std::max(0, std::min(scrollRange, newSliderOffset)); // TODO is the -1 right?
-
-				const int valueInterval = _maximum - _minimum;
-				const int calculatedRelativeValAfter = scrollRange ? ((valueInterval*_lowDraggingSliderOffset+scrollRange/2)/scrollRange) : 0;
-
-				setLowValue(_minimum + calculatedRelativeValAfter);
+                setLowValue(pow(10.0, logValue));
 			}
 			break;
 			default:
@@ -370,8 +293,9 @@ Rect RangeSelector::_LowSliderRect() const
 
 int RangeSelector::_ValueToSliderOffset(int val) const
 {
-	const int relativeVal = val - _minimum;
-	const int valueInterval = _maximum - _minimum;
+
+    const double relativeVal = val?log10((double)val):0;
+	const double valueInterval =log10((double)_maximum);
 	const int sliderOffset = (valueInterval ? (std::max(0, _GutterLength() - _SliderLength())*relativeVal/valueInterval) : 0);
 	return sliderOffset;
 }
