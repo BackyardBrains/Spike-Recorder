@@ -167,8 +167,8 @@ void ConfigView::SetupScreen()
         rangeSelector->lowValueChanged.connect(this, &ConfigView::lowFilterValueChanged);
         rangeSelector->highValueChanged.connect(this, &ConfigView::highFilterValueChanged);
         Log::msg("Update values range selector");
-        rangeSelector->updateHighLogValue(_manager.lowCornerFrequency());
-        rangeSelector->updateLowLogValue(_manager.highCornerFrequency());
+        rangeSelector->initHighAndLow( _manager.lowCornerFrequency(), _manager.highCornerFrequency());
+        
 
         Log::msg("Create label for range boxes");
         Widgets::BoxLayout *labelsBox = new Widgets::BoxLayout(Widgets::Horizontal);
@@ -1070,14 +1070,14 @@ void ConfigView::lowFilterValueChanged(int lvalue)
 void ConfigView::lowFilterTIValueChanged(std::string newString)
 {
     Log::msg("lowFilterTIValueChanged");
-    rangeSelector->updateLowLogValue(lowValueTI->getInt());
+    rangeSelector->setLowValue(lowValueTI->getInt());
     lowValueTI->setInt(rangeSelector->getLowValue());
 }
 
 void ConfigView::highFilterTIValueChanged(std::string newString)
 {
     Log::msg("highFilterTIValueChanged");
-    rangeSelector->updateHighLogValue(highValueTI->getInt());
+    rangeSelector->setHighValue(highValueTI->getInt());
     highValueTI->setInt(rangeSelector->getHighValue());
 }
 

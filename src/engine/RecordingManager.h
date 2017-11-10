@@ -177,8 +177,8 @@ public:
     bool highPassFilterEnabled() {return _highPassFilterEnabled;}
     void enableHighPassFilterWithCornerFreq(float cornerFreq);
     void disableHighPassFilter(){_highPassFilterEnabled = false;}
-    int highCornerFrequency(){return (int)_highCornerFreq;}
-    int lowCornerFrequency(){return (int)_lowCornerFreq;}
+    int highCornerFrequency();
+    int lowCornerFrequency();
     
     bool weShouldDisplayWaveform();
 

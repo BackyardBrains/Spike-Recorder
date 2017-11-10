@@ -177,7 +177,7 @@ bool RecordingManager::initHIDUSB()
     //_player.stop();
     //_player.start(_hidUsbManager.maxSamplingRate());
     _player.setVolume(0);
-    //enableHighPassFilterWithCornerFreq(1);
+    
     loadFilterSettings();
     return true;
 }
@@ -1986,7 +1986,26 @@ void RecordingManager::startRemovingMeanValue()
         }
 }
 
-
+int RecordingManager::highCornerFrequency()
+{
+    int cornerFrequency = (int)_highCornerFreq;
+    if(cornerFrequency>_sampleRate/2.0)
+    {
+        cornerFrequency = _sampleRate/2.0;
+    }
+    return cornerFrequency;
+    
+}
+int RecordingManager::lowCornerFrequency()
+{
+    int cornerFrequency = (int)_lowCornerFreq;
+    if(cornerFrequency>_sampleRate/2.0)
+    {
+        cornerFrequency = _sampleRate/2.0;
+    }
+    return cornerFrequency;
+}
+    
 void RecordingManager::enableLowPassFilterWithCornerFreq(float cornerFreq)
 {
 
@@ -1995,14 +2014,18 @@ void RecordingManager::enableLowPassFilterWithCornerFreq(float cornerFreq)
     {
         cornerFreq = 0.0f;
     }
-    if(cornerFreq>_sampleRate/2.0)
-    {
-        cornerFreq = _sampleRate/2.0;
-    }
+   
     _lowCornerFreq = cornerFreq;
 
     for(int chan = 0; chan < numberOfChannels(); chan++)
     {
+        //we don't limit _lowCornerFreq internaly because we don't want situation
+        //when user change from 1 ch to 6ch and return back to 1ch to get samplerate/6
+        //max frequency
+        if(cornerFreq>_sampleRate/2.0)
+        {
+            cornerFreq = _sampleRate/2.0;
+        }
         _devices.begin()->_lowPassFilters[chan].setCornerFrequency(cornerFreq);
     }
 
@@ -2024,14 +2047,18 @@ void RecordingManager::enableHighPassFilterWithCornerFreq(float cornerFreq)
     {
         cornerFreq = 0.0f;
     }
-    if(cornerFreq>_sampleRate/2.0)
-    {
-        cornerFreq = _sampleRate/2.0;
-    }
+   
     _highCornerFreq = cornerFreq;
 
      for(int chan = 0; chan < numberOfChannels(); chan++)
     {
+        //we don't limit _lowCornerFreq internaly because we don't want situation
+        //when user change from 1 ch to 6ch and return back to 1ch to get samplerate/6
+        //max frequency
+        if(cornerFreq>_sampleRate/2.0)
+        {
+            cornerFreq = _sampleRate/2.0;
+        }
         _devices.begin()->_highPassFilters[chan].setCornerFrequency(cornerFreq);
     }
     if(cornerFreq<1.0f)
@@ -2532,8 +2559,8 @@ void RecordingManager::saveInputConfigSettings()
                         foundPort = true;
                         it->filter50Hz = fiftyHzFilterEnabled();
                         it->filter60Hz = sixtyHzFilterEnabled();
-                        it->filterLowPass = lowCornerFrequency();
-                        it->filterHighPass = highCornerFrequency();
+                        it->filterLowPass = _lowCornerFreq;
+                        it->filterHighPass = _highCornerFreq;
                         //gain and timescale should be constanly updated by AudioView
                         it->initialized = true;
                         break;
@@ -2545,8 +2572,8 @@ void RecordingManager::saveInputConfigSettings()
             {
                 audioInputConfigArray[inputType].filter50Hz = fiftyHzFilterEnabled();
                 audioInputConfigArray[inputType].filter60Hz = sixtyHzFilterEnabled();
-                audioInputConfigArray[inputType].filterLowPass = lowCornerFrequency();
-                audioInputConfigArray[inputType].filterHighPass = highCornerFrequency();
+                audioInputConfigArray[inputType].filterLowPass = _lowCornerFreq;
+                audioInputConfigArray[inputType].filterHighPass = _highCornerFreq;
                 //gain and timescale should be constanly updated by AudioView
                 audioInputConfigArray[inputType].initialized = true;
             }
