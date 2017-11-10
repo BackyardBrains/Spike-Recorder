@@ -24,6 +24,7 @@ namespace Widgets  {
                 int getHighValue();
                 sigslot::signal1<int> lowValueChanged;
                 sigslot::signal1<int> highValueChanged;
+            void initHighAndLow(int newHigh, int newLow);
             protected:
             private:
 

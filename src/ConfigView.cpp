@@ -167,8 +167,8 @@ void ConfigView::SetupScreen()
         rangeSelector->lowValueChanged.connect(this, &ConfigView::lowFilterValueChanged);
         rangeSelector->highValueChanged.connect(this, &ConfigView::highFilterValueChanged);
         Log::msg("Update values range selector");
-        rangeSelector->setHighValue(_manager.lowCornerFrequency());
-        rangeSelector->setLowValue(_manager.highCornerFrequency());
+        rangeSelector->initHighAndLow( _manager.lowCornerFrequency(), _manager.highCornerFrequency());
+        
 
         Log::msg("Create label for range boxes");
         Widgets::BoxLayout *labelsBox = new Widgets::BoxLayout(Widgets::Horizontal);

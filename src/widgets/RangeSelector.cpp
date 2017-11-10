@@ -4,7 +4,7 @@
 #include "widgets/BitmapFontGL.h"
 #include "widgets/Application.h"
 #include <iostream>
-
+#define WIDTH_OF_ZERO 20
 namespace BackyardBrains {
 
 namespace Widgets {
@@ -116,6 +116,12 @@ int RangeSelector::getHighValue()
     return _highValue;
 }
     
+void RangeSelector::initHighAndLow(int newHigh, int newLow)
+{
+    _lowValue = std::max(_minimum, std::min(newLow, _maximum));
+    _highValue = std::max(_minimum, std::min(newHigh, _maximum));
+}
+    
 void RangeSelector::setLowValue(int val)
 {
     const int oldValue = _lowValue;
@@ -155,15 +161,17 @@ void RangeSelector::paintEvent()
 
     //----- draw log10 scale --------------
     double maximumOnLogScale = log10((double)_maximum);
+    double withOfZero = WIDTH_OF_ZERO;
+    double widthWithoutZero =(double)width() - withOfZero;
     //strechCoeficient converts log number to pixels
-    double strechCoeficient = ((double)width())/maximumOnLogScale;
+    double strechCoeficient = widthWithoutZero/maximumOnLogScale;
     for(int i=0;i<((int)maximumOnLogScale)+1;i++)
     {
         for(int k=1;k<10;k++)
         {
             double frequencyMark = k*pow(10,i);
 
-            int positionInPixels =strechCoeficient*log10(frequencyMark);
+            int positionInPixels =withOfZero+strechCoeficient*log10(frequencyMark);
             if(positionInPixels>width())
             {
                 break;
@@ -172,14 +180,14 @@ void RangeSelector::paintEvent()
             {
                 std::stringstream scaleMarkFreq;
                 
-                if(k==1 && i==0)
+                /*if(k==1 && i==0)
                 {
                     scaleMarkFreq <<""<< 0<<"";
                 }
                 else
-                {
+                {*/
                     scaleMarkFreq <<""<< frequencyMark<<"";
-                }
+               // }
                 Widgets::Painter::setColor(Widgets::Colors::white);
                 Widgets::Application::font()->draw(scaleMarkFreq.str().c_str(),positionInPixels, baseHeight+6, AlignHCenter);
             }
@@ -229,9 +237,10 @@ void RangeSelector::mouseMotionEvent(MouseEvent *event)
 if (event->buttons() == LeftButton)
 	{
         double position = (double)event->pos().x;
-
+        double withOfZero = WIDTH_OF_ZERO;
+        double widthWithoutZero =(double)width() - withOfZero;
         double maxLog = log10(_maximum);
-        double logValue = maxLog*(position/((double)width()));
+        double logValue = maxLog*((position-WIDTH_OF_ZERO)/(widthWithoutZero));
 		switch (_clickState)
 		{
 			case CLICKED_HIGH_SLIDER:
@@ -293,10 +302,17 @@ Rect RangeSelector::_LowSliderRect() const
 
 int RangeSelector::_ValueToSliderOffset(int val) const
 {
-
+    double withOfZero = WIDTH_OF_ZERO;
+    double widthWithoutZero =(double)width() - withOfZero- _SliderLength();
     const double relativeVal = val?log10((double)val):0;
 	const double valueInterval =log10((double)_maximum);
-	const int sliderOffset = (valueInterval ? (std::max(0, _GutterLength() - _SliderLength())*relativeVal/valueInterval) : 0);
+	 int sliderOffset = valueInterval ? std::max(0, WIDTH_OF_ZERO+(int)(widthWithoutZero*(relativeVal/valueInterval))) : 0;
+    if(val<1)
+    {
+        sliderOffset = 0;
+        
+    }
+    
 	return sliderOffset;
 }
 
