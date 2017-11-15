@@ -225,7 +225,7 @@ public:
                 //in this way we will not have clicking sound in audio
                 //as we would if we are sending zeros for signal with offset
                 dst[j] = _buffer[(_head + -1 + SIZE)%SIZE];
-                std::cout<<"Old value"<<"\n";
+                //std::cout<<"Old value"<<"\n";
             }
 			else
             {

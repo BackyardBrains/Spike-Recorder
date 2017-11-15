@@ -194,7 +194,7 @@ namespace BackyardBrains {
 
         while(stillProcessing)
         {
-            std::cout<<"----- MB: "<< currentPositionInString<<"     :"<<messagesBuffer<<"\n";
+            //std::cout<<"----- MB: "<< currentPositionInString<<"     :"<<messagesBuffer<<"\n";
             if(messagesBuffer[currentPositionInString]==';')
             {
                //we have message, parse it
