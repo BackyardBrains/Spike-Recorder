@@ -168,7 +168,7 @@ void ConfigView::SetupScreen()
         rangeSelector->highValueChanged.connect(this, &ConfigView::highFilterValueChanged);
         Log::msg("Update values range selector");
         rangeSelector->initHighAndLow( _manager.lowCornerFrequency(), _manager.highCornerFrequency());
-        
+
 
         Log::msg("Create label for range boxes");
         Widgets::BoxLayout *labelsBox = new Widgets::BoxLayout(Widgets::Horizontal);
@@ -434,6 +434,13 @@ void ConfigView::SetupScreen()
                             {
                                 touchSerialPortWidget->addItem("Heart And Brain SpikerShield");
                             }
+                            else
+                            {
+                                if(it->deviceType == ArduinoSerial::heartOneChannel)
+                                {
+                                    touchSerialPortWidget->addItem("Heart And Brain SpikerBox");
+                                }
+                            }
                         }
 
                     }
@@ -484,6 +491,13 @@ void ConfigView::SetupScreen()
                             if(it->deviceType == ArduinoSerial::heart)
                             {
                                 serialPortWidget->addItem("Heart And Brain SpikerShield");
+                            }
+                            else
+                            {
+                                if(it->deviceType == ArduinoSerial::heartOneChannel)
+                                {
+                                    serialPortWidget->addItem("Heart And Brain SpikerBox");
+                                }
                             }
                         }
 
@@ -562,7 +576,7 @@ void ConfigView::SetupScreen()
 
         //-------------- Serial Number of channels chooser ----------------------------------------
         Log::msg("Check if in serial mode for Num. ch. dropdown");
-        if(_manager.serialMode())
+        if(_manager.serialMode() && !(_manager.getCurrentPort().deviceType == ArduinoSerial::heartOneChannel || _manager.getCurrentPort().deviceType == ArduinoSerial::plant))
         {
                 //Number of channels chooser
                 Log::msg("Create box layout");

@@ -177,7 +177,7 @@ bool RecordingManager::initHIDUSB()
     //_player.stop();
     //_player.start(_hidUsbManager.maxSamplingRate());
     _player.setVolume(0);
-    
+
     loadFilterSettings();
     return true;
 }
@@ -500,7 +500,7 @@ bool RecordingManager::initSerial(const char *portName)
 
     resetCalibrationCoeficient();
     saveInputConfigSettings();
-    
+
     if(!_arduinoSerial.portOpened())
     {
         if(_arduinoSerial.openSerialDevice(portName) == -1)
@@ -1994,7 +1994,7 @@ int RecordingManager::highCornerFrequency()
         cornerFrequency = _sampleRate/2.0;
     }
     return cornerFrequency;
-    
+
 }
 int RecordingManager::lowCornerFrequency()
 {
@@ -2005,7 +2005,7 @@ int RecordingManager::lowCornerFrequency()
     }
     return cornerFrequency;
 }
-    
+
 void RecordingManager::enableLowPassFilterWithCornerFreq(float cornerFreq)
 {
 
@@ -2014,7 +2014,7 @@ void RecordingManager::enableLowPassFilterWithCornerFreq(float cornerFreq)
     {
         cornerFreq = 0.0f;
     }
-   
+
     _lowCornerFreq = cornerFreq;
 
     for(int chan = 0; chan < numberOfChannels(); chan++)
@@ -2047,7 +2047,7 @@ void RecordingManager::enableHighPassFilterWithCornerFreq(float cornerFreq)
     {
         cornerFreq = 0.0f;
     }
-   
+
     _highCornerFreq = cornerFreq;
 
      for(int chan = 0; chan < numberOfChannels(); chan++)
@@ -2516,6 +2516,9 @@ int RecordingManager::getCurrentInputType()
             case ArduinoSerial::heart:
                 return INPUT_TYPE_HEARTSS;
                 break;
+            case ArduinoSerial::heartOneChannel:
+                return INPUT_TYPE_HEARTSS;
+                break;
             case ArduinoSerial::muscle:
                 return INPUT_TYPE_MUSCLESS;
                 break;
@@ -2607,6 +2610,9 @@ void RecordingManager::makeNewSerialAudioConfig(std::string nameOfThePort)
                 audioInputType =  INPUT_TYPE_PLANTSS;
                 break;
             case ArduinoSerial::heart:
+                audioInputType = INPUT_TYPE_HEARTSS;
+                break;
+            case ArduinoSerial::heartOneChannel:
                 audioInputType = INPUT_TYPE_HEARTSS;
                 break;
             case ArduinoSerial::muscle:

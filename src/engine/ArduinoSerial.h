@@ -58,7 +58,8 @@ namespace BackyardBrains {
             unknown = 0,
             muscle = 1,
             plant = 2,
-            heart = 3
+            heart = 3,
+            heartOneChannel = 4
         };
         struct SerialPort
         {

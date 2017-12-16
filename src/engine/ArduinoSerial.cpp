@@ -1017,15 +1017,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             #endif
              ArduinoSerial::openPortLock = false;
 
-
-
-
     }
-
-
-
-
-
 
 
     // Close the port
@@ -1590,7 +1582,14 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                     {
                         setDeviceTypeToCurrentPort(ArduinoSerial::heart);
                     }
-
+                    else
+                    {
+                        std::size_t found=hardwareType.find("HBLEOSB");//leonardo heart and brain with one channel only
+                        if (found!=std::string::npos)
+                        {
+                            setDeviceTypeToCurrentPort(ArduinoSerial::heartOneChannel);
+                        }
+                    }
                 }
             }
         }
