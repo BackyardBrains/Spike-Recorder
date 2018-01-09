@@ -5,7 +5,8 @@
 
 //BYB ones
 #define BYB_VID 0x2E73
-#define BYB_PID 0x1
+#define BYB_PID_MUSCLE_SB_PRO 0x1
+#define BYB_PID_NEURON_SB_PRO 0x2
 
 //debug ones
 //#define BYB_VID 0x2047
@@ -64,7 +65,7 @@ namespace BackyardBrains {
     {
         _manager = managerin;
         std::stringstream sstm;//variable for log
-        handle = hid_open(BYB_VID, BYB_PID, NULL);
+        handle = hid_open(BYB_VID, currentPID, NULL);
         if (!handle) {
              sstm << "Unable to open HID USB device. Please plug in the BackyardBrains USB device and try again.";
             errorString = sstm.str();
@@ -625,7 +626,7 @@ namespace BackyardBrains {
             #ifdef LOG_HID_SCANNING
             Log::msg("Before HID enumerate");
             #endif
-            devs = hid_enumerate(BYB_VID, BYB_PID);
+            devs = hid_enumerate(0, 0);//we can put BYB HID and VID here
             #ifdef LOG_HID_SCANNING
             Log::msg("After HID enumerate");
             #endif
@@ -634,8 +635,9 @@ namespace BackyardBrains {
             while (cur_dev) {
                 //check VID and PID
                 //std::cout<<"Check VID, check PID \n";
-                if((cur_dev->vendor_id == BYB_VID) && (cur_dev->product_id == BYB_PID))
+                if((cur_dev->vendor_id == BYB_VID) && (cur_dev->product_id == BYB_PID_MUSCLE_SB_PRO || cur_dev->product_id == BYB_PID_NEURON_SB_PRO))
                 {
+                    currentPID = cur_dev->product_id;
                 //     std::cout<<"HID while \n";
                      std::string nameOfHID((char *) cur_dev->product_string);
                    //  std::cout<<"Name took \n";
