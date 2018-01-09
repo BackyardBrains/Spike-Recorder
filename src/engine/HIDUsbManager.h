@@ -9,6 +9,9 @@
 #define HID_POWER_OFF 0
 #define HID_POWER_UNKNOWN -1
 
+#define HID_BOARD_TYPE_MUSCLE 1
+#define HID_BOARD_TYPE_NEURON 2
+
 #include <stdio.h>
 #include <wchar.h>
 #include <string.h>
@@ -61,7 +64,8 @@ class HIDUsbManager
         bool isRTRepeating();
         void swapRTRepeat();
         int powerRailIsState();//HID_POWER_ON, HID_POWER_OFF, HID_POWER_UNKNOWN
-
+        int availableBoardType();// info based on PID before connection
+    
         std::string firmwareVersion;
         std::string hardwareVersion;
         std::string hardwareType;

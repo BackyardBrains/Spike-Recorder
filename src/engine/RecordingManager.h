@@ -192,6 +192,7 @@ public:
     std::string currentHIDFirmwareVersion() {return _hidUsbManager.firmwareVersion;}
     std::string currentHIDFirmwareType() {return _hidUsbManager.hardwareType;}
     std::string currentHIDHardwareVersion() {return _hidUsbManager.hardwareVersion;}
+    int currentHIDBoardType();
 
     void saveGainForAudioInput(float newGain);
     void saveTimeScaleForAudioInput(float newTimeScale);

@@ -231,7 +231,12 @@ void RecordingManager::scanForHIDDevices()
 
 }
 
-
+int RecordingManager::currentHIDBoardType()
+{
+    return _hidUsbManager.availableBoardType();
+}
+    
+    
 void RecordingManager::scanUSBDevices()
 {
 

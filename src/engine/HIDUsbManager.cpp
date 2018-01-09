@@ -55,7 +55,23 @@ namespace BackyardBrains {
 
     }
 
-
+    //
+    // Return board type based on PID
+    //
+    int HIDUsbManager::availableBoardType()
+    {
+        switch (currentPID) {
+            case BYB_PID_MUSCLE_SB_PRO:
+                return HID_BOARD_TYPE_MUSCLE;
+                break;
+            case BYB_PID_NEURON_SB_PRO:
+                return HID_BOARD_TYPE_NEURON;
+                break;
+            default:
+                return HID_BOARD_TYPE_MUSCLE;
+                break;
+        }
+    }
 
 
     //
@@ -626,7 +642,7 @@ namespace BackyardBrains {
             #ifdef LOG_HID_SCANNING
             Log::msg("Before HID enumerate");
             #endif
-            devs = hid_enumerate(0, 0);//we can put BYB HID and VID here
+            devs = hid_enumerate(BYB_VID, BYB_PID_MUSCLE_SB_PRO);//we can put BYB HID and VID here
             #ifdef LOG_HID_SCANNING
             Log::msg("After HID enumerate");
             #endif
@@ -635,7 +651,7 @@ namespace BackyardBrains {
             while (cur_dev) {
                 //check VID and PID
                 //std::cout<<"Check VID, check PID \n";
-                if((cur_dev->vendor_id == BYB_VID) && (cur_dev->product_id == BYB_PID_MUSCLE_SB_PRO || cur_dev->product_id == BYB_PID_NEURON_SB_PRO))
+                if((cur_dev->vendor_id == BYB_VID) && (cur_dev->product_id == BYB_PID_MUSCLE_SB_PRO) )
                 {
                     currentPID = cur_dev->product_id;
                 //     std::cout<<"HID while \n";
@@ -652,6 +668,36 @@ namespace BackyardBrains {
                //  std::cout<<"Next device \n";
                 cur_dev = cur_dev->next;
             }
+            
+            devs = hid_enumerate(BYB_VID, BYB_PID_NEURON_SB_PRO);//we can put BYB HID and VID here
+            #ifdef LOG_HID_SCANNING
+            Log::msg("After HID enumerate");
+            #endif
+            // std::cout<<"HID After scan \n";
+            cur_dev = devs;
+            while (cur_dev) {
+                //check VID and PID
+                //std::cout<<"Check VID, check PID \n";
+                if((cur_dev->vendor_id == BYB_VID) && (cur_dev->product_id == BYB_PID_NEURON_SB_PRO))
+                {
+                    currentPID = cur_dev->product_id;
+                    //     std::cout<<"HID while \n";
+                    std::string nameOfHID((char *) cur_dev->product_string);
+                    //  std::cout<<"Name took \n";
+                    Log::msg("Found our HID push it");
+                    list.push_back(nameOfHID);
+                    //  std::cout<<"HID name added to list \n";
+                    //   std::cout<<"HID device: "<<cur_dev->vendor_id<<", "<<cur_dev->product_string<<"\n";
+                    
+                    
+                    
+                }
+                //  std::cout<<"Next device \n";
+                cur_dev = cur_dev->next;
+            }
+            
+            
+            
            //  std::cout<<"Free enumeration \n";
             #ifdef LOG_HID_SCANNING
             Log::msg("Before HID free enumeration");

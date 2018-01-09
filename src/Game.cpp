@@ -82,9 +82,13 @@ void Game::loadResources() {
     Widgets::TextureGL::load("data/bupdate.bmp");
     Widgets::TextureGL::load("data/bupdate-high.bmp");
 
-    Widgets::TextureGL::load("data/usbcon.bmp");
-    Widgets::TextureGL::load("data/usbconhigh.bmp");
-    Widgets::TextureGL::load("data/usbdiscon.bmp");
+    Widgets::TextureGL::load("data/neuronprocon.bmp");
+    Widgets::TextureGL::load("data/neuronproconhigh.bmp");
+    Widgets::TextureGL::load("data/neuronprodiscon.bmp");
+    
+    Widgets::TextureGL::load("data/emgprocon.bmp");
+    Widgets::TextureGL::load("data/emgproconhigh.bmp");
+    Widgets::TextureGL::load("data/emgprodiscon.bmp");
 
     Widgets::TextureGL::load("data/plantcon.bmp");
     Widgets::TextureGL::load("data/plantconhigh.bmp");
