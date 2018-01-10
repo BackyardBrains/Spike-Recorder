@@ -13,6 +13,7 @@
 #define BYB_PID 0x3e0
 #define BYB_PID_MUSCLE_SB_PRO 0x3e0
 #define BYB_PID_NEURON_SB_PRO 0x3e0
+*/
 //----------end of DEBUG TI VID and PID --------------------
 #define SIZE_OF_MAIN_CIRCULAR_BUFFER 40000
 
