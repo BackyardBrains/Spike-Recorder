@@ -89,6 +89,7 @@ class HIDUsbManager
         bool checkIfHaveWholeFrame();
         void readThread(HIDUsbManager * ref);
         bool _deviceConnected;
+        bool prepareForDisconnect;
         int currentAddOnBoard;
         bool _rtReapeating;
         bool restartDevice;
@@ -104,6 +105,7 @@ class HIDUsbManager
         unsigned int escapeSequence[ESCAPE_SEQUENCE_LENGTH];
         unsigned int endOfescapeSequence[ESCAPE_SEQUENCE_LENGTH];
         unsigned int tempHeadAndTailDifference;//used for precise events reference
+        void enumerateDevicesForVIDAndPID(int invid, int inpid);
 
     private:
 }; //class end

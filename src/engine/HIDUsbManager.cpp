@@ -32,7 +32,7 @@ namespace BackyardBrains {
     {
 
         _deviceConnected = false;
-
+        prepareForDisconnect = false;
         escapeSequence[0] = 255;
         escapeSequence[1] = 255;
         escapeSequence[2] = 1;
@@ -356,7 +356,7 @@ namespace BackyardBrains {
        // int k = 0;
 
         tempHeadAndTailDifference-=SIZE_OF_MAIN_CIRCULAR_BUFFER;
-        while (ref->_deviceConnected) {
+        while (ref->prepareForDisconnect==false) {
 
             try{
                 numberOfFrames = ref->readOneBatch(buffer);
@@ -376,7 +376,7 @@ namespace BackyardBrains {
 
             if(numberOfFrames == -1)
             {
-                ref->_deviceConnected = false;
+                ref->prepareForDisconnect = true;
             }
             //std::cout<<numberOfFrames<<"-";
             for(int i=0;i<numberOfFrames;i++)
@@ -409,9 +409,10 @@ namespace BackyardBrains {
             }
         }
         //realy disconnect from device here
-        if(!_deviceConnected)
+        if(prepareForDisconnect)
         {
             ref->stopDevice();
+            
             try {
                 hid_close(ref->handle);
             }
@@ -425,7 +426,8 @@ namespace BackyardBrains {
                 std::cout<<"Error while closing devices";
                 //hid_free_enumeration(devs);
             }
-
+            prepareForDisconnect = false;
+            _deviceConnected = false;
             ref->handle = NULL;
             currentAddOnBoard = 0;
         }
@@ -448,7 +450,8 @@ namespace BackyardBrains {
 
 
         try {
-            size = hid_read(handle, buffer, sizeof(buffer));
+            //size = hid_read(handle, buffer, sizeof(buffer));
+            size = hid_read_timeout(handle, buffer, sizeof(buffer), 100);
         }
         catch(std::exception &e)
         {
@@ -625,62 +628,51 @@ namespace BackyardBrains {
     //
     void HIDUsbManager::getAllDevicesList()
     {
-        #ifdef LOG_HID_SCANNING
+        if(!_deviceConnected)
+        {
+            list.clear();
+            enumerateDevicesForVIDAndPID(BYB_VID, BYB_PID_MUSCLE_SB_PRO);
+            enumerateDevicesForVIDAndPID(BYB_VID, BYB_PID_NEURON_SB_PRO);
+        }
+    }
+
+    
+    void HIDUsbManager::enumerateDevicesForVIDAndPID(int invid, int inpid)
+    {
+        
+#ifdef LOG_HID_SCANNING
         Log::msg("getAllDevicesList");
-        #endif
+#endif
         try
         {
             if((!_deviceConnected) )
             {
-               // std::cout<<"Call HID exit... \n";
-                #ifdef LOG_HID_SCANNING
+                // std::cout<<"Call HID exit... \n";
+#ifdef LOG_HID_SCANNING
                 Log::msg("Call HID exit... ");
-                #endif
+#endif
                 hid_exit();
             }
-            list.clear();
+            
             struct hid_device_info *devs, *cur_dev;
             //std::cout<<"Scan for HID devices... \n";
-            #ifdef LOG_HID_SCANNING
+#ifdef LOG_HID_SCANNING
             Log::msg("Before HID enumerate");
-            #endif
-            devs = hid_enumerate(BYB_VID, BYB_PID_MUSCLE_SB_PRO);//we can put BYB HID and VID here
-            #ifdef LOG_HID_SCANNING
+#endif
+            devs = hid_enumerate(invid, inpid);//we can put BYB HID and VID here
+#ifdef LOG_HID_SCANNING
             Log::msg("After HID enumerate");
-            #endif
-           // std::cout<<"HID After scan \n";
-            cur_dev = devs;
-            while (cur_dev) {
-                //check VID and PID
-                //std::cout<<"Check VID, check PID \n";
-                if((cur_dev->vendor_id == BYB_VID) && (cur_dev->product_id == BYB_PID_MUSCLE_SB_PRO) )
-                {
-                    currentPID = cur_dev->product_id;
-                //     std::cout<<"HID while \n";
-                     std::string nameOfHID((char *) cur_dev->product_string);
-                   //  std::cout<<"Name took \n";
-                    Log::msg("Found our HID push it");
-                     list.push_back(nameOfHID);
-                   //  std::cout<<"HID name added to list \n";
-                  //   std::cout<<"HID device: "<<cur_dev->vendor_id<<", "<<cur_dev->product_string<<"\n";
-
-
-
-                }
-               //  std::cout<<"Next device \n";
-                cur_dev = cur_dev->next;
-            }
-            
-            devs = hid_enumerate(BYB_VID, BYB_PID_NEURON_SB_PRO);//we can put BYB HID and VID here
-            #ifdef LOG_HID_SCANNING
-            Log::msg("After HID enumerate");
-            #endif
+#endif
             // std::cout<<"HID After scan \n";
             cur_dev = devs;
             while (cur_dev) {
                 //check VID and PID
                 //std::cout<<"Check VID, check PID \n";
-                if((cur_dev->vendor_id == BYB_VID) && (cur_dev->product_id == BYB_PID_NEURON_SB_PRO))
+                if(list.size()>0)
+                {
+                    break;
+                }
+                if((cur_dev->vendor_id == invid) && (cur_dev->product_id == inpid) )
                 {
                     currentPID = cur_dev->product_id;
                     //     std::cout<<"HID while \n";
@@ -698,22 +690,20 @@ namespace BackyardBrains {
                 cur_dev = cur_dev->next;
             }
             
-            
-            
-           //  std::cout<<"Free enumeration \n";
-            #ifdef LOG_HID_SCANNING
+            //  std::cout<<"Free enumeration \n";
+#ifdef LOG_HID_SCANNING
             Log::msg("Before HID free enumeration");
-            #endif
+#endif
             hid_free_enumeration(devs);
-            #ifdef LOG_HID_SCANNING
+#ifdef LOG_HID_SCANNING
             Log::msg("After HID free enumeration");
-            #endif
+#endif
         }
         catch(std::exception &e)
         {
             Log::error("Error while scanning VID/PID of devices 2: %s", e.what());
             std::cout<<"Error while scanning VID/PID of devices 2: "<<e.what();
-           // hid_free_enumeration(devs);
+            // hid_free_enumeration(devs);
         }
         catch(...)
         {
@@ -721,8 +711,14 @@ namespace BackyardBrains {
             std::cout<<"Error while scanning VID/PID of devices";
             //hid_free_enumeration(devs);
         }
+        
     }
-
+    
+    
+    
+    
+    
+    
     //
     // Close connection with HID device
     // This close connection just logicaly (puts flag _deviceConnected to false)
@@ -734,11 +730,8 @@ namespace BackyardBrains {
     {
         if(handle && _deviceConnected)
         {
-            _deviceConnected = false;
+            prepareForDisconnect = true;
             _powerRailState = -1;
-            //hid_close(handle);
-            //handle = NULL;
-            //_deviceConnected = false;
         }
     }
 
