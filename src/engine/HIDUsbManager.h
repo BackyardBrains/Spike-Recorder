@@ -9,8 +9,12 @@
 #define HID_POWER_OFF 0
 #define HID_POWER_UNKNOWN -1
 
-#define HID_BOARD_TYPE_MUSCLE 1
-#define HID_BOARD_TYPE_NEURON 2
+typedef enum
+{
+    HID_BOARD_TYPE_NONE,
+    HID_BOARD_TYPE_MUSCLE,
+    HID_BOARD_TYPE_NEURON
+} HIDBoardType;
 
 #include <stdio.h>
 #include <wchar.h>
@@ -34,44 +38,64 @@
 
 namespace BackyardBrains {
 class RecordingManager;
+    
+    typedef struct HIDManagerDevice {
+        
+        HIDBoardType deviceType;
+        std::string devicePath;
+        std::string serialNumber;
+        
+    }HIDManagerDevice;
+    
+    
 class HIDUsbManager
 {
     public:
         HIDUsbManager();
-        int openDevice(RecordingManager * managerin);
-        int readDevice(int32_t * obuffer);
-        std::list<std::string> list;
+    
+        // scan
         void getAllDevicesList();
+        std::list<HIDManagerDevice> list;
+        int isBoardTypeAvailable(HIDBoardType bt);
+    
+        // open / close
+        int openDevice(RecordingManager * managerin, HIDBoardType hidBoardType);
         void closeDevice();
+    
+        //read device
+        int readDevice(int32_t * obuffer);
+        int readOneBatch(int32_t * obuffer);
         void askForCapabilities();
         void askForMaximumRatings();
         void askForStateOfPowerRail();
         void askForBoard();
         void askForRTRepeat();
-        void setNumberOfChannelsAndSamplingRate(int numberOfChannels, int samplingRate);
+
+    
+        //write to device
         int writeToDevice(const unsigned char *ptr, size_t len);
+        void setNumberOfChannelsAndSamplingRate(int numberOfChannels, int samplingRate);
+        void stopDevice();
+        void putInFirmwareUpdateMode();
+    
+        //properties and state
+        int currentlyConnectedHIDBoardType();
         int maxSamplingRate();
         int maxNumberOfChannels();
         int numberOfChannels();
-        const char * currentDeviceName();
         std::string errorString;
         bool deviceOpened();
-        int readOneBatch(int32_t * obuffer);
         int32_t *mainCircularBuffer;
-        void stopDevice();
-        void putInFirmwareUpdateMode();
         int addOnBoardPressent();
         bool isRTRepeating();
         void swapRTRepeat();
         int powerRailIsState();//HID_POWER_ON, HID_POWER_OFF, HID_POWER_UNKNOWN
-        int availableBoardType();// info based on PID before connection
-    
         std::string firmwareVersion;
         std::string hardwareVersion;
         std::string hardwareType;
     protected:
+    
         void startDevice();
-
         RecordingManager *_manager;
         char circularBuffer[SIZE_OF_CIRC_BUFFER];
         std::thread t1;
@@ -94,7 +118,7 @@ class HIDUsbManager
         bool _rtReapeating;
         bool restartDevice;
         int maxSamples;
-        int currentPID;
+        int currentConnectedDevicePID;
         void testEscapeSequence(unsigned int newByte, int offset);
         void executeOneMessage(std::string typeOfMessage, std::string valueOfMessage, int offsetin);
         void executeContentOfMessageBuffer(int offset);

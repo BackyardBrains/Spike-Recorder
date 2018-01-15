@@ -67,25 +67,23 @@ MainView::MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder
 
 	_analysisButton->setVisible(false);
 
-	_usbButton = new Widgets::PushButton(this);
+	_muscleHIDButton = new Widgets::PushButton(this);
+    _muscleHIDButton->setNormalTex(Widgets::TextureGL::get("data/emgprocon.bmp"));
+    _muscleHIDButton->setHoverTex(Widgets::TextureGL::get("data/emgproconhigh.bmp"));
+    _muscleHIDButton->clicked.connect(this, &MainView::muscleHIDPressed);
+	_muscleHIDButton->setVisible(false);
+	_muscleHIDButton->setRightPadding(5);
+	_muscleHIDButton->setSizeHint(Widgets::Size(0,0));
     
-    if(_manager.currentHIDBoardType()==HID_BOARD_TYPE_MUSCLE)
-    {
-        _usbButton->setNormalTex(Widgets::TextureGL::get("data/emgprocon.bmp"));
-        _usbButton->setHoverTex(Widgets::TextureGL::get("data/emgproconhigh.bmp"));
-    }
-    else
-    {
-        _usbButton->setNormalTex(Widgets::TextureGL::get("data/neuronprocon.bmp"));
-        _usbButton->setHoverTex(Widgets::TextureGL::get("data/neuronproconhigh.bmp"));
-    }
-
     
-    _usbButton->clicked.connect(this, &MainView::usbPressed);
-	_usbButton->setVisible(false);
-	_usbButton->setRightPadding(5);
-	_usbButton->setSizeHint(Widgets::Size(0,0));
-
+    _neuronHIDButton = new Widgets::PushButton(this);
+    _neuronHIDButton->setNormalTex(Widgets::TextureGL::get("data/neuronprocon.bmp"));
+    _neuronHIDButton->setHoverTex(Widgets::TextureGL::get("data/neuronproconhigh.bmp"));
+    _neuronHIDButton->clicked.connect(this, &MainView::neuronHIDPressed);
+    _neuronHIDButton->setVisible(false);
+    _neuronHIDButton->setRightPadding(5);
+    _neuronHIDButton->setSizeHint(Widgets::Size(0,0));
+    
 
 	_recordButton = new Widgets::PushButton(this);
 	_recordButton->setNormalTex(Widgets::TextureGL::get("data/rec.bmp"));
@@ -159,7 +157,8 @@ MainView::MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder
 	//topBar->addSpacing(5);
 	topBar->addWidget(_fftButton);
     //topBar->addSpacing(5);
-    topBar->addWidget(_usbButton);
+    topBar->addWidget(_muscleHIDButton);
+    topBar->addWidget(_neuronHIDButton);
 
 
     shieldsButtonBoxLayout = new Widgets::BoxLayout(Widgets::Horizontal);
@@ -515,16 +514,11 @@ void MainView::analysisPressed() {
         if(_manager.hidMode())
         {
             _manager.disconnectFromHID();
-            if(_manager.currentHIDBoardType()==HID_BOARD_TYPE_MUSCLE)
-            {
-                _usbButton->setNormalTex(Widgets::TextureGL::get("data/emgprocon.bmp"));
-                _usbButton->setHoverTex(Widgets::TextureGL::get("data/emgproconhigh.bmp"));
-            }
-            else
-            {
-                _usbButton->setNormalTex(Widgets::TextureGL::get("data/neuronprocon.bmp"));
-                _usbButton->setHoverTex(Widgets::TextureGL::get("data/neuronproconhigh.bmp"));
-            }
+            _muscleHIDButton->setNormalTex(Widgets::TextureGL::get("data/emgprocon.bmp"));
+            _muscleHIDButton->setHoverTex(Widgets::TextureGL::get("data/emgproconhigh.bmp"));
+            _neuronHIDButton->setNormalTex(Widgets::TextureGL::get("data/neuronprocon.bmp"));
+            _neuronHIDButton->setHoverTex(Widgets::TextureGL::get("data/neuronproconhigh.bmp"));
+            
         }
 
         // end file mode when in file mode
@@ -591,16 +585,11 @@ void MainView::analysisPressed() {
         if(_manager.hidMode())
         {
             _manager.disconnectFromHID();
-            if(_manager.currentHIDBoardType()==HID_BOARD_TYPE_MUSCLE)
-            {
-                _usbButton->setNormalTex(Widgets::TextureGL::get("data/emgprocon.bmp"));
-                _usbButton->setHoverTex(Widgets::TextureGL::get("data/emgproconhigh.bmp"));
-            }
-            else
-            {
-                _usbButton->setNormalTex(Widgets::TextureGL::get("data/neuronprocon.bmp"));
-                _usbButton->setHoverTex(Widgets::TextureGL::get("data/neuronproconhigh.bmp"));
-            }
+            _muscleHIDButton->setNormalTex(Widgets::TextureGL::get("data/emgprocon.bmp"));
+            _muscleHIDButton->setHoverTex(Widgets::TextureGL::get("data/emgproconhigh.bmp"));
+            _neuronHIDButton->setNormalTex(Widgets::TextureGL::get("data/neuronprocon.bmp"));
+            _neuronHIDButton->setHoverTex(Widgets::TextureGL::get("data/neuronproconhigh.bmp"));
+            
 
         }
         if(_manager.serialMode())
@@ -678,28 +667,29 @@ void MainView::analysisPressed() {
 
     }
 
-void MainView::usbPressed()
+void MainView::muscleHIDPressed()
 {
     //connect/diconnect
 
-    if(_manager.hidMode())
+    if(_manager.hidMode() && (_manager.currentlyConnectedHIDBoardType() == HID_BOARD_TYPE_MUSCLE))
     {
-        // _manager.setSerialNumberOfChannels(1);
         _manager.disconnectFromHID();
-        if(_manager.currentHIDBoardType()==HID_BOARD_TYPE_MUSCLE)
-        {
-            _usbButton->setNormalTex(Widgets::TextureGL::get("data/emgprocon.bmp"));
-            _usbButton->setHoverTex(Widgets::TextureGL::get("data/emgproconhigh.bmp"));
-        }
-        else
-        {
-            _usbButton->setNormalTex(Widgets::TextureGL::get("data/neuronprocon.bmp"));
-            _usbButton->setHoverTex(Widgets::TextureGL::get("data/neuronproconhigh.bmp"));
-        }
-
+        _muscleHIDButton->setNormalTex(Widgets::TextureGL::get("data/emgprocon.bmp"));
+        _muscleHIDButton->setHoverTex(Widgets::TextureGL::get("data/emgproconhigh.bmp"));
     }
     else
     {
+        if(_manager.hidMode() && (_manager.currentlyConnectedHIDBoardType() == HID_BOARD_TYPE_NEURON))
+        {
+            _manager.disconnectFromHID();
+            _neuronHIDButton->setNormalTex(Widgets::TextureGL::get("data/neuronprocon.bmp"));
+            _neuronHIDButton->setHoverTex(Widgets::TextureGL::get("data/neuronproconhigh.bmp"));
+            while(_manager.currentlyConnectedHIDBoardType() != HID_BOARD_TYPE_NONE)
+            {
+                
+            }
+        }
+
         if(_manager.serialMode())
         {
             _manager.setSerialNumberOfChannels(1);
@@ -716,37 +706,93 @@ void MainView::usbPressed()
             _audioView->setOffset(0);
         }
 
-
-
         if(_manager.paused())
         {
             _manager.setPaused(false);
         }
 
-        if(!_manager.initHIDUSB())
+        if(!_manager.initHIDUSB(HID_BOARD_TYPE_MUSCLE))
         {
-            std::cout<<"Can't open HID device. \n";
+            std::cout<<"Can't open HID Muscle device. \n";
 
 
             Widgets::ErrorBox *box = new Widgets::ErrorBox(_manager.hidError.c_str());
             box->setGeometry(Widgets::Rect(this->width()/2-250, this->height()/2-40, 500, 80));
             Widgets::Application::getInstance()->addPopup(box);
         }
-        if(_manager.currentHIDBoardType()==HID_BOARD_TYPE_MUSCLE)
+        if(_manager.currentlyConnectedHIDBoardType()==HID_BOARD_TYPE_MUSCLE)
         {
-            _usbButton->setNormalTex(Widgets::TextureGL::get("data/emgprodiscon.bmp"));
-            _usbButton->setHoverTex(Widgets::TextureGL::get("data/emgprodiscon.bmp"));
+            _muscleHIDButton->setNormalTex(Widgets::TextureGL::get("data/emgprodiscon.bmp"));
+            _muscleHIDButton->setHoverTex(Widgets::TextureGL::get("data/emgprodiscon.bmp"));
         }
-        else
-        {
-            _usbButton->setNormalTex(Widgets::TextureGL::get("data/neuronprodiscon.bmp"));
-            _usbButton->setHoverTex(Widgets::TextureGL::get("data/neuronprodiscon.bmp"));
-        }
+       
 
     }
 
 }
 
+void MainView::neuronHIDPressed()
+{
+    //connect/diconnect
+    
+    if(_manager.hidMode() && (_manager.currentlyConnectedHIDBoardType() == HID_BOARD_TYPE_NEURON))
+    {
+        _manager.disconnectFromHID();
+        _neuronHIDButton->setNormalTex(Widgets::TextureGL::get("data/neuronprocon.bmp"));
+        _neuronHIDButton->setHoverTex(Widgets::TextureGL::get("data/neuronproconhigh.bmp"));
+    }
+    else
+    {
+        if(_manager.hidMode() && (_manager.currentlyConnectedHIDBoardType() == HID_BOARD_TYPE_MUSCLE))
+        {
+            _manager.disconnectFromHID();
+            _muscleHIDButton->setNormalTex(Widgets::TextureGL::get("data/emgprocon.bmp"));
+            _muscleHIDButton->setHoverTex(Widgets::TextureGL::get("data/emgproconhigh.bmp"));
+            while(_manager.currentlyConnectedHIDBoardType() != HID_BOARD_TYPE_NONE)
+            {
+                
+            }
+        }
+        
+        if(_manager.serialMode())
+        {
+            _manager.setSerialNumberOfChannels(1);
+            _manager.disconnectFromSerial();
+        }
+        
+        if(_manager.fileMode()) { // end file mode when in file mode
+            //delete _anaView;
+            _manager.initRecordingDevices();
+            _recordButton->setVisible(true);
+            _analysisButton->setVisible(false);
+            _anaView = NULL;
+        } else {
+            _audioView->setOffset(0);
+        }
+        
+        if(_manager.paused())
+        {
+            _manager.setPaused(false);
+        }
+        
+        if(!_manager.initHIDUSB(HID_BOARD_TYPE_NEURON))
+        {
+            std::cout<<"Can't open HID Muscle device. \n";
+            
+            
+            Widgets::ErrorBox *box = new Widgets::ErrorBox(_manager.hidError.c_str());
+            box->setGeometry(Widgets::Rect(this->width()/2-250, this->height()/2-40, 500, 80));
+            Widgets::Application::getInstance()->addPopup(box);
+        }
+        if(_manager.currentlyConnectedHIDBoardType()==HID_BOARD_TYPE_NEURON)
+        {
+            _neuronHIDButton->setNormalTex(Widgets::TextureGL::get("data/neuronprodiscon.bmp"));
+            _neuronHIDButton->setHoverTex(Widgets::TextureGL::get("data/neuronprodiscon.bmp"));
+        }
+        
+        
+    }
+}
 //
 // Draws time label (current time and file length) when in file mode
 // must be here and not in audio view since audio view shrinks when FFT is opened
@@ -868,18 +914,28 @@ void MainView::paintEvent()
         _manager.shouldStartFirmwareUpdatePresentation = false;
     }
     #endif
-    if(_manager.hidDevicePresent())
+    if(_manager.isHIDBoardTypeAvailable(HID_BOARD_TYPE_MUSCLE))
     {
-        //_usbButton->setSizeHint(Widgets::Size(48,48));
-        _usbButton->setSizeHint(Widgets::Size(53,48));
-        _usbButton->setVisible(true);
+        _muscleHIDButton->setSizeHint(Widgets::Size(53,48));
+        _muscleHIDButton->setVisible(true);
         Widgets::Application::getInstance()->updateLayout();
-
     }
     else
     {
-        _usbButton->setVisible(false);
-        _usbButton->setSizeHint(Widgets::Size(0,0));
+        _muscleHIDButton->setVisible(false);
+        _muscleHIDButton->setSizeHint(Widgets::Size(0,0));
+    }
+    
+    if(_manager.isHIDBoardTypeAvailable(HID_BOARD_TYPE_NEURON))
+    {
+        _neuronHIDButton->setSizeHint(Widgets::Size(53,48));
+        _neuronHIDButton->setVisible(true);
+        Widgets::Application::getInstance()->updateLayout();
+    }
+    else
+    {
+        _neuronHIDButton->setVisible(false);
+        _neuronHIDButton->setSizeHint(Widgets::Size(0,0));
     }
 
 
@@ -1289,35 +1345,30 @@ void MainView::paintEvent()
     {
         
         
-        if(_manager.currentHIDBoardType()==HID_BOARD_TYPE_MUSCLE)
+        if(_manager.currentlyConnectedHIDBoardType()==HID_BOARD_TYPE_MUSCLE)
         {
-            _usbButton->setNormalTex(Widgets::TextureGL::get("data/emgprodiscon.bmp"));
-            _usbButton->setHoverTex(Widgets::TextureGL::get("data/emgprodiscon.bmp"));
+            _muscleHIDButton->setNormalTex(Widgets::TextureGL::get("data/emgprodiscon.bmp"));
+            _muscleHIDButton->setHoverTex(Widgets::TextureGL::get("data/emgprodiscon.bmp"));
+            _muscleHIDButton->setSizeHint(Widgets::Size(53,48));
+            _muscleHIDButton->setVisible(true);
         }
         else
         {
-            _usbButton->setNormalTex(Widgets::TextureGL::get("data/neuronprodiscon.bmp"));
-            _usbButton->setHoverTex(Widgets::TextureGL::get("data/neuronprodiscon.bmp"));
+            _neuronHIDButton->setNormalTex(Widgets::TextureGL::get("data/neuronprodiscon.bmp"));
+            _neuronHIDButton->setHoverTex(Widgets::TextureGL::get("data/neuronprodiscon.bmp"));
+            _neuronHIDButton->setSizeHint(Widgets::Size(53,48));
+            _neuronHIDButton->setVisible(true);
         }
-
-        _usbButton->setSizeHint(Widgets::Size(53,48));
-        //_usbButton->setSizeHint(Widgets::Size(48,48));
-        _usbButton->setVisible(true);
         Widgets::Application::getInstance()->updateLayout();
+        
 
     }
     else
     {
-        if(_manager.currentHIDBoardType()==HID_BOARD_TYPE_MUSCLE)
-        {
-            _usbButton->setNormalTex(Widgets::TextureGL::get("data/emgprocon.bmp"));
-            _usbButton->setHoverTex(Widgets::TextureGL::get("data/emgproconhigh.bmp"));
-        }
-        else
-        {
-            _usbButton->setNormalTex(Widgets::TextureGL::get("data/neuronprocon.bmp"));
-            _usbButton->setHoverTex(Widgets::TextureGL::get("data/neuronproconhigh.bmp"));
-        }
+        _muscleHIDButton->setNormalTex(Widgets::TextureGL::get("data/emgprocon.bmp"));
+        _muscleHIDButton->setHoverTex(Widgets::TextureGL::get("data/emgproconhigh.bmp"));
+        _neuronHIDButton->setNormalTex(Widgets::TextureGL::get("data/neuronprocon.bmp"));
+        _neuronHIDButton->setHoverTex(Widgets::TextureGL::get("data/neuronproconhigh.bmp"));
     }
 
     if(_manager.fileMode())

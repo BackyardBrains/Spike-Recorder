@@ -33,6 +33,7 @@ namespace BackyardBrains {
 
         _deviceConnected = false;
         prepareForDisconnect = false;
+        currentConnectedDevicePID = HID_BOARD_TYPE_NONE;
         escapeSequence[0] = 255;
         escapeSequence[1] = 255;
         escapeSequence[2] = 1;
@@ -57,40 +58,30 @@ namespace BackyardBrains {
 
     }
 
-    //
-    // Return board type based on PID
-    //
-    int HIDUsbManager::availableBoardType()
-    {
-        switch (currentPID) {
-            case BYB_PID_MUSCLE_SB_PRO:
-                return HID_BOARD_TYPE_MUSCLE;
-                break;
-            case BYB_PID_NEURON_SB_PRO:
-                return HID_BOARD_TYPE_NEURON;
-                break;
-            default:
-                return HID_BOARD_TYPE_MUSCLE;
-                break;
-        }
-    }
-
 
     //
     // Open USB connection to BYB device based on PID and VID
     //
-    int HIDUsbManager::openDevice(RecordingManager * managerin)
+    int HIDUsbManager::openDevice(RecordingManager * managerin, HIDBoardType hidBoardType)
     {
         _manager = managerin;
         std::stringstream sstm;//variable for log
-        handle = hid_open(BYB_VID, currentPID, NULL);
+        
+        if(hidBoardType == HID_BOARD_TYPE_MUSCLE)
+        {
+            handle = hid_open(BYB_VID, BYB_PID_MUSCLE_SB_PRO, NULL);
+        }
+        else if(hidBoardType == HID_BOARD_TYPE_NEURON)
+        {
+            handle = hid_open(BYB_VID, BYB_PID_NEURON_SB_PRO, NULL);
+        }
         if (!handle) {
              sstm << "Unable to open HID USB device. Please plug in the BackyardBrains USB device and try again.";
             errorString = sstm.str();
             std::cout<<"unable to open HID device.\n";
             return -1;
         }
-
+        currentConnectedDevicePID = hidBoardType;
         std::cout<<"Success. HID device connected\n";
 
         circularBuffer[0] = '\n';
@@ -428,6 +419,7 @@ namespace BackyardBrains {
             }
             prepareForDisconnect = false;
             _deviceConnected = false;
+             currentConnectedDevicePID = HID_BOARD_TYPE_NONE;
             ref->handle = NULL;
             currentAddOnBoard = 0;
         }
@@ -628,12 +620,9 @@ namespace BackyardBrains {
     //
     void HIDUsbManager::getAllDevicesList()
     {
-        if(!_deviceConnected)
-        {
             list.clear();
             enumerateDevicesForVIDAndPID(BYB_VID, BYB_PID_MUSCLE_SB_PRO);
             enumerateDevicesForVIDAndPID(BYB_VID, BYB_PID_NEURON_SB_PRO);
-        }
     }
 
     
@@ -668,18 +657,36 @@ namespace BackyardBrains {
             while (cur_dev) {
                 //check VID and PID
                 //std::cout<<"Check VID, check PID \n";
-                if(list.size()>0)
-                {
-                    break;
-                }
+               
                 if((cur_dev->vendor_id == invid) && (cur_dev->product_id == inpid) )
                 {
-                    currentPID = cur_dev->product_id;
+                    HIDManagerDevice newDevice;
+                    
+                    int sizeOfPath = (int)strlen(cur_dev->path);
+                    newDevice.devicePath.assign(cur_dev->path, sizeOfPath);
+                    
+                    
+                    std::wstring wsn(cur_dev->serial_number);
+                    // your new String
+                    std::string strsn(wsn.begin(), wsn.end());
+                    newDevice.serialNumber.assign(strsn);
+                    if(cur_dev->product_id == BYB_PID_NEURON_SB_PRO)
+                    {
+                        newDevice.deviceType = HID_BOARD_TYPE_NEURON;
+                    }else if(cur_dev->product_id == BYB_PID_MUSCLE_SB_PRO)
+                    {
+                        newDevice.deviceType = HID_BOARD_TYPE_MUSCLE;
+                    }
+                    else
+                    {
+                        newDevice.deviceType = HID_BOARD_TYPE_MUSCLE;
+                    }
+                    
                     //     std::cout<<"HID while \n";
                     std::string nameOfHID((char *) cur_dev->product_string);
                     //  std::cout<<"Name took \n";
                     Log::msg("Found our HID push it");
-                    list.push_back(nameOfHID);
+                    list.push_back(newDevice);
                     //  std::cout<<"HID name added to list \n";
                     //   std::cout<<"HID device: "<<cur_dev->vendor_id<<", "<<cur_dev->product_string<<"\n";
                     
@@ -714,10 +721,27 @@ namespace BackyardBrains {
         
     }
     
+    int HIDUsbManager::isBoardTypeAvailable(HIDBoardType bt)
+    {
+        std::list<HIDManagerDevice>::iterator HIDListIt;
+
+        for( HIDListIt = list.begin(); // not listMyClass.begin()
+            HIDListIt != list.end(); // not listMyClass.end()
+            HIDListIt ++)
+        {
+            if(HIDListIt->deviceType == bt)
+            {
+                return true;
+                
+            }
+        }
+        return false;
+    }
     
-    
-    
-    
+    int HIDUsbManager::currentlyConnectedHIDBoardType()
+    {
+        return currentConnectedDevicePID;
+    }
     
     //
     // Close connection with HID device
@@ -733,6 +757,7 @@ namespace BackyardBrains {
             prepareForDisconnect = true;
             _powerRailState = -1;
         }
+       // currentConnectedDevicePID = HID_BOARD_TYPE_NONE;
     }
 
     //
@@ -895,13 +920,7 @@ namespace BackyardBrains {
         return _numberOfChannels;
     }
 
-    //
-    // Selected device name
-    //
-    const char * HIDUsbManager::currentDeviceName()
-    {
-        return "Spike Recorder USB HID";
-    }
+
 
     //
     //Flag that is true when HID device is connected

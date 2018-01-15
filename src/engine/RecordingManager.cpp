@@ -98,13 +98,13 @@ void RecordingManager::reloadHID()
     _HIDShouldBeReloaded = true;
 }
 
-bool RecordingManager::initHIDUSB()
+bool RecordingManager::initHIDUSB(HIDBoardType deviceType)
 {
     std::cout<<"Init HID\n";
     saveInputConfigSettings();
     if(!_hidUsbManager.deviceOpened())
     {
-        if(_hidUsbManager.openDevice(this) == -1)
+        if(_hidUsbManager.openDevice(this, deviceType) == -1)
         {
             _hidMode = false;
             hidError = _hidUsbManager.errorString;
@@ -196,25 +196,12 @@ void RecordingManager::closeHid()
     _hidMode = false;
 }
 
-void RecordingManager::setHIDNumberOfChannels(int numberOfChannels)
-{
-    std::cout<<"Number of channels on HID USB: "<<numberOfChannels<<"\n";
-    _numOfHidChannels = numberOfChannels;
-    _hidUsbManager.setNumberOfChannelsAndSamplingRate(numberOfChannels, _hidUsbManager.maxSamplingRate());
-    initHIDUSB();
-}
-
 int RecordingManager::numberOfHIDChannels()
 {
     return _numOfHidChannels;
 }
 
-bool RecordingManager::hidDevicePresent()
-{
 
-    return _hidDevicePresent;
-
-}
 
 void RecordingManager::scanForHIDDevices()
 {
@@ -231,9 +218,14 @@ void RecordingManager::scanForHIDDevices()
 
 }
 
-int RecordingManager::currentHIDBoardType()
+bool RecordingManager::isHIDBoardTypeAvailable(HIDBoardType hd)
 {
-    return _hidUsbManager.availableBoardType();
+    return _hidUsbManager.isBoardTypeAvailable(hd);
+}
+    
+int RecordingManager::currentlyConnectedHIDBoardType()
+{
+    return _hidUsbManager.currentlyConnectedHIDBoardType();
 }
     
     
@@ -249,13 +241,7 @@ void RecordingManager::scanUSBDevices()
         //Log::msg("Scanning for HID");
 
         scanForHIDDevices();
-        if((_hidDevicePresent = (_hidUsbManager.list.size()>0)))
-        {
-                std::cout<<"USB Present ...\n";
-        }
     }
-
-
 }
 
 
@@ -1547,7 +1533,6 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 
     if(!_hidUsbManager.deviceOpened())
     {
-        _hidDevicePresent = false;
         disconnectFromHID();
         scanForHIDDevices();
     }
@@ -1754,7 +1739,7 @@ void RecordingManager::advance(uint32_t samples) {
 		if(_HIDShouldBeReloaded)
 		{
 			_HIDShouldBeReloaded = false;
-			initHIDUSB();
+			initHIDUSB((HIDBoardType)_hidUsbManager.currentlyConnectedHIDBoardType());
 		}
 		else
 		{

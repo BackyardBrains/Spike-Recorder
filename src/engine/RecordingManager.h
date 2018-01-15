@@ -145,11 +145,9 @@ public:
 
     //HID functions
     bool hidMode() const {return _hidMode;}
-    bool initHIDUSB();
+    bool initHIDUSB(HIDBoardType deviceType);
     void disconnectFromHID();
-    void setHIDNumberOfChannels(int numberOfChannels);
     int numberOfHIDChannels();
-    bool hidDevicePresent();
     void scanForHIDDevices();
     void scanUSBDevices();
     void sendEKGImpuls();
@@ -159,7 +157,11 @@ public:
     void swapRTRepeating();
     void reloadHID();
     bool _HIDShouldBeReloaded;
-
+    int currentlyConnectedHIDBoardType();
+    bool isHIDBoardTypeAvailable(HIDBoardType hd);
+    
+    
+    
     int numberOfChannels();
 
 
@@ -192,7 +194,7 @@ public:
     std::string currentHIDFirmwareVersion() {return _hidUsbManager.firmwareVersion;}
     std::string currentHIDFirmwareType() {return _hidUsbManager.hardwareType;}
     std::string currentHIDHardwareVersion() {return _hidUsbManager.hardwareVersion;}
-    int currentHIDBoardType();
+
 
     void saveGainForAudioInput(float newGain);
     void saveTimeScaleForAudioInput(float newTimeScale);
@@ -334,7 +336,6 @@ private:
 	int _numOfHidChannels;
 	clock_t timerUSB = 0;
 	clock_t timerEKG = 0;
-	bool _hidDevicePresent;
 
 	int _firmwareUpdateStage;//this needs to be outside exclusive win block
 

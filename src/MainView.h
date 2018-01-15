@@ -52,7 +52,8 @@ private:
 	Widgets::PushButton *_recordButton;
 	Widgets::PushButton *_fftButton;
 	Widgets::PushButton *_analysisButton;
-	Widgets::PushButton *_usbButton;
+	Widgets::PushButton *_muscleHIDButton;
+    Widgets::PushButton *_neuronHIDButton;
 	Widgets::PushButton *threshButton;
     
     Widgets::BoxLayout * shieldsButtonBoxLayout;
@@ -90,7 +91,8 @@ private:
 	void recordPressed();
 	void analysisPressed();
 
-    void usbPressed();
+    void muscleHIDPressed();
+    void neuronHIDPressed();
 
 	void fftPressed();
 
