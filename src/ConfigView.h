@@ -91,7 +91,7 @@ private:
         void firmwareUpdatePressed();
         BYBFirmwareVO * selectedFirmware;
         typedef std::list<BYBFirmwareVO> listBYBFirmwareVO;
-        void hidConnectPressed();
+        //void hidConnectPressed();
     #endif
 
     void SetupScreen();

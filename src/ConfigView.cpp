@@ -838,7 +838,7 @@ void ConfigView::paintEvent() {
 
 #if defined(_WIN32)
 
-        void ConfigView::hidConnectPressed()
+      /*  void ConfigView::hidConnectPressed()
         {
             Log::msg("Hid connect pressed");
             //connect/diconnect
@@ -868,7 +868,7 @@ void ConfigView::paintEvent() {
                 close();
             }
         }
-
+*/
         //
         //Firmware selection drop-down selection changed
         //
