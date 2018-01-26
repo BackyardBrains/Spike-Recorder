@@ -1041,8 +1041,16 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
 
 
-
+        try
+        {
             CloseHandle(port_handle);
+        }
+        catch(...)
+        {
+            Log::error("Error while disconnecting device. Device probably already unplugged.");
+            std::cout<<"Error while disconnecting device. Device probably already unplugged.";
+
+        }
 #endif
             _portOpened = false;
 
