@@ -74,8 +74,8 @@ MainView::MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder
 	_muscleHIDButton->setVisible(false);
 	_muscleHIDButton->setRightPadding(5);
 	_muscleHIDButton->setSizeHint(Widgets::Size(0,0));
-    
-    
+
+
     _neuronHIDButton = new Widgets::PushButton(this);
     _neuronHIDButton->setNormalTex(Widgets::TextureGL::get("data/neuronprocon.bmp"));
     _neuronHIDButton->setHoverTex(Widgets::TextureGL::get("data/neuronproconhigh.bmp"));
@@ -83,7 +83,7 @@ MainView::MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder
     _neuronHIDButton->setVisible(false);
     _neuronHIDButton->setRightPadding(5);
     _neuronHIDButton->setSizeHint(Widgets::Size(0,0));
-    
+
 
 	_recordButton = new Widgets::PushButton(this);
 	_recordButton->setNormalTex(Widgets::TextureGL::get("data/rec.bmp"));
@@ -518,7 +518,7 @@ void MainView::analysisPressed() {
             _muscleHIDButton->setHoverTex(Widgets::TextureGL::get("data/emgproconhigh.bmp"));
             _neuronHIDButton->setNormalTex(Widgets::TextureGL::get("data/neuronprocon.bmp"));
             _neuronHIDButton->setHoverTex(Widgets::TextureGL::get("data/neuronproconhigh.bmp"));
-            
+
         }
 
         // end file mode when in file mode
@@ -589,7 +589,7 @@ void MainView::analysisPressed() {
             _muscleHIDButton->setHoverTex(Widgets::TextureGL::get("data/emgproconhigh.bmp"));
             _neuronHIDButton->setNormalTex(Widgets::TextureGL::get("data/neuronprocon.bmp"));
             _neuronHIDButton->setHoverTex(Widgets::TextureGL::get("data/neuronproconhigh.bmp"));
-            
+
 
         }
         if(_manager.serialMode())
@@ -686,7 +686,7 @@ void MainView::muscleHIDPressed()
             _neuronHIDButton->setHoverTex(Widgets::TextureGL::get("data/neuronproconhigh.bmp"));
             while(_manager.currentlyConnectedHIDBoardType() != HID_BOARD_TYPE_NONE)
             {
-                
+
             }
         }
 
@@ -725,7 +725,7 @@ void MainView::muscleHIDPressed()
             _muscleHIDButton->setNormalTex(Widgets::TextureGL::get("data/emgprodiscon.bmp"));
             _muscleHIDButton->setHoverTex(Widgets::TextureGL::get("data/emgprodiscon.bmp"));
         }
-       
+
 
     }
 
@@ -734,7 +734,7 @@ void MainView::muscleHIDPressed()
 void MainView::neuronHIDPressed()
 {
     //connect/diconnect
-    
+
     if(_manager.hidMode() && (_manager.currentlyConnectedHIDBoardType() == HID_BOARD_TYPE_NEURON))
     {
         _manager.disconnectFromHID();
@@ -750,16 +750,16 @@ void MainView::neuronHIDPressed()
             _muscleHIDButton->setHoverTex(Widgets::TextureGL::get("data/emgproconhigh.bmp"));
             while(_manager.currentlyConnectedHIDBoardType() != HID_BOARD_TYPE_NONE)
             {
-                
+
             }
         }
-        
+
         if(_manager.serialMode())
         {
             _manager.setSerialNumberOfChannels(1);
             _manager.disconnectFromSerial();
         }
-        
+
         if(_manager.fileMode()) { // end file mode when in file mode
             //delete _anaView;
             _manager.initRecordingDevices();
@@ -769,17 +769,17 @@ void MainView::neuronHIDPressed()
         } else {
             _audioView->setOffset(0);
         }
-        
+
         if(_manager.paused())
         {
             _manager.setPaused(false);
         }
-        
+
         if(!_manager.initHIDUSB(HID_BOARD_TYPE_NEURON))
         {
             std::cout<<"Can't open HID Muscle device. \n";
-            
-            
+
+
             Widgets::ErrorBox *box = new Widgets::ErrorBox(_manager.hidError.c_str());
             box->setGeometry(Widgets::Rect(this->width()/2-250, this->height()/2-40, 500, 80));
             Widgets::Application::getInstance()->addPopup(box);
@@ -789,8 +789,8 @@ void MainView::neuronHIDPressed()
             _neuronHIDButton->setNormalTex(Widgets::TextureGL::get("data/neuronprodiscon.bmp"));
             _neuronHIDButton->setHoverTex(Widgets::TextureGL::get("data/neuronprodiscon.bmp"));
         }
-        
-        
+
+
     }
 }
 //
@@ -903,7 +903,6 @@ void MainView::drawTimeLabelsForFile()
 void MainView::paintEvent()
 {
 
-
     #if defined(_WIN32)
     if(_manager.shouldStartFirmwareUpdatePresentation)
     {
@@ -924,8 +923,9 @@ void MainView::paintEvent()
     {
         _muscleHIDButton->setVisible(false);
         _muscleHIDButton->setSizeHint(Widgets::Size(0,0));
+        Widgets::Application::getInstance()->updateLayout();
     }
-    
+
     if(_manager.isHIDBoardTypeAvailable(HID_BOARD_TYPE_NEURON))
     {
         _neuronHIDButton->setSizeHint(Widgets::Size(53,48));
@@ -936,6 +936,7 @@ void MainView::paintEvent()
     {
         _neuronHIDButton->setVisible(false);
         _neuronHIDButton->setSizeHint(Widgets::Size(0,0));
+        Widgets::Application::getInstance()->updateLayout();
     }
 
 
@@ -1032,6 +1033,24 @@ void MainView::paintEvent()
     }
 
 
+    //check if only one USB device is present
+    //if yes we will use generic USB icon for any device that
+    //is connected to USB
+    int numberOfUSBDevicesConnected = 0;
+    if(_manager.isHIDBoardTypeAvailable(HID_BOARD_TYPE_MUSCLE) || _manager.currentlyConnectedHIDBoardType()==HID_BOARD_TYPE_MUSCLE)
+    {numberOfUSBDevicesConnected++;}
+    if(_manager.isHIDBoardTypeAvailable(HID_BOARD_TYPE_NEURON) || _manager.currentlyConnectedHIDBoardType()==HID_BOARD_TYPE_NEURON)
+    {numberOfUSBDevicesConnected++;}
+    numberOfUSBDevicesConnected += numberOfMuscle;
+    numberOfUSBDevicesConnected += numberOfHeart;
+    numberOfUSBDevicesConnected += numberOfPlant;
+    bool showGenericUSBButton = false;
+    if(numberOfUSBDevicesConnected==1)
+    {
+        showGenericUSBButton = true;
+    }
+   // std::cout<<"Number of USB: "<<numberOfUSBDevicesConnected<<"\n";
+
     //Now we have sinchronized port and button list
     //check if we had changes and update screen
 
@@ -1076,9 +1095,16 @@ void MainView::paintEvent()
                 }
                 else
                 {
-                    newButton->setNormalTex(Widgets::TextureGL::get("data/plantcon.bmp"));
-                    newButton->setHoverTex(Widgets::TextureGL::get("data/plantconhigh.bmp"));
-
+                    if(showGenericUSBButton)
+                    {
+                        newButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.bmp"));
+                        newButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.bmp"));
+                    }
+                    else
+                    {
+                        newButton->setNormalTex(Widgets::TextureGL::get("data/plantcon.bmp"));
+                        newButton->setHoverTex(Widgets::TextureGL::get("data/plantconhigh.bmp"));
+                    }
                 }
                 newButton->clickedWithRef.connect(this, &MainView::plantPressed);
             }
@@ -1111,9 +1137,16 @@ void MainView::paintEvent()
                 }
                 else
                 {
-                    newButton->setNormalTex(Widgets::TextureGL::get("data/musclecon.bmp"));
-                    newButton->setHoverTex(Widgets::TextureGL::get("data/muscleconhigh.bmp"));
-
+                    if(showGenericUSBButton)
+                    {
+                        newButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.bmp"));
+                        newButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.bmp"));
+                    }
+                    else
+                    {
+                        newButton->setNormalTex(Widgets::TextureGL::get("data/musclecon.bmp"));
+                        newButton->setHoverTex(Widgets::TextureGL::get("data/muscleconhigh.bmp"));
+                    }
                 }
 
                 newButton->clickedWithRef.connect(this, &MainView::musclePressed);
@@ -1148,9 +1181,16 @@ void MainView::paintEvent()
                 }
                 else
                 {
-                    newButton->setNormalTex(Widgets::TextureGL::get("data/heartcon.bmp"));
-                    newButton->setHoverTex(Widgets::TextureGL::get("data/heartconhigh.bmp"));
-
+                    if(showGenericUSBButton)
+                    {
+                        newButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.bmp"));
+                        newButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.bmp"));
+                    }
+                    else
+                    {
+                        newButton->setNormalTex(Widgets::TextureGL::get("data/heartcon.bmp"));
+                        newButton->setHoverTex(Widgets::TextureGL::get("data/heartconhigh.bmp"));
+                    }
                 }
 
                 newButton->clickedWithRef.connect(this, &MainView::heartPressed);
@@ -1161,7 +1201,7 @@ void MainView::paintEvent()
 
         Widgets::Application::getInstance()->updateLayout();
     }
-    else//if there was not change just update icons on button
+    else//if there was no change just update icons on button
     {
 
         //refresh icons
@@ -1205,14 +1245,29 @@ void MainView::paintEvent()
                 {
                     if(buttonIsActive)
                     {
-                        buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/plantdiscon.bmp"));
-                        buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/plantdiscon.bmp"));
-
+                        if(showGenericUSBButton)
+                        {
+                            buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.bmp"));
+                            buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/usbdiscon.bmp"));
+                        }
+                        else
+                        {
+                            buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/plantdiscon.bmp"));
+                            buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/plantdiscon.bmp"));
+                        }
                     }
                     else
                     {
-                        buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/plantcon.bmp"));
-                        buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/plantconhigh.bmp"));
+                        if(showGenericUSBButton)
+                        {
+                            buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/usbcon.bmp"));
+                            buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.bmp"));
+                        }
+                        else
+                        {
+                            buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/plantcon.bmp"));
+                            buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/plantconhigh.bmp"));
+                        }
                     }
 
                 }
@@ -1248,13 +1303,29 @@ void MainView::paintEvent()
                 {
                     if(buttonIsActive)
                     {
-                        buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/musclediscon.bmp"));
-                        buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/musclediscon.bmp"));
+                        if(showGenericUSBButton)
+                        {
+                            buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.bmp"));
+                            buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/usbdiscon.bmp"));
+                        }
+                        else
+                        {
+                            buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/musclediscon.bmp"));
+                            buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/musclediscon.bmp"));
+                        }
                     }
                     else
                     {
-                        buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/musclecon.bmp"));
-                        buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/muscleconhigh.bmp"));
+                        if(showGenericUSBButton)
+                        {
+                            buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/usbcon.bmp"));
+                            buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.bmp"));
+                        }
+                        else
+                        {
+                            buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/musclecon.bmp"));
+                            buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/muscleconhigh.bmp"));
+                        }
                     }
                 }
 
@@ -1291,13 +1362,29 @@ void MainView::paintEvent()
                 {
                     if(buttonIsActive)
                     {
-                        buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/heartdiscon.bmp"));
-                        buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/heartdiscon.bmp"));
+                        if(showGenericUSBButton)
+                        {
+                            buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.bmp"));
+                            buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/usbdiscon.bmp"));
+                        }
+                        else
+                        {
+                            buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/heartdiscon.bmp"));
+                            buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/heartdiscon.bmp"));
+                        }
                     }
                     else
                     {
-                        buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/heartcon.bmp"));
-                        buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/heartconhigh.bmp"));
+                        if(showGenericUSBButton)
+                        {
+                            buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/usbcon.bmp"));
+                            buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.bmp"));
+                        }
+                        else
+                        {
+                            buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/heartcon.bmp"));
+                            buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/heartconhigh.bmp"));
+                        }
                     }
                 }
 
@@ -1343,32 +1430,58 @@ void MainView::paintEvent()
 
     if(_manager.hidMode())
     {
-        
-        
+
+
         if(_manager.currentlyConnectedHIDBoardType()==HID_BOARD_TYPE_MUSCLE)
         {
-            _muscleHIDButton->setNormalTex(Widgets::TextureGL::get("data/emgprodiscon.bmp"));
-            _muscleHIDButton->setHoverTex(Widgets::TextureGL::get("data/emgprodiscon.bmp"));
+            if(showGenericUSBButton)
+            {
+                _muscleHIDButton->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.bmp"));
+                _muscleHIDButton->setHoverTex(Widgets::TextureGL::get("data/usbdiscon.bmp"));
+            }
+            else
+            {
+                _muscleHIDButton->setNormalTex(Widgets::TextureGL::get("data/emgprodiscon.bmp"));
+                _muscleHIDButton->setHoverTex(Widgets::TextureGL::get("data/emgprodiscon.bmp"));
+            }
             _muscleHIDButton->setSizeHint(Widgets::Size(53,48));
             _muscleHIDButton->setVisible(true);
         }
         else
         {
-            _neuronHIDButton->setNormalTex(Widgets::TextureGL::get("data/neuronprodiscon.bmp"));
-            _neuronHIDButton->setHoverTex(Widgets::TextureGL::get("data/neuronprodiscon.bmp"));
+            if(showGenericUSBButton)
+            {
+                _neuronHIDButton->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.bmp"));
+                _neuronHIDButton->setHoverTex(Widgets::TextureGL::get("data/usbdiscon.bmp"));
+            }
+            else
+            {
+                _neuronHIDButton->setNormalTex(Widgets::TextureGL::get("data/neuronprodiscon.bmp"));
+                _neuronHIDButton->setHoverTex(Widgets::TextureGL::get("data/neuronprodiscon.bmp"));
+            }
             _neuronHIDButton->setSizeHint(Widgets::Size(53,48));
             _neuronHIDButton->setVisible(true);
         }
         Widgets::Application::getInstance()->updateLayout();
-        
+
 
     }
     else
     {
-        _muscleHIDButton->setNormalTex(Widgets::TextureGL::get("data/emgprocon.bmp"));
-        _muscleHIDButton->setHoverTex(Widgets::TextureGL::get("data/emgproconhigh.bmp"));
-        _neuronHIDButton->setNormalTex(Widgets::TextureGL::get("data/neuronprocon.bmp"));
-        _neuronHIDButton->setHoverTex(Widgets::TextureGL::get("data/neuronproconhigh.bmp"));
+        if(showGenericUSBButton)
+        {
+            _muscleHIDButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.bmp"));
+            _muscleHIDButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.bmp"));
+            _neuronHIDButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.bmp"));
+            _neuronHIDButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.bmp"));
+        }
+        else
+        {
+            _muscleHIDButton->setNormalTex(Widgets::TextureGL::get("data/emgprocon.bmp"));
+            _muscleHIDButton->setHoverTex(Widgets::TextureGL::get("data/emgproconhigh.bmp"));
+            _neuronHIDButton->setNormalTex(Widgets::TextureGL::get("data/neuronprocon.bmp"));
+            _neuronHIDButton->setHoverTex(Widgets::TextureGL::get("data/neuronproconhigh.bmp"));
+        }
     }
 
     if(_manager.fileMode())
