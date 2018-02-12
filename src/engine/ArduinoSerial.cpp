@@ -118,7 +118,9 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         #ifdef LOG_SCANNING_OF_ARDUINO
         Log::msg("New cycle in thread");
         #endif
+ 
         selfRef->checkAllPortsForArduino(workingArduinoRef);
+       
     }
 }
 
@@ -1249,7 +1251,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             {
                 circularBuffer[cBufHead++] = buffer[i];
                  //uint debugMSB  = ((uint)(buffer[i])) & 0xFF;
-                 // std::cout<<"M: " << debugMSB<<"\n";
+                  //std::cout<<"M: " << debugMSB<<"\n";
 
                 if(cBufHead>=SIZE_OF_CIRC_BUFFER)
                 {
@@ -1330,6 +1332,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                             numberOfFrames--;
                             break;//continue as if we have new frame
                         }
+                        
                         obuffer[obufferIndex++] = (writeInteger-512)*30;
 
 
