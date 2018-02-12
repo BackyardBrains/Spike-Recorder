@@ -12,7 +12,7 @@
 #include <unistd.h>
 #include <sstream>
 #include <stdint.h>
-
+#include "RecordingManager.h"
 
 #define NUMBER_OF_TIMES_TO_SCAN_UNKNOWN_PORT 10
 
@@ -88,7 +88,12 @@ namespace BackyardBrains {
 
     }
 
-
+void ArduinoSerial::setRecordingManager(RecordingManager *rm)
+{
+    _manager = rm;
+}
+    
+    
 //---------------------------------- Port scanning and opening ------------------------------
 #pragma mark - Port scanning and opening
 
@@ -1605,13 +1610,13 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             }
         }
 
-        /*if(typeOfMessage == "EVNT")
+        if(typeOfMessage == "EVNT" && portOpened())
         {
             int mnum = (int)((unsigned int)valueOfMessage[0]-48);
             int64_t offset = 0;
             _manager->addMarker(std::string(1, mnum+'0'), offset+offsetin);
 
-        }*/
+        }
     }
 
 

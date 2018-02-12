@@ -50,7 +50,8 @@ namespace BackyardBrains {
         plant = 2,
         heart = 3
     };
-
+    
+    class RecordingManager;
 
     class ArduinoSerial {
     public:
@@ -75,6 +76,7 @@ namespace BackyardBrains {
 
 
         ArduinoSerial();
+        void setRecordingManager(RecordingManager *rm);
         int openSerialDevice(const char *portName);
         int readPort(char * buffer);
         int getNewSamples(int16_t * obuffer);
@@ -102,6 +104,7 @@ namespace BackyardBrains {
         void startScanningForArduinos(ArduinoSerial * refToWorkingArduinoSerial);
         static bool openPortLock;
     private:
+        RecordingManager *_manager;
         int openPort(const char *portName);
         std::thread scanningThread;
         void refreshPortList(std::list<SerialPort> newPorts);

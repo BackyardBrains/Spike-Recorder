@@ -64,6 +64,8 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
     alphaWavePower = 0;
 
 	initRecordingDevices();
+    
+    _arduinoSerial.setRecordingManager(this);
 
     _portScanningArduinoSerial.startScanningForArduinos(&_arduinoSerial);
 }
@@ -615,7 +617,7 @@ void RecordingManager::sendEKGImpuls()
     {
 
         timerEKG = end;
-        _arduinoSerial.sendEventMessage(0);
+        //_arduinoSerial.sendEventMessage(0);
     }
 
 }
