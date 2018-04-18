@@ -168,10 +168,21 @@ bool RecordingManager::initHIDUSB(HIDBoardType deviceType)
     _serialMode = false;
     _hidMode = true;
 
-
-    for(unsigned int i = 0; i < (unsigned int)_numOfHidChannels;i++)
+    if(_numOfHidChannels ==4)//this is hack for presentation with hammer
     {
-        bindVirtualDevice(i);
+        bindVirtualDevice(0);
+        bindVirtualDevice(2);
+    }
+    else
+    {
+        if(_numOfHidChannels>0)
+        {
+            bindVirtualDevice(0);
+        }
+        //for(unsigned int i = 0; i < (unsigned int)_numOfHidChannels;i++)
+        //{
+            //bindVirtualDevice(i);
+        //}
     }
 
     setCalibrationCoeficient(0.005f);

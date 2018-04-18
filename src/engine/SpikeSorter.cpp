@@ -132,12 +132,13 @@ void SpikeSorter::findSpikes(const std::string &filename, int channel, int holdo
     
     std::vector<std::pair<int64_t, int16_t> > posspikes, negspikes;
     long long testMaxSize = posspikes.max_size();
-	while(left > 0) {
+	while(left > 0)
+    {
 		DWORD bytesread = BASS_ChannelGetData(handle, buffer, std::min(left,(int64_t)BUFSIZE));
 		if(bytesread == (DWORD)-1) {
 			Log::error("Bass Error: getting channel data failed: %s", GetBassStrError());
 			break;
-		}
+    }
 
 		
 
