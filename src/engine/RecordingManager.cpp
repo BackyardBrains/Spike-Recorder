@@ -64,7 +64,7 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
     alphaWavePower = 0;
 
 	initRecordingDevices();
-    
+
     _arduinoSerial.setRecordingManager(this);
 
     _portScanningArduinoSerial.startScanningForArduinos(&_arduinoSerial);
@@ -171,7 +171,7 @@ bool RecordingManager::initHIDUSB(HIDBoardType deviceType)
     if(_numOfHidChannels ==4)//this is hack for presentation with hammer
     {
         bindVirtualDevice(0);
-        bindVirtualDevice(2);
+        bindVirtualDevice(3);
     }
     else
     {
@@ -235,13 +235,13 @@ bool RecordingManager::isHIDBoardTypeAvailable(HIDBoardType hd)
 {
     return _hidUsbManager.isBoardTypeAvailable(hd);
 }
-    
+
 int RecordingManager::currentlyConnectedHIDBoardType()
 {
     return _hidUsbManager.currentlyConnectedHIDBoardType();
 }
-    
-    
+
+
 void RecordingManager::scanUSBDevices()
 {
 
@@ -1583,11 +1583,15 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 
 
 
-
+        int maxChannelToFilter = channum;
+        if(maxChannelToFilter>2)
+        {
+            maxChannelToFilter = 2;
+        }
 
         if(highPassFilterEnabled())
         {
-            for(int chan = 0; chan < channum; chan++) {
+            for(int chan = 0; chan < maxChannelToFilter; chan++) {
                 _devices.begin()->_highPassFilters[chan].filterIntData(channels[chan].data(), samplesRead);
             }
         }
@@ -1609,7 +1613,7 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 
         if(lowPassFilterEnabled())
         {
-            for(int chan = 0; chan < channum; chan++) {
+            for(int chan = 0; chan < maxChannelToFilter; chan++) {
 	            _devices.begin()->_lowPassFilters[chan].filterIntData(channels[chan].data(), samplesRead);
 	        }
         }
