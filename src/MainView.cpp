@@ -423,7 +423,7 @@ void MainView::configPressed() {
 
 
     Log::msg("Config pressed, refresh serial port...");
-    _manager.refreshSerialPorts();
+    //_manager.refreshSerialPorts();
     Log::msg("Create config view...");
 	ConfigView *c = new ConfigView(_manager, *_audioView);
 	Log::msg("Set mouse track...");

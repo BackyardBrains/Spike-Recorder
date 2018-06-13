@@ -228,13 +228,11 @@ void ConfigView::SetupScreen()
 		if(_manager.fiftyHzFilterEnabled())
         {
             Log::msg("50 hz enabled");
-            std::cout<<"\n\n-----50hz enabled init";
 			_50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
         }
 		else
         {
             Log::msg("50 hz disabled");
-            std::cout<<"\n\n-------50hz disabled init";
 			_50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
         }
         Log::msg("Wire up 50 hz");
@@ -246,13 +244,11 @@ void ConfigView::SetupScreen()
 		if(_manager.sixtyHzFilterEnabled())
         {
             Log::msg("60 Hz enabled");
-            std::cout<<"\n\n-----6s0hz enabled init";
 			_60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
         }
 		else
         {
             Log::msg("60 Hz disabled");
-             std::cout<<"\n\n-------60hz disabled init";
 			_60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
         }
         Log::msg("Wire up 60 Hz");
@@ -415,30 +411,35 @@ void ConfigView::SetupScreen()
                 if(it->deviceType == ArduinoSerial::unknown)
                 {
                     touchSerialPortWidget->addItem(it->portName.c_str());
+                    Log::msg("Serial dropdown item: %s", it->portName.c_str());
                 }
                 else
                 {
                     if(it->deviceType == ArduinoSerial::plant)
                     {
                         touchSerialPortWidget->addItem("Plant SpikerShield");
+                        Log::msg("Serial dropdown item: Plant SpikerShield");
                     }
                     else
                     {
                         if(it->deviceType == ArduinoSerial::muscle)
                         {
                             touchSerialPortWidget->addItem("Muscle SpikerShield");
+                            Log::msg("Serial dropdown item: Muscle SpikerShield");
                         }
                         else
                         {
                             if(it->deviceType == ArduinoSerial::heart)
                             {
                                 touchSerialPortWidget->addItem("Heart And Brain SpikerShield");
+                                Log::msg("Serial dropdown item: Heart and Brain SpikerShield");
                             }
                             else
                             {
                                 if(it->deviceType == ArduinoSerial::heartOneChannel)
                                 {
                                     touchSerialPortWidget->addItem("Heart And Brain SpikerBox");
+                                    Log::msg("Serial dropdown item: Heart and Brain SpikerBox");
                                 }
                             }
                         }
@@ -473,30 +474,35 @@ void ConfigView::SetupScreen()
                 if(it->deviceType == ArduinoSerial::unknown)
                 {
                     serialPortWidget->addItem(it->portName.c_str());
+                    Log::msg("Serial dropdown item: %s", it->portName.c_str());
                 }
                 else
                 {
                     if(it->deviceType == ArduinoSerial::plant)
                     {
                         serialPortWidget->addItem("Plant SpikerShield");
+                         Log::msg("Serial dropdown item: Plant SpikerShield");
                     }
                     else
                     {
                         if(it->deviceType == ArduinoSerial::muscle)
                         {
                             serialPortWidget->addItem("Muscle SpikerShield");
+                            Log::msg("Serial dropdown item: Muscle SpikerShield");
                         }
                         else
                         {
                             if(it->deviceType == ArduinoSerial::heart)
                             {
                                 serialPortWidget->addItem("Heart And Brain SpikerShield");
+                                Log::msg("Serial dropdown item: Heart and Brain SpikerShield");
                             }
                             else
                             {
                                 if(it->deviceType == ArduinoSerial::heartOneChannel)
                                 {
                                     serialPortWidget->addItem("Heart And Brain SpikerBox");
+                                    Log::msg("Serial dropdown item: Heart and Brain SpikerBox");
                                 }
                             }
                         }

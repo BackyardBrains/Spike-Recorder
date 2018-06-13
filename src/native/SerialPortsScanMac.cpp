@@ -33,7 +33,7 @@
 #include <IOKit/IOBSD.h>
 
 
-//#define LOG_USB 1
+#define LOG_USB 1
 
 // Arduino VIDs:
 //0x2341 - Arduino
@@ -98,8 +98,28 @@ namespace BackyardBrains {
                 deviceName[0] = '\0';
             }
             #ifdef LOG_USB
-            Log::msg("USB Device found-: %s", deviceName);
+            Log::msg("USB Device found: %s", deviceName);
             #endif
+            
+            if (strcmp(deviceName, "IOUSBHostDevice") == 0)
+            {
+                Log::msg("Interesting device");
+            }
+            else if(strcmp(deviceName, "Arduino Leonardo") == 0)
+            {
+                Log::msg("Interesting board");
+            }
+            else if(strcmp(deviceName, "Arduino Uno") == 0)
+            {
+                Log::msg("Interesting board");
+            }
+            else
+            {
+                #ifdef LOG_USB
+                Log::msg("Skipping");
+                #endif
+                continue;
+            }
             //printf("deviceName:%s\n",deviceName);
             
             IOCFPlugInInterface         **plugInInterface = NULL;
@@ -111,6 +131,7 @@ namespace BackyardBrains {
           //  UInt16                      product;
             
             //Create an intermediate plug-in
+            usleep(500000);
             kr = IOCreatePlugInInterfaceForService(device,
                                                    kIOUSBDeviceUserClientTypeID, kIOCFPlugInInterfaceID,
                                                    &plugInInterface, &score);
@@ -118,7 +139,7 @@ namespace BackyardBrains {
             //kr = IOObjectRelease(device);
             if ((kIOReturnSuccess != kr) || !plugInInterface)
             {
-                printf("Unable to create a plug-in (%08x)\n", kr);
+                Log::msg("Unable to create a plug-in");
                 continue;
             }
             //Now create the device interface
@@ -130,8 +151,7 @@ namespace BackyardBrains {
             //(*plugInInterface)->Release(plugInInterface);
             if (result || !dev)
             {
-                printf("Couldn’t create a device interface (%08x)\n",
-                       (int) result);
+                Log::msg("Couldn’t create a device interface");
                 continue;
             }
             
@@ -141,7 +161,7 @@ namespace BackyardBrains {
            // kr = (*dev)->GetDeviceProduct(dev, &product);
            
             #ifdef LOG_USB
-            Log::msg("Vendor ID-: %x", (int)vendor);
+            Log::msg("Vendor ID: %x", (int)vendor);
             #endif
             bool isItEnabledVID = false;
             for (int i=0;i<NUMBER_OF_VIDS;i++)
@@ -174,7 +194,7 @@ namespace BackyardBrains {
                                            
                         //printf("Path: %s\n", cs);
                         #ifdef LOG_USB
-                        Log::msg("Path-: %s", s);
+                        Log::msg("Path: %s", s);
                         #endif
                         listOfPorts.push_back(s);
                     }

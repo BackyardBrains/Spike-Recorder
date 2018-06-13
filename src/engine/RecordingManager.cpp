@@ -102,7 +102,8 @@ void RecordingManager::reloadHID()
 
 bool RecordingManager::initHIDUSB(HIDBoardType deviceType)
 {
-    std::cout<<"Init HID\n";
+    
+    Log::msg("Init HID");
     saveInputConfigSettings();
     if(!_hidUsbManager.deviceOpened())
     {
@@ -116,10 +117,12 @@ bool RecordingManager::initHIDUSB(HIDBoardType deviceType)
     clear();
     DWORD frequency = _hidUsbManager.maxSamplingRate();
     _numOfHidChannels = _hidUsbManager.numberOfChannels();
-    std::cout<<"HID Frequency: "<<frequency<<" Chan: "<<_hidUsbManager.numberOfChannels()<<" Samp: "<<_hidUsbManager.maxSamplingRate()<<"\n";
+    //std::cout<<"HID Frequency: "<<frequency<<" Chan: "<<_hidUsbManager.numberOfChannels()<<" Samp: "<<_hidUsbManager.maxSamplingRate()<<"\n";
+    Log::msg("HID Frequency: %d Chan: %d Samp: %d", frequency, _hidUsbManager.numberOfChannels(), _hidUsbManager.maxSamplingRate());
     HSTREAM stream = BASS_StreamCreate(frequency, _hidUsbManager.numberOfChannels(), BASS_STREAM_DECODE, STREAMPROC_PUSH, NULL);
     if(stream == 0) {
         std::cerr << "Bass Error: Failed to open hid stream. \n";
+        Log::msg("Bass Error: Failed to open hid stream.");
         hidError = "Bass Error: Failed to open hid stream. \n";
         return false;
     }
@@ -171,7 +174,7 @@ bool RecordingManager::initHIDUSB(HIDBoardType deviceType)
     if(_numOfHidChannels ==4)//this is hack for presentation with hammer
     {
         bindVirtualDevice(0);
-        bindVirtualDevice(3);
+        bindVirtualDevice(2);
     }
     else
     {
@@ -224,8 +227,8 @@ void RecordingManager::scanForHIDDevices()
             _hidUsbManager.getAllDevicesList();
         }
     }catch(int e)
-    {
-       std::cout<<"Error while scanning HID devices\n";
+    {       
+        Log::msg("Error while scanning HID devices.");
     }
 
 
@@ -501,12 +504,13 @@ bool RecordingManager::weShouldDisplayWaveform()
 
 bool RecordingManager::initSerial(const char *portName)
 {
-
+    
     resetCalibrationCoeficient();
     saveInputConfigSettings();
 
     if(!_arduinoSerial.portOpened())
     {
+        Log::msg("initSerial - Open serial device %s |||||||||||||||||||||||||||||||||||||||||", portName);
         if(_arduinoSerial.openSerialDevice(portName) == -1)
         {
             _serialMode = false;
@@ -2197,7 +2201,7 @@ bool RecordingManager::Device::enable(int64_t pos) {
 	if(enabled)
 		return true;
 
-	Log::msg("device %d enabled", index);
+	Log::msg("RecordingManager::Device - BASS enable %d device", index);
 
 	// reset dc bias calculation
 	dcBiasNum = 1;
@@ -2249,7 +2253,7 @@ bool RecordingManager::Device::disable() {
 	if(!enabled)
 		return true;
 
-	Log::msg("device %d disabled", index);
+	Log::msg("RecordingManager::Device - BASS disable %d device", index);
 
 	if(type == Device::Audio) {
 		// make sure the device exists

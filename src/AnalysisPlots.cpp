@@ -77,7 +77,7 @@ void AnalysisPlots::setTarget(int target) {
 void AnalysisPlots::setAvgWaveformData(int idx) {
 	std::vector<float> buf, stdy;
     const float calibrationCoeficient = _manager.getCalibrationCoeficient();
-	SpikeAnalysis::averageWaveform(buf, stdy, _spikeTrains[idx].spikes, _manager.fileName().c_str(), 0, calibrationCoeficient);
+	SpikeAnalysis::averageWaveform(buf, stdy, _spikeTrains[idx].spikes, _manager.fileName().c_str(), idx, calibrationCoeficient);
 	std::vector<float> x, y;
 	
 	y.resize(buf.size());

@@ -16,10 +16,7 @@
 */
 //----------end of DEBUG TI VID and PID --------------------
 #define SIZE_OF_MAIN_CIRCULAR_BUFFER 40000
-
 #define BOARD_WITH_ADDITIONAL_INPUTS 1
-
-
 #define LOG_HID_SCANNING 1
 
 namespace BackyardBrains {
@@ -69,20 +66,32 @@ namespace BackyardBrains {
         
         if(hidBoardType == HID_BOARD_TYPE_MUSCLE)
         {
+#ifdef LOG_HID_SCANNING
+            Log::msg("HID - Try to open muscle board.");
+#endif
             handle = hid_open(BYB_VID, BYB_PID_MUSCLE_SB_PRO, NULL);
         }
         else if(hidBoardType == HID_BOARD_TYPE_NEURON)
         {
+#ifdef LOG_HID_SCANNING
+            Log::msg("HID - Try to open neuron board.");
+#endif
             handle = hid_open(BYB_VID, BYB_PID_NEURON_SB_PRO, NULL);
         }
         if (!handle) {
              sstm << "Unable to open HID USB device. Please plug in the BackyardBrains USB device and try again.";
             errorString = sstm.str();
-            std::cout<<"unable to open HID device.\n";
+            
+#ifdef LOG_HID_SCANNING
+            Log::msg("HID - unable to open HID device.");
+#endif
             return -1;
         }
         currentConnectedDevicePID = hidBoardType;
-        std::cout<<"Success. HID device connected\n";
+        
+#ifdef LOG_HID_SCANNING
+        Log::msg("HID - Success. HID device connected");
+#endif
 
         circularBuffer[0] = '\n';
 
@@ -249,7 +258,8 @@ namespace BackyardBrains {
 
     void HIDUsbManager::executeOneMessage(std::string typeOfMessage, std::string valueOfMessage, int offsetin)
     {
-        std::cout<<"\nMESSAGE: "<<typeOfMessage<<" - "<<valueOfMessage<<"\n";
+        //std::cout<<"\nMESSAGE: "<<typeOfMessage<<" - "<<valueOfMessage<<"\n";
+        Log::msg("HID - MESSAGE: %s - %s", typeOfMessage.c_str(), valueOfMessage.c_str());
         if(typeOfMessage == "FWV")
         {
             firmwareVersion = valueOfMessage;
@@ -355,13 +365,18 @@ namespace BackyardBrains {
             catch(std::exception &e)
             {
                 numberOfFrames = -1;
-                std::cout<<"Error on read 1";
+#ifdef LOG_HID_SCANNING
+                Log::msg("HID - Error on read 1");
+#endif
 
             }
             catch(...)
             {
                 numberOfFrames = -1;
-                std::cout<<"Error on read 2";
+                
+#ifdef LOG_HID_SCANNING
+                Log::msg("HID - Error on read 2");
+#endif
             }
 
 
@@ -409,12 +424,19 @@ namespace BackyardBrains {
             }
             catch(std::exception &e)
             {
-                std::cout<<"Error while closing device";
+                
+                
+#ifdef LOG_HID_SCANNING
+                Log::msg("HID - Error while closing device");
+#endif
                 // hid_free_enumeration(devs);
             }
             catch(...)
             {
-                std::cout<<"Error while closing devices";
+                
+#ifdef LOG_HID_SCANNING
+                Log::msg("HID - Error while closing devices");
+#endif
                 //hid_free_enumeration(devs);
             }
             prepareForDisconnect = false;
@@ -448,24 +470,36 @@ namespace BackyardBrains {
         catch(std::exception &e)
         {
             size = -1;
-            std::cout<<"Error on read 3";
+#ifdef LOG_HID_SCANNING
+            Log::msg("HID - Error: on read 3");
+#endif
 
         }
         catch(...)
         {
             size = -1;
-            std::cout<<"Error on read 4";
+            //std::cout<<"Error on read 4";
+#ifdef LOG_HID_SCANNING
+            Log::msg("HID - Error: on read 4");
+#endif
         }
 
 
         if (size == 0)
         {
-            std::cout<<"No HID data\n";
+            //std::cout<<"No HID data";
+#ifdef LOG_HID_SCANNING
+            Log::msg("HID - Error: No HID data");
+#endif
+
             return 0;
         }
         if (size < 0)
         {
-            std::cout<<"Error HID: Unable to read\n";
+            //std::cout<<"Error HID: Unable to read\n";
+            #ifdef LOG_HID_SCANNING
+                Log::msg("HID - Error: Unable to read\n");
+            #endif
             return -1;
         }
         if(size<3)
@@ -630,7 +664,7 @@ namespace BackyardBrains {
     {
         
 #ifdef LOG_HID_SCANNING
-        Log::msg("getAllDevicesList");
+        Log::msg("HID - getAllDevicesList");
 #endif
         try
         {
@@ -638,7 +672,7 @@ namespace BackyardBrains {
             {
                 // std::cout<<"Call HID exit... \n";
 #ifdef LOG_HID_SCANNING
-                Log::msg("Call HID exit... ");
+                Log::msg("HID - Call HID exit... ");
 #endif
                 hid_exit();
             }
@@ -646,11 +680,11 @@ namespace BackyardBrains {
             struct hid_device_info *devs, *cur_dev;
             //std::cout<<"Scan for HID devices... \n";
 #ifdef LOG_HID_SCANNING
-            Log::msg("Before HID enumerate");
+            Log::msg("HID - Before HID enumerate");
 #endif
             devs = hid_enumerate(invid, inpid);//we can put BYB HID and VID here
 #ifdef LOG_HID_SCANNING
-            Log::msg("After HID enumerate");
+            Log::msg("HID - After HID enumerate");
 #endif
             // std::cout<<"HID After scan \n";
             cur_dev = devs;
@@ -685,7 +719,7 @@ namespace BackyardBrains {
                     //     std::cout<<"HID while \n";
                     std::string nameOfHID((char *) cur_dev->product_string);
                     //  std::cout<<"Name took \n";
-                    Log::msg("Found our HID push it");
+                    Log::msg("HID - Found our HID push it");
                     list.push_back(newDevice);
                     //  std::cout<<"HID name added to list \n";
                     //   std::cout<<"HID device: "<<cur_dev->vendor_id<<", "<<cur_dev->product_string<<"\n";
@@ -699,23 +733,23 @@ namespace BackyardBrains {
             
             //  std::cout<<"Free enumeration \n";
 #ifdef LOG_HID_SCANNING
-            Log::msg("Before HID free enumeration");
+            Log::msg("HID - Before HID free enumeration");
 #endif
             hid_free_enumeration(devs);
 #ifdef LOG_HID_SCANNING
-            Log::msg("After HID free enumeration");
+            Log::msg("HID - After HID free enumeration");
 #endif
         }
         catch(std::exception &e)
         {
-            Log::error("Error while scanning VID/PID of devices 2: %s", e.what());
-            std::cout<<"Error while scanning VID/PID of devices 2: "<<e.what();
+            Log::error("HID - Error while scanning VID/PID of devices 2: %s", e.what());
+            //std::cout<<"Error while scanning VID/PID of devices 2: "<<e.what();
             // hid_free_enumeration(devs);
         }
         catch(...)
         {
-            Log::error("Error while scanning VID/PID of devices");
-            std::cout<<"Error while scanning VID/PID of devices";
+            Log::error("HID - Error while scanning VID/PID of devices");
+            //std::cout<<"Error while scanning VID/PID of devices";
             //hid_free_enumeration(devs);
         }
         
@@ -891,7 +925,10 @@ namespace BackyardBrains {
             std::stringstream sstm;//variable for log
             sstm << "Could not write to device. Error reported was: " << hid_error(handle);
             errorString = sstm.str();
-            std::cout<<"Error HID write: \n"<<sstm.str();
+            //std::cout<<"Error HID write: \n"<<sstm.str();
+#ifdef LOG_HID_SCANNING
+            Log::msg("Error HID write: %s",sstm.str().c_str());
+#endif
         }
         return 0;
     }

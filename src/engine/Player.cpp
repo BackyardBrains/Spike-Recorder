@@ -73,7 +73,7 @@ int Player::sampleRate() const {
 void Player::setSampleRate(int sampleRate) {
 	if(BASS_ChannelSetAttribute(_output, BASS_ATTRIB_FREQ, sampleRate))
     {
-        Log::msg("Sample rate set OK");
+        Log::msg("Player::setSampleRate - Sample rate set OK");
     }
     else
     {
