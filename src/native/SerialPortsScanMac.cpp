@@ -52,8 +52,8 @@
 //M0 pro  VID: 0x03eb - Atmel corp VID actualy (pid 2111 = Xplained Pro board debugger and programmer)
 
 //0x2E73 - BYB VID
-#define NUMBER_OF_VIDS 5
-UInt16 enabledVIDs[NUMBER_OF_VIDS] = {0x2341, 0x2A03, 0x0403, 0x1A86, 0x2E73};//conservative list: Arduino, FTDI, China and BYB
+#define NUMBER_OF_VIDS 6
+UInt16 enabledVIDs[NUMBER_OF_VIDS] = {0x2341, 0x2A03, 0x0403, 0x1A86, 0x2E73, 0x10C4};//conservative list: Arduino, FTDI, China and BYB
 //int enabledVIDs[] = {0x2341, 0x2A03, 0x1B4F, 0x239A, 0x0403, 0x1A86, 0x4348, 0x10C4, 0x067B, 0x04D8, 0x04B4};//All VIDs
 
 
@@ -110,6 +110,14 @@ namespace BackyardBrains {
                 Log::msg("Interesting board");
             }
             else if(strcmp(deviceName, "Arduino Uno") == 0)
+            {
+                Log::msg("Interesting board");
+            }
+            else if(strcmp(deviceName, "CP2102N USB to UART Bridge Controller")==0)
+            {
+                Log::msg("Interesting board");
+            }
+            else if(strcmp(deviceName, "FT230X Basic UART")==0)
             {
                 Log::msg("Interesting board");
             }
