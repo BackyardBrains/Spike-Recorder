@@ -141,8 +141,8 @@ void ThresholdPanel::triggerPressed()
     {
         ThresholdWidget * _thresholdWidget = new ThresholdWidget(*_manager);
         _thresholdWidget->valueChanged.connect(this, &ThresholdPanel::triggerChanged);
-        _thresholdWidget->setSizeHint(Widgets::Size(74,270));
-        Widgets::Rect positionOfPopup = Widgets::Rect(_triggerButton->mapToGlobal(_triggerButton->rect().bottomLeft()), Widgets::Size(74, 270));
+        _thresholdWidget->setSizeHint(Widgets::Size(74,270+26));
+        Widgets::Rect positionOfPopup = Widgets::Rect(_triggerButton->mapToGlobal(_triggerButton->rect().bottomLeft()), Widgets::Size(74, 270+26));
          std::cout<<"Position: "<<positionOfPopup.x<<"\n";
         positionOfPopup.x -=18;
         /*if(_manager->serialMode() || _manager->hidMode())
@@ -240,12 +240,12 @@ void EkgWidget::advance() {
 	_beatt += (0.6-_beatt)*0.1;
 }
     
-    
+
 //=========================== Threshold widget =====================================
     
     ThresholdWidget::ThresholdWidget(RecordingManager &manager, Widget *parent) : Widget(parent) {
         _manager = &manager;
-        setSizeHint(Widgets::Size(74,270));
+        setSizeHint(Widgets::Size(74,270+26));
     }
     
     void ThresholdWidget::paintEvent() {
@@ -259,9 +259,9 @@ void EkgWidget::advance() {
             //draw background
             
             Widgets::Painter::setColor(Widgets::Colors::widgetbg);
-            Widgets::Painter::drawRect(Widgets::Rect(Xposition,0, widthOfCell, 270));
+            Widgets::Painter::drawRect(Widgets::Rect(Xposition,0, widthOfCell, 270+26));
             Widgets::Painter::setColor(Widgets::Colors::widgetbgdark);
-            Widgets::Painter::drawRect(Widgets::Rect(Xposition+2,2, widthOfCell-4, 266));
+            Widgets::Painter::drawRect(Widgets::Rect(Xposition+2,2, widthOfCell-4, 266+26));
             
             Widgets::Painter::setColor(Widgets::Colors::white);
             int YOffset =10;
@@ -288,7 +288,7 @@ void EkgWidget::advance() {
             //Draw events labels
             
             YOffset += increment;
-            for(int i=1;i<10;i++)
+            for(int i=1;i<11;i++)
             {
                 
                 if(_manager->getThresholdSource()==i)
@@ -308,7 +308,15 @@ void EkgWidget::advance() {
                      Widgets::Painter::setColor(Widgets::Colors::white);
                 }
                 o.str("");
-                o << "Event " << i;
+                if(i==10)
+                {
+                    o << "Events";
+                }
+                else
+                {
+                    o << "Event " << i;
+                }
+                
                 Widgets::Application::font()->draw(o.str().c_str(), Xposition+10, YOffset, Widgets::AlignLeft);
                 YOffset += increment;
             }
