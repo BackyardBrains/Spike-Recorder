@@ -31,8 +31,8 @@ namespace BackyardBrains {
 
 #define NUMBER_OF_SEGMENTS 120
 #define SEGMENT_SIZE 44100
-    
-    
+
+
 class SampleBuffer
 {
 public:
@@ -51,7 +51,7 @@ public:
 	{
 		memset(_buffer, 0, sizeof(int16_t[SIZE]));
         memset(segmentsState, 0, sizeof(int[NUMBER_OF_SEGMENTS]));
-        
+
 		int size = SIZE/2;
         //create SIZE_LOG2 (21) envelope arrays.
 		for (int i = 0; i < SIZE_LOG2; i++, size/=2)
@@ -113,7 +113,7 @@ public:
     //
 	void addData(const int16_t *src, int64_t len)
 	{
-       // std::cout<<"Add "<<len<<" samples to buffer\n";
+      //  std::cout<<"Add "<<len<<" samples to buffer\n";
 		if (len > 0)
 			_notEmpty = true;
 		for (int i = 0; i < len; i++)
@@ -253,9 +253,9 @@ public:
 			{
 				// qDebug() << "Whole thing...";
 				// we can process the whole thing
-                
+
                 //DEBUG: Stanislav
-                
+
 				uint64_t index = (_head + i + SIZE)%SIZE;// transform index "i" into circular buffer reference frame
 				unsigned int remaining = skip;
 				bounding = std::pair<int16_t, int16_t>(_buffer[index], _buffer[index]);
@@ -374,7 +374,7 @@ public:
 		if(_notEmpty) {
 			_notEmpty = false;
 			memset(_buffer, 0, SIZE*sizeof(int16_t));
-            
+
 
 			for (int i = 0, size = SIZE/2; i < SIZE_LOG2; i++, size/=2)
 				_envelopes[i].assign(size+1, std::pair<int16_t, int16_t>(0, 0));
@@ -401,7 +401,7 @@ private:
     //First array holds maximum values of signal (just subsampled)
     //Second array holds minimum values of signal (just subsampled)
 	std::vector<std::pair<int16_t, int16_t> > _envelopes[SIZE_LOG2];
-    
+
 
 	bool _notEmpty;
 };

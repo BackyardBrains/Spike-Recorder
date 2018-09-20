@@ -85,15 +85,15 @@ namespace BackyardBrains {
         endOfescapeSequence[4] = 129;
         endOfescapeSequence[5] = 255;
         //start thread that will periodicaly read HID
-
+        batchSizeForSerial = 600;
     }
 
 void ArduinoSerial::setRecordingManager(RecordingManager *rm)
 {
     _manager = rm;
 }
-    
-    
+
+
 //---------------------------------- Port scanning and opening ------------------------------
 #pragma mark - Port scanning and opening
 
@@ -124,9 +124,9 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         #ifdef LOG_SCANNING_OF_ARDUINO
         Log::msg("\nNew cycle in serial scanning thread ---------------------------------");
         #endif
- 
+
         selfRef->checkAllPortsForArduino(workingArduinoRef);
-       
+
     }
 }
 
@@ -793,14 +793,14 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         #ifdef LOG_SCANNING_OF_ARDUINO
         Log::msg("openSerialDevice before lock: %s", portName);
         #endif
-       
+
         while(ArduinoSerial::openPortLock==true){
             #ifdef LOG_SCANNING_OF_ARDUINO
             Log::msg("openSerialDevice  lock---- User waiting");
             #endif
         }
         ArduinoSerial::openPortLock = true;
-        
+
         #ifdef LOG_SCANNING_OF_ARDUINO
         Log::msg("openSerialDevice after lock %s - User driven", portName);
         #endif
@@ -831,7 +831,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
     int ArduinoSerial::openSerialDeviceWithoutLock(const char *portName)
     {
 
-        
+
         _portName = std::string(portName);
         _portOpened = false;
         fd = 0;
@@ -862,7 +862,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         messageBufferIndex =0;
 
         _portOpened = true;
-        
+
         #ifdef LOG_SCANNING_OF_ARDUINO
                 //std::cout<<"\nTry Port: "<<list_it->portName.c_str()<<"\n";
                 Log::msg("openSerialDeviceWithoutLock - Set Number of channels and sample rate at %s", portName);
@@ -904,7 +904,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                 //std::cout<<"\nTry Port: "<<list_it->portName.c_str()<<"\n";
                 Log::msg("checkAllPortsForArduino Try port: %s",list_it->portName.c_str());
                 #endif
-                
+
 
 
                 std::size_t found=list_it->portName.find(workingArduinoRef->currentPortName());
@@ -1038,7 +1038,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         currentPort.portName = "";
         if(_portOpened)
         {
-            
+
             #ifdef LOG_SCANNING_OF_ARDUINO
                         Log::msg("closeSerial - Set Number of channels and sample rate before closing");
             #endif
@@ -1101,12 +1101,6 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                 newPort.deviceType = portsIterator->deviceType;
                 ports.push_back(newPort);
         }
-
-
-
-
-
-
     }
 
 
@@ -1176,15 +1170,24 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         COMSTAT st;
         DWORD errmask=0, num_read, num_request;
         OVERLAPPED ov;
-        int count = 32768 ;
+        int count = batchSizeForSerial;//32768;
 
         if (!ClearCommError(port_handle, &errmask, &st))
         {
             return -1;
         }
         //printf("Read, %d requested, %lu buffered\n", count, st.cbInQue);
+        //std::cout<<"Serial read  " << currentDateTime()<<"\n";
+        //Log::msg("");
+
         if (st.cbInQue <= 0)
         {
+             printf("Read -- %lu\n",st.cbInQue);
+             batchSizeForSerial -=15;
+             if(batchSizeForSerial<100)
+             {
+                batchSizeForSerial = 100;
+             }
             return 0;
         }
 
@@ -1193,10 +1196,22 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         // is all-or-nothing on async I/O and we must have it enabled
         // because it's the only way to get a timeout for WaitCommEvent
 
+        if(count<st.cbInQue)
+        {
+            num_request = (DWORD)count;
+        }
+        else
+        {
+            num_request = st.cbInQue;
+            batchSizeForSerial -=15;
+             if(batchSizeForSerial<100)
+             {
+                batchSizeForSerial = 100;
+             }
+        }
+        //num_request =  ((DWORD)count < st.cbInQue) ? (DWORD)count : st.cbInQue;
 
-        num_request = ((DWORD)count < st.cbInQue) ? (DWORD)count : st.cbInQue;
-
-
+        unsigned long numInCueue = st.cbInQue;
 
 
 
@@ -1208,7 +1223,9 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         if (ReadFile(port_handle, buffer, num_request, &num_read, &ov)) {
             // this should usually be the result, since we asked for
             // data we knew was already buffered
-            //printf("Read, immediate complete, num_read=%lu\n", num_read);
+            //std::cout << currentDateTime()<<"\n";
+            batchSizeForSerial +=1;
+            printf("Read, immediate complete, askedFor: %lu read=%lu in queue: %lu\n",num_request, num_read,numInCueue);
             size = num_read;
 
             // std::cout <<num_request<<" -- " <<num_request-num_read<<"\n";
@@ -1355,7 +1372,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                             std::cout<< "More channels than expected\n";
                             break;//continue as if we have new frame
                         }
-                        
+
                         obuffer[obufferIndex++] = (writeInteger-512)*30;
 
 
@@ -1590,7 +1607,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
     {
         //std::cout<<"\nMESSAGE Arduino: "<<typeOfMessage<<" - "<<valueOfMessage<<"\n";
         Log::msg("Message: Type: %s Value: %s", typeOfMessage.c_str(), valueOfMessage.c_str());
-        
+
 
         if(typeOfMessage == "HWT")
         {
@@ -1718,7 +1735,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         struct timeval tv;
         Log::msg("writeToPort - Try to write %d bytes to port", len);
         while (written < len) {
-           
+
             n = write(fd, (const char *)ptr + written, len - written);
             Log::msg("writeToPort - %d bytes written to port", len);
             if (n < 0 && (errno == EAGAIN || errno == EINTR))
@@ -1782,5 +1799,17 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         #endif
     }
 
+
+const std::string ArduinoSerial::currentDateTime() {
+   char            fmt[64], buf[64];
+   struct timeval  tv;
+   struct tm       *tm;
+
+   gettimeofday(&tv, NULL);
+   tm = localtime(&tv.tv_sec);
+   strftime(fmt, sizeof fmt, "%Y-%m-%d %H:%M:%S.%%06u", tm);
+   snprintf(buf, sizeof buf, fmt, tv.tv_usec);
+   return buf;
+}
 
 }

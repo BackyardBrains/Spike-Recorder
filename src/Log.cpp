@@ -6,7 +6,7 @@
 #include <string>
 #include <cstring>
 #include <cerrno>
-
+#include <sys/time.h>
 #ifdef __APPLE__
 #include <syslog.h>
 #include <stdarg.h>
@@ -36,9 +36,14 @@ void Log::init() {
 
 void Log::msg(const char *fmt, ...) {
 	init();
-
+struct timeval tp;
+gettimeofday(&tp, NULL);
+long int ms = tp.tv_sec * 1000 + tp.tv_usec / 1000;
 	std::string format = "-- ";
+	//format += ms;
+	format += " - ";
 	format += fmt;
+
 	format += "\n";
 	va_list args;
 	va_start(args,format);
@@ -50,9 +55,9 @@ void Log::msg(const char *fmt, ...) {
 #else
 	vfprintf(_log->_out, format.c_str(), args);
 #endif
-    
-   
-    
+
+
+
 	va_end(args);
 }
 
@@ -64,7 +69,7 @@ void Log::warn(const char *fmt, ...) {
 	format += "\n";
 	va_list args;
 	va_start(args,fmt);
-	
+
     #ifdef __APPLE__
         char buffer[512];
         vsprintf (buffer,fmt, args);
