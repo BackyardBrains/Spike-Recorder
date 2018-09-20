@@ -1316,6 +1316,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                             //we have begining of the frame inside frame
                             //something is wrong
                             numberOfFrames--;
+                            std::cout<< "Incomplete frame 1 \n";
                             break;//continue as if we have new frame
                         }
                         MSB  = ((uint)(circularBuffer[cBufTail])) & 0x7F;
@@ -1331,6 +1332,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                         if(LSB>127)
                         {
                             numberOfFrames--;
+                            std::cout<< "Incomplete frame 2 \n";
                             break;//continue as if we have new frame
                         }
                         // std::cout<< cBufTail<<" -L "<<LSB<<"\n";
@@ -1350,6 +1352,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                             //we have more data in frame than we need
                             //something is wrong with this frame
                             numberOfFrames--;
+                            std::cout<< "More channels than expected\n";
                             break;//continue as if we have new frame
                         }
                         

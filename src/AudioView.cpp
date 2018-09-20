@@ -773,6 +773,11 @@ void AudioView::paintEvent() {
         {
             drawThreshold(screenWidth());
         }
+        else
+        {
+            drawZeroLine();
+            
+        }
     }
     else
     {
@@ -788,6 +793,32 @@ void AudioView::paintEvent() {
 	}
 }
 
+void AudioView::drawZeroLine()
+{
+    Widgets::Painter::setColor(Widgets::Color(150,150,150));
+    const int doth = 6;
+    int screenw = screenWidth();
+    int screenHeight = height();
+    int x = screenw/2+DATA_XOFF;
+    for(int i = 0; i <= (screenHeight-50)/doth+1; i++) {
+        float y = screenHeight-doth*i;
+        
+        glBegin(GL_LINES);
+        glVertex3f(x, y, 0.f);
+        glVertex3f(x, y-doth/2, 0.f);
+        glEnd();
+    }
+    Widgets::Painter::setColor(Widgets::Color(0,0,0));
+    for(int i = 0; i <= (screenHeight-50)/doth+1; i++) {
+        float y = screenHeight-doth*i+doth/2;
+        
+        glBegin(GL_LINES);
+        glVertex3f(x, y, 0.f);
+        glVertex3f(x, y-doth/2, 0.f);
+        glEnd();
+    }
+}
+    
 void AudioView::drawThreshold(int screenw) {
 	if(_channels.size() == 0)
     {

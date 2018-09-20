@@ -121,6 +121,18 @@ namespace BackyardBrains {
             {
                 Log::msg("Interesting board");
             }
+            else if(strcmp(deviceName, "Arduino Due Prog. Port")==0)
+            {
+                Log::msg("Interesting board");
+            }
+            else if(strcmp(deviceName, "USB2.0-Serial")==0)
+            {
+                Log::msg("Interesting board");
+            }
+            else if(strcmp(deviceName, "Arduino Due")==0)
+            {
+                Log::msg("Interesting board");
+            }
             else
             {
                 #ifdef LOG_USB
