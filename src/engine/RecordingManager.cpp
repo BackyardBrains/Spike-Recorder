@@ -102,7 +102,7 @@ void RecordingManager::reloadHID()
 
 bool RecordingManager::initHIDUSB(HIDBoardType deviceType)
 {
-    
+
     Log::msg("Init HID");
     saveInputConfigSettings();
     if(!_hidUsbManager.deviceOpened())
@@ -176,6 +176,11 @@ bool RecordingManager::initHIDUSB(HIDBoardType deviceType)
         bindVirtualDevice(0);
         bindVirtualDevice(2);
     }
+     if(_numOfHidChannels ==3)//this is hack for presentation with hammer
+    {
+        bindVirtualDevice(0);
+        bindVirtualDevice(2);
+    }
     else
     {
         if(_numOfHidChannels>0)
@@ -228,7 +233,7 @@ void RecordingManager::scanForHIDDevices()
             _hidUsbManager.getAllDevicesList();
         }
     }catch(int e)
-    {       
+    {
         Log::msg("Error while scanning HID devices.");
     }
 
@@ -505,7 +510,7 @@ bool RecordingManager::weShouldDisplayWaveform()
 
 bool RecordingManager::initSerial(const char *portName)
 {
-    
+
     resetCalibrationCoeficient();
     saveInputConfigSettings();
 

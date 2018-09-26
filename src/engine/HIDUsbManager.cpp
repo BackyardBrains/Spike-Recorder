@@ -17,6 +17,7 @@
 //----------end of DEBUG TI VID and PID --------------------
 #define SIZE_OF_MAIN_CIRCULAR_BUFFER 40000
 #define BOARD_WITH_ADDITIONAL_INPUTS 1
+#define BOARD_WITH_HAMMER 4
 #define LOG_HID_SCANNING 1
 
 namespace BackyardBrains {
@@ -63,7 +64,7 @@ namespace BackyardBrains {
     {
         _manager = managerin;
         std::stringstream sstm;//variable for log
-        
+
         if(hidBoardType == HID_BOARD_TYPE_MUSCLE)
         {
 #ifdef LOG_HID_SCANNING
@@ -81,14 +82,14 @@ namespace BackyardBrains {
         if (!handle) {
              sstm << "Unable to open HID USB device. Please plug in the BackyardBrains USB device and try again.";
             errorString = sstm.str();
-            
+
 #ifdef LOG_HID_SCANNING
             Log::msg("HID - unable to open HID device.");
 #endif
             return -1;
         }
         currentConnectedDevicePID = hidBoardType;
-        
+
 #ifdef LOG_HID_SCANNING
         Log::msg("HID - Success. HID device connected");
 #endif
@@ -303,8 +304,16 @@ namespace BackyardBrains {
                     restartDevice = true;
                 //}
             }
+            else if(currentAddOnBoard == BOARD_WITH_HAMMER)
+            {
+                    _samplingRate = 5000;
+                    _numberOfChannels  =3;
+                    restartDevice = true;
+            }
             else
             {
+
+
                 if(_samplingRate != 10000)
                 {
                     _samplingRate = 10000;
@@ -373,7 +382,7 @@ namespace BackyardBrains {
             catch(...)
             {
                 numberOfFrames = -1;
-                
+
 #ifdef LOG_HID_SCANNING
                 Log::msg("HID - Error on read 2");
 #endif
@@ -418,14 +427,14 @@ namespace BackyardBrains {
         if(prepareForDisconnect)
         {
             ref->stopDevice();
-            
+
             try {
                 hid_close(ref->handle);
             }
             catch(std::exception &e)
             {
-                
-                
+
+
 #ifdef LOG_HID_SCANNING
                 Log::msg("HID - Error while closing device");
 #endif
@@ -433,7 +442,7 @@ namespace BackyardBrains {
             }
             catch(...)
             {
-                
+
 #ifdef LOG_HID_SCANNING
                 Log::msg("HID - Error while closing devices");
 #endif
@@ -661,10 +670,10 @@ namespace BackyardBrains {
             enumerateDevicesForVIDAndPID(BYB_VID, BYB_PID_NEURON_SB_PRO);
     }
 
-    
+
     void HIDUsbManager::enumerateDevicesForVIDAndPID(int invid, int inpid)
     {
-        
+
 #ifdef LOG_HID_SCANNING
         Log::msg("HID - getAllDevicesList");
 #endif
@@ -678,7 +687,7 @@ namespace BackyardBrains {
 #endif
                 hid_exit();
             }
-            
+
             struct hid_device_info *devs, *cur_dev;
             //std::cout<<"Scan for HID devices... \n";
 #ifdef LOG_HID_SCANNING
@@ -693,15 +702,15 @@ namespace BackyardBrains {
             while (cur_dev) {
                 //check VID and PID
                 //std::cout<<"Check VID, check PID \n";
-               
+
                 if((cur_dev->vendor_id == invid) && (cur_dev->product_id == inpid) )
                 {
                     HIDManagerDevice newDevice;
-                    
+
                     int sizeOfPath = (int)strlen(cur_dev->path);
                     newDevice.devicePath.assign(cur_dev->path, sizeOfPath);
-                    
-                    
+
+
                     std::wstring wsn(cur_dev->serial_number);
                     // your new String
                     std::string strsn(wsn.begin(), wsn.end());
@@ -717,7 +726,7 @@ namespace BackyardBrains {
                     {
                         newDevice.deviceType = HID_BOARD_TYPE_MUSCLE;
                     }
-                    
+
                     //     std::cout<<"HID while \n";
                     std::string nameOfHID((char *) cur_dev->product_string);
                     //  std::cout<<"Name took \n";
@@ -725,14 +734,14 @@ namespace BackyardBrains {
                     list.push_back(newDevice);
                     //  std::cout<<"HID name added to list \n";
                     //   std::cout<<"HID device: "<<cur_dev->vendor_id<<", "<<cur_dev->product_string<<"\n";
-                    
-                    
-                    
+
+
+
                 }
                 //  std::cout<<"Next device \n";
                 cur_dev = cur_dev->next;
             }
-            
+
             //  std::cout<<"Free enumeration \n";
 #ifdef LOG_HID_SCANNING
             Log::msg("HID - Before HID free enumeration");
@@ -754,9 +763,9 @@ namespace BackyardBrains {
             //std::cout<<"Error while scanning VID/PID of devices";
             //hid_free_enumeration(devs);
         }
-        
+
     }
-    
+
     int HIDUsbManager::isBoardTypeAvailable(HIDBoardType bt)
     {
         std::list<HIDManagerDevice>::iterator HIDListIt;
@@ -768,17 +777,17 @@ namespace BackyardBrains {
             if(HIDListIt->deviceType == bt)
             {
                 return true;
-                
+
             }
         }
         return false;
     }
-    
+
     int HIDUsbManager::currentlyConnectedHIDBoardType()
     {
         return currentConnectedDevicePID;
     }
-    
+
     //
     // Close connection with HID device
     // This close connection just logicaly (puts flag _deviceConnected to false)
