@@ -121,6 +121,11 @@ namespace BackyardBrains {
             {
                 Log::msg("Interesting board");
             }
+            //32-bit MFi Development Kit
+            else if(strcmp(deviceName, "32-bit MFi Development Kit")==0)
+            {
+                Log::msg("Interesting board");
+            }
             else
             {
                 #ifdef LOG_USB

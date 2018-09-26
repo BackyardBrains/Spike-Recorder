@@ -953,6 +953,8 @@
 					/Library/Frameworks/SDL2.framework/Versions/A/Headers,
 					"src/**",
 					support,
+					SDL2_image.framework/Versions/A/Headers,
+					SDL2.framework/Versions/A/Headers,
 				);
 				INFOPLIST_FILE = src/xcode/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path @loader_path/../Frameworks @loader_path/../Resources .";
@@ -1001,6 +1003,8 @@
 					/Library/Frameworks/SDL2.framework/Versions/A/Headers,
 					"src/**",
 					support,
+					SDL2_image.framework/Versions/A/Headers,
+					SDL2.framework/Versions/A/Headers,
 				);
 				INFOPLIST_FILE = src/xcode/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path @loader_path/../Frameworks @loader_path/../Resources .";

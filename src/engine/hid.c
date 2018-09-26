@@ -276,6 +276,11 @@ static int get_string_property(IOHIDDeviceRef device, CFStringRef prop, wchar_t 
 		CFRange range;
 		range.location = 0;
 		range.length = len;
+        range = CFRangeMake(0, CFStringGetLength(str));//stanislav added
+        if(range.length>len)
+        {
+            range.length = len;
+        }
 		CFIndex used_buf_len;
 		CFStringGetBytes(str,
 			range,

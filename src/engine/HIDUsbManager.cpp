@@ -453,6 +453,7 @@ namespace BackyardBrains {
     //
     // Read one batch of data from HID usb
     //
+    // Wireshark enable USB Sudo ifconfig XHC20 up
     int HIDUsbManager::readOneBatch(int32_t * obuffer)
     {
         unsigned char buffer[256];
@@ -504,6 +505,7 @@ namespace BackyardBrains {
         }
         if(size<3)
         {
+            //return 0;
             return-1;
         }
         //get number of bytes

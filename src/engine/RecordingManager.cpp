@@ -181,6 +181,7 @@ bool RecordingManager::initHIDUSB(HIDBoardType deviceType)
         if(_numOfHidChannels>0)
         {
             bindVirtualDevice(0);
+           // bindVirtualDevice(1);
         }
         //for(unsigned int i = 0; i < (unsigned int)_numOfHidChannels;i++)
         //{
