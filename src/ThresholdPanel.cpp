@@ -90,7 +90,7 @@ ThresholdPanel::ThresholdPanel(RecordingManager &manager, AnalysisManager &anama
     
 void ThresholdPanel::setTriggerButtonImage()
 {
-    if(_manager->getThresholdSource()==0)
+    if(_manager->getThresholdSource()==THRESHOLD_SOURCE_SIGNAL)
     {
         _triggerButton->setNormalTex(Widgets::TextureGL::get("data/trigger.bmp"));
         _triggerButton->setHoverTex(Widgets::TextureGL::get("data/triggerhigh.bmp"));
@@ -271,7 +271,7 @@ void EkgWidget::advance() {
             int increment = 26;
             std::stringstream o;
             o << "Signal";
-            if(_manager->getThresholdSource()==0)
+            if(_manager->getThresholdSource()==THRESHOLD_SOURCE_SIGNAL)
             {
                 Widgets::Painter::setColor(Widgets::Colors::selectedstate);
                 Widgets::Painter::drawRect(Widgets::Rect(Xposition+2, YOffset-5, widthOfCell-4, increment));

@@ -769,7 +769,7 @@ void AudioView::paintEvent() {
 
 	if(_manager.threshMode())
     {
-        if(_manager.getThresholdSource()==0)
+        if(_manager.getThresholdSource()==THRESHOLD_SOURCE_SIGNAL)
         {
             drawThreshold(screenWidth());
         }
@@ -817,6 +817,22 @@ void AudioView::drawZeroLine()
         glVertex3f(x, y-doth/2, 0.f);
         glEnd();
     }
+    
+    if(_manager.getThresholdSource()==THRESHOLD_SOURCE_ALL_EVENTS && _manager.getLastEventThresholded()!=-1)
+    {
+            Widgets::Painter::setColor(MARKER_COLORS[_manager.getLastEventThresholded() % MARKER_COLOR_NUM]);
+            std::stringstream o;
+            o << _manager.getLastEventThresholded();
+            int w = Widgets::Application::font()->characterWidth()*((int)o.str().size())+5;
+            int h = Widgets::Application::font()->characterHeight();
+
+            Widgets::Painter::drawRect(Widgets::Rect(x-w/2,20,w,h));
+            Widgets::Painter::setColor(Widgets::Color(30,30,30));
+            Widgets::Application::font()->draw(o.str().c_str(), x+1, 21, Widgets::AlignHCenter);
+    }
+    
+    
+    
 }
     
 void AudioView::drawThreshold(int screenw) {

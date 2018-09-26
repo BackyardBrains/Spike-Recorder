@@ -913,7 +913,7 @@ void RecordingManager::clear() {
 
     _markers.clear();
     _triggers.clear();
-
+    _lastThresholdedEvent = -1;
     _pos = 0;
     _selectedVDevice = 0;
 }
@@ -943,6 +943,7 @@ void RecordingManager::setPaused(bool pausing) {
         }
 		if(!pausing && _pos >= fileLength()-1) {
 			_triggers.clear();
+            _lastThresholdedEvent = -1;
 			setPos(0);
 		}
 	} else {
@@ -1012,6 +1013,7 @@ void RecordingManager::addTrigger(int64_t position)
 void RecordingManager::setThreshMode(bool threshMode) {
 	_threshMode = threshMode;
     _triggers.clear();
+    _lastThresholdedEvent = -1;
 }
 
 int RecordingManager::getThresholdSource()
@@ -1022,12 +1024,14 @@ int RecordingManager::getThresholdSource()
 void RecordingManager::setThresholdSource(int newThresholdSource)
 {
     _thresholdSource = newThresholdSource;
+    _lastThresholdedEvent = -1;
 
 }
 
 void RecordingManager::setThreshAvgCount(int threshAvgCount) {
 	_threshAvgCount = std::max(0,threshAvgCount);
 	_triggers.clear();
+    _lastThresholdedEvent = -1;
 }
 
 void RecordingManager::setSelectedVDevice(int virtualDevice) {
@@ -1036,11 +1040,13 @@ void RecordingManager::setSelectedVDevice(int virtualDevice) {
 
 	_selectedVDevice = virtualDevice;
 	_triggers.clear();
+    _lastThresholdedEvent = -1;
 }
 
 void RecordingManager::setVDeviceThreshold(int virtualDevice, int threshold) {
 	_virtualDevices[virtualDevice].threshold = threshold;
 	_triggers.clear();
+    _lastThresholdedEvent = -1;
 	thresholdChanged.emit();
 }
 
@@ -1058,9 +1064,14 @@ void RecordingManager::addMarker(const std::string &id, int64_t offset) {
 	char tempChar = id.at(0);
     int i_dec = tempChar -48;//std::stoi (id);
 
-    if((getThresholdSource() == i_dec || getThresholdSource()==10) &&  threshMode())
+    if((getThresholdSource() == i_dec || getThresholdSource()==THRESHOLD_SOURCE_ALL_EVENTS) &&  threshMode())
     {
+        if(getThresholdSource()==THRESHOLD_SOURCE_ALL_EVENTS)
+        {
+            _lastThresholdedEvent = i_dec;
+        }
          addTrigger(_pos + offset);
+        
     }
 }
 
@@ -1292,7 +1303,7 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
                                 //int i_dec = std::stoi (it->first);
                                 char tempChar = it->first.at(0);
                                 int i_dec = tempChar -48;
-                                if(getThresholdSource() == i_dec || getThresholdSource()==10)
+                                if(getThresholdSource() == i_dec || getThresholdSource()==THRESHOLD_SOURCE_ALL_EVENTS)
                                 {
                                     addTrigger(it->second);
                                 }

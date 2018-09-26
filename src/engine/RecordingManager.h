@@ -27,6 +27,9 @@
 #define AM_CARRIER_FREQUENCY 5000.0
 #define AM_DEMODULATION_CUTOFF 500.0
 
+#define THRESHOLD_SOURCE_SIGNAL 0
+#define THRESHOLD_SOURCE_ALL_EVENTS 10
+
 namespace BackyardBrains {
 
 class SampleBuffer;
@@ -99,6 +102,7 @@ public:
 	bool paused() const {return _paused;}
 	bool threshMode() const {return _threshMode;}
     void addTrigger(int64_t position);
+    
 	bool fileMode() const {return _fileMode;}
     std::list<std::string> serailPortsList() const {return _arduinoSerial.list;}
     std::list<ArduinoSerial::SerialPort> serailPorts() const {return _portScanningArduinoSerial.ports;}
@@ -110,7 +114,8 @@ public:
 	int selectedVDevice() const {return _selectedVDevice;}
     int getThresholdSource();
     void setThresholdSource(int newThresholdSource);
-
+    int getLastEventThresholded(void){return _lastThresholdedEvent;}
+    void clearLastEventThresholded(void){_lastThresholdedEvent = -1;}
 
 
 	std::vector<SpikeTrain> &spikeTrains() { return _spikeTrains; }
@@ -326,6 +331,7 @@ private:
     ///used to keep last sample for threshold so that we can detect crossing of
     //threshold
     int lastSampleForThreshold = 0;
+    int _lastThresholdedEvent = -1;
 
 	int _serialPortIndex;
 	ArduinoSerial _arduinoSerial;
