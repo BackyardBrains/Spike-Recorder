@@ -50,7 +50,7 @@ namespace BackyardBrains {
         plant = 2,
         heart = 3
     };
-    
+
     class RecordingManager;
 
     class ArduinoSerial {
@@ -137,6 +137,7 @@ namespace BackyardBrains {
         int messageBufferIndex;
         unsigned int escapeSequence[ESCAPE_SEQUENCE_LENGTH];
         unsigned int endOfescapeSequence[ESCAPE_SEQUENCE_LENGTH];
+        const std::string currentDateTime();
 
         #ifdef __APPLE__
             void macos_ports(io_iterator_t  * PortIterator);
@@ -149,6 +150,7 @@ namespace BackyardBrains {
         std::string _portName;
         bool _portOpened;
         bool triedToConfigureAgain;
+        int batchSizeForSerial;
     };
 
 

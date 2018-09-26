@@ -170,6 +170,7 @@ void Game::loadResources() {
     Widgets::TextureGL::load("data/e7.bmp");
     Widgets::TextureGL::load("data/e8.bmp");
     Widgets::TextureGL::load("data/e9.bmp");
+    Widgets::TextureGL::load("data/e10.bmp");
 
     Widgets::TextureGL::load("data/analysiscrossed.bmp");
     Widgets::TextureGL::load("data/fftcrossed.bmp");

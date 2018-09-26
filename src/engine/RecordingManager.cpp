@@ -1058,7 +1058,7 @@ void RecordingManager::addMarker(const std::string &id, int64_t offset) {
 	char tempChar = id.at(0);
     int i_dec = tempChar -48;//std::stoi (id);
 
-    if(getThresholdSource() == i_dec &&  threshMode())
+    if((getThresholdSource() == i_dec || getThresholdSource()==10) &&  threshMode())
     {
          addTrigger(_pos + offset);
     }
@@ -1281,7 +1281,7 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
                     triggered.emit();
             }
             else
-            {
+            {//if we are triggering on events
 
                     for(std::list<std::pair<std::string, int64_t> >::const_iterator it = markers().begin(); it != markers().end(); it++) {
                         try
@@ -1292,7 +1292,7 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
                                 //int i_dec = std::stoi (it->first);
                                 char tempChar = it->first.at(0);
                                 int i_dec = tempChar -48;
-                                if(getThresholdSource() == i_dec)
+                                if(getThresholdSource() == i_dec || getThresholdSource()==10)
                                 {
                                     addTrigger(it->second);
                                 }
