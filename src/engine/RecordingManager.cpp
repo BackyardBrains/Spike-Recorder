@@ -1305,6 +1305,10 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
                                 int i_dec = tempChar -48;
                                 if(getThresholdSource() == i_dec || getThresholdSource()==THRESHOLD_SOURCE_ALL_EVENTS)
                                 {
+                                    if(getThresholdSource()==THRESHOLD_SOURCE_ALL_EVENTS)
+                                    {
+                                        _lastThresholdedEvent = i_dec;
+                                    }
                                     addTrigger(it->second);
                                 }
                             }

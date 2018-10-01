@@ -776,7 +776,6 @@ void AudioView::paintEvent() {
         else
         {
             drawZeroLine();
-            
         }
     }
     else
