@@ -3,6 +3,11 @@
 #include "RecordingManager.h"
 #include "Log.h"
 
+
+#if defined(_WIN32)
+    #include <windows.h>
+#endif
+
 //BYB ones
 #define BYB_VID 0x2E73
 #define BYB_PID_MUSCLE_SB_PRO 0x1
@@ -18,6 +23,7 @@
 #define SIZE_OF_MAIN_CIRCULAR_BUFFER 40000
 #define BOARD_WITH_ADDITIONAL_INPUTS 1
 #define BOARD_WITH_HAMMER 4
+#define BOARD_WITH_JOYSTICK 5
 #define LOG_HID_SCANNING 1
 
 namespace BackyardBrains {
@@ -54,6 +60,18 @@ namespace BackyardBrains {
         restartDevice = false;
         handle = NULL;
 
+        #if defined(_WIN32)
+
+
+        keysForJoystick[0] = VK_UP;
+        keysForJoystick[1] = VK_DOWN;
+        keysForJoystick[2] = VK_LEFT;
+        keysForJoystick[3] = VK_RIGHT;
+        keysForJoystick[4] = VK_CONTROL;
+        keysForJoystick[5] = VK_MENU;
+        keysForJoystick[6] = VK_END;
+        keysForJoystick[7] = VK_SPACE;
+        #endif // defined
     }
 
 
@@ -292,6 +310,30 @@ namespace BackyardBrains {
             _manager->addMarker(std::string(1, mnum+'0'), offset+offsetin);
 
         }
+        if(typeOfMessage == "JOY")
+        {
+            currentButtonState = (unsigned int)valueOfMessage[0];
+            int j;
+            for( j =0;j<8;j++)
+            {
+                if(checkIfKeyWasPressed(j))
+                {
+                    #if defined(_WIN32)
+                     pressKey(keysForJoystick[j]);
+                    #endif // defined
+                }
+                if(checkIfKeyWasReleased(j))
+                {
+                     #if defined(_WIN32)
+                    releaseKey(keysForJoystick[j]);
+                    #endif // defined
+                }
+            }
+
+
+
+            previousButtonState = currentButtonState;
+        }
         if(typeOfMessage == "BRD")
         {
             currentAddOnBoard = (int)((unsigned int)valueOfMessage[0]-48);
@@ -305,6 +347,12 @@ namespace BackyardBrains {
                 //}
             }
             else if(currentAddOnBoard == BOARD_WITH_HAMMER)
+            {
+                    _samplingRate = 5000;
+                    _numberOfChannels  =3;
+                    restartDevice = true;
+            }
+            else if(currentAddOnBoard == BOARD_WITH_JOYSTICK)
             {
                     _samplingRate = 5000;
                     _numberOfChannels  =3;
@@ -343,6 +391,53 @@ namespace BackyardBrains {
         }
 
     }
+
+
+    bool HIDUsbManager::checkIfKeyWasPressed(int keyIndex)
+    {
+        uint8_t temp =1;
+        if((currentButtonState>>keyIndex) & temp)
+        {
+            if(!((previousButtonState>>keyIndex) & temp))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool HIDUsbManager::checkIfKeyWasReleased(int keyIndex)
+    {
+        uint8_t temp =1;
+        if((previousButtonState>>keyIndex) & temp)
+        {
+            if(!((currentButtonState>>keyIndex) & temp))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    #if defined(_WIN32)
+    void HIDUsbManager::pressKey(BYTE keyIndex)
+    {
+         keybd_event( keyIndex,
+                      0x45,
+                      KEYEVENTF_EXTENDEDKEY | 0,
+                      0 );
+    }
+
+    void HIDUsbManager::releaseKey(BYTE keyIndex)
+    {
+     keybd_event( keyIndex,
+                      0x45,
+                      KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP,
+                      0);
+    }
+
+    #endif
+
+
 
     int HIDUsbManager::addOnBoardPressent()
     {

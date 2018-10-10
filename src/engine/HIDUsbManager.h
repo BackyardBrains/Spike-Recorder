@@ -38,30 +38,30 @@ typedef enum
 
 namespace BackyardBrains {
 class RecordingManager;
-    
+
     typedef struct HIDManagerDevice {
-        
+
         HIDBoardType deviceType;
         std::string devicePath;
         std::string serialNumber;
-        
+
     }HIDManagerDevice;
-    
-    
+
+
 class HIDUsbManager
 {
     public:
         HIDUsbManager();
-    
+
         // scan
         void getAllDevicesList();
         std::list<HIDManagerDevice> list;
         int isBoardTypeAvailable(HIDBoardType bt);
-    
+
         // open / close
         int openDevice(RecordingManager * managerin, HIDBoardType hidBoardType);
         void closeDevice();
-    
+
         //read device
         int readDevice(int32_t * obuffer);
         int readOneBatch(int32_t * obuffer);
@@ -71,13 +71,13 @@ class HIDUsbManager
         void askForBoard();
         void askForRTRepeat();
 
-    
+
         //write to device
         int writeToDevice(const unsigned char *ptr, size_t len);
         void setNumberOfChannelsAndSamplingRate(int numberOfChannels, int samplingRate);
         void stopDevice();
         void putInFirmwareUpdateMode();
-    
+
         //properties and state
         int currentlyConnectedHIDBoardType();
         int maxSamplingRate();
@@ -94,7 +94,7 @@ class HIDUsbManager
         std::string hardwareVersion;
         std::string hardwareType;
     protected:
-    
+
         void startDevice();
         RecordingManager *_manager;
         char circularBuffer[SIZE_OF_CIRC_BUFFER];
@@ -131,7 +131,18 @@ class HIDUsbManager
         unsigned int tempHeadAndTailDifference;//used for precise events reference
         void enumerateDevicesForVIDAndPID(int invid, int inpid);
 
+
+        bool checkIfKeyWasPressed(int keyIndex);
+        bool checkIfKeyWasReleased(int keyIndex);
+        BYTE keysForJoystick[8];
+        #if defined(_WIN32)
+        void pressKey(BYTE keyIndex);
+        void releaseKey(BYTE keyIndex);
+        #endif
+
     private:
+        uint8_t previousButtonState;
+        uint8_t currentButtonState;
 }; //class end
 
 }//namespace

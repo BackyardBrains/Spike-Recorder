@@ -8,9 +8,12 @@
 #include <cstdlib>
 #include <SDL.h>
 
+
+
 #if defined(_WIN32)
     #include <unistd.h>
     #include <cmath>
+    #include <windows.h>
 #endif
 
 
@@ -171,7 +174,7 @@ bool RecordingManager::initHIDUSB(HIDBoardType deviceType)
     _serialMode = false;
     _hidMode = true;
 
-    if(_numOfHidChannels ==4)//this is hack for presentation with hammer
+    if(_numOfHidChannels ==4)
     {
         bindVirtualDevice(0);
         bindVirtualDevice(2);
@@ -1076,7 +1079,7 @@ void RecordingManager::addMarker(const std::string &id, int64_t offset) {
             _lastThresholdedEvent = i_dec;
         }
          addTrigger(_pos + offset);
-        
+
     }
 }
 
@@ -1943,6 +1946,7 @@ void RecordingManager::advance(uint32_t samples) {
 
 						if(_triggers.empty() || ntrigger - _triggers.front() > _sampleRate/10) {
 							if((thresh > 0 && channels[chan][i] > thresh && lastSampleForThreshold<thresh) || (thresh <= 0 && channels[chan][i] < thresh && lastSampleForThreshold>thresh)) {
+
 								_triggers.push_front(oldPos + i);
 								triggerd = true;
 								if(_triggers.size() > (unsigned int)_threshAvgCount)
