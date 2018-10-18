@@ -1681,6 +1681,29 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 
                         if(_triggers.empty() || ntrigger - _triggers.front() > _sampleRate/10) {
                             if((thresh > 0 && channels[chan][i] > thresh && lastSampleForThreshold < thresh) || (thresh <= 0 && channels[chan][i] < thresh && lastSampleForThreshold>thresh)) {
+
+
+
+    #if defined(_WIN32)
+
+         keybd_event( VK_SPACE,
+                      0x39 ,
+                      0,
+                      0 );
+
+
+
+         keybd_event( VK_SPACE,
+                      0x39,
+                      KEYEVENTF_KEYUP,
+                      0);
+
+
+    #endif
+
+
+
+
                                 _triggers.push_front(_pos + i);
                                 triggerd = true;
                                 if(_triggers.size() > (unsigned int)_threshAvgCount)//_threshAvgCount == 1
@@ -1757,6 +1780,11 @@ void RecordingManager::advanceHidMode(uint32_t samples)
         delete[] buffer;
     }
 }
+
+
+
+
+
 
 void RecordingManager::advance(uint32_t samples) {
 	// std::cout<<"Advance ==========================\n";

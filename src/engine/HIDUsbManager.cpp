@@ -61,16 +61,14 @@ namespace BackyardBrains {
         handle = NULL;
 
         #if defined(_WIN32)
-
-
         keysForJoystick[0] = VK_UP;
         keysForJoystick[1] = VK_DOWN;
         keysForJoystick[2] = VK_LEFT;
         keysForJoystick[3] = VK_RIGHT;
         keysForJoystick[4] = VK_CONTROL;
-        keysForJoystick[5] = VK_MENU;
-        keysForJoystick[6] = VK_END;
-        keysForJoystick[7] = VK_SPACE;
+        keysForJoystick[5] = VK_RETURN;
+        keysForJoystick[6] = 0x5A;//Z
+        keysForJoystick[7] = 0x58;//X
         #endif // defined
     }
 
@@ -312,23 +310,206 @@ namespace BackyardBrains {
         }
         if(typeOfMessage == "JOY")
         {
-            currentButtonState = (unsigned int)valueOfMessage[0];
+            uint8_t LSBByte= (unsigned int)valueOfMessage[0];
+            uint8_t MSBByte= (unsigned int)valueOfMessage[1];
+            currentButtonState = (MSBByte<<4 & 0xF0) | (LSBByte&0x0F);
+             Log::msg("Button state %u ------------------------",currentButtonState);
             int j;
-            for( j =0;j<8;j++)
+           /* for( j =0;j<8;j++)
             {
                 if(checkIfKeyWasPressed(j))
                 {
+
                     #if defined(_WIN32)
+                    Log::msg("Pressed %d",j);
                      pressKey(keysForJoystick[j]);
                     #endif // defined
                 }
                 if(checkIfKeyWasReleased(j))
                 {
                      #if defined(_WIN32)
+                     Log::msg("Released %d",j);
                     releaseKey(keysForJoystick[j]);
                     #endif // defined
                 }
-            }
+            }*/
+
+                if(checkIfKeyWasPressed(0))
+                {
+                    #if defined(_WIN32)
+                    Log::msg("Pressed w");
+                      keybd_event( VkKeyScan('w'),
+                      0x11,
+                      0,
+                      0 );
+                    #endif // defined
+                }
+
+                if(checkIfKeyWasPressed(1))
+                {
+                    #if defined(_WIN32)
+                    Log::msg("Pressed s");
+                    keybd_event( VkKeyScan('s'),
+                      0x1F,
+                      0,
+                      0 );
+                    #endif // defined
+                }
+                if(checkIfKeyWasPressed(2))
+                {
+                    #if defined(_WIN32)
+                    Log::msg("Pressed a");
+                     keybd_event( VkKeyScan('a'),
+                      0x1E,
+                      0,
+                      0 );
+                    #endif // defined
+                }
+                if(checkIfKeyWasPressed(3))
+                {
+                    #if defined(_WIN32)
+                    Log::msg("Pressed d");
+                    keybd_event( VkKeyScan('d'),
+                      0x20,
+                      0,
+                      0 );
+                    #endif // defined
+                }
+
+                if(checkIfKeyWasPressed(4))
+                {
+                    #if defined(_WIN32)
+                    Log::msg("Pressed z");
+                      keybd_event( VkKeyScan('z'),
+                      0x2C,
+                      0,
+                      0 );
+                    #endif // defined
+                }
+
+                 if(checkIfKeyWasPressed(5))
+                {
+                    #if defined(_WIN32)
+                    Log::msg("Pressed x");
+                      keybd_event( VkKeyScan('x'),
+                      0x2D,
+                      0,
+                      0 );
+                    #endif // defined
+                }
+
+                 if(checkIfKeyWasPressed(6))
+                {
+                    #if defined(_WIN32)
+                    Log::msg("Pressed c");
+                      keybd_event( VkKeyScan('c'),
+                      0x2E,
+                      0,
+                      0 );
+                    #endif // defined
+                }
+
+                if(checkIfKeyWasPressed(7))
+                {
+                    #if defined(_WIN32)
+                    Log::msg("Pressed v");
+                      keybd_event( VkKeyScan('v'),
+                      0x2F,
+                      0,
+                      0 );
+                    #endif // defined
+                }
+
+
+//---------------------------- release ------------------------------------------
+
+            if(checkIfKeyWasReleased(0))
+                {
+                    #if defined(_WIN32)
+                    Log::msg("Released w");
+                      keybd_event( VkKeyScan('w'),
+                      0x11,//0x91,
+                      KEYEVENTF_KEYUP,
+                      0 );
+                    #endif // defined
+                }
+
+                if(checkIfKeyWasReleased(1))
+                {
+                    #if defined(_WIN32)
+                    Log::msg("Released s");
+                    keybd_event( VkKeyScan('s'),
+                      0x1f,//0x9F,
+                      KEYEVENTF_KEYUP,
+                      0 );
+                    #endif // defined
+                }
+                if(checkIfKeyWasReleased(2))
+                {
+                    #if defined(_WIN32)
+                    Log::msg("Released a");
+                     keybd_event( VkKeyScan('a'),
+                      0x1e,//0x9E,
+                      KEYEVENTF_KEYUP,
+                      0 );
+                    #endif // defined
+                }
+                if(checkIfKeyWasReleased(3))
+                {
+                    #if defined(_WIN32)
+                    Log::msg("Released d");
+                     keybd_event( VkKeyScan('d'),
+                      0x20,//0xA0,
+                      KEYEVENTF_KEYUP,
+                      0 );
+                    #endif // defined
+                }
+
+                if(checkIfKeyWasReleased(4))
+                {
+                    #if defined(_WIN32)
+                    Log::msg("Released z");
+                      keybd_event( VkKeyScan('z'),
+                      0x2c,//0xAC,
+                      KEYEVENTF_KEYUP,
+                      0 );
+                    #endif // defined
+                }
+
+                 if(checkIfKeyWasReleased(5))
+                {
+                    #if defined(_WIN32)
+                    Log::msg("Released x");
+                      keybd_event( VkKeyScan('x'),
+                      0x2d,//0xAD,
+                      KEYEVENTF_KEYUP,
+                      0 );
+                    #endif // defined
+                }
+
+                 if(checkIfKeyWasReleased(6))
+                {
+                    #if defined(_WIN32)
+                    Log::msg("Released c");
+                      keybd_event( VkKeyScan('c'),
+                      0x2e,//0xAE,
+                      KEYEVENTF_KEYUP,
+                      0 );
+                    #endif // defined
+                }
+
+                if(checkIfKeyWasReleased(7))
+                {
+                    #if defined(_WIN32)
+                    Log::msg("Released v");
+                      keybd_event( VkKeyScan('v'),
+                      0x2f,//0xAF,
+                      KEYEVENTF_KEYUP,
+                      0 );
+                    #endif // definedvvv
+                }
+
+
 
 
 
@@ -420,19 +601,25 @@ namespace BackyardBrains {
     }
     #if defined(_WIN32)
     void HIDUsbManager::pressKey(BYTE keyIndex)
-    {
-         keybd_event( keyIndex,
-                      0x45,
-                      KEYEVENTF_EXTENDEDKEY | 0,
+    {//KEYEVENTF_EXTENDEDKEY |vvvv
+        /*
+         keybd_event( VK_RIGHT,//VK_RIGHT,//VkKeyScan('a'),
+                      0x4D,//0x4D,//0x1e,//keyIndex+128,
+                      KEYEVENTF_EXTENDEDKEY |0,//KEYEVENTF_EXTENDEDKEY |0,//0
+                      0 );
+                      */
+         keybd_event( VkKeyScan('z'),
+                      0x2C,
+                      0,
                       0 );
     }
 
     void HIDUsbManager::releaseKey(BYTE keyIndex)
     {
-     keybd_event( keyIndex,
-                      0x45,
-                      KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP,
-                      0);
+   /*  keybd_event( keyIndex,
+                       keyIndex+128,
+                       KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP,
+                      0);*/
     }
 
     #endif
