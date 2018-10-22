@@ -30,6 +30,8 @@
 #define THRESHOLD_SOURCE_SIGNAL 0
 #define THRESHOLD_SOURCE_ALL_EVENTS 10
 
+#define NUMBER_OF_AVAILABLE_CHANNELS_FOR_JOYSTICK 3
+
 namespace BackyardBrains {
 
 class SampleBuffer;
@@ -189,8 +191,10 @@ public:
     
     bool weShouldDisplayWaveform();
 
-
-
+    void setKeyForJoystick(int channelIndex, int keyIndex);
+    int getKeyIndexForJoystick(int channelIndex);
+    void initDefaultJoystickKeys();
+    
     void setCalibrationCoeficient(float newCalibrationCoeficient);
     void resetCalibrationCoeficient();
     bool isCalibrated(){return systemIsCalibrated;}
@@ -343,6 +347,11 @@ private:
 	clock_t timerUSB = 0;
 	clock_t timerEKG = 0;
 
+    int _keyIndexSetForJoystick[NUMBER_OF_AVAILABLE_CHANNELS_FOR_JOYSTICK];
+    int64_t _timeOfLastTriggerJoystick[NUMBER_OF_AVAILABLE_CHANNELS_FOR_JOYSTICK];
+    int _lastValueOfSignalJoystick[NUMBER_OF_AVAILABLE_CHANNELS_FOR_JOYSTICK];
+    
+    
 	int _firmwareUpdateStage;//this needs to be outside exclusive win block
 
     #if defined(_WIN32)

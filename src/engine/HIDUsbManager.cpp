@@ -61,6 +61,7 @@ namespace BackyardBrains {
         handle = NULL;
 
         #if defined(_WIN32)
+        /*
         keysForJoystick[0] = VK_UP;
         keysForJoystick[1] = VK_DOWN;
         keysForJoystick[2] = VK_LEFT;
@@ -69,6 +70,7 @@ namespace BackyardBrains {
         keysForJoystick[5] = VK_RETURN;
         keysForJoystick[6] = 0x5A;//Z
         keysForJoystick[7] = 0x58;//X
+        */
         #endif // defined
     }
 
@@ -314,25 +316,8 @@ namespace BackyardBrains {
             uint8_t MSBByte= (unsigned int)valueOfMessage[1];
             currentButtonState = (MSBByte<<4 & 0xF0) | (LSBByte&0x0F);
              Log::msg("Button state %u ------------------------",currentButtonState);
-            int j;
-           /* for( j =0;j<8;j++)
-            {
-                if(checkIfKeyWasPressed(j))
-                {
-
-                    #if defined(_WIN32)
-                    Log::msg("Pressed %d",j);
-                     pressKey(keysForJoystick[j]);
-                    #endif // defined
-                }
-                if(checkIfKeyWasReleased(j))
-                {
-                     #if defined(_WIN32)
-                     Log::msg("Released %d",j);
-                    releaseKey(keysForJoystick[j]);
-                    #endif // defined
-                }
-            }*/
+           
+         
 
                 if(checkIfKeyWasPressed(0))
                 {
@@ -599,30 +584,37 @@ namespace BackyardBrains {
         }
         return false;
     }
-    #if defined(_WIN32)
-    void HIDUsbManager::pressKey(BYTE keyIndex)
-    {//KEYEVENTF_EXTENDEDKEY |vvvv
+   
+    void HIDUsbManager::pressKey(int keyIndex)
+    {
+        
+        turnONJoystickLed(keyIndex);
+         #if defined(_WIN32)
+        //KEYEVENTF_EXTENDEDKEY |vvvv
         /*
          keybd_event( VK_RIGHT,//VK_RIGHT,//VkKeyScan('a'),
                       0x4D,//0x4D,//0x1e,//keyIndex+128,
                       KEYEVENTF_EXTENDEDKEY |0,//KEYEVENTF_EXTENDEDKEY |0,//0
                       0 );
                       */
-         keybd_event( VkKeyScan('z'),
+         /*keybd_event( VkKeyScan('z'),
                       0x2C,
                       0,
-                      0 );
+                      0 );*/
+        #endif
     }
 
-    void HIDUsbManager::releaseKey(BYTE keyIndex)
+    void HIDUsbManager::releaseKey(int keyIndex)
     {
+        #if defined(_WIN32)
    /*  keybd_event( keyIndex,
                        keyIndex+128,
                        KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP,
                       0);*/
+        #endif
     }
 
-    #endif
+    
 
 
 
@@ -1119,6 +1111,23 @@ namespace BackyardBrains {
         writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
     }
 
+    //
+    // Set state of LEDs on Joystick expansion board
+    //
+    void HIDUsbManager::setJoystickLeds(uint8_t state)
+    {
+        std::stringstream sstm;
+        sstm << "leds:"<<state<<";\n";
+        writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
+    }
+    
+    void HIDUsbManager::turnONJoystickLed(int ledIndex)
+    {
+        std::stringstream sstm;
+        sstm << "ledon:"<<ledIndex<<";\n";
+        writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
+    }
+    
     //
     // Ask microcontroller for state of power
     // rail. ON or OFF

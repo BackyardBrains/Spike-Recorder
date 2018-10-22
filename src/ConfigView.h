@@ -50,6 +50,11 @@ private:
         void setNumOfChannelsForTouchHandler(int selectionNum) {
             _parent->setSerialNumberOfChannels(selectionNum);
         }
+        
+        void changeKeyForJoystick(int selectionNum)
+        {
+            _parent->changeKeysForJoystick(_virtualDevice, selectionNum);
+        }
 	private:
 		int _virtualDevice;
 		ConfigView *_parent;
@@ -79,6 +84,9 @@ private:
     TouchDropDownList * touchFirmwareListWidget;
     DropDownList * numberOfChannelsWidget;
     Widgets::PushButton *_connectButton;
+    
+    std::vector<DropDownList *> joystickKeyDropdowns;
+
 
 
     //HID usb connection and firmware update
@@ -115,7 +123,7 @@ private:
     void highFilterTIValueChanged(std::string newString);
     void calibratePressed();
 
-
+    void changeKeysForJoystick(int channelIndex, int keyIndex);
 
 };
 

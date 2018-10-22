@@ -71,6 +71,8 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
     _arduinoSerial.setRecordingManager(this);
 
     _portScanningArduinoSerial.startScanningForArduinos(&_arduinoSerial);
+    
+    initDefaultJoystickKeys();
 }
 
 RecordingManager::~RecordingManager() {
@@ -1673,37 +1675,56 @@ void RecordingManager::advanceHidMode(uint32_t samples)
                 for(DWORD i = 0; i < (unsigned int)samplesRead; i++) {
 
                     channels[chan][i] -= dcBias;//substract DC offset from channels data
-
+                    const int thresh = _virtualDevices[_selectedVDevice].threshold;
+                    const int64_t ntrigger = _pos + i;
+                    //--------------- joystick related code --------------------------
+                    if((ntrigger - _timeOfLastTriggerJoystick[chan])> _sampleRate/10)
+                    {
+                        if((thresh > 0 && channels[chan][i] > thresh && _lastValueOfSignalJoystick[chan] < thresh) || (thresh <= 0 && channels[chan][i] < thresh && _lastValueOfSignalJoystick[chan]>thresh))
+                        {
+                            //we thresholded on signal for one channel
+                            _timeOfLastTriggerJoystick[chan] = ntrigger;
+                            if(_keyIndexSetForJoystick[chan]>0)//zero is "none of the keys selected"
+                            {
+                                _hidUsbManager.pressKey(_keyIndexSetForJoystick[chan]-1);
+                                _hidUsbManager.releaseKey(_keyIndexSetForJoystick[chan]-1);
+                            }
+                        
+                            
+                          /*  #if defined(_WIN32)
+                                    keybd_event( VK_SPACE,
+                                                0x39 ,
+                                                0,
+                                                0 );
+                            
+                            
+                            
+                                    keybd_event( VK_SPACE,
+                                                0x39,
+                                                KEYEVENTF_KEYUP,
+                                                0);
+                            #endif*/
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                        }
+                    }
+                    _lastValueOfSignalJoystick[chan] = channels[chan][i];
+                    //-------------------- end of joystick related code --------------
+                    
                     //add position of data samples that are greater than threshold to FIFO list _triggers
                     if(_threshMode && _devices.begin()->index*channum+chan == _selectedVDevice) {
-                        const int64_t ntrigger = _pos + i;
-                        const int thresh = _virtualDevices[_selectedVDevice].threshold;
+                        
+                        
 
                         if(_triggers.empty() || ntrigger - _triggers.front() > _sampleRate/10) {
                             if((thresh > 0 && channels[chan][i] > thresh && lastSampleForThreshold < thresh) || (thresh <= 0 && channels[chan][i] < thresh && lastSampleForThreshold>thresh)) {
-
-
-
-    #if defined(_WIN32)
-
-         keybd_event( VK_SPACE,
-                      0x39 ,
-                      0,
-                      0 );
-
-
-
-         keybd_event( VK_SPACE,
-                      0x39,
-                      KEYEVENTF_KEYUP,
-                      0);
-
-
-    #endif
-
-
-
-
                                 _triggers.push_front(_pos + i);
                                 triggerd = true;
                                 if(_triggers.size() > (unsigned int)_threshAvgCount)//_threshAvgCount == 1
@@ -2464,6 +2485,38 @@ SampleBuffer *RecordingManager::sampleBuffer(int virtualDeviceIndex) {
 	return result;
 }
 
+#pragma mark - Joystick related
+    
+void RecordingManager::setKeyForJoystick(int channelIndex, int keyIndex)
+{
+    if(channelIndex<NUMBER_OF_AVAILABLE_CHANNELS_FOR_JOYSTICK && channelIndex>=0)
+    {
+        _keyIndexSetForJoystick[channelIndex] = keyIndex;
+    }
+}
+    
+int RecordingManager::getKeyIndexForJoystick(int channelIndex)
+{
+    if(channelIndex<NUMBER_OF_AVAILABLE_CHANNELS_FOR_JOYSTICK && channelIndex>=0)
+    {
+        return _keyIndexSetForJoystick[channelIndex];
+    }
+    else
+    {
+        return 0;
+    }
+}
+    
+void RecordingManager::initDefaultJoystickKeys()
+{
+    for(int i=0;i<NUMBER_OF_AVAILABLE_CHANNELS_FOR_JOYSTICK;i++)
+    {
+        _keyIndexSetForJoystick[i] =0;
+        _timeOfLastTriggerJoystick[i] = 0;
+        _lastValueOfSignalJoystick[i] = 0;
+    }
+}
+    
 #pragma mark - Input Config related
 
 //
