@@ -61,16 +61,39 @@ namespace BackyardBrains {
         handle = NULL;
 
         #if defined(_WIN32)
-        /*
-        keysForJoystick[0] = VK_UP;
-        keysForJoystick[1] = VK_DOWN;
-        keysForJoystick[2] = VK_LEFT;
-        keysForJoystick[3] = VK_RIGHT;
-        keysForJoystick[4] = VK_CONTROL;
-        keysForJoystick[5] = VK_RETURN;
-        keysForJoystick[6] = 0x5A;//Z
-        keysForJoystick[7] = 0x58;//X
-        */
+
+        keysForJoystick[0].bVk = VkKeyScan('w');
+        keysForJoystick[0].bScan = 0x11;
+        keysForJoystick[0].dwFlags = 0;
+
+        keysForJoystick[1].bVk = VkKeyScan('s');
+        keysForJoystick[1].bScan = 0x1F;
+        keysForJoystick[1].dwFlags = 0;
+
+        keysForJoystick[2].bVk = VkKeyScan('a');
+        keysForJoystick[2].bScan = 0x1E;
+        keysForJoystick[2].dwFlags = 0;
+
+        keysForJoystick[3].bVk = VkKeyScan('d');
+        keysForJoystick[3].bScan = 0x20;
+        keysForJoystick[3].dwFlags = 0;
+
+        keysForJoystick[4].bVk = VkKeyScan('z');
+        keysForJoystick[4].bScan = 0x2C;
+        keysForJoystick[4].dwFlags = 0;
+
+        keysForJoystick[5].bVk = VkKeyScan('x');
+        keysForJoystick[5].bScan = 0x2D;
+        keysForJoystick[5].dwFlags = 0;
+
+        keysForJoystick[6].bVk = VkKeyScan('c');
+        keysForJoystick[6].bScan = 0x2E;
+        keysForJoystick[6].dwFlags = 0;
+
+        keysForJoystick[7].bVk = VkKeyScan('v');
+        keysForJoystick[7].bScan = 0x2F;
+        keysForJoystick[7].dwFlags = 0;
+
         #endif // defined
     }
 
@@ -316,8 +339,8 @@ namespace BackyardBrains {
             uint8_t MSBByte= (unsigned int)valueOfMessage[1];
             currentButtonState = (MSBByte<<4 & 0xF0) | (LSBByte&0x0F);
              Log::msg("Button state %u ------------------------",currentButtonState);
-           
-         
+
+
 
                 if(checkIfKeyWasPressed(0))
                 {
@@ -584,18 +607,24 @@ namespace BackyardBrains {
         }
         return false;
     }
-   
+
     void HIDUsbManager::pressKey(int keyIndex)
     {
-        
+
         turnONJoystickLed(keyIndex);
+        #if defined(_WIN32)
+        keybd_event( keysForJoystick[keyIndex].bVk,
+                      keysForJoystick[keyIndex].bScan,
+                      keysForJoystick[keyIndex].dwFlags,
+                      0 );
+
+        #endif
          #if defined(_WIN32)
         //KEYEVENTF_EXTENDEDKEY |vvvv
         /*
          keybd_event( VK_RIGHT,//VK_RIGHT,//VkKeyScan('a'),
                       0x4D,//0x4D,//0x1e,//keyIndex+128,
-                      KEYEVENTF_EXTENDEDKEY |0,//KEYEVENTF_EXTENDEDKEY |0,//0
-                      0 );
+                      KEYEVENTF_EXTENDEDKEY |0,//KEYEVENTF_EXTENDEDKEY |0,//
                       */
          /*keybd_event( VkKeyScan('z'),
                       0x2C,
@@ -607,6 +636,11 @@ namespace BackyardBrains {
     void HIDUsbManager::releaseKey(int keyIndex)
     {
         #if defined(_WIN32)
+
+        keybd_event( keysForJoystick[keyIndex].bVk,
+                      keysForJoystick[keyIndex].bScan,
+                      keysForJoystick[keyIndex].dwFlags | KEYEVENTF_KEYUP,
+                      0 );
    /*  keybd_event( keyIndex,
                        keyIndex+128,
                        KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP,
@@ -614,7 +648,7 @@ namespace BackyardBrains {
         #endif
     }
 
-    
+
 
 
 
@@ -1120,14 +1154,14 @@ namespace BackyardBrains {
         sstm << "leds:"<<state<<";\n";
         writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
     }
-    
+
     void HIDUsbManager::turnONJoystickLed(int ledIndex)
     {
         std::stringstream sstm;
         sstm << "ledon:"<<ledIndex<<";\n";
         writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
     }
-    
+
     //
     // Ask microcontroller for state of power
     // rail. ON or OFF
