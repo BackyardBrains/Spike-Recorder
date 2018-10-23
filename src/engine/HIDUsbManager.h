@@ -46,12 +46,12 @@ class RecordingManager;
         std::string serialNumber;
 
     }HIDManagerDevice;
-    
+
     #ifdef _WIN32
         typedef struct KeyForJoystick {
-            BYTE      bVk,
-            BYTE      bScan,
-            DWORD     dwFlags,
+            BYTE      bVk;
+            BYTE      bScan;
+            DWORD     dwFlags;
         }KeyForJoystick;
     #endif
 
@@ -142,13 +142,13 @@ class HIDUsbManager
 
         bool checkIfKeyWasPressed(int keyIndex);
         bool checkIfKeyWasReleased(int keyIndex);
-    
-    
+
+
         #if defined(_WIN32)
         KeyForJoystick keysForJoystick[8];
-    
+
         #endif
-    
+
         void setJoystickLeds(uint8_t state);
         void turnONJoystickLed(int ledIndex);
 
