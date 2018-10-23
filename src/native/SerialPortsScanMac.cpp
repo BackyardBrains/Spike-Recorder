@@ -121,6 +121,10 @@ namespace BackyardBrains {
             {
                 Log::msg("Interesting board");
             }
+            else if(strcmp(deviceName, "FT231X USB UART")==0)
+            {
+                Log::msg("Interesting board");
+            }
             else if(strcmp(deviceName, "32-bit MFi Development Kit")==0)
             {
                  Log::msg("Interesting board");
