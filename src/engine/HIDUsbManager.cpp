@@ -618,18 +618,27 @@ namespace BackyardBrains {
                       keysForJoystick[keyIndex].dwFlags,
                       0 );
 
+
+
+                    /*
+                    keybd_event( VkKeyScan('z'),
+                                          0x2c,
+                                          0,
+                                          0 );
+
+                    */
         #endif
          #if defined(_WIN32)
-        //KEYEVENTF_EXTENDEDKEY |vvvv
-        /*
-         keybd_event( VK_RIGHT,//VK_RIGHT,//VkKeyScan('a'),
-                      0x4D,//0x4D,//0x1e,//keyIndex+128,
-                      KEYEVENTF_EXTENDEDKEY |0,//KEYEVENTF_EXTENDEDKEY |0,//
-                      */
-         /*keybd_event( VkKeyScan('z'),
-                      0x2C,
-                      0,
-                      0 );*/
+                    //KEYEVENTF_EXTENDEDKEY |vvvvzzzzz
+                    /*
+                     keybd_event( VK_RIGHT,//VK_RIGHT,//VkKeyScan('a'),
+                                  0x4D,//0x4D,//0x1e,//keyIndex+128,
+                                  KEYEVENTF_EXTENDEDKEY |0,//KEYEVENTF_EXTENDEDKEY |0,//zzzzzzzzz
+                                  */
+                     /*keybd_event( VkKeyScan('z'),
+                                  0x2C,
+                                  0,
+                                  0 );*/
         #endif
     }
 
@@ -641,6 +650,12 @@ namespace BackyardBrains {
                       keysForJoystick[keyIndex].bScan,
                       keysForJoystick[keyIndex].dwFlags | KEYEVENTF_KEYUP,
                       0 );
+
+
+/*keybd_event( VkKeyScan('z'),
+                      0x2c,//0xAC,
+                      KEYEVENTF_KEYUP,
+                      0 );*/
    /*  keybd_event( keyIndex,
                        keyIndex+128,
                        KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP,

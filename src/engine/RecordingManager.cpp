@@ -71,7 +71,7 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
     _arduinoSerial.setRecordingManager(this);
 
     _portScanningArduinoSerial.startScanningForArduinos(&_arduinoSerial);
-    
+
     initDefaultJoystickKeys();
 }
 
@@ -1665,6 +1665,16 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 	        }
 	    }
 
+        if(keyReleaseList.size()>0)
+        {
+            for(int i=keyReleaseList.size();i>0;i--)
+            {
+                    _hidUsbManager.releaseKey(keyReleaseList.back());
+                    keyReleaseList.pop_back();
+            }
+
+        }
+
         bool triggerd = false;
         for(int chan = 0; chan < channum; chan++) {
             //calculate DC offset in fist 10 sec for channel
@@ -1687,41 +1697,42 @@ void RecordingManager::advanceHidMode(uint32_t samples)
                             if(_keyIndexSetForJoystick[chan]>0)//zero is "none of the keys selected"
                             {
                                 _hidUsbManager.pressKey(_keyIndexSetForJoystick[chan]-1);
-                                _hidUsbManager.releaseKey(_keyIndexSetForJoystick[chan]-1);
+                                keyReleaseList.push_back(_keyIndexSetForJoystick[chan]-1);
+
                             }
-                        
-                            
+
+
                           /*  #if defined(_WIN32)
                                     keybd_event( VK_SPACE,
                                                 0x39 ,
                                                 0,
                                                 0 );
-                            
-                            
-                            
+
+
+
                                     keybd_event( VK_SPACE,
                                                 0x39,
                                                 KEYEVENTF_KEYUP,
                                                 0);
                             #endif*/
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
+
+
+
+
+
+
+
+
+
                         }
                     }
                     _lastValueOfSignalJoystick[chan] = channels[chan][i];
                     //-------------------- end of joystick related code --------------
-                    
+
                     //add position of data samples that are greater than threshold to FIFO list _triggers
                     if(_threshMode && _devices.begin()->index*channum+chan == _selectedVDevice) {
-                        
-                        
+
+
 
                         if(_triggers.empty() || ntrigger - _triggers.front() > _sampleRate/10) {
                             if((thresh > 0 && channels[chan][i] > thresh && lastSampleForThreshold < thresh) || (thresh <= 0 && channels[chan][i] < thresh && lastSampleForThreshold>thresh)) {
@@ -2486,7 +2497,7 @@ SampleBuffer *RecordingManager::sampleBuffer(int virtualDeviceIndex) {
 }
 
 #pragma mark - Joystick related
-    
+
 void RecordingManager::setKeyForJoystick(int channelIndex, int keyIndex)
 {
     if(channelIndex<NUMBER_OF_AVAILABLE_CHANNELS_FOR_JOYSTICK && channelIndex>=0)
@@ -2494,7 +2505,7 @@ void RecordingManager::setKeyForJoystick(int channelIndex, int keyIndex)
         _keyIndexSetForJoystick[channelIndex] = keyIndex;
     }
 }
-    
+
 int RecordingManager::getKeyIndexForJoystick(int channelIndex)
 {
     if(channelIndex<NUMBER_OF_AVAILABLE_CHANNELS_FOR_JOYSTICK && channelIndex>=0)
@@ -2506,7 +2517,7 @@ int RecordingManager::getKeyIndexForJoystick(int channelIndex)
         return 0;
     }
 }
-    
+
 void RecordingManager::initDefaultJoystickKeys()
 {
     for(int i=0;i<NUMBER_OF_AVAILABLE_CHANNELS_FOR_JOYSTICK;i++)
@@ -2516,7 +2527,7 @@ void RecordingManager::initDefaultJoystickKeys()
         _lastValueOfSignalJoystick[i] = 0;
     }
 }
-    
+
 #pragma mark - Input Config related
 
 //
