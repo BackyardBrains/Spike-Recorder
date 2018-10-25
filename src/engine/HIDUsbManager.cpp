@@ -1,6 +1,7 @@
 #include "HIDUsbManager.h"
 #include <sstream>
 #include "RecordingManager.h"
+#include "native/KeyboardGenerator.h"
 #include "Log.h"
 
 
@@ -419,6 +420,9 @@ namespace BackyardBrains {
 
                 if(checkIfKeyWasPressed(7))
                 {
+#if defined(__APPLE__)
+                   // simulateKeyPress();
+#endif
                     #if defined(_WIN32)
                     Log::msg("Pressed v");
                       keybd_event( VkKeyScan('v'),
