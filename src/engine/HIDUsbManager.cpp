@@ -621,33 +621,13 @@ namespace BackyardBrains {
                       keysForJoystick[keyIndex].bScan,
                       keysForJoystick[keyIndex].dwFlags,
                       0 );
-
-
-
-                    /*
-                    keybd_event( VkKeyScan('z'),
-                                          0x2c,
-                                          0,
-                                          0 );
-
-                    */
         #endif
-         #if defined(_WIN32)
-                    //KEYEVENTF_EXTENDEDKEY |vvvvzzzzz
-                    /*
-                     keybd_event( VK_RIGHT,//VK_RIGHT,//VkKeyScan('a'),
-                                  0x4D,//0x4D,//0x1e,//keyIndex+128,
-                                  KEYEVENTF_EXTENDEDKEY |0,//KEYEVENTF_EXTENDEDKEY |0,//zzzzzzzzz
-                                  */
-                     /*keybd_event( VkKeyScan('z'),
-                                  0x2C,
-                                  0,
-                                  0 );*/
-        #endif
+
     }
 
     void HIDUsbManager::releaseKey(int keyIndex)
     {
+        turnOFFJoystickLed(keyIndex);
         #if defined(_WIN32)
 
         keybd_event( keysForJoystick[keyIndex].bVk,
@@ -656,10 +636,6 @@ namespace BackyardBrains {
                       0 );
 
 
-/*keybd_event( VkKeyScan('z'),
-                      0x2c,//0xAC,
-                      KEYEVENTF_KEYUP,
-                      0 );*/
    /*  keybd_event( keyIndex,
                        keyIndex+128,
                        KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP,
@@ -1178,6 +1154,13 @@ namespace BackyardBrains {
     {
         std::stringstream sstm;
         sstm << "ledon:"<<ledIndex<<";\n";
+        writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
+    }
+
+    void HIDUsbManager::turnOFFJoystickLed(int ledIndex)
+    {
+        std::stringstream sstm;
+        sstm << "ledoff:"<<ledIndex<<";\n";
         writeToDevice((unsigned char*)(sstm.str().c_str()),sstm.str().length());
     }
 

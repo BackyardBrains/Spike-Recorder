@@ -151,7 +151,7 @@ class HIDUsbManager
 
         void setJoystickLeds(uint8_t state);
         void turnONJoystickLed(int ledIndex);
-
+        void turnOFFJoystickLed(int ledIndex);
     private:
         uint8_t previousButtonState;
         uint8_t currentButtonState;

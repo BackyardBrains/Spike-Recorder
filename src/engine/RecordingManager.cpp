@@ -1665,7 +1665,7 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 	        }
 	    }
 
-        if(keyReleaseList.size()>0)
+       /* if(keyReleaseList.size()>0)
         {
             for(int i=keyReleaseList.size();i>0;i--)
             {
@@ -1674,8 +1674,9 @@ void RecordingManager::advanceHidMode(uint32_t samples)
             }
 
         }
-
+*/
         bool triggerd = false;
+        int samplerateDiv10 = _sampleRate/10;
         for(int chan = 0; chan < channum; chan++) {
             //calculate DC offset in fist 10 sec for channel
             int dcBias = _devices.begin()->dcBiasSum[chan]/_devices.begin()->dcBiasNum;
@@ -1688,16 +1689,30 @@ void RecordingManager::advanceHidMode(uint32_t samples)
                     const int thresh = _virtualDevices[_selectedVDevice].threshold;
                     const int64_t ntrigger = _pos + i;
                     //--------------- joystick related code --------------------------
-                    if((ntrigger - _timeOfLastTriggerJoystick[chan])> _sampleRate/10)
+
+                    const int currentthresh = _virtualDevices[chan].threshold;
+                    if(_timersForKeyRelease[chan]>0)
                     {
-                        if((thresh > 0 && channels[chan][i] > thresh && _lastValueOfSignalJoystick[chan] < thresh) || (thresh <= 0 && channels[chan][i] < thresh && _lastValueOfSignalJoystick[chan]>thresh))
+                        _timersForKeyRelease[chan] --;
+                        if(_timersForKeyRelease[chan]==0)
+                        {
+                            _hidUsbManager.releaseKey( _keyIndexSetForJoystick[chan]-1);
+                        }
+                    }
+                    if((ntrigger - _timeOfLastTriggerJoystick[chan])> samplerateDiv10)
+                    {
+                        if((currentthresh > 0 && channels[chan][i] > currentthresh && _lastValueOfSignalJoystick[chan] < currentthresh) || (currentthresh <= 0 && channels[chan][i] < currentthresh && _lastValueOfSignalJoystick[chan]>currentthresh))
                         {
                             //we thresholded on signal for one channel
                             _timeOfLastTriggerJoystick[chan] = ntrigger;
                             if(_keyIndexSetForJoystick[chan]>0)//zero is "none of the keys selected"
                             {
-                                _hidUsbManager.pressKey(_keyIndexSetForJoystick[chan]-1);
-                                keyReleaseList.push_back(_keyIndexSetForJoystick[chan]-1);
+                                if(_timersForKeyRelease[chan]==0)
+                                {
+                                    _hidUsbManager.pressKey(_keyIndexSetForJoystick[chan]-1);
+                                }
+                                _timersForKeyRelease[chan] = MAX_TIMER_FOR_KEY_RELEASE;
+                                //keyReleaseList.push_back(_keyIndexSetForJoystick[chan]-1);
 
                             }
 
@@ -1734,7 +1749,7 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 
 
 
-                        if(_triggers.empty() || ntrigger - _triggers.front() > _sampleRate/10) {
+                        if(_triggers.empty() || ntrigger - _triggers.front() >samplerateDiv10) {
                             if((thresh > 0 && channels[chan][i] > thresh && lastSampleForThreshold < thresh) || (thresh <= 0 && channels[chan][i] < thresh && lastSampleForThreshold>thresh)) {
                                 _triggers.push_front(_pos + i);
                                 triggerd = true;

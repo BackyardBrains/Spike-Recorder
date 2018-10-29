@@ -31,7 +31,7 @@
 #define THRESHOLD_SOURCE_ALL_EVENTS 10
 
 #define NUMBER_OF_AVAILABLE_CHANNELS_FOR_JOYSTICK 3
-
+#define MAX_TIMER_FOR_KEY_RELEASE 700
 namespace BackyardBrains {
 
 class SampleBuffer;
@@ -166,7 +166,6 @@ public:
     bool _HIDShouldBeReloaded;
     int currentlyConnectedHIDBoardType();
     bool isHIDBoardTypeAvailable(HIDBoardType hd);
-    std::vector<int> keyReleaseList;
 
 
     int numberOfChannels();
@@ -350,7 +349,8 @@ private:
     int _keyIndexSetForJoystick[NUMBER_OF_AVAILABLE_CHANNELS_FOR_JOYSTICK];
     int64_t _timeOfLastTriggerJoystick[NUMBER_OF_AVAILABLE_CHANNELS_FOR_JOYSTICK];
     int _lastValueOfSignalJoystick[NUMBER_OF_AVAILABLE_CHANNELS_FOR_JOYSTICK];
-
+    std::vector<int> keyReleaseList;
+    int64_t _timersForKeyRelease[NUMBER_OF_AVAILABLE_CHANNELS_FOR_JOYSTICK];
 
 	int _firmwareUpdateStage;//this needs to be outside exclusive win block
 
