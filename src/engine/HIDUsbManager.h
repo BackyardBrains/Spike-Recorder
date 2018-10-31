@@ -47,6 +47,13 @@ class RecordingManager;
 
     }HIDManagerDevice;
 
+    #ifdef _WIN32
+        typedef struct KeyForJoystick {
+            BYTE      bVk;
+            BYTE      bScan;
+            DWORD     dwFlags;
+        }KeyForJoystick;
+    #endif
 
 class HIDUsbManager
 {
@@ -70,7 +77,8 @@ class HIDUsbManager
         void askForStateOfPowerRail();
         void askForBoard();
         void askForRTRepeat();
-
+        void pressKey(int keyIndex);
+        void releaseKey(int keyIndex);
 
         //write to device
         int writeToDevice(const unsigned char *ptr, size_t len);
@@ -134,12 +142,16 @@ class HIDUsbManager
 
         bool checkIfKeyWasPressed(int keyIndex);
         bool checkIfKeyWasReleased(int keyIndex);
-        BYTE keysForJoystick[8];
+
+
         #if defined(_WIN32)
-        void pressKey(BYTE keyIndex);
-        void releaseKey(BYTE keyIndex);
+        KeyForJoystick keysForJoystick[8];
+
         #endif
 
+        void setJoystickLeds(uint8_t state);
+        void turnONJoystickLed(int ledIndex);
+        void turnOFFJoystickLed(int ledIndex);
     private:
         uint8_t previousButtonState;
         uint8_t currentButtonState;

@@ -11,6 +11,7 @@
 #include "widgets/ErrorBox.h"
 #include "widgets/Label.h"
 #include "widgets/ErrorBox.h"
+#define BOARD_WITH_JOYSTICK 5
 
 #include "DropDownList.h"
 #include "AudioView.h"
@@ -62,6 +63,7 @@ void ConfigView::SetupScreen()
         _clrs.resize(_manager.virtualDevices().size());
         _catchers.reserve(_clrs.size());
     }
+
 
     Log::msg("Make box layout");
 	Widgets::Widget *group = new Widgets::Widget(this);
@@ -276,6 +278,7 @@ void ConfigView::SetupScreen()
 
     //----------- Color chooser for channels --------------------------------
 
+    joystickKeyDropdowns.resize(3);
 
     if(weAreOnTouchScreen)
     {
@@ -332,7 +335,33 @@ void ConfigView::SetupScreen()
 
             Log::msg("Signal catcher");
             _catchers.push_back(SignalCatcher(i, this));
-            _clrs[i]->selectionChanged.connect(&_catchers[i], &SignalCatcher::catchColor);
+            _clrs[i]->selectionChanged.connect(&_catchers[_catchers.size()-1], &SignalCatcher::catchColor);
+
+
+            //create dropdowns for selection of keys for Joystick
+            if(_manager.currentAddOnBoard() == BOARD_WITH_JOYSTICK)
+            {
+                    Log::msg("Create dropdown for keys");
+                    joystickKeyDropdowns[i] = new DropDownList(group, 100,30);
+                    joystickKeyDropdowns[i]->clear();
+                    Log::msg("Add items");
+                    joystickKeyDropdowns[i]->addItem("None");
+                    joystickKeyDropdowns[i]->addItem("w");
+                    joystickKeyDropdowns[i]->addItem("s");
+                    joystickKeyDropdowns[i]->addItem("a");
+                    joystickKeyDropdowns[i]->addItem("d");
+                    joystickKeyDropdowns[i]->addItem("z");
+                    joystickKeyDropdowns[i]->addItem("x");
+                    joystickKeyDropdowns[i]->addItem("c");
+                    joystickKeyDropdowns[i]->addItem("v");
+                    Log::msg("Set selection");
+                    joystickKeyDropdowns[i]->setSelection(_manager.getKeyIndexForJoystick(i));
+                    Log::msg("Signal catcher");
+                    _catchers.push_back(SignalCatcher(i, this));
+                    Log::msg("Connect other signal catchers");
+                    joystickKeyDropdowns[i]->indexChanged.connect(&_catchers[_catchers.size()-1], &SignalCatcher::changeKeyForJoystick);
+            }
+
             Log::msg("Create label");
             Widgets::Label *name = new Widgets::Label(group);
             Log::msg("get name of virtual device");
@@ -342,6 +371,12 @@ void ConfigView::SetupScreen()
             Widgets::BoxLayout *ghbox = new Widgets::BoxLayout(Widgets::Horizontal);
             Log::msg("Add to gvbox");
             ghbox->addWidget(_clrs[i]);
+
+            if(_manager.currentAddOnBoard() == BOARD_WITH_JOYSTICK)
+            {
+                ghbox->addSpacing(20);
+                ghbox->addWidget(joystickKeyDropdowns[i]);
+            }
             ghbox->addSpacing(20);
             ghbox->addWidget(name,Widgets::AlignVCenter);
             gvbox->addLayout(ghbox);
@@ -1222,5 +1257,10 @@ void ConfigView::calibratePressed()
 
 }
 
+
+void ConfigView::changeKeysForJoystick(int channelIndex, int keyIndex)
+{
+    _manager.setKeyForJoystick(channelIndex, keyIndex);
+}
 
 }
