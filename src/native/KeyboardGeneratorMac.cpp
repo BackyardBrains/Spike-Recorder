@@ -9,11 +9,12 @@
 #include <stdio.h>
 #include "KeyboardGenerator.h"
 #include <CoreGraphics/CoreGraphics.h>
+#include <Carbon/Carbon.h>
 namespace BackyardBrains {
     void simulateKeyPress()
     {
-        const CGKeyCode keyCode = 0x12;
-        
+        const CGKeyCode keyCode = 0x01;
+        /*
         CGEventSourceRef source = CGEventSourceCreate(kCGEventSourceStateCombinedSessionState);
         CGEventRef eventDown = CGEventCreateKeyboardEvent(source, keyCode, true);
         CGEventSetFlags(eventDown, kCGEventFlagMaskCommand);
@@ -28,6 +29,41 @@ namespace BackyardBrains {
         
         CFRelease(eventUp);
         CFRelease(eventDown);
-        CFRelease(source);
+        CFRelease(source);*/
+        
+        
+        
+        
+        
+        /*CGEventFlags flags = kCGEventFlagMaskShift;
+        CGEventRef ev;
+        CGEventSourceRef source = CGEventSourceCreate (kCGEventSourceStateCombinedSessionState);
+        
+        //press down
+        ev = CGEventCreateKeyboardEvent (source, keyCode, true);
+        CGEventSetFlags(ev,flags | CGEventGetFlags(ev)); //combine flags
+        CGEventPost(kCGHIDEventTap,ev);
+        CFRelease(ev);
+        
+        //press up
+        ev = CGEventCreateKeyboardEvent (source, keyCode, false);
+        CGEventSetFlags(ev,flags | CGEventGetFlags(ev)); //combine flags
+        CGEventPost(kCGHIDEventTap,ev);
+        CFRelease(ev);
+        
+        CFRelease(source);*/
+        
+        
+        
+       /* CGEventRef downEvt = CGEventCreateKeyboardEvent( NULL, 0, true );
+        CGEventRef upEvt = CGEventCreateKeyboardEvent( NULL, 0, false );
+        UniChar oneChar = '1';
+        CGEventKeyboardSetUnicodeString( downEvt, 1, &oneChar );
+        CGEventKeyboardSetUnicodeString( upEvt, 1, &oneChar );
+        CGEventPost( kCGAnnotatedSessionEventTap, downEvt );
+        CGEventPost( kCGAnnotatedSessionEventTap, upEvt );*/
+        
+        
+        
     }
 }

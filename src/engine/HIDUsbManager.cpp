@@ -421,7 +421,7 @@ namespace BackyardBrains {
                 if(checkIfKeyWasPressed(7))
                 {
 #if defined(__APPLE__)
-                   // simulateKeyPress();
+                    simulateKeyPress();
 #endif
                     #if defined(_WIN32)
                     Log::msg("Pressed v");
