@@ -351,7 +351,7 @@ namespace BackyardBrains {
                       0x11,
                       0,
                       0 );
-                    #endif // defined
+                    #endif // definedwv
                 }
 
                 if(checkIfKeyWasPressed(1))
@@ -362,7 +362,7 @@ namespace BackyardBrains {
                       0x1F,
                       0,
                       0 );
-                    #endif // defined
+                    #endif // definedaaaaaaaaawwww
                 }
                 if(checkIfKeyWasPressed(2))
                 {
@@ -529,6 +529,7 @@ namespace BackyardBrains {
         }
         if(typeOfMessage == "BRD")
         {
+            Log::msg("Change board type");
             currentAddOnBoard = (int)((unsigned int)valueOfMessage[0]-48);
             if(currentAddOnBoard == BOARD_WITH_ADDITIONAL_INPUTS)
             {
@@ -614,33 +615,44 @@ namespace BackyardBrains {
 
     void HIDUsbManager::pressKey(int keyIndex)
     {
-
-        turnONJoystickLed(keyIndex);
-        #if defined(_WIN32)
-        keybd_event( keysForJoystick[keyIndex].bVk,
-                      keysForJoystick[keyIndex].bScan,
-                      keysForJoystick[keyIndex].dwFlags,
-                      0 );
-        #endif
-
+        try{
+            turnONJoystickLed(keyIndex);
+            #if defined(_WIN32)
+            keybd_event( keysForJoystick[keyIndex].bVk,
+                          keysForJoystick[keyIndex].bScan,
+                          keysForJoystick[keyIndex].dwFlags,
+                          0 );
+            #endif
+        }
+        catch(std::exception &e)
+        {
+            Log::msg("First pressKey exception: %s", e.what() );
+        }
+        catch(...)
+        {
+            Log::msg("All pressKey exception");
+        }
     }
 
     void HIDUsbManager::releaseKey(int keyIndex)
     {
-        turnOFFJoystickLed(keyIndex);
-        #if defined(_WIN32)
-
-        keybd_event( keysForJoystick[keyIndex].bVk,
-                      keysForJoystick[keyIndex].bScan,
-                      keysForJoystick[keyIndex].dwFlags | KEYEVENTF_KEYUP,
-                      0 );
-
-
-   /*  keybd_event( keyIndex,
-                       keyIndex+128,
-                       KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP,
-                      0);*/
-        #endif
+         try{
+            turnOFFJoystickLed(keyIndex);
+            #if defined(_WIN32)
+            keybd_event( keysForJoystick[keyIndex].bVk,
+                          keysForJoystick[keyIndex].bScan,
+                          keysForJoystick[keyIndex].dwFlags | KEYEVENTF_KEYUP,
+                          0 );
+            #endif
+        }
+        catch(std::exception &e)
+        {
+            Log::msg("First releaseKey exception: %s", e.what() );
+        }
+        catch(...)
+        {
+            Log::msg("All releaseKey exception");
+        }
     }
 
 
@@ -678,7 +690,7 @@ namespace BackyardBrains {
             {
                 numberOfFrames = -1;
 #ifdef LOG_HID_SCANNING
-                Log::msg("HID - Error on read 1");
+                Log::msg("HID - Error on read 1: %s", e.what() );
 #endif
 
             }
@@ -736,10 +748,8 @@ namespace BackyardBrains {
             }
             catch(std::exception &e)
             {
-
-
 #ifdef LOG_HID_SCANNING
-                Log::msg("HID - Error while closing device");
+                Log::msg("HID - Error while closing device: %s", e.what());
 #endif
                 // hid_free_enumeration(devs);
             }
@@ -784,7 +794,7 @@ namespace BackyardBrains {
         {
             size = -1;
 #ifdef LOG_HID_SCANNING
-            Log::msg("HID - Error: on read 3");
+            Log::msg("HID - Error: on read 3: %s", e.what() );
 #endif
 
         }
@@ -1141,7 +1151,7 @@ namespace BackyardBrains {
     }
 
     //
-    // Set state of LEDs on Joystick expansion board
+    // Set state of LEDs on Joystick expansion boardvw
     //
     void HIDUsbManager::setJoystickLeds(uint8_t state)
     {
@@ -1258,7 +1268,18 @@ namespace BackyardBrains {
         {
             outbuff[i+2] = ptr[i];
         }
-        int res = hid_write(handle, outbuff, 64);
+        int res = 0;
+        try{
+            res = hid_write(handle, outbuff, 64);
+        }
+            catch(std::exception &e)
+            {
+                Log::msg("writeToDevice First exception: %s", e.what() );
+            }
+            catch(...)
+            {
+                Log::msg("writeToDevice All exception");
+            }
         if (res < 0) {
             std::stringstream sstm;//variable for log
             sstm << "Could not write to device. Error reported was: " << hid_error(handle);

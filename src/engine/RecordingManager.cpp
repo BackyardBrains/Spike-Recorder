@@ -102,6 +102,7 @@ void RecordingManager::resetCalibrationCoeficient()
 
 void RecordingManager::reloadHID()
 {
+    Log::msg("Reload HID");
     _HIDShouldBeReloaded = true;
 }
 
@@ -211,7 +212,8 @@ bool RecordingManager::initHIDUSB(HIDBoardType deviceType)
 
 void RecordingManager::disconnectFromHID()
 {
-
+     Log::msg("Disconnect from HID ----------------------------------!!!!!!");
+    initDefaultJoystickKeys();
     initRecordingDevices();
     closeHid();
 }
@@ -817,6 +819,7 @@ void RecordingManager::initRecordingDevices() {
     rmsOfOriginalSignal = 0;
     rmsOfNotchedAMSignal = 0;
     weAreReceivingAMSignal = false;
+    initDefaultJoystickKeys();
 
 }
 
@@ -1683,12 +1686,13 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 
             if(_thresholdSource == 0)//if we trigger on signal
             {
+                Log::msg("HSR: %d", samplesRead);
                 for(DWORD i = 0; i < (unsigned int)samplesRead; i++) {
 
                     channels[chan][i] -= dcBias;//substract DC offset from channels data
                     const int thresh = _virtualDevices[_selectedVDevice].threshold;
                     const int64_t ntrigger = _pos + i;
-                    //--------------- joystick related code --------------------------
+                    //--------------- joystick related code --------------------------vdddddddddddddddddddddddwww
 
                     const int currentthresh = _virtualDevices[chan].threshold;
                     if(_timersForKeyRelease[chan]>0)
@@ -1696,6 +1700,7 @@ void RecordingManager::advanceHidMode(uint32_t samples)
                         _timersForKeyRelease[chan] --;
                         if(_timersForKeyRelease[chan]==0)
                         {
+                            Log::msg("Release %d", _keyIndexSetForJoystick[chan]-1);
                             _hidUsbManager.releaseKey( _keyIndexSetForJoystick[chan]-1);
                         }
                     }
@@ -1709,6 +1714,7 @@ void RecordingManager::advanceHidMode(uint32_t samples)
                             {
                                 if(_timersForKeyRelease[chan]==0)
                                 {
+                                    Log::msg("Press %d",_keyIndexSetForJoystick[chan]-1);
                                     _hidUsbManager.pressKey(_keyIndexSetForJoystick[chan]-1);
                                 }
                                 _timersForKeyRelease[chan] = MAX_TIMER_FOR_KEY_RELEASE;
@@ -1858,6 +1864,7 @@ void RecordingManager::advance(uint32_t samples) {
 	{
 		if(_HIDShouldBeReloaded)
 		{
+		    initDefaultJoystickKeys();
 			_HIDShouldBeReloaded = false;
 			initHIDUSB((HIDBoardType)_hidUsbManager.currentlyConnectedHIDBoardType());
 		}
