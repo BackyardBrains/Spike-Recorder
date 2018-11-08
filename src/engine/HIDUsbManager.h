@@ -122,6 +122,7 @@ class HIDUsbManager
         void readThread(HIDUsbManager * ref);
         bool _deviceConnected;
         bool prepareForDisconnect;
+        bool hidAccessBlock;
         int currentAddOnBoard;
         bool _rtReapeating;
         bool restartDevice;

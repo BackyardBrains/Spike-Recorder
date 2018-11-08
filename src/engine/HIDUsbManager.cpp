@@ -135,7 +135,11 @@ namespace BackyardBrains {
 #ifdef LOG_HID_SCANNING
         Log::msg("HID - Success. HID device connected");
 #endif
-
+        if(hid_set_nonblocking(handle, 1) == -1)
+        {
+            Log::msg("HID - Nonblocking set");
+        }
+        hidAccessBlock = 0;
         circularBuffer[0] = '\n';
 
         cBufHead = 0;
@@ -787,8 +791,16 @@ namespace BackyardBrains {
 
 
         try {
+
             //size = hid_read(handle, buffer, sizeof(buffer));
+
+            while(hidAccessBlock==1)
+            {
+                Log::msg("Waiting to read HID");
+            }
+            hidAccessBlock = 1;
             size = hid_read_timeout(handle, buffer, sizeof(buffer), 100);
+            hidAccessBlock = 0;
         }
         catch(std::exception &e)
         {
@@ -1266,12 +1278,22 @@ namespace BackyardBrains {
         outbuff[1] = 62;
         for(size_t i=0;i<len;i++)
         {
+            Log::msg("Message %c",ptr[i]);
             outbuff[i+2] = ptr[i];
         }
         int res = 0;
-        try{
+        //try{
+            Log::msg("Before HID write with handle %d", handle);
+
+            while(hidAccessBlock==1)
+            {
+                 Log::msg("Waiting to write HID");
+            }
+            hidAccessBlock = 1;
             res = hid_write(handle, outbuff, 64);
-        }
+            hidAccessBlock = 0;
+            Log::msg("After HID write with res: %d", res);
+       /* }
             catch(std::exception &e)
             {
                 Log::msg("writeToDevice First exception: %s", e.what() );
@@ -1279,7 +1301,7 @@ namespace BackyardBrains {
             catch(...)
             {
                 Log::msg("writeToDevice All exception");
-            }
+            }*/
         if (res < 0) {
             std::stringstream sstm;//variable for log
             sstm << "Could not write to device. Error reported was: " << hid_error(handle);
