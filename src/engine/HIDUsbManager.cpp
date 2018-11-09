@@ -140,6 +140,10 @@ namespace BackyardBrains {
             Log::msg("HID - Nonblocking set");
         }
         hidAccessBlock = 0;
+        writeWantsToAccessHID = false;
+        readGrantsAccessToWriteToHID = false;
+        writeWantsToReleaseAccessHID = false;
+        readGrantsReleaseAccessToWriteToHID = false;
         circularBuffer[0] = '\n';
 
         cBufHead = 0;
@@ -150,19 +154,22 @@ namespace BackyardBrains {
         messageBufferIndex =0;
         currentAddOnBoard = 0;
         _deviceConnected = true;
-
+        //start thread that will periodicaly read HID
+        t1 = std::thread(&HIDUsbManager::readThread, this, this);
+        t1.detach();
         askForCapabilities();//ask for firmware version etc.
         askForMaximumRatings(); //ask for sample rate and number of channels
 
         //askForRTRepeat();//ask if RT board is repeating stimmulation
         //set number of channels and sampling rate on micro (this will not work with firmware V0.1)
         setNumberOfChannelsAndSamplingRate(2, maxSamplingRate());
+
+
+
         //send start command to micro
         startDevice();
 
-        //start thread that will periodicaly read HID
-        t1 = std::thread(&HIDUsbManager::readThread, this, this);
-        t1.detach();
+
 
         askForBoard();//ask if any board is connected
 
@@ -745,6 +752,10 @@ namespace BackyardBrains {
         //realy disconnect from device here
         if(prepareForDisconnect)
         {
+
+                readGrantsAccessToWriteToHID = true;
+
+                readGrantsReleaseAccessToWriteToHID = true;
             ref->stopDevice();
 
             try {
@@ -770,6 +781,7 @@ namespace BackyardBrains {
              currentConnectedDevicePID = HID_BOARD_TYPE_NONE;
             ref->handle = NULL;
             currentAddOnBoard = 0;
+
         }
         numberOfFrames = 0;
     }
@@ -794,13 +806,18 @@ namespace BackyardBrains {
 
             //size = hid_read(handle, buffer, sizeof(buffer));
 
-            while(hidAccessBlock==1)
+
+            if(writeWantsToAccessHID)
             {
-                Log::msg("Waiting to read HID");
+                readGrantsReleaseAccessToWriteToHID = false;
+                readGrantsAccessToWriteToHID = true;
+                while(!writeWantsToReleaseAccessHID){Log::msg("HID Read waiting Write to request release of access");}
+                readGrantsAccessToWriteToHID = false;
+                readGrantsReleaseAccessToWriteToHID = true;
             }
-            hidAccessBlock = 1;
+
             size = hid_read_timeout(handle, buffer, sizeof(buffer), 100);
-            hidAccessBlock = 0;
+
         }
         catch(std::exception &e)
         {
@@ -1285,13 +1302,27 @@ namespace BackyardBrains {
         //try{
             Log::msg("Before HID write with handle %d", handle);
 
-            while(hidAccessBlock==1)
+
+
+
+
+            writeWantsToReleaseAccessHID = false;
+            writeWantsToAccessHID = true;
+            while(!readGrantsAccessToWriteToHID)
             {
-                 Log::msg("Waiting to write HID");
+                    Log::msg("HID Write waiting to get access");
             }
-            hidAccessBlock = 1;
+
             res = hid_write(handle, outbuff, 64);
-            hidAccessBlock = 0;
+
+            writeWantsToAccessHID = false;
+            writeWantsToReleaseAccessHID = true;
+            while(!readGrantsReleaseAccessToWriteToHID)
+            {
+                    Log::msg("HID Write waiting to release access");
+            }
+            writeWantsToReleaseAccessHID = false;
+
             Log::msg("After HID write with res: %d", res);
        /* }
             catch(std::exception &e)

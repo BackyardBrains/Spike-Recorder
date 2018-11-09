@@ -123,6 +123,12 @@ class HIDUsbManager
         bool _deviceConnected;
         bool prepareForDisconnect;
         bool hidAccessBlock;
+
+        bool writeWantsToAccessHID;
+        bool readGrantsAccessToWriteToHID;
+        bool writeWantsToReleaseAccessHID;
+        bool readGrantsReleaseAccessToWriteToHID;
+
         int currentAddOnBoard;
         bool _rtReapeating;
         bool restartDevice;
