@@ -200,7 +200,7 @@ bool RecordingManager::initHIDUSB(HIDBoardType deviceType)
         //}
     }
 
-    setCalibrationCoeficient(0.005f);
+    //setCalibrationCoeficient(0.005f);
 
     //_player.stop();
     //_player.start(_hidUsbManager.maxSamplingRate());
