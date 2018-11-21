@@ -351,11 +351,13 @@ void ConfigView::SetupScreen()
                     joystickKeyDropdowns[i]->addItem("a");
                     joystickKeyDropdowns[i]->addItem("d");
                     joystickKeyDropdowns[i]->addItem("z");
-                    joystickKeyDropdowns[i]->addItem("x");
+                    joystickKeyDropdowns[i]->addItem("q");
                     joystickKeyDropdowns[i]->addItem("c");
                     joystickKeyDropdowns[i]->addItem("v");
                     Log::msg("Set selection");
+
                     joystickKeyDropdowns[i]->setSelection(_manager.getKeyIndexForJoystick(i));
+
                     Log::msg("Signal catcher");
                     _catchers.push_back(SignalCatcher(i, this));
                     Log::msg("Connect other signal catchers");

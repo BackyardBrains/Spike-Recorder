@@ -2548,6 +2548,10 @@ void RecordingManager::initDefaultJoystickKeys()
         _timeOfLastTriggerJoystick[i] = 0;
         _lastValueOfSignalJoystick[i] = 0;
     }
+
+    _keyIndexSetForJoystick[0] =  3;//a
+    _keyIndexSetForJoystick[1] =  4;//d
+    _keyIndexSetForJoystick[2] =  6;//q
 }
 
 #pragma mark - Input Config related

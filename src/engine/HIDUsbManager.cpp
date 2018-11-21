@@ -83,8 +83,8 @@ namespace BackyardBrains {
         keysForJoystick[4].bScan = 0x2C;
         keysForJoystick[4].dwFlags = 0;
 
-        keysForJoystick[5].bVk = VkKeyScan('x');
-        keysForJoystick[5].bScan = 0x2D;
+        keysForJoystick[5].bVk = VkKeyScan('q');
+        keysForJoystick[5].bScan = 0x10;
         keysForJoystick[5].dwFlags = 0;
 
         keysForJoystick[6].bVk = VkKeyScan('c');
@@ -410,9 +410,9 @@ namespace BackyardBrains {
                  if(checkIfKeyWasPressed(5))
                 {
                     #if defined(_WIN32)
-                    Log::msg("Pressed x");
-                      keybd_event( VkKeyScan('x'),
-                      0x2D,
+                    Log::msg("Pressed q");
+                      keybd_event( VkKeyScan('q'),
+                      0x10,
                       0,
                       0 );
                     #endif // defined
@@ -502,9 +502,9 @@ namespace BackyardBrains {
                  if(checkIfKeyWasReleased(5))
                 {
                     #if defined(_WIN32)
-                    Log::msg("Released x");
-                      keybd_event( VkKeyScan('x'),
-                      0x2d,//0xAD,
+                    Log::msg("Released q");
+                      keybd_event( VkKeyScan('q'),
+                      0x10,//0xAD,
                       KEYEVENTF_KEYUP,
                       0 );
                     #endif // defined
