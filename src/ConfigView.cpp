@@ -113,6 +113,7 @@ void ConfigView::SetupScreen()
 	}
 
     //---------- Calibrator code --------------------------------------
+    /*
 	if(!_manager.fileMode()) {
         Widgets::Label *calibrateMainLabel = new Widgets::Label(group);
 		calibrateMainLabel->setText("Calibrate SpikeRecorder for current setup ");
@@ -132,7 +133,7 @@ void ConfigView::SetupScreen()
         gvbox->addLayout(hcalBox);
         gvbox->addSpacing(40);
 	}
-
+*/
     //---------- High/Low pass filter --------------------------------------
     Log::msg("Check file mode 2");
     if(!_manager.fileMode()) {

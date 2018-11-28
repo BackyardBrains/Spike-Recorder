@@ -29,10 +29,21 @@ std::string getRecordingPath() {
 std::string getLoggingPath() {
 
     std::stringstream ss;
-ss << ExePath() << "\\byb.log";
-//std::string s = ss.str();
-return ss.str().c_str();
+    ss << ExePath() << "\\byb.log";
+    //std::string s = ss.str();
+    return ss.str().c_str();
 	//return "%APPDATA%\\BackyardBrains\\SpikeRecorder\\byb.log";
 }
+
+std::string getConfigPath() {
+
+    std::stringstream ss;
+    ss<<getenv("APPDATA");
+    ss <<"\\BackyardBrains\\SpikeRecorder\\config.xml";
+    //std::string s = ss.str();
+    return ss.str().c_str();
+	//return "%APPDATA%\\BackyardBrains\\SpikeRecorder\\byb.log";
+}
+
 
 }

@@ -18,6 +18,7 @@ namespace BackyardBrains {
 
 Log *Log::_log = 0;
 Log::Log() {
+    std::string test  = getConfigPath();
 	if(getLoggingPath() == "") {
 		_out = stdout;
 	} else {
