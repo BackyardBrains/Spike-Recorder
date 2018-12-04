@@ -25,7 +25,11 @@ const int RecordingManager::DEFAULT_SAMPLE_RATE = 44100;
 RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(false), _fileMode(false), _sampleRate(DEFAULT_SAMPLE_RATE), _selectedVDevice(0), _threshAvgCount(1) {
 	Log::msg("Initializing libbass...");
 	if(!BASS_Init(-1, _sampleRate, 0, 0, NULL)) {
-		Log::fatal("Bass initialization failed: %s", GetBassStrError());
+		Log::msg("Bass 1 initialization failed: %s", GetBassStrError());
+		if(!BASS_Init(0, _sampleRate, 0, 0, NULL))
+        {
+            Log::fatal("Bass 2 initialization failed: %s", GetBassStrError());
+        }
 	}
 	#if defined(_WIN32)
         //load acc plugin for .m4a files ALAC (Apple Lossless Audio Codec)
@@ -2347,6 +2351,7 @@ bool RecordingManager::Device::enable(int64_t pos) {
 		}
 
 		handle = BASS_RecordStart(samplerate, 2, 0, NULL, NULL);
+		handle = FALSE;
 		if (handle == FALSE) {
 			Log::error("Bass Error: starting the recording failed: %s", GetBassStrError());
 			return false;

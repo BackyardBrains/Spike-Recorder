@@ -283,7 +283,7 @@ void ConfigView::SetupScreen()
 
     if(weAreOnTouchScreen)
     {
-        Log::msg("Color chooser start -------");
+        Log::msg("Color chooser start touch");
         for(unsigned int i = 0; i < _manager.virtualDevices().size(); i++) {
             Log::msg("Create dropdown");
             _hclrs[i] = new HorizontalColorPicker(group);
