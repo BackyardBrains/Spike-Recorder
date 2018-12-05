@@ -363,7 +363,9 @@ private:
         std::list<BYBFirmwareVO> _currentFirmwares;
         std::vector<BYBFirmwareVO> getAllFirmwaresFromLocal();
     #endif
-DefaultConfig configValues;
+    #if defined(_WIN32)
+    DefaultConfig configValues;
+    #endif
     double _alphaAudioTime = 0;
     bool alphaFeedbackActive;
 

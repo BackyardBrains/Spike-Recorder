@@ -76,8 +76,9 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
 
     _portScanningArduinoSerial.startScanningForArduinos(&_arduinoSerial);
 
-
+    #if defined(_WIN32)
     configValues.loadDefaults();
+    #endif
     initDefaultJoystickKeys();
 
 }
@@ -2534,6 +2535,7 @@ void RecordingManager::setKeyForJoystick(int channelIndex, int keyIndex)
     {
         _keyIndexSetForJoystick[channelIndex] = keyIndex;
     }
+    #if defined(_WIN32)
     if(channelIndex == 0)
     {
         configValues.firstChannelButton = keyIndex;
@@ -2547,6 +2549,7 @@ void RecordingManager::setKeyForJoystick(int channelIndex, int keyIndex)
         configValues.thirdChannelButton = keyIndex;
     }
     configValues.saveDefaults();
+    #endif
 }
 
 int RecordingManager::getKeyIndexForJoystick(int channelIndex)
@@ -2569,10 +2572,11 @@ void RecordingManager::initDefaultJoystickKeys()
         _timeOfLastTriggerJoystick[i] = 0;
         _lastValueOfSignalJoystick[i] = 0;
     }
-
+    #if defined(_WIN32)
     _keyIndexSetForJoystick[0] =  configValues.firstChannelButton;
     _keyIndexSetForJoystick[1] =  configValues.secondChannelButton;
     _keyIndexSetForJoystick[2] =  configValues.thirdChannelButton;
+    #endif
 }
 #pragma mark - Input Config related
 
