@@ -25,4 +25,9 @@ std::string getLoggingPath() {
 	return "";
 }
 
+std::string getConfigPath()
+{
+    return "";
+}
+
 }

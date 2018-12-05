@@ -83,8 +83,8 @@ namespace BackyardBrains {
         keysForJoystick[4].bScan = 0x2C;
         keysForJoystick[4].dwFlags = 0;
 
-        keysForJoystick[5].bVk = VkKeyScan('x');
-        keysForJoystick[5].bScan = 0x2D;
+        keysForJoystick[5].bVk = VkKeyScan('q');
+        keysForJoystick[5].bScan = 0x10;
         keysForJoystick[5].dwFlags = 0;
 
         keysForJoystick[6].bVk = VkKeyScan('c');
@@ -135,7 +135,15 @@ namespace BackyardBrains {
 #ifdef LOG_HID_SCANNING
         Log::msg("HID - Success. HID device connected");
 #endif
-
+        if(hid_set_nonblocking(handle, 1) == -1)
+        {
+            Log::msg("HID - Nonblocking set");
+        }
+        hidAccessBlock = 0;
+        writeWantsToAccessHID = false;
+        readGrantsAccessToWriteToHID = false;
+        writeWantsToReleaseAccessHID = false;
+        readGrantsReleaseAccessToWriteToHID = false;
         circularBuffer[0] = '\n';
 
         cBufHead = 0;
@@ -146,19 +154,22 @@ namespace BackyardBrains {
         messageBufferIndex =0;
         currentAddOnBoard = 0;
         _deviceConnected = true;
-
+        //start thread that will periodicaly read HID
+        t1 = std::thread(&HIDUsbManager::readThread, this, this);
+        t1.detach();
         askForCapabilities();//ask for firmware version etc.
         askForMaximumRatings(); //ask for sample rate and number of channels
 
         //askForRTRepeat();//ask if RT board is repeating stimmulation
         //set number of channels and sampling rate on micro (this will not work with firmware V0.1)
         setNumberOfChannelsAndSamplingRate(2, maxSamplingRate());
+
+
+
         //send start command to micro
         startDevice();
 
-        //start thread that will periodicaly read HID
-        t1 = std::thread(&HIDUsbManager::readThread, this, this);
-        t1.detach();
+
 
         askForBoard();//ask if any board is connected
 
@@ -399,9 +410,9 @@ namespace BackyardBrains {
                  if(checkIfKeyWasPressed(5))
                 {
                     #if defined(_WIN32)
-                    Log::msg("Pressed x");
-                      keybd_event( VkKeyScan('x'),
-                      0x2D,
+                    Log::msg("Pressed q");
+                      keybd_event( VkKeyScan('q'),
+                      0x10,
                       0,
                       0 );
                     #endif // defined
@@ -491,9 +502,9 @@ namespace BackyardBrains {
                  if(checkIfKeyWasReleased(5))
                 {
                     #if defined(_WIN32)
-                    Log::msg("Released x");
-                      keybd_event( VkKeyScan('x'),
-                      0x2d,//0xAD,
+                    Log::msg("Released q");
+                      keybd_event( VkKeyScan('q'),
+                      0x10,//0xAD,
                       KEYEVENTF_KEYUP,
                       0 );
                     #endif // defined
@@ -741,6 +752,10 @@ namespace BackyardBrains {
         //realy disconnect from device here
         if(prepareForDisconnect)
         {
+
+                readGrantsAccessToWriteToHID = true;
+
+                readGrantsReleaseAccessToWriteToHID = true;
             ref->stopDevice();
 
             try {
@@ -766,6 +781,7 @@ namespace BackyardBrains {
              currentConnectedDevicePID = HID_BOARD_TYPE_NONE;
             ref->handle = NULL;
             currentAddOnBoard = 0;
+
         }
         numberOfFrames = 0;
     }
@@ -787,8 +803,21 @@ namespace BackyardBrains {
 
 
         try {
+
             //size = hid_read(handle, buffer, sizeof(buffer));
+
+
+            if(writeWantsToAccessHID)
+            {
+                readGrantsReleaseAccessToWriteToHID = false;
+                readGrantsAccessToWriteToHID = true;
+                while(!writeWantsToReleaseAccessHID){Log::msg("HID Read waiting Write to request release of access");}
+                readGrantsAccessToWriteToHID = false;
+                readGrantsReleaseAccessToWriteToHID = true;
+            }
+
             size = hid_read_timeout(handle, buffer, sizeof(buffer), 100);
+
         }
         catch(std::exception &e)
         {
@@ -1266,12 +1295,36 @@ namespace BackyardBrains {
         outbuff[1] = 62;
         for(size_t i=0;i<len;i++)
         {
+            Log::msg("Message %c",ptr[i]);
             outbuff[i+2] = ptr[i];
         }
         int res = 0;
-        try{
+        //try{
+            Log::msg("Before HID write with handle %d", handle);
+
+
+
+
+
+            writeWantsToReleaseAccessHID = false;
+            writeWantsToAccessHID = true;
+            while(!readGrantsAccessToWriteToHID)
+            {
+                    Log::msg("HID Write waiting to get access");
+            }
+
             res = hid_write(handle, outbuff, 64);
-        }
+
+            writeWantsToAccessHID = false;
+            writeWantsToReleaseAccessHID = true;
+            while(!readGrantsReleaseAccessToWriteToHID)
+            {
+                    Log::msg("HID Write waiting to release access");
+            }
+            writeWantsToReleaseAccessHID = false;
+
+            Log::msg("After HID write with res: %d", res);
+       /* }
             catch(std::exception &e)
             {
                 Log::msg("writeToDevice First exception: %s", e.what() );
@@ -1279,7 +1332,7 @@ namespace BackyardBrains {
             catch(...)
             {
                 Log::msg("writeToDevice All exception");
-            }
+            }*/
         if (res < 0) {
             std::stringstream sstm;//variable for log
             sstm << "Could not write to device. Error reported was: " << hid_error(handle);

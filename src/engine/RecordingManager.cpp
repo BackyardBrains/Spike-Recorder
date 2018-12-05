@@ -25,7 +25,11 @@ const int RecordingManager::DEFAULT_SAMPLE_RATE = 44100;
 RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(false), _fileMode(false), _sampleRate(DEFAULT_SAMPLE_RATE), _selectedVDevice(0), _threshAvgCount(1) {
 	Log::msg("Initializing libbass...");
 	if(!BASS_Init(-1, _sampleRate, 0, 0, NULL)) {
-		Log::fatal("Bass initialization failed: %s", GetBassStrError());
+		Log::msg("Bass 1 initialization failed: %s", GetBassStrError());
+		if(!BASS_Init(0, _sampleRate, 0, 0, NULL))
+        {
+            Log::fatal("Bass 2 initialization failed: %s", GetBassStrError());
+        }
 	}
 	#if defined(_WIN32)
         //load acc plugin for .m4a files ALAC (Apple Lossless Audio Codec)
@@ -72,7 +76,11 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
 
     _portScanningArduinoSerial.startScanningForArduinos(&_arduinoSerial);
 
+    #if defined(_WIN32)
+    configValues.loadDefaults();
+    #endif
     initDefaultJoystickKeys();
+
 }
 
 RecordingManager::~RecordingManager() {
@@ -200,7 +208,7 @@ bool RecordingManager::initHIDUSB(HIDBoardType deviceType)
         //}
     }
 
-    setCalibrationCoeficient(0.005f);
+    //setCalibrationCoeficient(0.005f);
 
     //_player.stop();
     //_player.start(_hidUsbManager.maxSamplingRate());
@@ -2344,6 +2352,7 @@ bool RecordingManager::Device::enable(int64_t pos) {
 		}
 
 		handle = BASS_RecordStart(samplerate, 2, 0, NULL, NULL);
+		handle = FALSE;
 		if (handle == FALSE) {
 			Log::error("Bass Error: starting the recording failed: %s", GetBassStrError());
 			return false;
@@ -2526,6 +2535,21 @@ void RecordingManager::setKeyForJoystick(int channelIndex, int keyIndex)
     {
         _keyIndexSetForJoystick[channelIndex] = keyIndex;
     }
+    #if defined(_WIN32)
+    if(channelIndex == 0)
+    {
+        configValues.firstChannelButton = keyIndex;
+    }
+    if(channelIndex == 1)
+    {
+        configValues.secondChannelButton = keyIndex;
+    }
+    if(channelIndex == 2)
+    {
+        configValues.thirdChannelButton = keyIndex;
+    }
+    configValues.saveDefaults();
+    #endif
 }
 
 int RecordingManager::getKeyIndexForJoystick(int channelIndex)
@@ -2548,8 +2572,12 @@ void RecordingManager::initDefaultJoystickKeys()
         _timeOfLastTriggerJoystick[i] = 0;
         _lastValueOfSignalJoystick[i] = 0;
     }
+    #if defined(_WIN32)
+    _keyIndexSetForJoystick[0] =  configValues.firstChannelButton;
+    _keyIndexSetForJoystick[1] =  configValues.secondChannelButton;
+    _keyIndexSetForJoystick[2] =  configValues.thirdChannelButton;
+    #endif
 }
-
 #pragma mark - Input Config related
 
 //

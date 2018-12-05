@@ -441,7 +441,9 @@ void Application::_HandleEvent(const void *eventRaw) {
 	else if (event.type == SDL_KEYDOWN) {
 		const SDL_KeyboardEvent &kevent = *reinterpret_cast<const SDL_KeyboardEvent*>(&event);
 		if(kevent.keysym.sym == SDLK_q && kevent.keysym.mod | KMOD_CTRL)
-			_running = false;
+        {
+			//_running = false;
+        }
 		else {
 			KeyboardEvent e(sdl_keysym_to_key(kevent.keysym.sym), sdl_keymod_to_keymod(kevent.keysym.mod));
 			if(_keyboardGrabber) {
@@ -479,10 +481,10 @@ void Application::_HandleEvent(const void *eventRaw) {
 	else if (event.type == SDL_QUIT) {
 		_running = false; // TODO generate an event instead of directly shutting down the event loop
 	}
-    
-    
+
+
     /* for drag and drop add this to info.plist
-     
+
      <key>CFBundleDocumentTypes</key>
      <array>
      <dict>
@@ -497,8 +499,8 @@ void Application::_HandleEvent(const void *eventRaw) {
      </dict>
      </array>
      */
-    
-    
+
+
    /* else if(event.type == SDL_DROPFILE)
     {
         char* dropped_filedir = event.drop.file;
@@ -510,7 +512,7 @@ void Application::_HandleEvent(const void *eventRaw) {
                                  sdlWindow
                                  );
         SDL_free(dropped_filedir);    // Free dropped_filedir memory
-    
+
     }*/
 	else if (event.type == SDL_WINDOWEVENT)	{
 		if(event.window.event == SDL_WINDOWEVENT_RESIZED) {
@@ -642,8 +644,8 @@ void Application::getWindowSize(int *w, int *h)
     SDL_GetWindowSize(sdlWindow,w,h);
 
 }
-    
-    
+
+
 void Application::_SetHoverWidget(Widget *widget) {
 	if (widget != _hoverWidget) {
 		if (_hoverWidget)

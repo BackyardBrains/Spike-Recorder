@@ -15,6 +15,7 @@
 #include "LowPassFilter.h"
 #include "HighPassFilter.h"
 #include "AudioInputConfig.h"
+#include "defaults/DefaultConfig.h"
 
 #if defined(_WIN32)
     #include "FirmwareUpdater.h"
@@ -231,6 +232,8 @@ public:
 
 
     std::string hidError;
+
+
 private:
 	struct Device
 	{
@@ -360,7 +363,9 @@ private:
         std::list<BYBFirmwareVO> _currentFirmwares;
         std::vector<BYBFirmwareVO> getAllFirmwaresFromLocal();
     #endif
-
+    #if defined(_WIN32)
+    DefaultConfig configValues;
+    #endif
     double _alphaAudioTime = 0;
     bool alphaFeedbackActive;
 

@@ -11,12 +11,14 @@
 #include <syslog.h>
 #include <stdarg.h>
 #endif
+#include <sstream>
 
 
 namespace BackyardBrains {
 
 Log *Log::_log = 0;
 Log::Log() {
+    //std::string test  = getConfigPath();
 	if(getLoggingPath() == "") {
 		_out = stdout;
 	} else {
@@ -38,9 +40,12 @@ void Log::msg(const char *fmt, ...) {
 	init();
 struct timeval tp;
 gettimeofday(&tp, NULL);
-long int ms = tp.tv_sec * 1000 + tp.tv_usec / 1000;
-	std::string format = "-- ";
-	//format += ms;
+long ms = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+    std::stringstream mystream;
+
+    mystream <<  tp.tv_sec <<" "<<tp.tv_usec / 1000;
+	std::string format = "";
+	format += mystream.str();
 	format += " - ";
 	format += fmt;
 
