@@ -311,6 +311,8 @@ private:
 	bool _serialMode;
 	bool _hidMode;
 	std::string _filename;
+    int debugNumberOfSamplesThatWeNeed;
+    int debugNumberOfSamplesThatWeGet;
 
     //it keeps last zoom, gain and filter configs for each type of inputs
     AudioInputConfig audioInputConfigArray[7];//standard audio, file, HID, 3  shields, and unknown shield
@@ -332,7 +334,7 @@ private:
 	std::vector<SpikeTrain> _spikeTrains;
 
 	Player _player;
-
+    LowPassFilter filterSoundForPlayer;
 	int _thresholdSource = 0;//signal is the default one (1,2,3,4 ... are events)
     ///used to keep last sample for threshold so that we can detect crossing of
     //threshold

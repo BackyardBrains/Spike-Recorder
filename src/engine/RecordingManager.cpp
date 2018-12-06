@@ -157,6 +157,10 @@ bool RecordingManager::initHIDUSB(HIDBoardType deviceType)
 
     bytespersample = 4; // bass converts everything it doesn't support.
     setSampleRate(info.freq);
+    filterSoundForPlayer.initWithSamplingRate(info.freq);
+    filterSoundForPlayer.setCornerFrequency(1000);
+    filterSoundForPlayer.setQ(1.0);
+  //_player.setSampleRate(info.freq * 1.05);
 
     _devices.push_back(Device(0, _numOfHidChannels, _sampleRate));
     _devices[0].bytespersample = bytespersample;
@@ -1694,13 +1698,13 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 
             if(_thresholdSource == 0)//if we trigger on signal
             {
-                Log::msg("HSR: %d", samplesRead);
+                //Log::msg("HSR: %d", samplesRead);
                 for(DWORD i = 0; i < (unsigned int)samplesRead; i++) {
 
                     channels[chan][i] -= dcBias;//substract DC offset from channels data
                     const int thresh = _virtualDevices[_selectedVDevice].threshold;
                     const int64_t ntrigger = _pos + i;
-                    //--------------- joystick related code --------------------------vdddddddddddddddddddddddwww
+                    //--------------- joystick related code --------------------------
 
                     const int currentthresh = _virtualDevices[chan].threshold;
                     if(_timersForKeyRelease[chan]>0)
@@ -1803,10 +1807,19 @@ void RecordingManager::advanceHidMode(uint32_t samples)
         //sends 9999 instead of 10000. Than we can hear clicking sound
         //since audio will need all 10000 samples and we will provide less
         int biggerBufferSize = samples;
-        if(samplesRead>biggerBufferSize)
+        
+        debugNumberOfSamplesThatWeNeed += samples;
+        debugNumberOfSamplesThatWeGet += samplesRead;
+        if(debugNumberOfSamplesThatWeNeed>100000)
+        {
+            Log::msg("\n\nNeed: %d, Read:%d -----------------------\n\n",debugNumberOfSamplesThatWeNeed, debugNumberOfSamplesThatWeGet);
+            debugNumberOfSamplesThatWeNeed = 0;
+            debugNumberOfSamplesThatWeGet = 0;
+        }
+       /* if(samplesRead>biggerBufferSize)
         {
             biggerBufferSize = samplesRead;
-        }
+        }*/
         int16_t *buf = new int16_t[biggerBufferSize];
 
 
@@ -1819,7 +1832,10 @@ void RecordingManager::advanceHidMode(uint32_t samples)
             } else {
                 memset(buf, 0, biggerBufferSize*sizeof(int16_t));
             }
+            
+            filterSoundForPlayer.filterIntData(buf, biggerBufferSize);
             _player.push(buf, biggerBufferSize*sizeof(int16_t));
+            
         } else {
             _player.setPos(_pos, bytesPerSample, 1);
             //std::cout<<"\nSet position: "<<_pos;
