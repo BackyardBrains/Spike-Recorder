@@ -10,7 +10,7 @@
 #include <cassert>
 #include <iostream>
 #include <sstream>
-
+#include <math.h>
 
 namespace BackyardBrains {
 

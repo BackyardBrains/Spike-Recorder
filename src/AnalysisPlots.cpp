@@ -14,7 +14,7 @@ namespace BackyardBrains {
 
 AnalysisPlots::AnalysisPlots(const std::vector<SpikeTrain> &trains, RecordingManager &manager, Widget *parent) : Widget(parent), _manager(manager), _active(0), _spikeTrains(trains), _target(0) {
 	setSizeHint(Widgets::Size());
-	
+
 	_tabs = new Widgets::TabBar(this);
 	std::vector<std::string> entries;
 	entries.push_back("Average Waveform");
@@ -27,7 +27,7 @@ AnalysisPlots::AnalysisPlots(const std::vector<SpikeTrain> &trains, RecordingMan
 
 	Widgets::BoxLayout *vbox = new Widgets::BoxLayout(Widgets::Vertical, this);
 	_plotLayout = new Widgets::BoxLayout(Widgets::Horizontal);
-	
+
 	setPlotCount(1);
 
 	vbox->addWidget(_tabs);
@@ -50,7 +50,7 @@ void AnalysisPlots::setPlotCount(int ncount) {
 		}
 	}
 	_plots.resize(ncount);
-	
+
 	_plotLayout->clear();
 	for(int i = 0; i < ncount; i++) {
 		if(i >= ocount) {
@@ -77,9 +77,9 @@ void AnalysisPlots::setTarget(int target) {
 void AnalysisPlots::setAvgWaveformData(int idx) {
 	std::vector<float> buf, stdy;
     const float calibrationCoeficient = _manager.getCalibrationCoeficient();
-	SpikeAnalysis::averageWaveform(buf, stdy, _spikeTrains[idx].spikes, _manager.fileName().c_str(), idx, calibrationCoeficient);
+	SpikeAnalysis::averageWaveform(buf, stdy, _spikeTrains[idx].spikes, _manager.fileName().c_str(), _spikeTrains[idx].channelIndex, calibrationCoeficient);
 	std::vector<float> x, y;
-	
+
 	y.resize(buf.size());
 	x.resize(buf.size());
 
@@ -98,7 +98,7 @@ void AnalysisPlots::setAutocorrData(int idx) {
 	std::vector<int> buf;
 	SpikeAnalysis::autoCorrelation(buf, _spikeTrains[idx].spikes, 0.1f*_manager.sampleRate(), 0.001f*_manager.sampleRate());
 	std::vector<float> x, y;
-	
+
 	y.resize(buf.size());
 	x.resize(buf.size());
 
@@ -117,7 +117,7 @@ void AnalysisPlots::setCrosscorrData(int idx) {
 	std::vector<int> buf;
 	SpikeAnalysis::crossCorrelation(buf, _spikeTrains[idx].spikes, _spikeTrains[_target].spikes, 0.1f*_manager.sampleRate(), 0.001f*_manager.sampleRate());
 	std::vector<float> x, y;
-	
+
 	y.resize(buf.size());
 	x.resize(buf.size());
 
@@ -139,7 +139,7 @@ void AnalysisPlots::setISIData(int idx) {
 	SpikeAnalysis::isiPartition(bins, 100);
 	SpikeAnalysis::isi(buf, _spikeTrains[idx].spikes, bins, _manager.sampleRate());
 	std::vector<float> x, y;
-	
+
 	y.resize(buf.size());
 	x.resize(buf.size());
 
@@ -166,7 +166,7 @@ void AnalysisPlots::updateTrain(int idx) {
 		update();
 		return;
 	}
-	setData(idx, _tabs->selected());	
+	setData(idx, _tabs->selected());
 }
 
 void AnalysisPlots::setData(int idx, int tab) {

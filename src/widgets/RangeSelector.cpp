@@ -4,6 +4,7 @@
 #include "widgets/BitmapFontGL.h"
 #include "widgets/Application.h"
 #include <iostream>
+#include <math.h>
 #define WIDTH_OF_ZERO 20
 namespace BackyardBrains {
 
@@ -18,7 +19,7 @@ RangeSelector::RangeSelector(Widget *parent, int heightOfComponent) : Widget(par
     _maximum = 0;
     _lowValue = 0;
     _highValue = 0;
-    
+
     if(heightOfComponent<2*baseHeight)
     {
         heightOfComponent = 2*baseHeight;
@@ -28,7 +29,7 @@ RangeSelector::RangeSelector(Widget *parent, int heightOfComponent) : Widget(par
     setSizePolicy(SizePolicy(SizePolicy::Expanding, SizePolicy::Fixed));
 
     setSizeHint(Size(sliderMinSize, 2*baseHeight));
-    
+
 }
 
 RangeSelector::~RangeSelector()
@@ -115,24 +116,24 @@ int RangeSelector::getHighValue()
     }
     return _highValue;
 }
-    
+
 void RangeSelector::initHighAndLow(int newHigh, int newLow)
 {
     _lowValue = std::max(_minimum, std::min(newLow, _maximum));
     _highValue = std::max(_minimum, std::min(newHigh, _maximum));
 }
-    
+
 void RangeSelector::setLowValue(int val)
 {
     const int oldValue = _lowValue;
     _lowValue = std::max(_minimum, std::min(val, _maximum));
-    
+
     //if we want to move low value over high value push high value
     if(_lowValue>_highValue)
     {
         setHighValue(_lowValue);
     }
-    
+
     if (_lowValue != oldValue)
         lowValueChanged.emit(_lowValue);
 }
@@ -179,7 +180,7 @@ void RangeSelector::paintEvent()
             if(k==1)
             {
                 std::stringstream scaleMarkFreq;
-                
+
                 /*if(k==1 && i==0)
                 {
                     scaleMarkFreq <<""<< 0<<"";
@@ -310,9 +311,9 @@ int RangeSelector::_ValueToSliderOffset(int val) const
     if(val<1)
     {
         sliderOffset = 0;
-        
+
     }
-    
+
 	return sliderOffset;
 }
 

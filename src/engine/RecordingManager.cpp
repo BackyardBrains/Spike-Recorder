@@ -1807,7 +1807,7 @@ void RecordingManager::advanceHidMode(uint32_t samples)
         //sends 9999 instead of 10000. Than we can hear clicking sound
         //since audio will need all 10000 samples and we will provide less
         int biggerBufferSize = samples;
-        
+
         debugNumberOfSamplesThatWeNeed += samples;
         debugNumberOfSamplesThatWeGet += samplesRead;
         if(debugNumberOfSamplesThatWeNeed>100000)
@@ -1832,10 +1832,10 @@ void RecordingManager::advanceHidMode(uint32_t samples)
             } else {
                 memset(buf, 0, biggerBufferSize*sizeof(int16_t));
             }
-            
+
             filterSoundForPlayer.filterIntData(buf, biggerBufferSize);
             _player.push(buf, biggerBufferSize*sizeof(int16_t));
-            
+
         } else {
             _player.setPos(_pos, bytesPerSample, 1);
             //std::cout<<"\nSet position: "<<_pos;
@@ -2368,9 +2368,10 @@ bool RecordingManager::Device::enable(int64_t pos) {
 		}
 
 		handle = BASS_RecordStart(samplerate, 2, 0, NULL, NULL);
-		handle = FALSE;
+		//handle = FALSE;
 		if (handle == FALSE) {
 			Log::error("Bass Error: starting the recording failed: %s", GetBassStrError());
+			printf("\nBass Error: starting the recording failed: %s\n", GetBassStrError());
 			return false;
 		}
 	}

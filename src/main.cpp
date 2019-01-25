@@ -20,9 +20,13 @@ int main(int argc, char *argv[]) {
 	BackyardBrains::Log::msg("BYB SpikeRecorder started on %s", ctime(&t));
     #ifdef __WIN32__
     char *lastslash = strrchr(argv[0], '\\');
+    char *lastslash2 = strrchr(argv[0], '/');
+     if(lastslash == NULL)
+		lastslash = lastslash2;
     #else
     char *lastslash = strrchr(argv[0], '/');
     #endif
+
 
 	if(lastslash == NULL)
 		lastslash = argv[0]+strlen(argv[0]);
