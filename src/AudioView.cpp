@@ -41,10 +41,10 @@ const int AudioView::COLOR_NUM = sizeof(AudioView::COLORS)/sizeof(AudioView::COL
 
 const Widgets::Color AudioView::MARKER_COLORS[] = {
     Widgets::Color(216, 180, 231),
+    Widgets::Color(176, 229, 124),
     Widgets::Color(255, 80, 0),  //orange
 	Widgets::Color(255, 236, 148),
 	Widgets::Color(255, 174, 174),
-	Widgets::Color(176, 229, 124),
 	Widgets::Color(180, 216, 231),
 	Widgets::Color(193, 218, 214),
 	Widgets::Color(172, 209, 233),
@@ -376,7 +376,7 @@ void AudioView::drawScale() {
 
 void AudioView::drawData(std::vector<std::pair<int16_t, int16_t> > &data, int channel, int samples, int x, int y, int width, int numberOfSamplesToAvoid) {
 	float dist = width/(float)(data.size()-1);
-    
+
 	if(fabs(dist-1.f) < 0.003f)
 		dist = 1.f; // we don’t want round off artifacts
 
@@ -801,7 +801,7 @@ void AudioView::drawZeroLine()
     int x = screenw/2+DATA_XOFF;
     for(int i = 0; i <= (screenHeight-50)/doth+1; i++) {
         float y = screenHeight-doth*i;
-        
+
         glBegin(GL_LINES);
         glVertex3f(x, y, 0.f);
         glVertex3f(x, y-doth/2, 0.f);
@@ -810,13 +810,13 @@ void AudioView::drawZeroLine()
     Widgets::Painter::setColor(Widgets::Color(0,0,0));
     for(int i = 0; i <= (screenHeight-50)/doth+1; i++) {
         float y = screenHeight-doth*i+doth/2;
-        
+
         glBegin(GL_LINES);
         glVertex3f(x, y, 0.f);
         glVertex3f(x, y-doth/2, 0.f);
         glEnd();
     }
-    
+
     if(_manager.getThresholdSource()==THRESHOLD_SOURCE_ALL_EVENTS && _manager.getLastEventThresholded()!=-1)
     {
             Widgets::Painter::setColor(MARKER_COLORS[_manager.getLastEventThresholded() % MARKER_COLOR_NUM]);
@@ -829,11 +829,11 @@ void AudioView::drawZeroLine()
             Widgets::Painter::setColor(Widgets::Color(30,30,30));
             Widgets::Application::font()->draw(o.str().c_str(), x+1, 21, Widgets::AlignHCenter);
     }
-    
-    
-    
+
+
+
 }
-    
+
 void AudioView::drawThreshold(int screenw) {
 	if(_channels.size() == 0)
     {
