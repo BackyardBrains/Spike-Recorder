@@ -15,7 +15,7 @@
     #include <cmath>
     #include <windows.h>
 #endif
-
+#define BOARD_WITH_JOYSTICK 5
 
 namespace BackyardBrains {
 
@@ -1716,7 +1716,7 @@ void RecordingManager::advanceHidMode(uint32_t samples)
                             _hidUsbManager.releaseKey( _keyIndexSetForJoystick[chan]-1);
                         }
                     }
-                    if((ntrigger - _timeOfLastTriggerJoystick[chan])> samplerateDiv10)
+                    if(((ntrigger - _timeOfLastTriggerJoystick[chan])> samplerateDiv10) && (currentAddOnBoard() == BOARD_WITH_JOYSTICK))
                     {
                         if((currentthresh > 0 && channels[chan][i] > currentthresh && _lastValueOfSignalJoystick[chan] < currentthresh) || (currentthresh <= 0 && channels[chan][i] < currentthresh && _lastValueOfSignalJoystick[chan]>currentthresh))
                         {
