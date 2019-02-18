@@ -172,14 +172,15 @@ namespace BackyardBrains {
             }
             //Now create the device interface
             result = (*plugInInterface)->QueryInterface(plugInInterface,
-                                                        CFUUIDGetUUIDBytes(kIOUSBDeviceInterfaceID),
+                                                        CFUUIDGetUUIDBytes(kIOUSBDeviceInterfaceID650),
                                                         (LPVOID *)&dev);
             //Don’t need the intermediate plug-in after device interface
             //is created
             //(*plugInInterface)->Release(plugInInterface);
             if (result || !dev)
             {
-                Log::msg("Couldn’t create a device interface");
+                Log::msg("Couldn’t create a device interface (%08x)\n",
+                         (int) result);
                 continue;
             }
             
