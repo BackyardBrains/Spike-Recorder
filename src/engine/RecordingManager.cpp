@@ -2293,7 +2293,7 @@ RecordingManager::Device::Device(int index, int nchan, int &sampleRate)
 	for(int i=0;i<nchan;i++)
     {
             _50HzNotchFilters[i].initWithSamplingRate(sampleRate);
-            _50HzNotchFilters[i].setCenterFrequency(60.0f);
+            _50HzNotchFilters[i].setCenterFrequency(50.0f);
             _50HzNotchFilters[i].setQ(1.0);
     }
 
