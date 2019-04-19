@@ -15,11 +15,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.8.73</string>
+	<string>1.8.77</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1.8.73</string>
+	<string>1.8.78</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.education</string>
 	<key>LSMinimumSystemVersion</key>
@@ -28,6 +28,8 @@
 	<string>Copyright © 2015 BackyardBrains. All rights reserved.</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Application is using microphone and microphone jack to connect to SpikerBox product</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 </dict>
