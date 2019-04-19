@@ -275,7 +275,7 @@ void RecordingManager::scanUSBDevices()
 
     clock_t end = clock();
     double elapsed_secs = double(end - timerUSB) / CLOCKS_PER_SEC;
-    if(elapsed_secs>0.5)
+    if(elapsed_secs>1)
     {
         timerUSB = end;
 
@@ -1607,6 +1607,8 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 
     //get interleaved data for all channels
     int samplesRead = _hidUsbManager.readDevice(buffer);
+
+//    printf("Read: %d, Needed: %d\n", samplesRead, samples);
     if(_paused || samplesRead==0)
     {
         delete[] channels;

@@ -1007,6 +1007,7 @@ namespace BackyardBrains {
     //
     void HIDUsbManager::getAllDevicesList()
     {
+         std::cout<<"Get HID device List--------------------------------\n";
             list.clear();
             enumerateDevicesForVIDAndPID(BYB_VID, BYB_PID_MUSCLE_SB_PRO);
             enumerateDevicesForVIDAndPID(BYB_VID, BYB_PID_NEURON_SB_PRO);
@@ -1052,11 +1053,18 @@ namespace BackyardBrains {
                     int sizeOfPath = (int)strlen(cur_dev->path);
                     newDevice.devicePath.assign(cur_dev->path, sizeOfPath);
 
+                    if(cur_dev->serial_number)
+                    {
+                        std::wstring wsn(cur_dev->serial_number);
+                        // your new String
+                        std::string strsn(wsn.begin(), wsn.end());
+                        newDevice.serialNumber.assign(strsn);
+                    }
+                    else
+                    {
+                        newDevice.serialNumber.assign("0");
+                    }
 
-                    std::wstring wsn(cur_dev->serial_number);
-                    // your new String
-                    std::string strsn(wsn.begin(), wsn.end());
-                    newDevice.serialNumber.assign(strsn);
                     if(cur_dev->product_id == BYB_PID_NEURON_SB_PRO)
                     {
                         newDevice.deviceType = HID_BOARD_TYPE_NEURON;
@@ -1070,11 +1078,19 @@ namespace BackyardBrains {
                     }
 
                     //     std::cout<<"HID while \n";
-                    std::string nameOfHID((char *) cur_dev->product_string);
+                     std::wstring wname(cur_dev->product_string);
+                    // your new String
+
+                    std::string nameOfHID(wname.begin(), wname.end());
+                      std::cout<<"HID name: "<<nameOfHID<<"\n";
                     //  std::cout<<"Name took \n";
                     Log::msg("HID - Found our HID push it");
+
                     list.push_back(newDevice);
-                    //  std::cout<<"HID name added to list \n";
+
+
+
+                    //  std::cout<<"HID name added to list \n";qd
                     //   std::cout<<"HID device: "<<cur_dev->vendor_id<<", "<<cur_dev->product_string<<"\n";
 
 
