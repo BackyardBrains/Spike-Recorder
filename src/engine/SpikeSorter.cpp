@@ -47,8 +47,12 @@ double SpikeSorter::calcRMS(int8_t *buffer, int size, int chan, int channels, in
 int SpikeSorter::findThreshold(int handle, int channel, int channels, int bytedepth, double *meanValue) {
 	int64_t left = BASS_ChannelGetLength(handle, BASS_POS_BYTE);
 	int8_t buffer[BUFSIZE];
-
-	std::vector<double> rms(left/channels/bytedepth/BUFSIZE);
+    int sizeOfRMS = left/channels/bytedepth/BUFSIZE;
+    if(sizeOfRMS<1)
+    {
+        sizeOfRMS = 1;
+    }
+	std::vector<double> rms(sizeOfRMS);
 	unsigned int i = 0;
 	while(left > 0) {
 		DWORD bytesread = BASS_ChannelGetData(handle, buffer, std::min(left,(int64_t)BUFSIZE));
