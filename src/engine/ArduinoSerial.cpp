@@ -86,6 +86,7 @@ namespace BackyardBrains {
         endOfescapeSequence[5] = 255;
         //start thread that will periodicaly read HID
         batchSizeForSerial = 600;
+
     }
 
 void ArduinoSerial::setRecordingManager(RecordingManager *rm)

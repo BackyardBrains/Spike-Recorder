@@ -952,7 +952,7 @@ void MainView::paintEvent()
 
     //first check if we have button for all serial ports
     //and refresh serial port data
-
+    SerialPortIndicator lastNewButton;
     bool foundButtonForPort;
     for(serialPortsIterator = sps.begin();serialPortsIterator!=sps.end();serialPortsIterator++)
     {
@@ -980,6 +980,7 @@ void MainView::paintEvent()
             SerialPortIndicator newButtonData;
             newButtonData.serialPort = *serialPortsIterator;
             shieldButtons.push_back(newButtonData);
+            lastNewButton = newButtonData;
         }
     }
 
@@ -1107,6 +1108,7 @@ void MainView::paintEvent()
                     }
                 }
                 newButton->clickedWithRef.connect(this, &MainView::plantPressed);
+
             }
             else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::muscle)
             {
@@ -1150,6 +1152,7 @@ void MainView::paintEvent()
                 }
 
                 newButton->clickedWithRef.connect(this, &MainView::musclePressed);
+
             }
             else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::heart || buttonsIterator->serialPort.deviceType == ArduinoSerial::heartOneChannel)
             {
@@ -1194,9 +1197,30 @@ void MainView::paintEvent()
                 }
 
                 newButton->clickedWithRef.connect(this, &MainView::heartPressed);
+
             }
             buttonsIterator->button = newButton;
             shieldsButtonBoxLayout->addWidget(newButton);
+
+            std::size_t foundTemp;
+            foundTemp  = lastNewButton.serialPort.portName.find(buttonsIterator->serialPort.portName);
+            if (foundTemp!=std::string::npos)
+            {
+               //it is the same
+                if(buttonsIterator->serialPort.deviceType == ArduinoSerial::plant)
+                {
+                    plantPressed(NULL, buttonsIterator->button);
+                }
+                else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::muscle)
+                {
+                    musclePressed(NULL,buttonsIterator->button );
+                }
+                else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::heart || buttonsIterator->serialPort.deviceType == ArduinoSerial::heartOneChannel)
+                {
+                   heartPressed(NULL,buttonsIterator->button );
+                }
+            }
+
         }
 
         Widgets::Application::getInstance()->updateLayout();

@@ -101,6 +101,7 @@ namespace BackyardBrains {
         //std::string hardwareVersion;
         std::string hardwareType;
         SerialPort currentPort;
+
         void startScanningForArduinos(ArduinoSerial * refToWorkingArduinoSerial);
         static bool openPortLock;
     private:
