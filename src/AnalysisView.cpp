@@ -220,7 +220,7 @@ void AnalysisView::savePressed() {
 		s << markers.size() << " spikes were written to '" << filename << "'";
 	} else {
         #ifdef __APPLE__
-		s << "Could not write markers: " << strerror(errno)<<". Please use /Users/username/Music/Spike Recorder/ directory.";
+		s << "Could not write markers. Please use /Users/username/Music/Spike Recorder/ directory.";
         #else
         s << "Could not write markers: " << strerror(errno);
         #endif

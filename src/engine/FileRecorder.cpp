@@ -189,7 +189,33 @@ std::string FileRecorder::eventTxtFilename(const std::string &filename) {
 }
 
 int FileRecorder::writeMarkerTextFile(const std::string &filename, const std::list<std::pair<std::string, int64_t> > &markers) const {
-	FILE *f = fopen(filename.c_str(),"w+");
+#ifdef __APPLE__
+    size_t lastSlash =  filename.find_last_of("/");
+    if(lastSlash == std::string::npos || lastSlash==0 )
+    {
+        Log::warn("Could not create marker file: %s", strerror(errno));
+        return 1;
+    }
+    std::string fullDirPath = filename.substr(0, lastSlash);
+    size_t secondToLastSlash =  fullDirPath.find_last_of("/");
+    
+    if(lastSlash == std::string::npos )
+    {
+        Log::warn("Could not create marker file: %s", strerror(errno));
+        return 1;
+    }
+    std::string parrentDir = filename.substr(secondToLastSlash, lastSlash-secondToLastSlash);
+    int resultOfComparison = strcmp("/Spike Recorder", parrentDir.c_str());
+    if(resultOfComparison !=0)
+    {
+        Log::warn("Could not create marker file: %s", strerror(errno));
+        return 1;
+    }
+    FILE *f = fopen(filename.c_str(),"w+");
+#else
+    FILE *f = fopen(filename.c_str(),"w+");
+#endif
+	
 	if(f == 0) {
 		Log::warn("Could not create marker file: %s", strerror(errno));
 		return 1;
