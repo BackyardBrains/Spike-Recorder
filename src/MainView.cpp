@@ -535,7 +535,7 @@ void MainView::analysisPressed() {
         if(_manager.serialMode())
         {
 
-                std::cout<<"1 disconnect \n";
+                std::cout<<"disconnect on Button click (connectToShieldForButton)\n";
 
                 std::size_t found;
                 found  = _manager.getCurrentPort().portName.find(selectedPort.portName);
@@ -916,7 +916,12 @@ void MainView::paintEvent()
     if(_manager.isHIDBoardTypeAvailable(HID_BOARD_TYPE_MUSCLE))
     {
         _muscleHIDButton->setSizeHint(Widgets::Size(53,48));
-        _muscleHIDButton->setVisible(true);
+        if(_muscleHIDButton->isHidden())
+        {
+            _muscleHIDButton->setVisible(true);
+            muscleHIDPressed();
+        }
+
         Widgets::Application::getInstance()->updateLayout();
     }
     else
@@ -929,7 +934,12 @@ void MainView::paintEvent()
     if(_manager.isHIDBoardTypeAvailable(HID_BOARD_TYPE_NEURON))
     {
         _neuronHIDButton->setSizeHint(Widgets::Size(53,48));
-        _neuronHIDButton->setVisible(true);
+        if(_neuronHIDButton->isHidden())
+        {
+            _neuronHIDButton->setVisible(true);
+            neuronHIDPressed();
+        }
+
         Widgets::Application::getInstance()->updateLayout();
     }
     else

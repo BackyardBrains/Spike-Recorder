@@ -1043,7 +1043,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             #ifdef LOG_SCANNING_OF_ARDUINO
                         Log::msg("closeSerial - Set Number of channels and sample rate before closing");
             #endif
-            setNumberOfChannelsAndSamplingRate(1, maxSamplingRate());
+            //setNumberOfChannelsAndSamplingRate(1, maxSamplingRate());
 #if defined(__linux__) || defined(__APPLE__)
             #ifdef LOG_SCANNING_OF_ARDUINO
                 Log::msg("Before closing serial port");
@@ -1226,7 +1226,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             // data we knew was already buffered
             //std::cout << currentDateTime()<<"\n";
             batchSizeForSerial +=1;
-            printf("Read, immediate complete, askedFor: %lu read=%lu in queue: %lu\n",num_request, num_read,numInCueue);
+           // printf("Read, immediate complete, askedFor: %lu read=%lu in queue: %lu\n",num_request, num_read,numInCueue);
             size = num_read;
 
             // std::cout <<num_request<<" -- " <<num_request-num_read<<"\n";
