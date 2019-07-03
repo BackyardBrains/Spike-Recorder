@@ -62,7 +62,8 @@ int AnalysisTrainList::selectedChannel()
 }
 
 void AnalysisTrainList::updateSize() {
-	setSizeHint(Widgets::Size(150,(CHANNEL_HEADER_SIZE+PADDING+PADDING) * _manager.numberOfChannels() + _spikeTrains.size()*(FIELDH+2*PADDING)));
+	//setSizeHint(Widgets::Size(150,(CHANNEL_HEADER_SIZE+PADDING+PADDING+PADDING) * _manager.numberOfChannels() + _spikeTrains.size()*(FIELDH+2*PADDING)));
+    setSizeHint(Widgets::Size(150,(FIELDH+FIELDH+PADDING+PADDING+PADDING) * _manager.numberOfChannels() + _spikeTrains.size()*(FIELDH+2*PADDING)));
 }
 
 void AnalysisTrainList::paintEvent() {
@@ -196,7 +197,7 @@ void AnalysisTrainList::mousePressEvent(Widgets::MouseEvent *event) {
                 }
             }
             
-            currentYPosition += FIELDH;
+            currentYPosition += FIELDH+PADDING;
             
             
             //click on spike train rows

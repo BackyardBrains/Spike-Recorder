@@ -96,7 +96,12 @@ void AnalysisPlots::setAvgWaveformData(int idx) {
 
 void AnalysisPlots::setAutocorrData(int idx) {
 	std::vector<int> buf;
-	SpikeAnalysis::autoCorrelation(buf, _spikeTrains[idx].spikes, 0.1f*_manager.sampleRate(), 0.001f*_manager.sampleRate());
+    int binSize =0.001f*_manager.sampleRate();
+    if(binSize<2)
+    {
+        binSize = 2;
+    }
+	SpikeAnalysis::autoCorrelation(buf, _spikeTrains[idx].spikes, 0.1f*_manager.sampleRate(), binSize);
 	std::vector<float> x, y;
 
 	y.resize(buf.size());
@@ -115,7 +120,12 @@ void AnalysisPlots::setAutocorrData(int idx) {
 
 void AnalysisPlots::setCrosscorrData(int idx) {
 	std::vector<int> buf;
-	SpikeAnalysis::crossCorrelation(buf, _spikeTrains[idx].spikes, _spikeTrains[_target].spikes, 0.1f*_manager.sampleRate(), 0.001f*_manager.sampleRate());
+    int binSize =0.001f*_manager.sampleRate();
+    if(binSize<2)
+    {
+        binSize = 2;
+    }
+	SpikeAnalysis::crossCorrelation(buf, _spikeTrains[idx].spikes, _spikeTrains[_target].spikes, 0.1f*_manager.sampleRate(), binSize);
 	std::vector<float> x, y;
 
 	y.resize(buf.size());
