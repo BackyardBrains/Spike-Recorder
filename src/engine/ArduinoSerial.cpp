@@ -61,7 +61,7 @@
 #endif
 
 
-#define LOG_SCANNING_OF_ARDUINO 1
+//#define LOG_SCANNING_OF_ARDUINO 1
 
 
 

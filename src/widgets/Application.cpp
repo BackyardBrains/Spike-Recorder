@@ -12,6 +12,7 @@
 #include <sstream>
 #include <math.h>
 
+
 namespace BackyardBrains {
 
 namespace Widgets {
@@ -22,9 +23,11 @@ const int Application::MIN_WINDOW_W = 120;
 const int Application::MIN_WINDOW_H = 100;
 
 Application::Application() : _running(false), _mouseGrabber(0), _keyboardGrabber(0), _hoverWidget(0), _windowStack(0), _popupStack(0) {
+    //SDL_SetHint(SDL_HINT_VIDEO_DOUBLE_BUFFER, "");
 	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
 		Log::fatal("SDL failed to initialize: %s", SDL_GetError());
 	}
+    
     _widgetInFocus = NULL;
 #if defined(_WIN32) && (_WIN32_WINNT >= 0x0501)
 	// FILE *ctt = fopen("CON", "w" );
@@ -99,6 +102,7 @@ void Application::run() {
 	_buttonState = ToMouseButtonsFromSDL(SDL_GetMouseState(&oldPos.x, &oldPos.y));
     //SDL_EventState(SDL_DROPFILE, SDL_ENABLE);
 	SDL_StartTextInput();
+    
 	while (_running && !_windowStack.empty()) {
 
 		// Delete closed windows/popups
@@ -111,7 +115,20 @@ void Application::run() {
 
 		removeClosed(_windowStack);
 		removeClosed(_popupStack);
-
+        
+        int w, h;
+        
+        //SDL_RenderSetLogicalSize(sdlRenderer,1440,800);
+        SDL_GetWindowSize(sdlWindow,&w,&h);
+        Log::msg("Size %d, %d -----------", w,h);
+        if(setWindowSize)
+        {//ugly hack for macOS Mojave 10.14.5 that has issues with full screen
+            setWindowSize = false;
+            SDL_SetWindowSize(sdlWindow,remW,remH);
+        }
+        //SDL_GL_GetDrawableSize(sdlWindow,&w,&h);
+        
+        
 		advance();
 		// Call step functions of widgets that actually need them. Are there any?
         //Answer: Audio view, for example, is using this.
@@ -121,13 +138,16 @@ void Application::run() {
 			(*it)->_CallAdvance();
 
 		// draw
-		int w, h;
+		//int w, h;
+        
 		SDL_GetWindowSize(sdlWindow,&w,&h);
+        SDL_GL_GetDrawableSize(sdlWindow,&w,&h);
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		glOrtho(0, w, h, 0, -100,100);
 
 		glClear(GL_COLOR_BUFFER_BIT);
+
 
 		for (WidgetList::const_iterator it = _windowStack.begin(); it != _windowStack.end(); ++it) {
 			glMatrixMode(GL_MODELVIEW);
@@ -139,6 +159,8 @@ void Application::run() {
 			glLoadIdentity();
 			(*it)->_DoPaintEvents(Point(), (*it)->geometry());
 		}
+        SDL_SetWindowSize(sdlWindow, w,h);
+
 		SDL_GL_SwapWindow(sdlWindow);
 
 		// free up the CPU a bit
@@ -516,8 +538,18 @@ void Application::_HandleEvent(const void *eventRaw) {
     }*/
 	else if (event.type == SDL_WINDOWEVENT)	{
 		if(event.window.event == SDL_WINDOWEVENT_RESIZED) {
+
 			int w, h;
-			SDL_GetWindowSize(sdlWindow,&w,&h);
+            SDL_GetWindowSize(sdlWindow,&w,&h);
+            SDL_GL_GetDrawableSize(sdlWindow,&w,&h);
+            if(!setWindowSize)
+            {//ugly hack for macOS Mojave 10.14.5 that has issues with full screen
+			
+            remW = w-1;
+            remH = h-1;
+            setWindowSize = true;
+            }
+            
 			glViewport(0, 0, w, h);
 
 			for(WidgetList::iterator it = _windowStack.begin(); it != _windowStack.end(); it++) {
@@ -525,6 +557,24 @@ void Application::_HandleEvent(const void *eventRaw) {
 				(*it)->_DoGlResetEvents();
 			}
 		}
+        
+        if(event.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
+            
+            int w, h;
+            SDL_GetWindowSize(sdlWindow,&w,&h);
+            SDL_GL_GetDrawableSize(sdlWindow,&w,&h);
+            remW = w;//ugly hack for macOS Mojave 10.14.5 that has issues with full screen
+            remH = h;
+            setWindowSize = true;
+            
+            glViewport(0, 0, w, h);
+            
+            for(WidgetList::iterator it = _windowStack.begin(); it != _windowStack.end(); it++) {
+                (*it)->setSize(Size(std::max(MIN_WINDOW_W,w), std::max(MIN_WINDOW_H,h)));
+                (*it)->_DoGlResetEvents();
+            }
+        }
+
 	}
 }
 
@@ -610,9 +660,10 @@ void Application::createWindow(int w, int h) {
 
 	sdlGLContext = SDL_GL_CreateContext(sdlWindow);
 	if(sdlGLContext == 0) {
-		//Log::fatal("SDL failed to create GL context: %d",SDL_GetError());
+		Log::msg("SDL failed to create GL context: %d",SDL_GetError());
 	}
 	SDL_GetWindowSize(sdlWindow,&w,&h);
+    SDL_GL_GetDrawableSize(sdlWindow,&w,&h);
 
 	glViewport(0, 0, w, h);
 	SDL_SetWindowTitle(sdlWindow, windowTitle().c_str());
@@ -642,6 +693,7 @@ void Application::createWindow(int w, int h) {
 void Application::getWindowSize(int *w, int *h)
 {
     SDL_GetWindowSize(sdlWindow,w,h);
+    SDL_GL_GetDrawableSize(sdlWindow,w,h);
 
 }
 

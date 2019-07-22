@@ -33,7 +33,7 @@
 #include <IOKit/IOBSD.h>
 
 
-#define LOG_USB 1
+//#define LOG_USB 1
 
 // Arduino VIDs:
 //0x2341 - Arduino

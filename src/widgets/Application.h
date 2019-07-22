@@ -58,7 +58,9 @@ private:
 	MouseButtons _buttonState;
 	WidgetList _windowStack;
 	WidgetList _popupStack;
-
+    bool setWindowSize;
+    float remW;
+    float remH;
 	static BitmapFontGL *_font;
 
 	virtual void advance();
