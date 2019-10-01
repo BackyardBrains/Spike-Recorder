@@ -480,6 +480,14 @@ void ConfigView::SetupScreen()
                                     touchSerialPortWidget->addItem("Heart And Brain SpikerBox");
                                     Log::msg("Serial dropdown item: Heart and Brain SpikerBox");
                                 }
+                                else
+                                {
+                                    if(it->deviceType == ArduinoSerial::heartPro)
+                                    {
+                                        touchSerialPortWidget->addItem("Heart And Brain SpikerBox Pro");
+                                        Log::msg("Serial dropdown item: Heart and Brain SpikerBox Pro");
+                                    }
+                                }
                             }
                         }
 
@@ -542,6 +550,14 @@ void ConfigView::SetupScreen()
                                 {
                                     serialPortWidget->addItem("Heart And Brain SpikerBox");
                                     Log::msg("Serial dropdown item: Heart and Brain SpikerBox");
+                                }
+                                else
+                                {
+                                    if(it->deviceType == ArduinoSerial::heartPro)
+                                    {
+                                        serialPortWidget->addItem("Heart And Brain SpikerBox Pro");
+                                        Log::msg("Serial dropdown item: Heart and Brain SpikerBox Pro");
+                                    }
                                 }
                             }
                         }
@@ -621,7 +637,7 @@ void ConfigView::SetupScreen()
 
         //-------------- Serial Number of channels chooser ----------------------------------------
         Log::msg("Check if in serial mode for Num. ch. dropdown");
-        if(_manager.serialMode() && !(_manager.getCurrentPort().deviceType == ArduinoSerial::heartOneChannel || _manager.getCurrentPort().deviceType == ArduinoSerial::plant))
+        if(_manager.serialMode() && !(_manager.getCurrentPort().deviceType == ArduinoSerial::heartOneChannel || _manager.getCurrentPort().deviceType == ArduinoSerial::plant || _manager.getCurrentPort().deviceType == ArduinoSerial::heartPro))
         {
                 //Number of channels chooser
                 Log::msg("Create box layout");

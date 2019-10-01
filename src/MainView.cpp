@@ -1045,7 +1045,7 @@ void MainView::paintEvent()
         {
             numberOfMuscle++;
         }
-        else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::heart || buttonsIterator->serialPort.deviceType == ArduinoSerial::heartOneChannel)
+        else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::heart || buttonsIterator->serialPort.deviceType == ArduinoSerial::heartOneChannel || buttonsIterator->serialPort.deviceType == ArduinoSerial::heartPro)
         {
             numberOfHeart++;
         }
@@ -1175,7 +1175,7 @@ void MainView::paintEvent()
                 newButton->clickedWithRef.connect(this, &MainView::musclePressed);
 
             }
-            else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::heart || buttonsIterator->serialPort.deviceType == ArduinoSerial::heartOneChannel)
+            else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::heart || buttonsIterator->serialPort.deviceType == ArduinoSerial::heartOneChannel || buttonsIterator->serialPort.deviceType == ArduinoSerial::heartPro)
             {
                 currentHeart++;
 
@@ -1241,7 +1241,7 @@ void MainView::paintEvent()
                 {
                     musclePressed(NULL,buttonsIterator->button );
                 }
-                else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::heart || buttonsIterator->serialPort.deviceType == ArduinoSerial::heartOneChannel)
+                else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::heart || buttonsIterator->serialPort.deviceType == ArduinoSerial::heartOneChannel || buttonsIterator->serialPort.deviceType == ArduinoSerial::heartPro)
                 {
                    heartPressed(NULL,buttonsIterator->button );
                 }
@@ -1381,7 +1381,7 @@ void MainView::paintEvent()
 
 
             }
-            else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::heart || buttonsIterator->serialPort.deviceType == ArduinoSerial::heartOneChannel)
+            else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::heart || buttonsIterator->serialPort.deviceType == ArduinoSerial::heartOneChannel ||  buttonsIterator->serialPort.deviceType == ArduinoSerial::heartPro)
             {
                 currentHeart++;
 

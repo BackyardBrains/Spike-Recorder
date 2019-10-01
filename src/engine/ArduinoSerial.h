@@ -60,7 +60,8 @@ namespace BackyardBrains {
             muscle = 1,
             plant = 2,
             heart = 3,
-            heartOneChannel = 4
+            heartOneChannel = 4,
+            heartPro = 5
         };
         struct SerialPort
         {
@@ -104,6 +105,8 @@ namespace BackyardBrains {
 
         void startScanningForArduinos(ArduinoSerial * refToWorkingArduinoSerial);
         static bool openPortLock;
+        void setSampleRateAndNumberOfChannelsBasedOnType();
+        int getSampleRate(){return _samplingRate;}
     private:
         RecordingManager *_manager;
         int openPort(const char *portName);
@@ -148,6 +151,7 @@ namespace BackyardBrains {
             COMMCONFIG port_cfg_orig;
             COMMCONFIG port_cfg;
         #endif
+        bool _justScanning;
         std::string _portName;
         bool _portOpened;
         bool triedToConfigureAgain;

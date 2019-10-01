@@ -547,9 +547,11 @@ bool RecordingManager::initSerial(const char *portName)
     //make audio congfig
     std::string nameOfThePort = portName;
     makeNewSerialAudioConfig(nameOfThePort);
+    _arduinoSerial.setSampleRateAndNumberOfChannelsBasedOnType();
 
-
-    DWORD frequency = _arduinoSerial.maxSamplingRate()/_numOfSerialChannels;
+    DWORD frequency = _arduinoSerial.getSampleRate();//_arduinoSerial.maxSamplingRate()/_numOfSerialChannels;
+    _sampleRate = _arduinoSerial.getSampleRate();
+    _numOfSerialChannels = _arduinoSerial.numberOfChannels();
     std::cout<<"Frequency: "<<frequency<<" Chan: "<<_numOfSerialChannels<<" Samp: "<<_arduinoSerial.maxSamplingRate()<<"\n";
     HSTREAM stream = BASS_StreamCreate(frequency, _numOfSerialChannels, BASS_STREAM_DECODE, STREAMPROC_PUSH, NULL);
     if(stream == 0) {
@@ -2718,6 +2720,9 @@ int RecordingManager::getCurrentInputType()
             case ArduinoSerial::heartOneChannel:
                 return INPUT_TYPE_HEARTSS;
                 break;
+            case ArduinoSerial::heartPro:
+                return INPUT_TYPE_HEARTSS;
+                break;
             case ArduinoSerial::muscle:
                 return INPUT_TYPE_MUSCLESS;
                 break;
@@ -2812,6 +2817,9 @@ void RecordingManager::makeNewSerialAudioConfig(std::string nameOfThePort)
                 audioInputType = INPUT_TYPE_HEARTSS;
                 break;
             case ArduinoSerial::heartOneChannel:
+                audioInputType = INPUT_TYPE_HEARTSS;
+                break;
+            case ArduinoSerial::heartPro:
                 audioInputType = INPUT_TYPE_HEARTSS;
                 break;
             case ArduinoSerial::muscle:

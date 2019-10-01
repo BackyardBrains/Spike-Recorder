@@ -68,7 +68,7 @@
 namespace BackyardBrains {
 
     bool ArduinoSerial::openPortLock = false;
-
+    
     ArduinoSerial::ArduinoSerial() : _portOpened(false) {
 
         escapeSequence[0] = 255;
@@ -86,6 +86,7 @@ namespace BackyardBrains {
         endOfescapeSequence[5] = 255;
         //start thread that will periodicaly read HID
         batchSizeForSerial = 600;
+        _justScanning = false;
 
     }
 
@@ -125,7 +126,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         #ifdef LOG_SCANNING_OF_ARDUINO
         Log::msg("\nNew cycle in serial scanning thread ---------------------------------");
         #endif
-
+        selfRef->_justScanning = true;
         selfRef->checkAllPortsForArduino(workingArduinoRef);
 
     }
@@ -1128,7 +1129,21 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
     }
 
 
-
+    void ArduinoSerial::setSampleRateAndNumberOfChannelsBasedOnType()
+    {
+        if(currentPort.deviceType == SerialDevice::heartPro )
+        {
+            _samplingRate = 1000;
+            _numberOfChannels = 2;
+        }
+        else
+        {
+            _numberOfChannels = numberOfChannels();
+            _samplingRate = maxSamplingRate()/_numberOfChannels;
+            
+        }
+        
+    }
 
 
 //---------------------------------- Reading and processing ------------------------------
@@ -1663,17 +1678,28 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                         {
                             setDeviceTypeToCurrentPort(ArduinoSerial::heartOneChannel);
                         }
+                        else
+                        {
+                            std::size_t found=hardwareType.find("HBSBPRO");//leonardo heart and brain with one channel only
+                            if (found!=std::string::npos)
+                            {
+                                setDeviceTypeToCurrentPort(ArduinoSerial::heartPro);
+                            }
+                        }
                     }
                 }
             }
         }
 
-        if(typeOfMessage == "EVNT" && portOpened())
+        if(!_justScanning)
         {
-            int mnum = (int)((unsigned int)valueOfMessage[0]-48);
-            int64_t offset = 0;
-            _manager->addMarker(std::string(1, mnum+'0'), offset+offsetin);
+            if(typeOfMessage == "EVNT" && portOpened())
+            {
+                int mnum = (int)((unsigned int)valueOfMessage[0]-48);
+                int64_t offset = 0;
+                _manager->addMarker(std::string(1, mnum+'0'), offset+offsetin);
 
+            }
         }
     }
 
@@ -1688,6 +1714,10 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
     int ArduinoSerial::maxSamplingRate()
     {
+        if(currentPort.deviceType == ArduinoSerial::heartPro)
+        {
+            return 1000;
+        }
         return 10000;
     }
 
