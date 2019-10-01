@@ -663,7 +663,9 @@ void RecordingManager::sendEKGImpuls()
 }
 
 
-
+//
+// Used so that config knows which one is selected in dropdown
+//
 int RecordingManager::serialPortIndex()
 {
    return std::max(0, std::min(_serialPortIndex,(int)(_arduinoSerial.list.size()-1)));

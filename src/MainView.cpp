@@ -553,7 +553,9 @@ void MainView::analysisPressed() {
         }
 
         bool connected = _manager.initSerial(selectedPort.portName.c_str());
+        //Used so that config knows which one is selected in dropdown
         _manager.changeSerialPort(portIndex);
+        
         if(!connected)
         {
             Log::error("Can't init serial port.");
@@ -576,6 +578,9 @@ void MainView::analysisPressed() {
 
 
 
+    //
+    // Not used currently
+    //
     void MainView::connectToFirstShieldOfType(ArduinoSerial::SerialDevice deviceType)
     {
         std::list<ArduinoSerial::SerialPort> sps =  _manager.serailPorts();
@@ -949,7 +954,10 @@ void MainView::paintEvent()
         Widgets::Application::getInstance()->updateLayout();
     }
 
-
+    //-------------- Check if we have new serial buttons ----------------------------------------------------------
+    //-------------- Compare buttons and ports in “_portScanningArduinoSerial.ports” ----------------
+    
+    //get ports from “_portScanningArduinoSerial.ports”
     std::list<ArduinoSerial::SerialPort> sps =  _manager.serailPorts();
     std::list<ArduinoSerial::SerialPort>::iterator it;
 
@@ -959,7 +967,7 @@ void MainView::paintEvent()
 
     bool thereWasChange = false;
 
-
+    //--------------------- add new serial buttons ------------------------------------
     //first check if we have button for all serial ports
     //and refresh serial port data
     SerialPortIndicator lastNewButton;
@@ -995,7 +1003,7 @@ void MainView::paintEvent()
     }
 
 
-
+    //----------------- remove nonexisting serial buttons ----------------------------------
     //than we remove buttons that do not have serial port anymore
     bool foundPortForButton;
 
@@ -1021,6 +1029,7 @@ void MainView::paintEvent()
         }
     }
 
+    //------------------- prepare to update serial buttons -----------------------------------
     int numberOfMuscle = 0;
     int numberOfHeart = 0;
     int numberOfPlant = 0;
@@ -1062,6 +1071,8 @@ void MainView::paintEvent()
     }
    // std::cout<<"Number of USB: "<<numberOfUSBDevicesConnected<<"\n";
 
+    // --------------------- Update all serial buttons -----------------------------
+    
     //Now we have sinchronized port and button list
     //check if we had changes and update screen
 
@@ -1212,6 +1223,11 @@ void MainView::paintEvent()
             buttonsIterator->button = newButton;
             shieldsButtonBoxLayout->addWidget(newButton);
 
+            
+            // -------------------------------- Autoconnect to serial ---------------------------------------------
+            // If we have new button
+            // CONNECT TO IT!!!
+            //
             std::size_t foundTemp;
             foundTemp  = lastNewButton.serialPort.portName.find(buttonsIterator->serialPort.portName);
             if (foundTemp!=std::string::npos)

@@ -120,7 +120,7 @@ void Application::run() {
         
         //SDL_RenderSetLogicalSize(sdlRenderer,1440,800);
         SDL_GetWindowSize(sdlWindow,&w,&h);
-        Log::msg("Size %d, %d -----------", w,h);
+        //Log::msg("Size %d, %d -----------", w,h);
         if(setWindowSize)
         {//ugly hack for macOS Mojave 10.14.5 that has issues with full screen
             setWindowSize = false;

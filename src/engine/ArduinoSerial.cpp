@@ -222,8 +222,10 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
 #endif // __APPLE__
 
-
+    //
     // Return a list of all serial ports
+    // Refresh "ports" list
+    //
     void ArduinoSerial::getAllPortsList()
     {
 
@@ -402,7 +404,9 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
     }
 
 
-
+    //
+    // Used during scanning when scanner calles getAllPortsList()
+    //
     void ArduinoSerial::refreshPortsDataList()
     {
 
@@ -457,6 +461,9 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
     }
 
 
+    //
+    // Used during scanning when we receive message
+    //
     void ArduinoSerial::setDeviceTypeToCurrentPort(SerialDevice deviceType)
     {
 
@@ -788,7 +795,9 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
 
 
-
+    //
+    // Used by Recording manager to open serial device
+    //
     int ArduinoSerial::openSerialDevice(const char *portName)
     {
         #ifdef LOG_SCANNING_OF_ARDUINO
@@ -876,7 +885,9 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
 
 
-
+    //
+    // Part of background scanning
+    //
     void ArduinoSerial::checkAllPortsForArduino(ArduinoSerial * workingArduinoRef)
     {
 
@@ -910,6 +921,10 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
                 std::size_t found=list_it->portName.find(workingArduinoRef->currentPortName());
 
+                
+                //
+                // SKIP scanning if we are currently use this port with workingArduinoRef
+                //
                 if (found!=std::string::npos && workingArduinoRef->portOpened())
                 {
 
@@ -922,6 +937,10 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                    // ArduinoSerial::openPortLock = false;
                     continue;
                 }
+                
+                //
+                // SKIP if we already checked it
+                //
                 if (list_it->deviceType != SerialDevice::unknown)
                 {
                     #ifdef LOG_SCANNING_OF_ARDUINO
@@ -931,6 +950,10 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                    // ArduinoSerial::openPortLock = false;
                     continue;
                 }
+                
+                //
+                // SKIP if we already checked 10 times
+                //
                 if(list_it->numOfTrials>NUMBER_OF_TIMES_TO_SCAN_UNKNOWN_PORT)
                 {
                     #ifdef LOG_SCANNING_OF_ARDUINO
