@@ -629,6 +629,12 @@ void RecordingManager::changeSerialPort(int portIndex)
 	_serialPortIndex = portIndex;
 }
 
+    
+void RecordingManager::resetCurrentSerial()
+{
+    setSerialNumberOfChannels(1);
+}
+    
 //
 // Change number of channels we are sampling through serial port
 // set sampling rate to 10000Hz/(number of channels)

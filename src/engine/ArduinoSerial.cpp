@@ -62,7 +62,10 @@
 
 
 //#define LOG_SCANNING_OF_ARDUINO 1
-
+#define BOARD_WITH_EVENT_INPUTS 0
+#define BOARD_WITH_ADDITIONAL_INPUTS 1
+#define BOARD_WITH_HAMMER 4
+#define BOARD_WITH_JOYSTICK 5
 
 
 namespace BackyardBrains {
@@ -87,7 +90,7 @@ namespace BackyardBrains {
         //start thread that will periodicaly read HID
         batchSizeForSerial = 600;
         _justScanning = false;
-
+        currentAddOnBoard == BOARD_WITH_EVENT_INPUTS;
     }
 
 void ArduinoSerial::setRecordingManager(RecordingManager *rm)
@@ -1135,6 +1138,28 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         {
             _samplingRate = 1000;
             _numberOfChannels = 2;
+            
+            if(currentAddOnBoard == BOARD_WITH_ADDITIONAL_INPUTS)
+            {
+                    _samplingRate = 1000;
+                    _numberOfChannels  =4;
+            }
+            else if(currentAddOnBoard == BOARD_WITH_HAMMER)
+            {
+                    _samplingRate = 1000;
+                    _numberOfChannels  =3;
+            }
+            else if(currentAddOnBoard == BOARD_WITH_JOYSTICK)
+            {
+                    _samplingRate = 1000;
+                    _numberOfChannels  =3;
+            }
+            else if(currentAddOnBoard == BOARD_WITH_EVENT_INPUTS)
+            {
+                    _samplingRate = 1000;
+                    _numberOfChannels  =2;
+            }
+            
         }
         else
         {
@@ -1699,7 +1724,60 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                 int64_t offset = 0;
                 _manager->addMarker(std::string(1, mnum+'0'), offset+offsetin);
 
-            }
+            }//EVNT
+            
+            if(typeOfMessage == "BRD")
+            {
+                Log::msg("Change board type on serial");
+                currentAddOnBoard = (int)((unsigned int)valueOfMessage[0]-48);
+                if(currentAddOnBoard == BOARD_WITH_ADDITIONAL_INPUTS)
+                {
+                    if(currentAddOnBoard != BOARD_WITH_ADDITIONAL_INPUTS)
+                    {
+                        _samplingRate = 1000;
+                        _numberOfChannels  =4;
+                        _manager->resetCurrentSerial();
+                    }
+
+                }
+                else if(currentAddOnBoard == BOARD_WITH_HAMMER)
+                {
+                    if(currentAddOnBoard == BOARD_WITH_HAMMER)
+                    {
+                        _samplingRate = 1000;
+                        _numberOfChannels  =3;
+                        _manager->resetCurrentSerial();
+                    }
+                }
+                else if(currentAddOnBoard == BOARD_WITH_JOYSTICK)
+                {
+                    if(currentAddOnBoard == BOARD_WITH_JOYSTICK)
+                    {
+                        _samplingRate = 1000;
+                        _numberOfChannels  =3;
+                        _manager->resetCurrentSerial();
+                    }
+                }
+                else if(currentAddOnBoard == BOARD_WITH_EVENT_INPUTS)
+                {
+                    if(currentAddOnBoard == BOARD_WITH_EVENT_INPUTS)
+                    {
+                        _samplingRate = 1000;
+                        _numberOfChannels  =2;
+                        _manager->resetCurrentSerial();
+                    }
+                }
+                else
+                {
+                    if(_numberOfChannels != 2)
+                    {
+                        _samplingRate = 1000;
+                        _numberOfChannels  =2;
+                        _manager->resetCurrentSerial();
+                    }
+                }
+            }//BRD
+            
         }
     }
 

@@ -150,6 +150,7 @@ public:
     int numberOfSerialChannels();
     std::string serialError;
     void refreshSerialPorts();
+    void resetCurrentSerial();
 
     //HID functions
     bool hidMode() const {return _hidMode;}

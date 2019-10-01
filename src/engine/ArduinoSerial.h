@@ -152,6 +152,7 @@ namespace BackyardBrains {
             COMMCONFIG port_cfg;
         #endif
         bool _justScanning;
+        int currentAddOnBoard;
         std::string _portName;
         bool _portOpened;
         bool triedToConfigureAgain;
