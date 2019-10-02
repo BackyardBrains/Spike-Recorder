@@ -1885,6 +1885,11 @@ void RecordingManager::advance(uint32_t samples) {
 	{
 		std::cout<<"Error HID scan\n";
 	}
+    if(_arduinoSerial.waitingForRestart())
+    {
+        resetCurrentSerial();
+        _arduinoSerial.deviceRestarted();
+    }
 	if(_serialMode)
 	{
 		advanceSerialMode(samples);

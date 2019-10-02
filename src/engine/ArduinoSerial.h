@@ -107,8 +107,11 @@ namespace BackyardBrains {
         static bool openPortLock;
         void setSampleRateAndNumberOfChannelsBasedOnType();
         int getSampleRate(){return _samplingRate;}
+        bool waitingForRestart(){return _shouldRestartDevice;}
+        void deviceRestarted(){_shouldRestartDevice = false;}
     private:
         RecordingManager *_manager;
+        bool _shouldRestartDevice;
         int openPort(const char *portName);
         std::thread scanningThread;
         void refreshPortList(std::list<SerialPort> newPorts);

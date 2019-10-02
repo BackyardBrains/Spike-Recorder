@@ -90,7 +90,8 @@ namespace BackyardBrains {
         //start thread that will periodicaly read HID
         batchSizeForSerial = 600;
         _justScanning = false;
-        currentAddOnBoard == BOARD_WITH_EVENT_INPUTS;
+        _shouldRestartDevice = false;
+        currentAddOnBoard = BOARD_WITH_EVENT_INPUTS;
     }
 
 void ArduinoSerial::setRecordingManager(RecordingManager *rm)
@@ -1729,42 +1730,50 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             if(typeOfMessage == "BRD")
             {
                 Log::msg("Change board type on serial");
-                currentAddOnBoard = (int)((unsigned int)valueOfMessage[0]-48);
-                if(currentAddOnBoard == BOARD_WITH_ADDITIONAL_INPUTS)
+                int newAddOnBoard = (int)((unsigned int)valueOfMessage[0]-48);
+                if(newAddOnBoard == BOARD_WITH_ADDITIONAL_INPUTS)
                 {
                     if(currentAddOnBoard != BOARD_WITH_ADDITIONAL_INPUTS)
                     {
                         _samplingRate = 1000;
                         _numberOfChannels  =4;
-                        _manager->resetCurrentSerial();
+                        currentAddOnBoard =newAddOnBoard;
+                        _shouldRestartDevice = true;
+                        
                     }
 
                 }
-                else if(currentAddOnBoard == BOARD_WITH_HAMMER)
+                else if(newAddOnBoard == BOARD_WITH_HAMMER)
                 {
-                    if(currentAddOnBoard == BOARD_WITH_HAMMER)
+                    if(currentAddOnBoard != BOARD_WITH_HAMMER)
                     {
                         _samplingRate = 1000;
                         _numberOfChannels  =3;
-                        _manager->resetCurrentSerial();
+                        currentAddOnBoard =newAddOnBoard;
+                        _shouldRestartDevice = true;
+                        
                     }
                 }
-                else if(currentAddOnBoard == BOARD_WITH_JOYSTICK)
+                else if(newAddOnBoard == BOARD_WITH_JOYSTICK)
                 {
-                    if(currentAddOnBoard == BOARD_WITH_JOYSTICK)
+                    if(currentAddOnBoard != BOARD_WITH_JOYSTICK)
                     {
                         _samplingRate = 1000;
                         _numberOfChannels  =3;
-                        _manager->resetCurrentSerial();
+                        currentAddOnBoard =newAddOnBoard;
+                        _shouldRestartDevice = true;
+                        
                     }
                 }
-                else if(currentAddOnBoard == BOARD_WITH_EVENT_INPUTS)
+                else if(newAddOnBoard == BOARD_WITH_EVENT_INPUTS)
                 {
-                    if(currentAddOnBoard == BOARD_WITH_EVENT_INPUTS)
+                    if(currentAddOnBoard != BOARD_WITH_EVENT_INPUTS)
                     {
                         _samplingRate = 1000;
                         _numberOfChannels  =2;
-                        _manager->resetCurrentSerial();
+                        currentAddOnBoard =newAddOnBoard;
+                        _shouldRestartDevice = true;
+                        
                     }
                 }
                 else
@@ -1773,7 +1782,9 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                     {
                         _samplingRate = 1000;
                         _numberOfChannels  =2;
-                        _manager->resetCurrentSerial();
+                        currentAddOnBoard =newAddOnBoard;
+                        _shouldRestartDevice = true;
+                        
                     }
                 }
             }//BRD
