@@ -103,43 +103,63 @@ namespace BackyardBrains {
             
             if (strcmp(deviceName, "IOUSBHostDevice") == 0)
             {
-                Log::msg("Interesting device");
+                 #ifdef LOG_USB
+                Log::msg("Interesting device IOUSBHostDevice");
+                #endif
             }
             else if(strcmp(deviceName, "Arduino Leonardo") == 0)
             {
-                Log::msg("Interesting board");
+                 #ifdef LOG_USB
+                Log::msg("Interesting board Arduino Leonardo");
+                #endif
             }
             else if(strcmp(deviceName, "Arduino Uno") == 0)
             {
-                Log::msg("Interesting board");
+                 #ifdef LOG_USB
+                Log::msg("Interesting board Arduino Uno");
+                #endif
             }
             else if(strcmp(deviceName, "CP2102N USB to UART Bridge Controller")==0)
             {
-                Log::msg("Interesting board");
+                 #ifdef LOG_USB
+                Log::msg("Interesting board CP2102N USB to UART Bridge Controller");
+                #endif
             }
             else if(strcmp(deviceName, "FT230X Basic UART")==0)
             {
-                Log::msg("Interesting board");
+                 #ifdef LOG_USB
+                Log::msg("Interesting board FT230X Basic UART");
+                #endif
             }
             else if(strcmp(deviceName, "FT231X USB UART")==0)
             {
-                Log::msg("Interesting board");
+                 #ifdef LOG_USB
+                Log::msg("Interesting board FT231X USB UART");
+                #endif
             }
             else if(strcmp(deviceName, "32-bit MFi Development Kit")==0)
             {
-                 Log::msg("Interesting board");
+                 #ifdef LOG_USB
+                 Log::msg("Interesting board MFi");
+                #endif
             }
             else if(strcmp(deviceName, "Arduino Due Prog. Port")==0)
             {
-                Log::msg("Interesting board");
+                 #ifdef LOG_USB
+                Log::msg("Interesting board Arduino Due Prog. Port");
+                #endif
             }
             else if(strcmp(deviceName, "USB2.0-Serial")==0)
             {
-                Log::msg("Interesting board");
+                 #ifdef LOG_USB
+                Log::msg("Interesting board USB2.0-Serial");
+                #endif
             }
             else if(strcmp(deviceName, "Arduino Due")==0)
             {
-                Log::msg("Interesting board");
+                 #ifdef LOG_USB
+                Log::msg("Interesting board Arduino Due");
+                #endif
             }
             else
             {
