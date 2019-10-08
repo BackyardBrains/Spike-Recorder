@@ -61,7 +61,7 @@
 #endif
 
 
-//#define LOG_SCANNING_OF_ARDUINO 1
+#define LOG_SCANNING_OF_ARDUINO 1
 #define BOARD_WITH_EVENT_INPUTS 0
 #define BOARD_WITH_ADDITIONAL_INPUTS 1
 #define BOARD_WITH_HAMMER 4
@@ -71,7 +71,7 @@
 namespace BackyardBrains {
 
     bool ArduinoSerial::openPortLock = false;
-    
+
     ArduinoSerial::ArduinoSerial() : _portOpened(false) {
 
         escapeSequence[0] = 255;
@@ -883,6 +883,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                 Log::msg("openSerialDeviceWithoutLock - Set Number of channels and sample rate at %s", portName);
         #endif
         setNumberOfChannelsAndSamplingRate(1, maxSamplingRate());
+
         //askForBoardType();
 
         return fd;
@@ -926,7 +927,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
                 std::size_t found=list_it->portName.find(workingArduinoRef->currentPortName());
 
-                
+
                 //
                 // SKIP scanning if we are currently use this port with workingArduinoRef
                 //
@@ -942,7 +943,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                    // ArduinoSerial::openPortLock = false;
                     continue;
                 }
-                
+
                 //
                 // SKIP if we already checked it
                 //
@@ -955,7 +956,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                    // ArduinoSerial::openPortLock = false;
                     continue;
                 }
-                
+
                 //
                 // SKIP if we already checked 10 times
                 //
@@ -1139,7 +1140,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         {
             _samplingRate = 1000;
             _numberOfChannels = 2;
-            
+
             if(currentAddOnBoard == BOARD_WITH_ADDITIONAL_INPUTS)
             {
                     _samplingRate = 1000;
@@ -1160,15 +1161,15 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                     _samplingRate = 1000;
                     _numberOfChannels  =2;
             }
-            
+
         }
         else
         {
             _numberOfChannels = numberOfChannels();
             _samplingRate = maxSamplingRate()/_numberOfChannels;
-            
+
         }
-        
+
     }
 
 
@@ -1726,7 +1727,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                 _manager->addMarker(std::string(1, mnum+'0'), offset+offsetin);
 
             }//EVNT
-            
+
             if(typeOfMessage == "BRD")
             {
                 Log::msg("Change board type on serial");
@@ -1739,7 +1740,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                         _numberOfChannels  =4;
                         currentAddOnBoard =newAddOnBoard;
                         _shouldRestartDevice = true;
-                        
+
                     }
 
                 }
@@ -1751,7 +1752,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                         _numberOfChannels  =3;
                         currentAddOnBoard =newAddOnBoard;
                         _shouldRestartDevice = true;
-                        
+
                     }
                 }
                 else if(newAddOnBoard == BOARD_WITH_JOYSTICK)
@@ -1762,7 +1763,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                         _numberOfChannels  =3;
                         currentAddOnBoard =newAddOnBoard;
                         _shouldRestartDevice = true;
-                        
+
                     }
                 }
                 else if(newAddOnBoard == BOARD_WITH_EVENT_INPUTS)
@@ -1773,7 +1774,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                         _numberOfChannels  =2;
                         currentAddOnBoard =newAddOnBoard;
                         _shouldRestartDevice = true;
-                        
+
                     }
                 }
                 else
@@ -1784,11 +1785,11 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                         _numberOfChannels  =2;
                         currentAddOnBoard =newAddOnBoard;
                         _shouldRestartDevice = true;
-                        
+
                     }
                 }
             }//BRD
-            
+
         }
     }
 
@@ -1866,6 +1867,18 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         sstm << "b:;\n";
         Log::msg("askForBoardType - Ask for Board type");
          writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
+
+    }
+
+    void ArduinoSerial::askForExpansionBoardType()
+    {
+        if(currentPort.deviceType == SerialDevice::heartPro )
+        {
+            std::stringstream sstm;
+            sstm << "board:;\n";
+            Log::msg("askForBoardType - Ask for Expansion Board type");
+             writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
+        }
 
     }
 

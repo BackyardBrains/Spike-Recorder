@@ -614,7 +614,7 @@ bool RecordingManager::initSerial(const char *portName)
   //  _player.start(_arduinoSerial.maxSamplingRate()/_numOfSerialChannels);
     _player.setVolume(0);
     loadFilterSettings();
-
+    _arduinoSerial.askForExpansionBoardType();
 	return true;
 }
 
@@ -629,12 +629,12 @@ void RecordingManager::changeSerialPort(int portIndex)
 	_serialPortIndex = portIndex;
 }
 
-    
+
 void RecordingManager::resetCurrentSerial()
 {
     setSerialNumberOfChannels(1);
 }
-    
+
 //
 // Change number of channels we are sampling through serial port
 // set sampling rate to 10000Hz/(number of channels)

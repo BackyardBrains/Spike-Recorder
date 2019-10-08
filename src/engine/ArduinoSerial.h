@@ -98,6 +98,7 @@ namespace BackyardBrains {
         void sendPotentiometerMessage(uint8_t value);
         void checkAllPortsForArduino(ArduinoSerial * workingArduinoRef);
         void askForBoardType();
+        void askForExpansionBoardType();
         //std::string firmwareVersion;
         //std::string hardwareVersion;
         std::string hardwareType;
