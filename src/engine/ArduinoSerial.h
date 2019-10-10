@@ -120,7 +120,7 @@ namespace BackyardBrains {
         int openSerialDeviceWithoutLock(const char *portName);
         void refreshPortsDataList();
         void setDeviceTypeToCurrentPort(SerialDevice deviceType);
-
+        void checkIfWeHavetoAskBoardSomething(void);
         char circularBuffer[SIZE_OF_CIRC_BUFFER];
         int cBufHead;
         int cBufTail;
@@ -133,7 +133,7 @@ namespace BackyardBrains {
         bool checkIfNextByteExist();
         bool areWeAtTheEndOfFrame();
         bool checkIfHaveWholeFrame();
-
+        
         void testEscapeSequence(unsigned int newByte, int offset);
         void executeContentOfMessageBuffer(int offset);
         void executeOneMessage(std::string typeOfMessage, std::string valueOfMessage, int offsetin);

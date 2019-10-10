@@ -480,8 +480,19 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             if (found!=std::string::npos)
             {
                 portsIterator->deviceType = deviceType;
-                currentPort.deviceType = deviceType;
                 currentPort.portName = portsIterator->portName;
+                if(!_justScanning)
+                {
+                    if(currentPort.deviceType == SerialDevice::unknown)
+                    {
+                        if(deviceType != SerialDevice::unknown)
+                        {
+                            currentPort.deviceType = deviceType;
+                            _shouldRestartDevice = true;
+                        }
+                    }
+                }
+                currentPort.deviceType = deviceType;
                 break;
             }
         }
@@ -935,7 +946,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                 {
 
                     workingArduinoRef->currentPort.portName = workingArduinoRef->currentPortName();
-                    workingArduinoRef->currentPort.deviceType = list_it->deviceType;
+                    //workingArduinoRef->currentPort.deviceType = list_it->deviceType;
                     #ifdef LOG_SCANNING_OF_ARDUINO
                     //std::cout<<"Port: "<<list_it->portName.c_str()<<" Already opened by another thread.\n";
                     Log::msg("checkAllPortsForArduino Port: %s Already opened by another thread.",list_it->portName.c_str());
@@ -1326,11 +1337,22 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
     int ArduinoSerial::getNewSamples(int16_t * obuffer)
     {
         char buffer[33024];
+        
+        
         int bytesRead = readPort(buffer);
         int numberOfSamples =  processDataIntoSamples(buffer, bytesRead, obuffer);
         return numberOfSamples;
     }
 
+    
+    void ArduinoSerial::checkIfWeHavetoAskBoardSomething(void)
+    {
+        if(currentPort.deviceType == ArduinoSerial::SerialDevice::unknown)
+        {
+            askForBoardType();
+        }
+        
+    }
     //
     // Process raw data from serial port
     // Extract frames and extract samples from frames
