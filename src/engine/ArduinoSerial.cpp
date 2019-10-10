@@ -1337,21 +1337,21 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
     int ArduinoSerial::getNewSamples(int16_t * obuffer)
     {
         char buffer[33024];
-        
-        
+        checkIfWeHavetoAskBoardSomething();
+
         int bytesRead = readPort(buffer);
         int numberOfSamples =  processDataIntoSamples(buffer, bytesRead, obuffer);
         return numberOfSamples;
     }
 
-    
+
     void ArduinoSerial::checkIfWeHavetoAskBoardSomething(void)
     {
         if(currentPort.deviceType == ArduinoSerial::SerialDevice::unknown)
         {
             askForBoardType();
         }
-        
+
     }
     //
     // Process raw data from serial port
