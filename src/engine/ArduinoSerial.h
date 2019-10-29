@@ -20,7 +20,7 @@
 #include <fcntl.h>
 #include <list>
 #include <string>
-
+#include "constants.h"
 
 //just MAC classes
 #ifdef __APPLE__
@@ -52,6 +52,10 @@ namespace BackyardBrains {
     };
 
     class RecordingManager;
+
+
+
+
 
     class ArduinoSerial {
     public:
@@ -110,6 +114,10 @@ namespace BackyardBrains {
         int getSampleRate(){return _samplingRate;}
         bool waitingForRestart(){return _shouldRestartDevice;}
         void deviceRestarted(){_shouldRestartDevice = false;}
+        int addOnBoardPressent();
+
+        void pressKey(int keyIndex);
+        void releaseKey(int keyIndex);
     private:
         RecordingManager *_manager;
         bool _shouldRestartDevice;
@@ -133,7 +141,7 @@ namespace BackyardBrains {
         bool checkIfNextByteExist();
         bool areWeAtTheEndOfFrame();
         bool checkIfHaveWholeFrame();
-        
+
         void testEscapeSequence(unsigned int newByte, int offset);
         void executeContentOfMessageBuffer(int offset);
         void executeOneMessage(std::string typeOfMessage, std::string valueOfMessage, int offsetin);
@@ -161,19 +169,21 @@ namespace BackyardBrains {
         bool _portOpened;
         bool triedToConfigureAgain;
         int batchSizeForSerial;
-        
+
         //for Joystick
-        
+
         #if defined(_WIN32)
         KeyForJoystick keysForJoystick[8];
         #endif
-        
-        
+
+
         uint8_t previousButtonState;
         uint8_t currentButtonState;
-        
+
         bool checkIfKeyWasPressed(int keyIndex);
         bool checkIfKeyWasReleased(int keyIndex);
+        void turnONJoystickLed(int ledIndex);
+        void turnOFFJoystickLed(int ledIndex);
     };
 
 

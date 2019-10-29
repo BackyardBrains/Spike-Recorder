@@ -25,7 +25,7 @@ typedef enum
 #include <string>
 #include <iostream>
 #include <sys/time.h>
-//
+#include "constants.h"
 
 #ifdef _WIN32
 	#include <windows.h>
@@ -47,13 +47,7 @@ class RecordingManager;
 
     }HIDManagerDevice;
 
-    #ifdef _WIN32
-        typedef struct KeyForJoystick {
-            BYTE      bVk;
-            BYTE      bScan;
-            DWORD     dwFlags;
-        }KeyForJoystick;
-    #endif
+
 
 class HIDUsbManager
 {

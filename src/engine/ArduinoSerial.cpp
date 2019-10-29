@@ -90,45 +90,45 @@ namespace BackyardBrains {
         //start thread that will periodicaly read HID
         batchSizeForSerial = 600;
         _justScanning = false;
-        
-        
+
+
         #if defined(_WIN32)
-        
+
         keysForJoystick[0].bVk = VkKeyScan('w');
         keysForJoystick[0].bScan = 0x11;
         keysForJoystick[0].dwFlags = 0;
-        
+
         keysForJoystick[1].bVk = VkKeyScan('s');
         keysForJoystick[1].bScan = 0x1F;
         keysForJoystick[1].dwFlags = 0;
-        
+
         keysForJoystick[2].bVk = VkKeyScan('a');
         keysForJoystick[2].bScan = 0x1E;
         keysForJoystick[2].dwFlags = 0;
-        
+
         keysForJoystick[3].bVk = VkKeyScan('d');
         keysForJoystick[3].bScan = 0x20;
         keysForJoystick[3].dwFlags = 0;
-        
+
         keysForJoystick[4].bVk = VkKeyScan('z');
         keysForJoystick[4].bScan = 0x2C;
         keysForJoystick[4].dwFlags = 0;
-        
+
         keysForJoystick[5].bVk = VkKeyScan('q');
         keysForJoystick[5].bScan = 0x10;
         keysForJoystick[5].dwFlags = 0;
-        
+
         keysForJoystick[6].bVk = VkKeyScan('c');
         keysForJoystick[6].bScan = 0x2E;
         keysForJoystick[6].dwFlags = 0;
-        
+
         keysForJoystick[7].bVk = VkKeyScan('v');
         keysForJoystick[7].bScan = 0x2F;
         keysForJoystick[7].dwFlags = 0;
-        
+
         #endif // defined
-        
-        
+
+
         _shouldRestartDevice = false;
         currentAddOnBoard = BOARD_WITH_EVENT_INPUTS;
     }
@@ -1728,10 +1728,10 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         //free(message);
 
     }
-    
-    
-    
-    
+
+
+
+
     bool ArduinoSerial::checkIfKeyWasPressed(int keyIndex)
     {
         uint8_t temp =1;
@@ -1744,7 +1744,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         }
         return false;
     }
-    
+
     bool ArduinoSerial::checkIfKeyWasReleased(int keyIndex)
     {
         uint8_t temp =1;
@@ -1770,7 +1770,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             uint8_t MSBByte= (unsigned int)valueOfMessage[1];
             currentButtonState = (MSBByte<<4 & 0xF0) | (LSBByte&0x0F);
             Log::msg("Button state %u ------------------------",currentButtonState);
-            
+
                         if(checkIfKeyWasPressed(0))
                         {
             #if defined(_WIN32)
@@ -1781,7 +1781,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                         0 );
             #endif // defined
                         }
-            
+
                         if(checkIfKeyWasPressed(1))
                         {
             #if defined(_WIN32)
@@ -1812,7 +1812,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                         0 );
             #endif // defined
                         }
-            
+
                         if(checkIfKeyWasPressed(4))
                         {
             #if defined(_WIN32)
@@ -1823,7 +1823,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                         0 );
             #endif // defined
                         }
-            
+
                         if(checkIfKeyWasPressed(5))
                         {
             #if defined(_WIN32)
@@ -1834,7 +1834,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                         0 );
             #endif // defined
                         }
-            
+
                         if(checkIfKeyWasPressed(6))
                         {
             #if defined(_WIN32)
@@ -1845,7 +1845,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                         0 );
             #endif // defined
                         }
-            
+
                         if(checkIfKeyWasPressed(7))
                         {
             #if defined(_WIN32)
@@ -1856,10 +1856,10 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                         0 );
             #endif // defined
                         }
-            
-            
+
+
                         //---------------------------- release ------------------------------------------
-            
+
                         if(checkIfKeyWasReleased(0))
                         {
             #if defined(_WIN32)
@@ -1870,7 +1870,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                         0 );
             #endif // defined
                         }
-            
+
                         if(checkIfKeyWasReleased(1))
                         {
             #if defined(_WIN32)
@@ -1901,7 +1901,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                         0 );
             #endif // defined
                         }
-            
+
                         if(checkIfKeyWasReleased(4))
                         {
             #if defined(_WIN32)
@@ -1912,7 +1912,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                         0 );
             #endif // defined
                         }
-            
+
                         if(checkIfKeyWasReleased(5))
                         {
             #if defined(_WIN32)
@@ -1923,7 +1923,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                         0 );
             #endif // defined
                         }
-            
+
                         if(checkIfKeyWasReleased(6))
                         {
             #if defined(_WIN32)
@@ -1934,7 +1934,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                         0 );
             #endif // defined
                         }
-            
+
                         if(checkIfKeyWasReleased(7))
                         {
             #if defined(_WIN32)
@@ -1945,11 +1945,11 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                         0 );
             #endif // definedvvv
                         }
-            
-            
-            
-            
-            
+
+
+
+
+
             previousButtonState = currentButtonState;
         }
         if(typeOfMessage == "HWT")
@@ -2072,8 +2072,59 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
 
 
+
+    void ArduinoSerial::pressKey(int keyIndex)
+    {
+        try{
+            turnONJoystickLed(keyIndex);
+            #if defined(_WIN32)
+            keybd_event( keysForJoystick[keyIndex].bVk,
+                          keysForJoystick[keyIndex].bScan,
+                          keysForJoystick[keyIndex].dwFlags,
+                          0 );
+            #endif
+        }
+        catch(std::exception &e)
+        {
+            Log::msg("First pressKey exception: %s", e.what() );
+        }
+        catch(...)
+        {
+            Log::msg("All pressKey exception");
+        }
+    }
+
+    void ArduinoSerial::releaseKey(int keyIndex)
+    {
+         try{
+            turnOFFJoystickLed(keyIndex);
+            #if defined(_WIN32)
+            keybd_event( keysForJoystick[keyIndex].bVk,
+                          keysForJoystick[keyIndex].bScan,
+                          keysForJoystick[keyIndex].dwFlags | KEYEVENTF_KEYUP,
+                          0 );
+            #endif
+        }
+        catch(std::exception &e)
+        {
+            Log::msg("First releaseKey exception: %s", e.what() );
+        }
+        catch(...)
+        {
+            Log::msg("All releaseKey exception");
+        }
+    }
+
+
     //---------------------------------- Getters/parameters ------------------------------
 #pragma mark - Getters/parameters
+
+    int ArduinoSerial::addOnBoardPressent()
+    {
+        return currentAddOnBoard;
+    }
+
+
     const char * ArduinoSerial::currentPortName()
     {
         return _portName.c_str();
@@ -2137,6 +2188,20 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
     }
 
+
+    void ArduinoSerial::turnONJoystickLed(int ledIndex)
+    {
+        std::stringstream sstm;
+        sstm << "ledon:"<<ledIndex<<";\n";
+        writeToPort((sstm.str().c_str()),sstm.str().length());
+    }
+
+    void ArduinoSerial::turnOFFJoystickLed(int ledIndex)
+    {
+        std::stringstream sstm;
+        sstm << "ledoff:"<<ledIndex<<";\n";
+        writeToPort((sstm.str().c_str()),sstm.str().length());
+    }
 
     void ArduinoSerial::askForBoardType()
     {

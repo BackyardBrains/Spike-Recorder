@@ -500,7 +500,17 @@ void RecordingManager::scanUSBDevices()
 
 int RecordingManager::currentAddOnBoard()
 {
-    return _hidUsbManager.addOnBoardPressent();
+
+    if(_serialMode)
+	{
+
+	    return _arduinoSerial.addOnBoardPressent();
+	}
+	else
+    {
+        return _hidUsbManager.addOnBoardPressent();
+    }
+
 }
 
 bool RecordingManager::isRTRepeating()
@@ -1390,7 +1400,7 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 
 	//get interleaved data for all channels
 
-
+    int samplerateDiv10 = _sampleRate/10;
 
 	int samplesRead = _arduinoSerial.getNewSamples(buffer);
     //	uint32_t numTicksAfter = SDL_GetTicks();
@@ -1509,7 +1519,44 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
                         const int64_t ntrigger = _pos + i;
                         const int thresh = _virtualDevices[_selectedVDevice].threshold;
 
-                        if(_triggers.empty() || ntrigger - _triggers.front() > _sampleRate/10) {
+
+
+                        //--------------- joystick related code --------------------------
+
+                        const int currentthresh = _virtualDevices[chan].threshold;
+                        if(_timersForKeyRelease[chan]>0)
+                        {
+                            _timersForKeyRelease[chan] --;
+                            if(_timersForKeyRelease[chan]==0)
+                            {
+                                Log::msg("Release %d", _keyIndexSetForJoystick[chan]-1);
+                                _arduinoSerial.releaseKey( _keyIndexSetForJoystick[chan]-1);
+                            }
+                        }
+                        if(((ntrigger - _timeOfLastTriggerJoystick[chan])> samplerateDiv10) && (currentAddOnBoard() == BOARD_WITH_JOYSTICK))
+                        {
+                            if((currentthresh > 0 && channels[chan][i] > currentthresh && _lastValueOfSignalJoystick[chan] < currentthresh) || (currentthresh <= 0 && channels[chan][i] < currentthresh && _lastValueOfSignalJoystick[chan]>currentthresh))
+                            {
+                                //we thresholded on signal for one channel
+                                _timeOfLastTriggerJoystick[chan] = ntrigger;
+                                if(_keyIndexSetForJoystick[chan]>0)//zero is "none of the keys selected"
+                                {
+                                    if(_timersForKeyRelease[chan]==0)
+                                    {
+                                        Log::msg("Press %d",_keyIndexSetForJoystick[chan]-1);
+                                        _arduinoSerial.pressKey(_keyIndexSetForJoystick[chan]-1);
+                                    }
+                                    _timersForKeyRelease[chan] = MAX_TIMER_FOR_KEY_RELEASE;
+                                    //keyReleaseList.push_back(_keyIndexSetForJoystick[chan]-1);
+
+                                }
+                            }
+                        }
+                        _lastValueOfSignalJoystick[chan] = channels[chan][i];
+                        //-------------------- end of joystick related code --------------
+
+
+                        if(_triggers.empty() || ntrigger - _triggers.front() > samplerateDiv10) {
                             if((thresh > 0 && channels[chan][i] >= thresh && lastSampleForThreshold< thresh) || (thresh <= 0 && channels[chan][i] < thresh && lastSampleForThreshold>= thresh)) {
                                 _triggers.push_front(_pos + i);
                                 triggerd = true;
@@ -1745,30 +1792,6 @@ void RecordingManager::advanceHidMode(uint32_t samples)
                                 //keyReleaseList.push_back(_keyIndexSetForJoystick[chan]-1);
 
                             }
-
-
-                          /*  #if defined(_WIN32)
-                                    keybd_event( VK_SPACE,
-                                                0x39 ,
-                                                0,
-                                                0 );
-
-
-
-                                    keybd_event( VK_SPACE,
-                                                0x39,
-                                                KEYEVENTF_KEYUP,
-                                                0);
-                            #endif*/
-
-
-
-
-
-
-
-
-
                         }
                     }
                     _lastValueOfSignalJoystick[chan] = channels[chan][i];
