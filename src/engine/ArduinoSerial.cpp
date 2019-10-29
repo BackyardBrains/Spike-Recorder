@@ -90,6 +90,45 @@ namespace BackyardBrains {
         //start thread that will periodicaly read HID
         batchSizeForSerial = 600;
         _justScanning = false;
+        
+        
+        #if defined(_WIN32)
+        
+        keysForJoystick[0].bVk = VkKeyScan('w');
+        keysForJoystick[0].bScan = 0x11;
+        keysForJoystick[0].dwFlags = 0;
+        
+        keysForJoystick[1].bVk = VkKeyScan('s');
+        keysForJoystick[1].bScan = 0x1F;
+        keysForJoystick[1].dwFlags = 0;
+        
+        keysForJoystick[2].bVk = VkKeyScan('a');
+        keysForJoystick[2].bScan = 0x1E;
+        keysForJoystick[2].dwFlags = 0;
+        
+        keysForJoystick[3].bVk = VkKeyScan('d');
+        keysForJoystick[3].bScan = 0x20;
+        keysForJoystick[3].dwFlags = 0;
+        
+        keysForJoystick[4].bVk = VkKeyScan('z');
+        keysForJoystick[4].bScan = 0x2C;
+        keysForJoystick[4].dwFlags = 0;
+        
+        keysForJoystick[5].bVk = VkKeyScan('q');
+        keysForJoystick[5].bScan = 0x10;
+        keysForJoystick[5].dwFlags = 0;
+        
+        keysForJoystick[6].bVk = VkKeyScan('c');
+        keysForJoystick[6].bScan = 0x2E;
+        keysForJoystick[6].dwFlags = 0;
+        
+        keysForJoystick[7].bVk = VkKeyScan('v');
+        keysForJoystick[7].bScan = 0x2F;
+        keysForJoystick[7].dwFlags = 0;
+        
+        #endif // defined
+        
+        
         _shouldRestartDevice = false;
         currentAddOnBoard = BOARD_WITH_EVENT_INPUTS;
     }
@@ -1456,8 +1495,8 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                         {
                             //we have more data in frame than we need
                             //something is wrong with this frame
-                            numberOfFrames--;
-                            std::cout<< "More channels than expected\n";
+                            //numberOfFrames--;
+                            //std::cout<< "More channels than expected\n";
                             break;//continue as if we have new frame
                         }
 
@@ -1689,6 +1728,35 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         //free(message);
 
     }
+    
+    
+    
+    
+    bool ArduinoSerial::checkIfKeyWasPressed(int keyIndex)
+    {
+        uint8_t temp =1;
+        if((currentButtonState>>keyIndex) & temp)
+        {
+            if(!((previousButtonState>>keyIndex) & temp))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    bool ArduinoSerial::checkIfKeyWasReleased(int keyIndex)
+    {
+        uint8_t temp =1;
+        if((previousButtonState>>keyIndex) & temp)
+        {
+            if(!((currentButtonState>>keyIndex) & temp))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
 
     void ArduinoSerial::executeOneMessage(std::string typeOfMessage, std::string valueOfMessage, int offsetin)
@@ -1696,7 +1764,194 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         //std::cout<<"\nMESSAGE Arduino: "<<typeOfMessage<<" - "<<valueOfMessage<<"\n";
         Log::msg("Message: Type: %s Value: %s", typeOfMessage.c_str(), valueOfMessage.c_str());
 
-
+        if(typeOfMessage == "JOY")
+        {
+            uint8_t LSBByte= (unsigned int)valueOfMessage[0];
+            uint8_t MSBByte= (unsigned int)valueOfMessage[1];
+            currentButtonState = (MSBByte<<4 & 0xF0) | (LSBByte&0x0F);
+            Log::msg("Button state %u ------------------------",currentButtonState);
+            
+                        if(checkIfKeyWasPressed(0))
+                        {
+            #if defined(_WIN32)
+                            Log::msg("Pressed w");
+                            keybd_event( VkKeyScan('w'),
+                                        0x11,
+                                        0,
+                                        0 );
+            #endif // defined
+                        }
+            
+                        if(checkIfKeyWasPressed(1))
+                        {
+            #if defined(_WIN32)
+                            Log::msg("Pressed s");
+                            keybd_event( VkKeyScan('s'),
+                                        0x1F,
+                                        0,
+                                        0 );
+            #endif // defined
+                        }
+                        if(checkIfKeyWasPressed(2))
+                        {
+            #if defined(_WIN32)
+                            Log::msg("Pressed a");
+                            keybd_event( VkKeyScan('a'),
+                                        0x1E,
+                                        0,
+                                        0 );
+            #endif // defined
+                        }
+                        if(checkIfKeyWasPressed(3))
+                        {
+            #if defined(_WIN32)
+                            Log::msg("Pressed d");
+                            keybd_event( VkKeyScan('d'),
+                                        0x20,
+                                        0,
+                                        0 );
+            #endif // defined
+                        }
+            
+                        if(checkIfKeyWasPressed(4))
+                        {
+            #if defined(_WIN32)
+                            Log::msg("Pressed z");
+                            keybd_event( VkKeyScan('z'),
+                                        0x2C,
+                                        0,
+                                        0 );
+            #endif // defined
+                        }
+            
+                        if(checkIfKeyWasPressed(5))
+                        {
+            #if defined(_WIN32)
+                            Log::msg("Pressed q");
+                            keybd_event( VkKeyScan('q'),
+                                        0x10,
+                                        0,
+                                        0 );
+            #endif // defined
+                        }
+            
+                        if(checkIfKeyWasPressed(6))
+                        {
+            #if defined(_WIN32)
+                            Log::msg("Pressed c");
+                            keybd_event( VkKeyScan('c'),
+                                        0x2E,
+                                        0,
+                                        0 );
+            #endif // defined
+                        }
+            
+                        if(checkIfKeyWasPressed(7))
+                        {
+            #if defined(_WIN32)
+                            Log::msg("Pressed v");
+                            keybd_event( VkKeyScan('v'),
+                                        0x2F,
+                                        0,
+                                        0 );
+            #endif // defined
+                        }
+            
+            
+                        //---------------------------- release ------------------------------------------
+            
+                        if(checkIfKeyWasReleased(0))
+                        {
+            #if defined(_WIN32)
+                            Log::msg("Released w");
+                            keybd_event( VkKeyScan('w'),
+                                        0x11,//0x91,
+                                        KEYEVENTF_KEYUP,
+                                        0 );
+            #endif // defined
+                        }
+            
+                        if(checkIfKeyWasReleased(1))
+                        {
+            #if defined(_WIN32)
+                            Log::msg("Released s");
+                            keybd_event( VkKeyScan('s'),
+                                        0x1f,//0x9F,
+                                        KEYEVENTF_KEYUP,
+                                        0 );
+            #endif // defined
+                        }
+                        if(checkIfKeyWasReleased(2))
+                        {
+            #if defined(_WIN32)
+                            Log::msg("Released a");
+                            keybd_event( VkKeyScan('a'),
+                                        0x1e,//0x9E,
+                                        KEYEVENTF_KEYUP,
+                                        0 );
+            #endif // defined
+                        }
+                        if(checkIfKeyWasReleased(3))
+                        {
+            #if defined(_WIN32)
+                            Log::msg("Released d");
+                            keybd_event( VkKeyScan('d'),
+                                        0x20,//0xA0,
+                                        KEYEVENTF_KEYUP,
+                                        0 );
+            #endif // defined
+                        }
+            
+                        if(checkIfKeyWasReleased(4))
+                        {
+            #if defined(_WIN32)
+                            Log::msg("Released z");
+                            keybd_event( VkKeyScan('z'),
+                                        0x2c,//0xAC,
+                                        KEYEVENTF_KEYUP,
+                                        0 );
+            #endif // defined
+                        }
+            
+                        if(checkIfKeyWasReleased(5))
+                        {
+            #if defined(_WIN32)
+                            Log::msg("Released q");
+                            keybd_event( VkKeyScan('q'),
+                                        0x10,//0xAD,
+                                        KEYEVENTF_KEYUP,
+                                        0 );
+            #endif // defined
+                        }
+            
+                        if(checkIfKeyWasReleased(6))
+                        {
+            #if defined(_WIN32)
+                            Log::msg("Released c");
+                            keybd_event( VkKeyScan('c'),
+                                        0x2e,//0xAE,
+                                        KEYEVENTF_KEYUP,
+                                        0 );
+            #endif // defined
+                        }
+            
+                        if(checkIfKeyWasReleased(7))
+                        {
+            #if defined(_WIN32)
+                            Log::msg("Released v");
+                            keybd_event( VkKeyScan('v'),
+                                        0x2f,//0xAF,
+                                        KEYEVENTF_KEYUP,
+                                        0 );
+            #endif // definedvvv
+                        }
+            
+            
+            
+            
+            
+            previousButtonState = currentButtonState;
+        }
         if(typeOfMessage == "HWT")
         {
             hardwareType = valueOfMessage;

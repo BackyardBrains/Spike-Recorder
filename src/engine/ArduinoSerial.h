@@ -161,6 +161,19 @@ namespace BackyardBrains {
         bool _portOpened;
         bool triedToConfigureAgain;
         int batchSizeForSerial;
+        
+        //for Joystick
+        
+        #if defined(_WIN32)
+        KeyForJoystick keysForJoystick[8];
+        #endif
+        
+        
+        uint8_t previousButtonState;
+        uint8_t currentButtonState;
+        
+        bool checkIfKeyWasPressed(int keyIndex);
+        bool checkIfKeyWasReleased(int keyIndex);
     };
 
 
