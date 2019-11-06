@@ -431,10 +431,18 @@ struct hid_device_info  HID_API_EXPORT *hid_enumerate(unsigned short vendor_id, 
    // syslog(LOG_ERR, "hid_enumerate - Init");
 	/* Set up the HID Manager if it hasn't been done */
 	hid_init();
-	
+	if(hid_mgr==NULL)
+    {
+        return NULL;
+    }
     //syslog(LOG_ERR, "hid_enumerate - List devices");
 	/* Get a list of the Devices */
-	CFSetRef device_set = IOHIDManagerCopyDevices(hid_mgr);
+    
+    
+    CFSetRef device_set = IOHIDManagerCopyDevices(hid_mgr);
+    
+    
+    
     //syslog(LOG_ERR, "hid_enumerate - Make c array");
 	/* Convert the list into a C array so we can iterate easily. */	
 	num_devices = CFSetGetCount(device_set);
