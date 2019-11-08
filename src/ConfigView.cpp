@@ -23,6 +23,8 @@
 #include "widgets/HorizontalColorPicker.h"
 #include "widgets/HorizontalNumberPicker.h"
 
+#include <stdio.h>
+#include <stdlib.h>
 
 namespace BackyardBrains {
 
@@ -874,6 +876,8 @@ void ConfigView::SetupScreen()
     this->setSize(this->size());
 
     Log::msg("End function");
+    
+    system("./avrdude -Cavrdude.conf -v -patmega328p -carduino -P/dev/cu.usbmodem1431201 -b115200 -D -Uflash:w:temp-firmware.ino.standard.hex:i");
 }
 //----------------------------------- END OF CONFIG ------------------------------------------------
 //--------------------------------------------------------------------------------------------------

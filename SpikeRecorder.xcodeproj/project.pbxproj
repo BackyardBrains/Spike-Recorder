@@ -93,6 +93,14 @@
 		8526E78523707D570089E8AF /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8526E78423707D570089E8AF /* SDL2.framework */; };
 		8526E78623707D6B0089E8AF /* SDL2.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8526E78423707D570089E8AF /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8526E78723707D710089E8AF /* SDL2.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8526E78423707D570089E8AF /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8526E7992375A8F30089E8AF /* avrdude in Resources */ = {isa = PBXBuildFile; fileRef = 8526E7952375A8F30089E8AF /* avrdude */; };
+		8526E79A2375A8F30089E8AF /* avrdude.conf in Resources */ = {isa = PBXBuildFile; fileRef = 8526E7962375A8F30089E8AF /* avrdude.conf */; };
+		8526E79B2375A8F30089E8AF /* entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8526E7972375A8F30089E8AF /* entitlements.plist */; };
+		8526E79C2375A8F30089E8AF /* temp-firmware.ino.standard.hex in Resources */ = {isa = PBXBuildFile; fileRef = 8526E7982375A8F30089E8AF /* temp-firmware.ino.standard.hex */; };
+		8526E7A22375A9F40089E8AF /* temp-firmware.ino.standard.hex in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8526E7982375A8F30089E8AF /* temp-firmware.ino.standard.hex */; };
+		8526E7A32375AA050089E8AF /* avrdude in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8526E7952375A8F30089E8AF /* avrdude */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		8526E7A42375AA050089E8AF /* avrdude.conf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8526E7962375A8F30089E8AF /* avrdude.conf */; };
+		8526E7A52375AA050089E8AF /* entitlements.plist in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8526E7972375A8F30089E8AF /* entitlements.plist */; };
 		85760FFA2180A1A100F197FB /* KeyboardGeneratorMac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85760FF92180A1A100F197FB /* KeyboardGeneratorMac.cpp */; };
 /* End PBXBuildFile section */
 
@@ -118,6 +126,19 @@
 				8526E78723707D710089E8AF /* SDL2.framework in CopyFiles */,
 				247FF9331C919F24004DF81C /* SDL2_image.framework in CopyFiles */,
 				1C7EA2551D380C0C00D5FCD7 /* libbass.dylib in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8526E7A12375A9DC0089E8AF /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+				8526E7A32375AA050089E8AF /* avrdude in CopyFiles */,
+				8526E7A42375AA050089E8AF /* avrdude.conf in CopyFiles */,
+				8526E7A52375AA050089E8AF /* entitlements.plist in CopyFiles */,
+				8526E7A22375A9F40089E8AF /* temp-firmware.ino.standard.hex in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -343,6 +364,10 @@
 		8526E78223707C780089E8AF /* SDL_blendmode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDL_blendmode.h; sourceTree = "<group>"; };
 		8526E78323707C780089E8AF /* SDL_opengl_glext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDL_opengl_glext.h; sourceTree = "<group>"; };
 		8526E78423707D570089E8AF /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2.framework; sourceTree = "<group>"; };
+		8526E7952375A8F30089E8AF /* avrdude */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = avrdude; sourceTree = "<group>"; };
+		8526E7962375A8F30089E8AF /* avrdude.conf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = avrdude.conf; sourceTree = "<group>"; };
+		8526E7972375A8F30089E8AF /* entitlements.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = entitlements.plist; sourceTree = "<group>"; };
+		8526E7982375A8F30089E8AF /* temp-firmware.ino.standard.hex */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "temp-firmware.ino.standard.hex"; sourceTree = "<group>"; };
 		85760FF82180A13500F197FB /* KeyboardGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KeyboardGenerator.h; sourceTree = "<group>"; };
 		85760FF92180A1A100F197FB /* KeyboardGeneratorMac.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = KeyboardGeneratorMac.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -454,6 +479,7 @@
 		248E58641AAE0CF50011707F = {
 			isa = PBXGroup;
 			children = (
+				8526E7942375A8F30089E8AF /* Helper */,
 				2407F70F1C7F53FF00D215B9 /* Media.xcassets */,
 				248E591E1AAE1B450011707F /* Frameworks */,
 				248E586F1AAE0CF60011707F /* SpikeRecorder */,
@@ -693,6 +719,18 @@
 			path = src/libraries;
 			sourceTree = SOURCE_ROOT;
 		};
+		8526E7942375A8F30089E8AF /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				8526E7952375A8F30089E8AF /* avrdude */,
+				8526E7962375A8F30089E8AF /* avrdude.conf */,
+				8526E7972375A8F30089E8AF /* entitlements.plist */,
+				8526E7982375A8F30089E8AF /* temp-firmware.ino.standard.hex */,
+			);
+			name = Helper;
+			path = src/Helper;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -705,6 +743,7 @@
 				248E586B1AAE0CF60011707F /* Resources */,
 				24079F3E1AB0CCC200820291 /* CopyFiles */,
 				24079F421AB0CCE600820291 /* CopyFiles */,
+				8526E7A12375A9DC0089E8AF /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -763,12 +802,16 @@
 				24079F3B1AB0CBE700820291 /* icon_512x512@2x.png in Resources */,
 				24079F391AB0CBE700820291 /* icon_32x32@2x.png in Resources */,
 				24079F351AB0CBE700820291 /* icon_16x16@2x.png in Resources */,
+				8526E79B2375A8F30089E8AF /* entitlements.plist in Resources */,
+				8526E79C2375A8F30089E8AF /* temp-firmware.ino.standard.hex in Resources */,
 				24079F3A1AB0CBE700820291 /* icon_512x512.png in Resources */,
 				24079F341AB0CBE700820291 /* icon_16x16.png in Resources */,
 				24079F371AB0CBE700820291 /* icon_256x256@2x.png in Resources */,
 				24079F331AB0CBE700820291 /* icon_128x128@2x.png in Resources */,
 				24079F321AB0CBE700820291 /* icon_128x128.png in Resources */,
 				24079F381AB0CBE700820291 /* icon_32x32.png in Resources */,
+				8526E79A2375A8F30089E8AF /* avrdude.conf in Resources */,
+				8526E7992375A8F30089E8AF /* avrdude in Resources */,
 				24079FA91AB1C90E00820291 /* data in Resources */,
 				2407F7101C7F53FF00D215B9 /* Media.xcassets in Resources */,
 				24079F361AB0CBE700820291 /* icon_256x256.png in Resources */,

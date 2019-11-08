@@ -1,0 +1,6 @@
+<dict>
+  <key>com.apple.security.app-sandbox</key>
+  <true/>
+  <key>com.apple.security.inherit</key>
+  <true/>
+</dict> 
