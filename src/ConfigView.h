@@ -50,7 +50,7 @@ private:
         void setNumOfChannelsForTouchHandler(int selectionNum) {
             _parent->setSerialNumberOfChannels(selectionNum);
         }
-        
+
         void changeKeyForJoystick(int selectionNum)
         {
             _parent->changeKeysForJoystick(_virtualDevice, selectionNum);
@@ -84,7 +84,7 @@ private:
     TouchDropDownList * touchFirmwareListWidget;
     DropDownList * numberOfChannelsWidget;
     Widgets::PushButton *_connectButton;
-    
+
     std::vector<DropDownList *> joystickKeyDropdowns;
 
 
@@ -124,7 +124,7 @@ private:
     void calibratePressed();
 
     void changeKeysForJoystick(int channelIndex, int keyIndex);
-
+    int windows_system(const char *cmd);
 };
 
 }

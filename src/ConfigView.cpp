@@ -25,6 +25,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#if defined(_WIN32)
+#include <tchar.h>
+#endif // defined
 
 namespace BackyardBrains {
 
@@ -876,9 +879,40 @@ void ConfigView::SetupScreen()
     this->setSize(this->size());
 
     Log::msg("End function");
-    
+
+    #if defined(__APPLE__)
     system("./avrdude -Cavrdude.conf -v -patmega328p -carduino -P/dev/cu.usbmodem1431201 -b115200 -D -Uflash:w:temp-firmware.ino.standard.hex:i");
+    #endif
+    #if defined(_WIN32)
+    system("avrdude -Cavrdude.conf -v -patmega328p -carduino -PCOM8 -b115200 -D -Uflash:w:temp-firmware.ino.standard.hex:i");
+    //windows_system("avrdude -Cavrdude.conf -v -patmega328p -carduino -PCOM8 -b115200 -D -Uflash:w:temp-firmware.ino.standard.hex:i");
+    #endif
 }
+
+//
+// Used for programming of Arduino devices using AVRDUDE
+//
+int ConfigView::windows_system(const char *cmd)
+{
+  PROCESS_INFORMATION p_info;
+  STARTUPINFO s_info;
+  LPSTR cmdline, programpath;
+
+  memset(&s_info, 0, sizeof(s_info));
+  memset(&p_info, 0, sizeof(p_info));
+  s_info.cb = sizeof(s_info);
+
+  cmdline     = _tcsdup(TEXT(cmd));
+  programpath = _tcsdup(TEXT(cmd));
+
+  if (CreateProcess(programpath, cmdline, NULL, NULL, 0, 0, NULL, NULL, &s_info, &p_info))
+  {
+    WaitForSingleObject(p_info.hProcess, INFINITE);
+    CloseHandle(p_info.hProcess);
+    CloseHandle(p_info.hThread);
+  }
+}
+
 //----------------------------------- END OF CONFIG ------------------------------------------------
 //--------------------------------------------------------------------------------------------------
 
