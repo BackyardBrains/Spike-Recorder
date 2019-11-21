@@ -65,14 +65,8 @@ $ make
 
 ***on OS X***
 
-Install the dependencies [libsdl](https://www.libsdl.org/download-1.2.php) and [sdl_image](https://www.libsdl.org/projects/SDL_image/release-1.2.html) by downloading the linked .dmg files and moving the .framework files to `/Library/Frameworks`.
+Open SpikeRecorder.xcodeproj in Xcode application.
 
-### Compilation
-
-```
-$ cd BYB-Neural-Recorder
-$ make
-```
 
 ### Running
 
