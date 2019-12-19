@@ -16,9 +16,9 @@
 #include "HighPassFilter.h"
 #include "AudioInputConfig.h"
 #include "defaults/DefaultConfig.h"
-
+#include "FirmwareUpdater.h"
 #if defined(_WIN32)
-    #include "FirmwareUpdater.h"
+
     #include "BYBFirmwareVO.h"
     #include "BSLFirmwareUpdater.h"
     #define LOCATION_OF_FIRMWARES "./firmwares"
@@ -359,9 +359,9 @@ private:
     int64_t _timersForKeyRelease[NUMBER_OF_AVAILABLE_CHANNELS_FOR_JOYSTICK];
 
 	int _firmwareUpdateStage;//this needs to be outside exclusive win block
-
+    FirmwareUpdater _xmlFirmwareUpdater;
     #if defined(_WIN32)
-        FirmwareUpdater _xmlFirmwareUpdater;
+
         BSLFirmwareUpdater _bslFirmwareUpdater;
         std::list<BYBFirmwareVO> _currentFirmwares;
         std::vector<BYBFirmwareVO> getAllFirmwaresFromLocal();

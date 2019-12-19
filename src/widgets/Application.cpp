@@ -128,8 +128,25 @@ void Application::run() {
         }
         //SDL_GL_GetDrawableSize(sdlWindow,&w,&h);
         
-        
+       /* int numOfDevices = SDL_GetNumTouchDevices();
+        if(numOfDevices>0)
+        {
+            for (int i=0;i<numOfDevices;i++)
+            {
+                
+                SDL_TouchID touchId = SDL_GetTouchDevice(i);
+                
+                int numberOfFingers = SDL_GetNumTouchFingers(touchId);
+                Log::msg("Num of FIngers: %d",numberOfFingers);
+            }
+            
+        }*/
 		advance();
+
+        
+
+        
+        
 		// Call step functions of widgets that actually need them. Are there any?
         //Answer: Audio view, for example, is using this.
 		for (WidgetList::const_iterator it = _windowStack.begin(); it != _windowStack.end(); ++it)
@@ -203,6 +220,7 @@ KeyModifiers sdl_keymod_to_keymod(unsigned short mod) {
 void Application::_HandleEvent(const void *eventRaw) {
 	const SDL_Event &event = *reinterpret_cast<const SDL_Event*>(eventRaw);
 
+    
     if(event.type ==SDL_FINGERMOTION)
     {
      //   Log::msg("Finger motion %ll x: %f y: %f", event.tfinger.fingerId, event.tfinger.x, event.tfinger.y );
@@ -235,11 +253,15 @@ void Application::_HandleEvent(const void *eventRaw) {
       //  std::cout<<"Finger MULTY: number of fingers:"<<event.mgesture.numFingers<<" Theta: "<<event.mgesture.dTheta<<" Distance: "<<event.mgesture.dDist<<", x: "<<event.mgesture.x<<", y: "<<event.mgesture.y<<"\n";
     }
 
-
+    
     if (event.type == SDL_MOUSEMOTION || event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP || event.type == SDL_MOUSEWHEEL ) {
-		// update our internal button state tracking
+		
+
+        
+        // update our internal button state tracking
 		if (event.type == SDL_MOUSEMOTION)
         {
+            
             _lastMouseClickWasOnTouchscreen = event.motion.which == SDL_TOUCH_MOUSEID;//check if user is using touchscreen
             // Log::msg("Mouse motion which: %d x: %f y: %f", event.motion.which, event.motion.x, event.motion.y );
            // std::cout<<"MOUSE motion  which:"<<event.motion.which<<" x: "<<event.motion.x<<" ,y: "<<event.motion.y<<"\n";
@@ -250,6 +272,7 @@ void Application::_HandleEvent(const void *eventRaw) {
             }
            //  Log::msg("Mouse motion which: %d x: %f y: %f", event.motion.which, event.motion.x, event.motion.y );
 			_buttonState = ToMouseButtonsFromSDL(event.motion.state);
+
         }
 		else if (event.type == SDL_MOUSEBUTTONDOWN)
         {
@@ -257,6 +280,7 @@ void Application::_HandleEvent(const void *eventRaw) {
           //  Log::msg("Mouse button down which: %d x: %f y: %f", event.button.which, event.button.x, event.button.y );
           //  std::cout<<"MOUSE button DOWN which:"<<event.button.which<<" x: "<<event.button.x<<" ,y: "<<event.button.y<<"\n";
 			_buttonState |= ToMouseButtonFromSDL(event.button.button);
+
         }
 		else if (event.type == SDL_MOUSEWHEEL)
         {
@@ -266,6 +290,7 @@ void Application::_HandleEvent(const void *eventRaw) {
 				_buttonState |= WheelUpButton;
 			if(event.wheel.y < 0)
 				_buttonState |= WheelDownButton;*/
+
 		}
 		else // if (event.type == SDL_MOUSEBUTTONUP)
         {
@@ -274,6 +299,8 @@ void Application::_HandleEvent(const void *eventRaw) {
            // std::cout<<"MOUSE button UP which:"<<event.button.which<<" x: "<<event.button.x<<" ,y: "<<event.button.y<<"\n";
 
 			_buttonState &= ~ToMouseButtonFromSDL(event.button.button);
+
+            
         }
 
 		// TODO generate events if the event.motion.state magically changed things

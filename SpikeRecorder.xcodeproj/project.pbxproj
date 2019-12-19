@@ -102,6 +102,9 @@
 		8526E7A42375AA050089E8AF /* avrdude.conf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8526E7962375A8F30089E8AF /* avrdude.conf */; };
 		8526E7A52375AA050089E8AF /* entitlements.plist in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8526E7972375A8F30089E8AF /* entitlements.plist */; };
 		85760FFA2180A1A100F197FB /* KeyboardGeneratorMac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85760FF92180A1A100F197FB /* KeyboardGeneratorMac.cpp */; };
+		85EF49052385AA53002268A4 /* BYBFirmwareVO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85EF48FF2385AA53002268A4 /* BYBFirmwareVO.cpp */; };
+		85EF49062385AA53002268A4 /* FirmwareUpdater.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85EF49012385AA53002268A4 /* FirmwareUpdater.cpp */; };
+		85EF490C238C19DE002268A4 /* FolderManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 85EF490B238C19DE002268A4 /* FolderManager.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -370,6 +373,12 @@
 		8526E7982375A8F30089E8AF /* temp-firmware.ino.standard.hex */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "temp-firmware.ino.standard.hex"; sourceTree = "<group>"; };
 		85760FF82180A13500F197FB /* KeyboardGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KeyboardGenerator.h; sourceTree = "<group>"; };
 		85760FF92180A1A100F197FB /* KeyboardGeneratorMac.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = KeyboardGeneratorMac.cpp; sourceTree = "<group>"; };
+		85EF48FF2385AA53002268A4 /* BYBFirmwareVO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BYBFirmwareVO.cpp; sourceTree = "<group>"; };
+		85EF49002385AA53002268A4 /* FirmwareUpdater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FirmwareUpdater.h; sourceTree = "<group>"; };
+		85EF49012385AA53002268A4 /* FirmwareUpdater.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FirmwareUpdater.cpp; sourceTree = "<group>"; };
+		85EF49092385AA98002268A4 /* BYBFirmwareVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BYBFirmwareVO.h; sourceTree = "<group>"; };
+		85EF490A238C19DE002268A4 /* FolderManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FolderManager.h; sourceTree = "<group>"; };
+		85EF490B238C19DE002268A4 /* FolderManager.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = FolderManager.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -479,6 +488,7 @@
 		248E58641AAE0CF50011707F = {
 			isa = PBXGroup;
 			children = (
+				85EF48FC2385AA53002268A4 /* firmware */,
 				8526E7942375A8F30089E8AF /* Helper */,
 				2407F70F1C7F53FF00D215B9 /* Media.xcassets */,
 				248E591E1AAE1B450011707F /* Frameworks */,
@@ -731,6 +741,20 @@
 			path = src/Helper;
 			sourceTree = "<group>";
 		};
+		85EF48FC2385AA53002268A4 /* firmware */ = {
+			isa = PBXGroup;
+			children = (
+				85EF49092385AA98002268A4 /* BYBFirmwareVO.h */,
+				85EF48FF2385AA53002268A4 /* BYBFirmwareVO.cpp */,
+				85EF49002385AA53002268A4 /* FirmwareUpdater.h */,
+				85EF49012385AA53002268A4 /* FirmwareUpdater.cpp */,
+				85EF490A238C19DE002268A4 /* FolderManager.h */,
+				85EF490B238C19DE002268A4 /* FolderManager.mm */,
+			);
+			name = firmware;
+			path = src/engine/firmware;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -836,6 +860,8 @@
 				248E58FB1AAE19570011707F /* LayoutItem.cpp in Sources */,
 				248E58F61AAE19570011707F /* BoxLayout.cpp in Sources */,
 				248E58EC1AAE19570011707F /* FFTView.cpp in Sources */,
+				85EF490C238C19DE002268A4 /* FolderManager.mm in Sources */,
+				85EF49062385AA53002268A4 /* FirmwareUpdater.cpp in Sources */,
 				248E58F11AAE19570011707F /* PathsMac.cpp in Sources */,
 				248E58E21AAE19570011707F /* AnalysisAudioView.cpp in Sources */,
 				24D572A41C8772E5007F4DEB /* EkgBackend.cpp in Sources */,
@@ -869,6 +895,7 @@
 				2421F0901ACFDDBD00927F19 /* SpikeAnalysis.cpp in Sources */,
 				248E58FF1AAE19570011707F /* FileDialogMac.mm in Sources */,
 				248E59051AAE19570011707F /* ToolTip.cpp in Sources */,
+				85EF49052385AA53002268A4 /* BYBFirmwareVO.cpp in Sources */,
 				248E58EA1AAE19570011707F /* RecordingManager.cpp in Sources */,
 				248E59011AAE19570011707F /* Painter.cpp in Sources */,
 				248E58EF1AAE19570011707F /* MainView.cpp in Sources */,
@@ -1021,6 +1048,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
+				OTHER_LDFLAGS = "-lcurl";
 				PRODUCT_BUNDLE_IDENTIFIER = com.backyardbrains.SpikeRecorder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -1071,6 +1099,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
+				OTHER_LDFLAGS = "-lcurl";
 				PRODUCT_BUNDLE_IDENTIFIER = com.backyardbrains.SpikeRecorder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";

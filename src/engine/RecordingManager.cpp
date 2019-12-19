@@ -293,8 +293,8 @@ void RecordingManager::scanUSBDevices()
              _currentFirmwares.clear();
 
             //first check if there are firmwares that have same hardware version and same hardware type
-            for( std::list<BYBFirmwareVO>::iterator ti = _xmlFirmwareUpdater.firmwares.begin();
-                    ti != _xmlFirmwareUpdater.firmwares.end();
+            for( std::list<BYBFirmwareVO>::iterator ti = _xmlFirmwareUpdater.hidFirmwares.begin();
+                    ti != _xmlFirmwareUpdater.hidFirmwares.end();
                     ti ++)
                 {
                     if(((BYBFirmwareVO)(*ti)).hardware.compare(_hidUsbManager.hardwareVersion)==0)
@@ -380,8 +380,8 @@ void RecordingManager::scanUSBDevices()
                 std::list<BYBFirmwareVO> tempCurrentFirmwares;
 
                 //first check if there are firmwares that have same hardware version and hardware type
-                for( std::list<BYBFirmwareVO>::iterator ti = _xmlFirmwareUpdater.firmwares.begin();
-                    ti != _xmlFirmwareUpdater.firmwares.end();
+                for( std::list<BYBFirmwareVO>::iterator ti = _xmlFirmwareUpdater.hidFirmwares.begin();
+                    ti != _xmlFirmwareUpdater.hidFirmwares.end();
                     ti ++)
                 {
                     //check if hardware version is the same with connected HID device

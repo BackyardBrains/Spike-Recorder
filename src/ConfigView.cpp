@@ -29,6 +29,15 @@
 #include <tchar.h>
 #endif // defined
 
+
+#define SIZE_CHECKBOX_NORMAL 19
+#define SIZE_CHECKBOX_TOUCH 40
+
+#define SIZE_HEIGHT_TEXT_INPUT_NORMAL 20
+#define SIZE_HEIGHT_TEXT_INPUT_TOUCH 30
+
+#define SIZE_HEIGHT_RANGE_SELECTOR_NORMAL 40
+#define SIZE_HEIGHT_RANGE_SELECTOR_TOUCH 80
 namespace BackyardBrains {
 
 ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *parent) : Widget(parent), _manager(mngr), _audioView(audioView) {
@@ -38,261 +47,202 @@ ConfigView::ConfigView(RecordingManager &mngr, AudioView &audioView, Widget *par
 //----------------------------------- START OF CONFIG ----------------------------------------------
 //--------------------------------------------------------------------------------------------------
 
-void ConfigView::SetupScreen()
+    
+void ConfigView::addMuteCheckBox(Widgets::Widget *group, int chckBoxSize)
 {
-    weAreOnTouchScreen = Widgets::Application::getInstance()->areWeOnTouchscreen();
+    Log::msg("Make mute checkbox");
+    Widgets::BoxLayout *mutehbox = new Widgets::BoxLayout(Widgets::Horizontal);
+    Widgets::Label *muteLabel = new Widgets::Label(group);
+    muteLabel->setText("Mute Speakers:");
+    muteLabel->updateSize();
+    
+    _muteCKBox = new Widgets::PushButton(group);
+    Log::msg("Check state for mute checkbox");
+    if(_manager.player().volume() == 0)
+        _muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
+    else
+        _muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
+    
+    
+    _muteCKBox->setSizeHint(Widgets::Size(chckBoxSize,chckBoxSize));
+    
+    
+    _muteCKBox->clicked.connect(this, &ConfigView::mutePressed);
+    Log::msg("Add mute label to box");
+    mutehbox->addWidget(muteLabel, Widgets::AlignVCenter);
+    mutehbox->addSpacing(10);
+    Log::msg("Add mute checkbox");
+    mutehbox->addWidget(_muteCKBox, Widgets::AlignVCenter);
+    mutehbox->addSpacing(50);
+    Log::msg("Add layout for mute checkbox");
+    gvbox->addLayout(mutehbox);
+    gvbox->addSpacing(30);
+}
+    
+    
+void ConfigView::addCalibration(Widgets::Widget *group)
+{
+    Widgets::Label *calibrateMainLabel = new Widgets::Label(group);
+    calibrateMainLabel->setText("Calibrate SpikeRecorder for current setup ");
+    calibrateMainLabel->updateSize();
+    
+    Widgets::PushButton *calibrateButton = new Widgets::PushButton(group);
+    calibrateButton->clicked.connect(this, &ConfigView::calibratePressed);
+    calibrateButton->setNormalTex(Widgets::TextureGL::get("data/calibratebtn-normal.bmp"));
+    calibrateButton->setHoverTex(Widgets::TextureGL::get("data/calibratebtn-high.bmp"));
+    calibrateButton->setSize(Widgets::Size(80,26));
+    
+    Widgets::BoxLayout *hcalBox = new Widgets::BoxLayout(Widgets::Horizontal);
+    hcalBox->addWidget(calibrateMainLabel);
+    hcalBox->addSpacing(10);
+    hcalBox->addWidget(calibrateButton);
+    
+    gvbox->addLayout(hcalBox);
+    gvbox->addSpacing(40);
+}
+    
+void ConfigView::addBandPassFilters(Widgets::Widget *group, int heightOfTextInput, int heightOfRangeSelector)
+{
+    Log::msg("Add filter label");
+    Widgets::Label *filterMainLabel = new Widgets::Label(group);
+    filterMainLabel->setText("Set band-pass filter cutoff frequencies");
+    filterMainLabel->updateSize();
+    
+    Log::msg("Create text inputs");
+    
+    lowValueTI = new Widgets::TextInput(group, 50, heightOfTextInput);
+    lowValueTI->textEditingEnded.connect(this, &ConfigView::lowFilterTIValueChanged);
+    highValueTI = new Widgets::TextInput(group, 50, heightOfTextInput);
+    highValueTI->textEditingEnded.connect(this, &ConfigView::highFilterTIValueChanged);
+    
+    Log::msg("Create range selector");
 
-
-        Log::msg("Create close button...");
-	Widgets::PushButton *closeButton = new Widgets::PushButton(this);
-	closeButton->clicked.connect(this, &ConfigView::closePressed);
-	closeButton->setNormalTex(Widgets::TextureGL::get("data/configcrossed.bmp"));
-	closeButton->setHoverTex(Widgets::TextureGL::get("data/configcrossed.bmp"));
-
-    Log::msg("Create top label...");
-	Widgets::Label *topLabel = new Widgets::Label(this);
-	topLabel->setText("Config");
-	topLabel->updateSize();
-    Log::msg("Make colors");
-	std::vector<Widgets::Color> colorSet(AudioView::COLORS, AudioView::COLORS+AudioView::COLOR_NUM);
-	std::vector<Widgets::Color> arduinoColorSet(AudioView::ARDUINO_COLORS, AudioView::ARDUINO_COLORS+AudioView::COLOR_NUM);
-	Log::msg("Access virtual devices");
-
-    if(weAreOnTouchScreen)
+    rangeSelector = new Widgets::RangeSelector(group, heightOfRangeSelector);
+    rangeSelector->setRange(0,_manager.sampleRate()/2);
+    Log::msg("Set parameters on range selector");
+    highValueTI->setInt(_manager.lowCornerFrequency());
+    lowValueTI->setInt(_manager.highCornerFrequency());
+    Log::msg("Connect range selector");
+    rangeSelector->lowValueChanged.connect(this, &ConfigView::lowFilterValueChanged);
+    rangeSelector->highValueChanged.connect(this, &ConfigView::highFilterValueChanged);
+    Log::msg("Update values range selector");
+    rangeSelector->initHighAndLow( _manager.lowCornerFrequency(), _manager.highCornerFrequency());
+    
+    
+    Log::msg("Create label for range boxes");
+    Widgets::BoxLayout *labelsBox = new Widgets::BoxLayout(Widgets::Horizontal);
+    
+    Widgets::Label *lowFilterLabel = new Widgets::Label(group);
+    lowFilterLabel->setText("Low");
+    lowFilterLabel->updateSize();
+    
+    Widgets::Label *highFilterLabel = new Widgets::Label(group);
+    highFilterLabel->setText("High");
+    highFilterLabel->updateSize();
+    Log::msg("Add filter labels to label boxes");
+    labelsBox->addSpacing(8);
+    labelsBox->addWidget(lowFilterLabel, Widgets::AlignBottom);
+    labelsBox->addSpacing(415);
+    labelsBox->addWidget(highFilterLabel, Widgets::AlignBottom);
+    Log::msg("Add layout label box");
+    gvbox->addLayout(labelsBox);
+    
+    Widgets::BoxLayout *valuesBox = new Widgets::BoxLayout(Widgets::Horizontal);
+    Log::msg("Add components to value box");
+    valuesBox->addWidget(lowValueTI);
+    valuesBox->addSpacing(40);
+    valuesBox->addWidget(filterMainLabel);
+    valuesBox->addSpacing(40);
+    valuesBox->addWidget(highValueTI);
+    Log::msg("Add components ro gvbox");
+    gvbox->addLayout(valuesBox);
+    gvbox->addSpacing(3);
+    gvbox->addWidget(rangeSelector);
+    gvbox->addSpacing(20);
+}
+    
+void ConfigView::addNotchFilter(Widgets::Widget *group, int chckBoxSize)
+{
+    Log::msg("Create filterbox");
+    Widgets::BoxLayout *filterhbox = new Widgets::BoxLayout(Widgets::Horizontal);
+    Log::msg("Create filter label for notch");
+    Widgets::Label *filterLabel = new Widgets::Label(group);
+    filterLabel->setText("Attenuate frequency (Notch filter):");
+    filterLabel->updateSize();
+    Log::msg("Create 50Hz label");
+    Widgets::Label *fiftyHzLabel = new Widgets::Label(group);
+    fiftyHzLabel->setText("50Hz");
+    fiftyHzLabel->updateSize();
+    Log::msg("Create 60Hz label");
+    Widgets::Label *sixtyHzLabel = new Widgets::Label(group);
+    sixtyHzLabel->setText("60Hz");
+    sixtyHzLabel->updateSize();
+    Log::msg("Create 50 hz push button");
+    _50hzFilter = new Widgets::PushButton(group);
+    if(_manager.fiftyHzFilterEnabled())
     {
-        _hclrs.resize(_manager.virtualDevices().size());
-        _catchers.reserve(_hclrs.size());
+        Log::msg("50 hz enabled");
+        _50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
     }
     else
     {
-        _clrs.resize(_manager.virtualDevices().size());
-        _catchers.reserve(_clrs.size());
+        Log::msg("50 hz disabled");
+        _50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
     }
-
-
-    Log::msg("Make box layout");
-	Widgets::Widget *group = new Widgets::Widget(this);
-	group->setSizeHint(Widgets::Size(500,2500));
-	gvbox = new Widgets::BoxLayout(Widgets::Vertical, group);
-
-
-
-    int chckBoxSize = 19;
-    if(weAreOnTouchScreen)
+    Log::msg("Wire up 50 hz");
+    _50hzFilter->setSizeHint(Widgets::Size(chckBoxSize,chckBoxSize));
+    _50hzFilter->clicked.connect(this, &ConfigView::fiftyHzPressed);
+    
+    Log::msg("Create 60 hz filter button");
+    _60hzFilter = new Widgets::PushButton(group);
+    if(_manager.sixtyHzFilterEnabled())
     {
-        chckBoxSize = 40;
+        Log::msg("60 Hz enabled");
+        _60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
     }
-
-
-    //-------------- Mute check box ----------------------------------------
-
-    Log::msg("Check file mode");
-	if(!_manager.fileMode()) {
-        Log::msg("Make mute checkbox");
-		Widgets::BoxLayout *mutehbox = new Widgets::BoxLayout(Widgets::Horizontal);
-		Widgets::Label *muteLabel = new Widgets::Label(group);
-		muteLabel->setText("Mute Speakers:");
-		muteLabel->updateSize();
-
-		_muteCKBox = new Widgets::PushButton(group);
-        Log::msg("Check state for mute checkbox");
-		if(_manager.player().volume() == 0)
-			_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
-		else
-			_muteCKBox->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
-
-
-        _muteCKBox->setSizeHint(Widgets::Size(chckBoxSize,chckBoxSize));
-
-
-		_muteCKBox->clicked.connect(this, &ConfigView::mutePressed);
-        Log::msg("Add mute label to box");
-		mutehbox->addWidget(muteLabel, Widgets::AlignVCenter);
-		mutehbox->addSpacing(10);
-		Log::msg("Add mute checkbox");
-		mutehbox->addWidget(_muteCKBox, Widgets::AlignVCenter);
-		mutehbox->addSpacing(50);
-		Log::msg("Add layout for mute checkbox");
-		gvbox->addLayout(mutehbox);
-		gvbox->addSpacing(30);
-	}
-
-    //---------- Calibrator code --------------------------------------
-    /*
-	if(!_manager.fileMode()) {
-        Widgets::Label *calibrateMainLabel = new Widgets::Label(group);
-		calibrateMainLabel->setText("Calibrate SpikeRecorder for current setup ");
-		calibrateMainLabel->updateSize();
-
-        Widgets::PushButton *calibrateButton = new Widgets::PushButton(group);
-        calibrateButton->clicked.connect(this, &ConfigView::calibratePressed);
-        calibrateButton->setNormalTex(Widgets::TextureGL::get("data/calibratebtn-normal.bmp"));
-        calibrateButton->setHoverTex(Widgets::TextureGL::get("data/calibratebtn-high.bmp"));
-        calibrateButton->setSize(Widgets::Size(80,26));
-
-        Widgets::BoxLayout *hcalBox = new Widgets::BoxLayout(Widgets::Horizontal);
-        hcalBox->addWidget(calibrateMainLabel);
-        hcalBox->addSpacing(10);
-        hcalBox->addWidget(calibrateButton);
-
-        gvbox->addLayout(hcalBox);
-        gvbox->addSpacing(40);
-	}
-*/
-    //---------- High/Low pass filter --------------------------------------
-    Log::msg("Check file mode 2");
-    if(!_manager.fileMode()) {
-        Log::msg("Add filter label");
-        Widgets::Label *filterMainLabel = new Widgets::Label(group);
-		filterMainLabel->setText("Set band-pass filter cutoff frequencies");
-		filterMainLabel->updateSize();
-
-        Log::msg("Create text inputs");
-
-        int heightOfTextInput = 20;
-        if(weAreOnTouchScreen)
-        {
-            heightOfTextInput= 30;
-        }
-
-        lowValueTI = new Widgets::TextInput(group, 50, heightOfTextInput);
-        lowValueTI->textEditingEnded.connect(this, &ConfigView::lowFilterTIValueChanged);
-        highValueTI = new Widgets::TextInput(group, 50, heightOfTextInput);
-        highValueTI->textEditingEnded.connect(this, &ConfigView::highFilterTIValueChanged);
-
-        Log::msg("Create range selector");
-        int heightOfRangeSelector = 40;
-        if(weAreOnTouchScreen)
-        {
-            heightOfRangeSelector = 80;
-        }
-        rangeSelector = new Widgets::RangeSelector(group, heightOfRangeSelector);
-        rangeSelector->setRange(0,_manager.sampleRate()/2);
-        Log::msg("Set parameters on range selector");
-        highValueTI->setInt(_manager.lowCornerFrequency());
-        lowValueTI->setInt(_manager.highCornerFrequency());
-        Log::msg("Connect range selector");
-        rangeSelector->lowValueChanged.connect(this, &ConfigView::lowFilterValueChanged);
-        rangeSelector->highValueChanged.connect(this, &ConfigView::highFilterValueChanged);
-        Log::msg("Update values range selector");
-        rangeSelector->initHighAndLow( _manager.lowCornerFrequency(), _manager.highCornerFrequency());
-
-
-        Log::msg("Create label for range boxes");
-        Widgets::BoxLayout *labelsBox = new Widgets::BoxLayout(Widgets::Horizontal);
-
-        Widgets::Label *lowFilterLabel = new Widgets::Label(group);
-		lowFilterLabel->setText("Low");
-		lowFilterLabel->updateSize();
-
-        Widgets::Label *highFilterLabel = new Widgets::Label(group);
-		highFilterLabel->setText("High");
-		highFilterLabel->updateSize();
-        Log::msg("Add filter labels to label boxes");
-        labelsBox->addSpacing(8);
-        labelsBox->addWidget(lowFilterLabel, Widgets::AlignBottom);
-		labelsBox->addSpacing(415);
-		labelsBox->addWidget(highFilterLabel, Widgets::AlignBottom);
-        Log::msg("Add layout label box");
-        gvbox->addLayout(labelsBox);
-
-        Widgets::BoxLayout *valuesBox = new Widgets::BoxLayout(Widgets::Horizontal);
-        Log::msg("Add components to value box");
-		valuesBox->addWidget(lowValueTI);
-		valuesBox->addSpacing(40);
-		valuesBox->addWidget(filterMainLabel);
-		valuesBox->addSpacing(40);
-		valuesBox->addWidget(highValueTI);
-		Log::msg("Add components ro gvbox");
-		gvbox->addLayout(valuesBox);
-        gvbox->addSpacing(3);
-        gvbox->addWidget(rangeSelector);
-		gvbox->addSpacing(20);
+    else
+    {
+        Log::msg("60 Hz disabled");
+        _60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
     }
-
-
-
-
-    //----------- 50Hz/60Hz noise filter ------------------------------------
-
-    Log::msg("Check file mode 3");
-    if(!_manager.fileMode()) {
-        Log::msg("Create filterbox");
-		Widgets::BoxLayout *filterhbox = new Widgets::BoxLayout(Widgets::Horizontal);
-        Log::msg("Create filter label for notch");
-		Widgets::Label *filterLabel = new Widgets::Label(group);
-		filterLabel->setText("Attenuate frequency (Notch filter):");
-		filterLabel->updateSize();
-        Log::msg("Create 50Hz label");
-		Widgets::Label *fiftyHzLabel = new Widgets::Label(group);
-		fiftyHzLabel->setText("50Hz");
-		fiftyHzLabel->updateSize();
-        Log::msg("Create 60Hz label");
-        Widgets::Label *sixtyHzLabel = new Widgets::Label(group);
-		sixtyHzLabel->setText("60Hz");
-		sixtyHzLabel->updateSize();
-        Log::msg("Create 50 hz push button");
-		_50hzFilter = new Widgets::PushButton(group);
-		if(_manager.fiftyHzFilterEnabled())
-        {
-            Log::msg("50 hz enabled");
-			_50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
-        }
-		else
-        {
-            Log::msg("50 hz disabled");
-			_50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
-        }
-        Log::msg("Wire up 50 hz");
-		_50hzFilter->setSizeHint(Widgets::Size(chckBoxSize,chckBoxSize));
-		_50hzFilter->clicked.connect(this, &ConfigView::fiftyHzPressed);
-
-        Log::msg("Create 60 hz filter button");
-		_60hzFilter = new Widgets::PushButton(group);
-		if(_manager.sixtyHzFilterEnabled())
-        {
-            Log::msg("60 Hz enabled");
-			_60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
-        }
-		else
-        {
-            Log::msg("60 Hz disabled");
-			_60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
-        }
-        Log::msg("Wire up 60 Hz");
-		_60hzFilter->setSizeHint(Widgets::Size(chckBoxSize,chckBoxSize));
-		_60hzFilter->clicked.connect(this, &ConfigView::sixtyHzPressed);
-
-        Log::msg("Add components to filter box");
-		filterhbox->addWidget(filterLabel, Widgets::AlignVCenter);
-		filterhbox->addSpacing(13);
-		Log::msg("50 Hz components");
-		filterhbox->addWidget(fiftyHzLabel, Widgets::AlignVCenter);
-		filterhbox->addSpacing(4);
-		filterhbox->addWidget(_50hzFilter, Widgets::AlignVCenter);
-		filterhbox->addSpacing(16);
-		Log::msg("60 hz components");
-		filterhbox->addWidget(sixtyHzLabel, Widgets::AlignVCenter);
-		filterhbox->addSpacing(4);
-		filterhbox->addWidget(_60hzFilter, Widgets::AlignVCenter);
-		filterhbox->addSpacing(50);
-		Log::msg("Add filter box to gvbox");
-		gvbox->addLayout(filterhbox);
-		gvbox->addSpacing(40);
-	}
-
-
-    //----------- Color chooser for channels --------------------------------
-
+    Log::msg("Wire up 60 Hz");
+    _60hzFilter->setSizeHint(Widgets::Size(chckBoxSize,chckBoxSize));
+    _60hzFilter->clicked.connect(this, &ConfigView::sixtyHzPressed);
+    
+    Log::msg("Add components to filter box");
+    filterhbox->addWidget(filterLabel, Widgets::AlignVCenter);
+    filterhbox->addSpacing(13);
+    Log::msg("50 Hz components");
+    filterhbox->addWidget(fiftyHzLabel, Widgets::AlignVCenter);
+    filterhbox->addSpacing(4);
+    filterhbox->addWidget(_50hzFilter, Widgets::AlignVCenter);
+    filterhbox->addSpacing(16);
+    Log::msg("60 hz components");
+    filterhbox->addWidget(sixtyHzLabel, Widgets::AlignVCenter);
+    filterhbox->addSpacing(4);
+    filterhbox->addWidget(_60hzFilter, Widgets::AlignVCenter);
+    filterhbox->addSpacing(50);
+    Log::msg("Add filter box to gvbox");
+    gvbox->addLayout(filterhbox);
+    gvbox->addSpacing(40);
+}
+    
+   
+void ConfigView::addChannelConfigChoosers(Widgets::Widget *group)
+{
+    
+    std::vector<Widgets::Color> colorSet(AudioView::COLORS, AudioView::COLORS+AudioView::COLOR_NUM);
+    std::vector<Widgets::Color> arduinoColorSet(AudioView::ARDUINO_COLORS, AudioView::ARDUINO_COLORS+AudioView::COLOR_NUM);
+    
     joystickKeyDropdowns.resize(3);
-
+    
     if(weAreOnTouchScreen)
     {
         Log::msg("Color chooser start touch");
         for(unsigned int i = 0; i < _manager.virtualDevices().size(); i++) {
             Log::msg("Create dropdown");
             _hclrs[i] = new HorizontalColorPicker(group);
-
+            
             if(_manager.serialMode())
             {
                 _hclrs[i]->setContent(arduinoColorSet);
@@ -301,7 +251,7 @@ void ConfigView::SetupScreen()
             {
                 _hclrs[i]->setContent(colorSet);
             }
-
+            
             Log::msg("Signal catcher");
             _catchers.push_back(SignalCatcher(i, this));
             _hclrs[i]->selectionChanged.connect(&_catchers[i], &SignalCatcher::catchColor);
@@ -319,17 +269,17 @@ void ConfigView::SetupScreen()
             gvbox->addLayout(ghbox);
             gvbox->addSpacing(15);
         }
-
+        
     }
     else
     {
         Log::msg("Color chooser start -------");
         for(unsigned int i = 0; i < _manager.virtualDevices().size(); i++) {
             Log::msg("Create dropdown");
-
-
+            
+            
             _clrs[i] = new ColorDropDownList(group);
-
+            
             if(_manager.serialMode())
             {
                 _clrs[i]->setContent(arduinoColorSet);
@@ -338,38 +288,38 @@ void ConfigView::SetupScreen()
             {
                 _clrs[i]->setContent(colorSet);
             }
-
+            
             Log::msg("Signal catcher");
             _catchers.push_back(SignalCatcher(i, this));
             _clrs[i]->selectionChanged.connect(&_catchers[_catchers.size()-1], &SignalCatcher::catchColor);
-
-
+            
+            
             //create dropdowns for selection of keys for Joystick
             if(_manager.currentAddOnBoard() == BOARD_WITH_JOYSTICK)
             {
-                    Log::msg("Create dropdown for keys");
-                    joystickKeyDropdowns[i] = new DropDownList(group, 100,30);
-                    joystickKeyDropdowns[i]->clear();
-                    Log::msg("Add items");
-                    joystickKeyDropdowns[i]->addItem("None");
-                    joystickKeyDropdowns[i]->addItem("w");
-                    joystickKeyDropdowns[i]->addItem("s");
-                    joystickKeyDropdowns[i]->addItem("a");
-                    joystickKeyDropdowns[i]->addItem("d");
-                    joystickKeyDropdowns[i]->addItem("z");
-                    joystickKeyDropdowns[i]->addItem("q");
-                    joystickKeyDropdowns[i]->addItem("c");
-                    joystickKeyDropdowns[i]->addItem("v");
-                    Log::msg("Set selection");
-
-                    joystickKeyDropdowns[i]->setSelection(_manager.getKeyIndexForJoystick(i));
-
-                    Log::msg("Signal catcher");
-                    _catchers.push_back(SignalCatcher(i, this));
-                    Log::msg("Connect other signal catchers");
-                    joystickKeyDropdowns[i]->indexChanged.connect(&_catchers[_catchers.size()-1], &SignalCatcher::changeKeyForJoystick);
+                Log::msg("Create dropdown for keys");
+                joystickKeyDropdowns[i] = new DropDownList(group, 100,30);
+                joystickKeyDropdowns[i]->clear();
+                Log::msg("Add items");
+                joystickKeyDropdowns[i]->addItem("None");
+                joystickKeyDropdowns[i]->addItem("w");
+                joystickKeyDropdowns[i]->addItem("s");
+                joystickKeyDropdowns[i]->addItem("a");
+                joystickKeyDropdowns[i]->addItem("d");
+                joystickKeyDropdowns[i]->addItem("z");
+                joystickKeyDropdowns[i]->addItem("q");
+                joystickKeyDropdowns[i]->addItem("c");
+                joystickKeyDropdowns[i]->addItem("v");
+                Log::msg("Set selection");
+                
+                joystickKeyDropdowns[i]->setSelection(_manager.getKeyIndexForJoystick(i));
+                
+                Log::msg("Signal catcher");
+                _catchers.push_back(SignalCatcher(i, this));
+                Log::msg("Connect other signal catchers");
+                joystickKeyDropdowns[i]->indexChanged.connect(&_catchers[_catchers.size()-1], &SignalCatcher::changeKeyForJoystick);
             }
-
+            
             Log::msg("Create label");
             Widgets::Label *name = new Widgets::Label(group);
             Log::msg("get name of virtual device");
@@ -392,10 +342,10 @@ void ConfigView::SetupScreen()
             gvbox->addSpacing(15);
         }
     }
-
-
+    
+    
     Log::msg("Set selection");
-	for(int i = 0; i < _audioView.channelCount(); i++)
+    for(int i = 0; i < _audioView.channelCount(); i++)
     {
         Log::msg("Set selection n");
         if(weAreOnTouchScreen)
@@ -407,14 +357,14 @@ void ConfigView::SetupScreen()
             _clrs[_audioView.channelVirtualDevice(i)]->setSelection(_audioView.channelColor(i));
         }
     }
-
-
-
-
+}
+    
+    
+void ConfigView::addSerialConnect(Widgets::Widget *group)
+{
     // -------- Serial configuration -----------------------------------------
     Log::msg("Set selection 4 - before serial");
-    if(!_manager.fileMode())
-    {
+    
         Log::msg("Create label");
         //Serial  config widgets
         Widgets::Label *name2 = new Widgets::Label(group);
@@ -426,30 +376,30 @@ void ConfigView::SetupScreen()
         {
             name2->setText("Select port:");
         }
-
+        
         name2->updateSize();
         Log::msg("Add widget label");
         gvbox->addSpacing(0);
         gvbox->addWidget(name2, Widgets::AlignLeft);
-
-
-
+        
+        
+        
         //Dropdown for select port
         Log::msg("Create box layout");
         Widgets::BoxLayout *serialHbox = new Widgets::BoxLayout(Widgets::Horizontal);
         Log::msg("Create dropdown");
-
-
-
+        
+        
+        
         if(weAreOnTouchScreen)
         {
             touchSerialPortWidget = new TouchDropDownList(group);
-
+            
             touchSerialPortWidget->clear();
-
+            
             std::list<ArduinoSerial::SerialPort> sps =  _manager.serailPorts();
             std::list<ArduinoSerial::SerialPort>::iterator it;
-
+            
             for(it = sps.begin();it!=sps.end();it++)
             {
                 if(it->deviceType == ArduinoSerial::unknown)
@@ -495,32 +445,31 @@ void ConfigView::SetupScreen()
                                 }
                             }
                         }
-
                     }
                 }
             }
-
+            
             touchSerialPortWidget->setSelection(_manager.serialPortIndex());
             _catchers.push_back(SignalCatcher(_catchers.size(), this));
-
+            
             touchSerialPortWidget->indexChanged.connect(&_catchers[_catchers.size()-1], &SignalCatcher::catchPort);
-
+            
             touchSerialPortWidget->setDisabled(_manager.serialMode());
-
+            
             serialHbox->addWidget(touchSerialPortWidget,Widgets::AlignVCenter);
             serialHbox->addSpacing(5);
         }
         else
         {
-
+            
             serialPortWidget = new DropDownList(group);
             Log::msg("Clear serial");
             serialPortWidget->clear();
             Log::msg("Get list of serials");
-
+            
             std::list<ArduinoSerial::SerialPort> sps =  _manager.serailPorts();
             std::list<ArduinoSerial::SerialPort>::iterator it;
-
+            
             for(it = sps.begin();it!=sps.end();it++)
             {
                 if(it->deviceType == ArduinoSerial::unknown)
@@ -533,7 +482,7 @@ void ConfigView::SetupScreen()
                     if(it->deviceType == ArduinoSerial::plant)
                     {
                         serialPortWidget->addItem("Plant SpikerShield");
-                         Log::msg("Serial dropdown item: Plant SpikerShield");
+                        Log::msg("Serial dropdown item: Plant SpikerShield");
                     }
                     else
                     {
@@ -566,11 +515,11 @@ void ConfigView::SetupScreen()
                                 }
                             }
                         }
-
+                        
                     }
                 }
             }
-
+            
             Log::msg("Set selection serial");
             serialPortWidget->setSelection(_manager.serialPortIndex());
             _catchers.push_back(SignalCatcher(_catchers.size(), this));
@@ -580,14 +529,14 @@ void ConfigView::SetupScreen()
             serialPortWidget->setDisabled(_manager.serialMode());
             Log::msg("Add widget serial port");
             serialHbox->addWidget(serialPortWidget, Widgets::AlignVCenter);
-
+            
             serialHbox->addSpacing(5);
-
-
+            
+            
         }
-
-
-
+        
+        
+        
         Log::msg("Create button for connect to serial");
         //Button for connect to serial
         _connectButton = new Widgets::PushButton(group);
@@ -619,7 +568,7 @@ void ConfigView::SetupScreen()
             }
         }
         Log::msg("Set size for button");
-
+        
         if(weAreOnTouchScreen)
         {
             _connectButton->setSizeHint(Widgets::Size(100,40));
@@ -627,84 +576,142 @@ void ConfigView::SetupScreen()
         else
         {
             _connectButton->setSizeHint(Widgets::Size(100,32));
-           // _connectButton->setSizeHint(Widgets::Size(80,40));
+            // _connectButton->setSizeHint(Widgets::Size(80,40));
         }
-
-
+        
+        
         Log::msg("Add button to serial H box");
         serialHbox->addWidget(_connectButton, Widgets::AlignVCenter);
         serialHbox->update();
         Log::msg("Add to gvbox");
         gvbox->addSpacing(3);
         gvbox->addLayout(serialHbox);
+}
+    
+    
+void ConfigView::addSelectSerialNumberOfChannels(Widgets::Widget *group)
+{
+    //Number of channels chooser
+    Log::msg("Create box layout");
+    Widgets::BoxLayout *numberOfChannelsHbox = new Widgets::BoxLayout(Widgets::Horizontal);
+    
+    Log::msg("Create label");
+    Widgets::Label *numChannelsLabel = new Widgets::Label(group);
+    if(weAreOnTouchScreen)
+    {
+        numChannelsLabel->setText("Num. of channels:");
+    }
+    else
+    {
+        numChannelsLabel->setText("Number of channels:");
+    }
+    
+    numChannelsLabel->updateSize();
+    Log::msg("Add label to box");
+    numberOfChannelsHbox->addWidget(numChannelsLabel, Widgets::AlignVCenter);
+    numberOfChannelsHbox->addSpacing(5);
+    
+    if(weAreOnTouchScreen)
+    {
+        
+        HorizontalNumberPicker * horizontalNumberPicker = new HorizontalNumberPicker(group);
+        horizontalNumberPicker->setLimits(1, 6);
+        horizontalNumberPicker->setSelection(_manager.numberOfSerialChannels());
+        
+        _catchers.push_back(SignalCatcher(_catchers.size(), this));
+        
+        horizontalNumberPicker->selectionChanged.connect(&_catchers[_catchers.size()-1], &SignalCatcher::setNumOfChannelsForTouchHandler);
+        //horizontalNumberPicker->setDisabled(!_manager.serialMode());
+        numberOfChannelsHbox->addWidget(horizontalNumberPicker);
+    }
+    else
+    {
+        Log::msg("Create dropdown");
+        numberOfChannelsWidget = new DropDownList(group, 50,30);
+        numberOfChannelsWidget->clear();
+        Log::msg("Add items");
+        numberOfChannelsWidget->addItem("1");
+        numberOfChannelsWidget->addItem("2");
+        numberOfChannelsWidget->addItem("3");
+        numberOfChannelsWidget->addItem("4");
+        numberOfChannelsWidget->addItem("5");
+        numberOfChannelsWidget->addItem("6");
+        Log::msg("Set selection");
+        numberOfChannelsWidget->setSelection(_manager.numberOfSerialChannels()-1);
+        Log::msg("Signal catcher");
+        _catchers.push_back(SignalCatcher(_catchers.size(), this));
+        Log::msg("Connect other signal catchers");
+        numberOfChannelsWidget->indexChanged.connect(&_catchers[_catchers.size()-1], &SignalCatcher::setNumOfChannelsHandler);
+        Log::msg("Disable/enable");
+        numberOfChannelsWidget->setDisabled(!_manager.serialMode());
+        Log::msg("Add widget to num of channel HBox");
+        numberOfChannelsHbox->addWidget(numberOfChannelsWidget, Widgets::AlignVCenter);
+    }
+    
+    numberOfChannelsHbox->update();
+    Log::msg("Add layout num of ch box");
+    gvbox->addSpacing(10);
+    gvbox->addLayout(numberOfChannelsHbox);
+}
+void ConfigView::SetupScreen()
+{
+    weAreOnTouchScreen = Widgets::Application::getInstance()->areWeOnTouchscreen();
 
 
+    Log::msg("Create close button...");
+	Widgets::PushButton *closeButton = new Widgets::PushButton(this);
+	closeButton->clicked.connect(this, &ConfigView::closePressed);
+	closeButton->setNormalTex(Widgets::TextureGL::get("data/configcrossed.bmp"));
+	closeButton->setHoverTex(Widgets::TextureGL::get("data/configcrossed.bmp"));
+
+    Log::msg("Create top label...");
+	Widgets::Label *topLabel = new Widgets::Label(this);
+	topLabel->setText("Config");
+	topLabel->updateSize();
+    Log::msg("Make colors");
+
+	Log::msg("Access virtual devices");
+
+    if(weAreOnTouchScreen)
+    {
+        _hclrs.resize(_manager.virtualDevices().size());
+        _catchers.reserve(_hclrs.size());
+    }
+    else
+    {
+        _clrs.resize(_manager.virtualDevices().size());
+        _catchers.reserve(_clrs.size());
+    }
+
+
+    Log::msg("Make box layout");
+	Widgets::Widget *group = new Widgets::Widget(this);
+	group->setSizeHint(Widgets::Size(500,2500));
+	gvbox = new Widgets::BoxLayout(Widgets::Vertical, group);
+
+
+	if(!_manager.fileMode()) {
+        addMuteCheckBox(group, weAreOnTouchScreen?SIZE_CHECKBOX_TOUCH:SIZE_CHECKBOX_NORMAL);
+        //addCalibration(group);
+        addBandPassFilters(group, weAreOnTouchScreen?SIZE_HEIGHT_TEXT_INPUT_TOUCH:SIZE_HEIGHT_TEXT_INPUT_NORMAL, weAreOnTouchScreen?SIZE_HEIGHT_RANGE_SELECTOR_TOUCH:SIZE_HEIGHT_RANGE_SELECTOR_NORMAL);
+        addNotchFilter(group, weAreOnTouchScreen?SIZE_CHECKBOX_TOUCH:SIZE_CHECKBOX_NORMAL);
+	}
+
+    addChannelConfigChoosers(group);
+
+    if(!_manager.fileMode())
+    {
+        addSerialConnect(group);
 
         //-------------- Serial Number of channels chooser ----------------------------------------
         Log::msg("Check if in serial mode for Num. ch. dropdown");
-        if(_manager.serialMode() && !(_manager.getCurrentPort().deviceType == ArduinoSerial::heartOneChannel || _manager.getCurrentPort().deviceType == ArduinoSerial::plant || _manager.getCurrentPort().deviceType == ArduinoSerial::heartPro))
+        if(_manager.serialMode()
+           && !(_manager.getCurrentPort().deviceType == ArduinoSerial::heartOneChannel
+             || _manager.getCurrentPort().deviceType == ArduinoSerial::plant
+             || _manager.getCurrentPort().deviceType == ArduinoSerial::heartPro
+               ))
         {
-                //Number of channels chooser
-                Log::msg("Create box layout");
-                Widgets::BoxLayout *numberOfChannelsHbox = new Widgets::BoxLayout(Widgets::Horizontal);
-
-                Log::msg("Create label");
-                Widgets::Label *numChannelsLabel = new Widgets::Label(group);
-                if(weAreOnTouchScreen)
-                {
-                    numChannelsLabel->setText("Num. of channels:");
-                }
-                else
-                {
-                    numChannelsLabel->setText("Number of channels:");
-                }
-
-                numChannelsLabel->updateSize();
-                Log::msg("Add label to box");
-                numberOfChannelsHbox->addWidget(numChannelsLabel, Widgets::AlignVCenter);
-                numberOfChannelsHbox->addSpacing(5);
-
-                if(weAreOnTouchScreen)
-                {
-
-                    HorizontalNumberPicker * horizontalNumberPicker = new HorizontalNumberPicker(group);
-                    horizontalNumberPicker->setLimits(1, 6);
-                    horizontalNumberPicker->setSelection(_manager.numberOfSerialChannels());
-
-                    _catchers.push_back(SignalCatcher(_catchers.size(), this));
-
-                    horizontalNumberPicker->selectionChanged.connect(&_catchers[_catchers.size()-1], &SignalCatcher::setNumOfChannelsForTouchHandler);
-                    //horizontalNumberPicker->setDisabled(!_manager.serialMode());
-                    numberOfChannelsHbox->addWidget(horizontalNumberPicker);
-                }
-                else
-                {
-                    Log::msg("Create dropdown");
-                    numberOfChannelsWidget = new DropDownList(group, 50,30);
-                    numberOfChannelsWidget->clear();
-                    Log::msg("Add items");
-                    numberOfChannelsWidget->addItem("1");
-                    numberOfChannelsWidget->addItem("2");
-                    numberOfChannelsWidget->addItem("3");
-                    numberOfChannelsWidget->addItem("4");
-                    numberOfChannelsWidget->addItem("5");
-                    numberOfChannelsWidget->addItem("6");
-                    Log::msg("Set selection");
-                    numberOfChannelsWidget->setSelection(_manager.numberOfSerialChannels()-1);
-                    Log::msg("Signal catcher");
-                    _catchers.push_back(SignalCatcher(_catchers.size(), this));
-                    Log::msg("Connect other signal catchers");
-                    numberOfChannelsWidget->indexChanged.connect(&_catchers[_catchers.size()-1], &SignalCatcher::setNumOfChannelsHandler);
-                    Log::msg("Disable/enable");
-                    numberOfChannelsWidget->setDisabled(!_manager.serialMode());
-                    Log::msg("Add widget to num of channel HBox");
-                    numberOfChannelsHbox->addWidget(numberOfChannelsWidget, Widgets::AlignVCenter);
-                }
-
-                numberOfChannelsHbox->update();
-                Log::msg("Add layout num of ch box");
-                gvbox->addSpacing(10);
-                gvbox->addLayout(numberOfChannelsHbox);
+            addSelectSerialNumberOfChannels(group);
         }
 
 
@@ -889,6 +896,8 @@ void ConfigView::SetupScreen()
     #endif
 }
 
+    
+#if defined(_WIN32)
 //
 // Used for programming of Arduino devices using AVRDUDE
 //
@@ -912,7 +921,7 @@ int ConfigView::windows_system(const char *cmd)
     CloseHandle(p_info.hThread);
   }
 }
-
+#endif
 //----------------------------------- END OF CONFIG ------------------------------------------------
 //--------------------------------------------------------------------------------------------------
 

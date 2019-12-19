@@ -100,6 +100,7 @@ private:
         BYBFirmwareVO * selectedFirmware;
         typedef std::list<BYBFirmwareVO> listBYBFirmwareVO;
         //void hidConnectPressed();
+    
     #endif
 
     void SetupScreen();
@@ -110,7 +111,15 @@ private:
 
 
 	void paintEvent();
-
+    void addMuteCheckBox(Widgets::Widget *group, int chckBoxSize);
+    void addCalibration(Widgets::Widget *group);
+    void addBandPassFilters(Widgets::Widget *group, int heightOfTextInput, int heightOfRangeSelector);
+    void addNotchFilter(Widgets::Widget *group, int chckBoxSize);
+    void addChannelConfigChoosers(Widgets::Widget *group);
+    void addSerialConnect(Widgets::Widget *group);
+    void addSelectSerialNumberOfChannels(Widgets::Widget *group);
+    
+    
     void connectPressed();
 
 	void closePressed();
@@ -124,7 +133,9 @@ private:
     void calibratePressed();
 
     void changeKeysForJoystick(int channelIndex, int keyIndex);
-    int windows_system(const char *cmd);
+    #if defined(_WIN32)
+    int windows_system(const char *cmd);//run command line on Windows
+    #endif
 };
 
 }
