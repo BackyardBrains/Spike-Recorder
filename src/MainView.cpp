@@ -464,6 +464,11 @@ void MainView::analysisPressed() {
         connectToShieldForButton(buttonInst);
         //connectToFirstShieldOfType(ArduinoSerial::muscle);
     }
+    void MainView::neuronPressed(Widgets::MouseEvent *mouseEv, Widgets::PushButton* buttonInst)
+    {
+        Log::msg("neuronPressed function");
+        connectToShieldForButton(buttonInst);
+    }
     void MainView::heartPressed(Widgets::MouseEvent *mouseEv, Widgets::PushButton* buttonInst)
     {
         Log::msg("heartPressed function");
@@ -1033,6 +1038,7 @@ void MainView::paintEvent()
     int numberOfMuscle = 0;
     int numberOfHeart = 0;
     int numberOfPlant = 0;
+    int numberOfNeuron = 0;
     for(buttonsIterator = shieldButtons.begin();buttonsIterator!=shieldButtons.end();buttonsIterator++)
     {
 
@@ -1040,6 +1046,10 @@ void MainView::paintEvent()
         if (buttonsIterator->serialPort.deviceType == ArduinoSerial::plant)
         {
             numberOfPlant++;
+        }
+        if (buttonsIterator->serialPort.deviceType == ArduinoSerial::neuronOneChannel)
+        {
+            numberOfNeuron++;
         }
         else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::muscle)
         {
@@ -1064,6 +1074,7 @@ void MainView::paintEvent()
     numberOfUSBDevicesConnected += numberOfMuscle;
     numberOfUSBDevicesConnected += numberOfHeart;
     numberOfUSBDevicesConnected += numberOfPlant;
+    numberOfUSBDevicesConnected += numberOfNeuron;
     bool showGenericUSBButton = false;
     if(numberOfUSBDevicesConnected==1)
     {
@@ -1079,6 +1090,7 @@ void MainView::paintEvent()
     int currentPlant = 0;
     int currentMuscle = 0;
     int currentHeart = 0;
+    int currentNeuron = 0;
     if(thereWasChange)
     {
         shieldsButtonBoxLayout->removeAll();
@@ -1130,6 +1142,50 @@ void MainView::paintEvent()
                 }
                 newButton->clickedWithRef.connect(this, &MainView::plantPressed);
 
+            }
+            else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::neuronOneChannel)
+            {
+                currentNeuron++;
+                
+                if(currentNeuron>6)
+                {
+                    numberOfNeuron = 1;
+                }
+                
+                if(numberOfNeuron>1)
+                {
+                    std::stringstream s;
+                    
+                    std::size_t found;
+                    found  = _manager.getCurrentPort().portName.find(buttonsIterator->serialPort.portName);
+                    if (found!=std::string::npos)
+                    {
+                        s << "data/dconnm"<<currentNeuron<<".bmp";//TODO
+                    }
+                    else
+                    {
+                        s << "data/connm"<<currentNeuron<<".bmp";//TODO
+                    }
+                    newButton->setNormalTex(Widgets::TextureGL::get(s.str().c_str()));
+                    newButton->setHoverTex(Widgets::TextureGL::get(s.str().c_str()));
+                    
+                }
+                else
+                {
+                    if(showGenericUSBButton)
+                    {
+                        newButton->setNormalTex(Widgets::TextureGL::get("data/usbcon.bmp"));
+                        newButton->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.bmp"));
+                    }
+                    else
+                    {
+                        newButton->setNormalTex(Widgets::TextureGL::get("data/musclecon.bmp"));//TODO
+                        newButton->setHoverTex(Widgets::TextureGL::get("data/muscleconhigh.bmp"));//TODO
+                    }
+                }
+                
+                newButton->clickedWithRef.connect(this, &MainView::neuronPressed);
+                
             }
             else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::muscle)
             {
@@ -1241,6 +1297,10 @@ void MainView::paintEvent()
                 {
                     musclePressed(NULL,buttonsIterator->button );
                 }
+                else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::neuronOneChannel)
+                {
+                    neuronPressed(NULL,buttonsIterator->button );
+                }
                 else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::heart || buttonsIterator->serialPort.deviceType == ArduinoSerial::heartOneChannel || buttonsIterator->serialPort.deviceType == ArduinoSerial::heartPro)
                 {
                    heartPressed(NULL,buttonsIterator->button );
@@ -1322,6 +1382,64 @@ void MainView::paintEvent()
 
                 }
 
+            }
+            else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::neuronOneChannel)
+            {
+                currentNeuron++;
+                
+                if(currentNeuron>6)
+                {
+                    numberOfNeuron = 1;
+                }
+                
+                if(numberOfNeuron>1)
+                {
+                    std::stringstream s;
+                    
+                    
+                    if (buttonIsActive)
+                    {
+                        s << "data/dconnm"<<currentNeuron<<".bmp";//TODO
+                    }
+                    else
+                    {
+                        s << "data/connm"<<currentNeuron<<".bmp";//TODO
+                    }
+                    buttonsIterator->button->setNormalTex(Widgets::TextureGL::get(s.str().c_str()));
+                    buttonsIterator->button->setHoverTex(Widgets::TextureGL::get(s.str().c_str()));
+                    
+                }
+                else
+                {
+                    if(buttonIsActive)
+                    {
+                        if(showGenericUSBButton)
+                        {
+                            buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/usbdiscon.bmp"));
+                            buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/usbdiscon.bmp"));
+                        }
+                        else
+                        {
+                            buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/musclediscon.bmp"));//TODO
+                            buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/musclediscon.bmp"));//TODO
+                        }
+                    }
+                    else
+                    {
+                        if(showGenericUSBButton)
+                        {
+                            buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/usbcon.bmp"));
+                            buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/usbconhigh.bmp"));
+                        }
+                        else
+                        {
+                            buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/musclecon.bmp"));//TODO
+                            buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/muscleconhigh.bmp"));//TODO
+                        }
+                    }
+                }
+                
+                
             }
             else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::muscle)
             {

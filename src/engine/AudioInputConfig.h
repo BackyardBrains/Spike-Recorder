@@ -16,7 +16,8 @@
 #define INPUT_TYPE_PLANTSS 3
 #define INPUT_TYPE_MUSCLESS 4
 #define INPUT_TYPE_HEARTSS 5
-#define INPUT_TYPE_ARDUINO_UNKOWN 6
+#define INPUT_TYPE_NEURONSS 6
+#define INPUT_TYPE_ARDUINO_UNKOWN 7
 
 #include <stdio.h>
 #include <string>
