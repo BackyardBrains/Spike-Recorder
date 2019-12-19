@@ -48,7 +48,8 @@ namespace BackyardBrains {
         unknown = 0,
         muscle = 1,
         plant = 2,
-        heart = 3
+        heart = 3,
+        neuron = 4
     };
 
     class RecordingManager;
@@ -65,7 +66,8 @@ namespace BackyardBrains {
             plant = 2,
             heart = 3,
             heartOneChannel = 4,
-            heartPro = 5
+            heartPro = 5,
+            neuronOneChannel = 6
         };
         struct SerialPort
         {

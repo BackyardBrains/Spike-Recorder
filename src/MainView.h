@@ -64,7 +64,7 @@ private:
     void plantPressed(Widgets::MouseEvent *mouseEv, Widgets::PushButton* buttonInst);
     void musclePressed(Widgets::MouseEvent *mouseEv, Widgets::PushButton* buttonInst);
     void heartPressed(Widgets::MouseEvent *mouseEv, Widgets::PushButton* buttonInst);
-
+    void neuronPressed(Widgets::MouseEvent *mouseEv, Widgets::PushButton* buttonInst);
     Widgets::PushButton *_alphaFeedbackButton;
     void alphaFeedbackPressed();
     bool alphaFeedbackAcive;
