@@ -120,6 +120,20 @@ void Game::loadResources() {
     Widgets::TextureGL::load("data/dconne5.bmp");
     Widgets::TextureGL::load("data/dconne6.bmp");
 
+    Widgets::TextureGL::load("data/connn1.bmp");
+    Widgets::TextureGL::load("data/connn2.bmp");
+    Widgets::TextureGL::load("data/connn3.bmp");
+    Widgets::TextureGL::load("data/connn4.bmp");
+    Widgets::TextureGL::load("data/connn5.bmp");
+    Widgets::TextureGL::load("data/connn6.bmp");
+    
+    Widgets::TextureGL::load("data/dconnn1.bmp");
+    Widgets::TextureGL::load("data/dconnn2.bmp");
+    Widgets::TextureGL::load("data/dconnn3.bmp");
+    Widgets::TextureGL::load("data/dconnn4.bmp");
+    Widgets::TextureGL::load("data/dconnn5.bmp");
+    Widgets::TextureGL::load("data/dconnn6.bmp");
+
     Widgets::TextureGL::load("data/connm1.bmp");
     Widgets::TextureGL::load("data/connm2.bmp");
     Widgets::TextureGL::load("data/connm3.bmp");
