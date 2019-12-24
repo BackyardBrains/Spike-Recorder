@@ -102,6 +102,10 @@ void Game::loadResources() {
     Widgets::TextureGL::load("data/muscleconhigh.bmp");
     Widgets::TextureGL::load("data/musclediscon.bmp");
 
+    
+    Widgets::TextureGL::load("data/neuroncon.bmp");
+    Widgets::TextureGL::load("data/neurondiscon.bmp");
+    
     Widgets::TextureGL::load("data/heartcon.bmp");
     Widgets::TextureGL::load("data/heartconhigh.bmp");
     Widgets::TextureGL::load("data/heartdiscon.bmp");

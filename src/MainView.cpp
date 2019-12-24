@@ -1160,11 +1160,11 @@ void MainView::paintEvent()
                     found  = _manager.getCurrentPort().portName.find(buttonsIterator->serialPort.portName);
                     if (found!=std::string::npos)
                     {
-                        s << "data/dconnm"<<currentNeuron<<".bmp";//TODO
+                        s << "data/dconnn"<<currentNeuron<<".bmp";//TODO
                     }
                     else
                     {
-                        s << "data/connm"<<currentNeuron<<".bmp";//TODO
+                        s << "data/connn"<<currentNeuron<<".bmp";//TODO
                     }
                     newButton->setNormalTex(Widgets::TextureGL::get(s.str().c_str()));
                     newButton->setHoverTex(Widgets::TextureGL::get(s.str().c_str()));
@@ -1179,8 +1179,8 @@ void MainView::paintEvent()
                     }
                     else
                     {
-                        newButton->setNormalTex(Widgets::TextureGL::get("data/musclecon.bmp"));//TODO
-                        newButton->setHoverTex(Widgets::TextureGL::get("data/muscleconhigh.bmp"));//TODO
+                        newButton->setNormalTex(Widgets::TextureGL::get("data/neuroncon.bmp"));//TODO
+                        newButton->setHoverTex(Widgets::TextureGL::get("data/neuroncon.bmp"));//TODO
                     }
                 }
                 
@@ -1399,11 +1399,11 @@ void MainView::paintEvent()
                     
                     if (buttonIsActive)
                     {
-                        s << "data/dconnm"<<currentNeuron<<".bmp";//TODO
+                        s << "data/dconnn"<<currentNeuron<<".bmp";//TODO
                     }
                     else
                     {
-                        s << "data/connm"<<currentNeuron<<".bmp";//TODO
+                        s << "data/connn"<<currentNeuron<<".bmp";//TODO
                     }
                     buttonsIterator->button->setNormalTex(Widgets::TextureGL::get(s.str().c_str()));
                     buttonsIterator->button->setHoverTex(Widgets::TextureGL::get(s.str().c_str()));
@@ -1420,8 +1420,8 @@ void MainView::paintEvent()
                         }
                         else
                         {
-                            buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/musclediscon.bmp"));//TODO
-                            buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/musclediscon.bmp"));//TODO
+                            buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/neurondiscon.bmp"));//TODO
+                            buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/neurondiscon.bmp"));//TODO
                         }
                     }
                     else
@@ -1433,8 +1433,8 @@ void MainView::paintEvent()
                         }
                         else
                         {
-                            buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/musclecon.bmp"));//TODO
-                            buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/muscleconhigh.bmp"));//TODO
+                            buttonsIterator->button->setNormalTex(Widgets::TextureGL::get("data/neuroncon.bmp"));//TODO
+                            buttonsIterator->button->setHoverTex(Widgets::TextureGL::get("data/neuroncon.bmp"));//TODO
                         }
                     }
                 }
