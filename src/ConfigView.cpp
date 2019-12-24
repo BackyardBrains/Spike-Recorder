@@ -487,6 +487,14 @@ void ConfigView::SetupScreen()
                                         touchSerialPortWidget->addItem("Heart And Brain SpikerBox Pro");
                                         Log::msg("Serial dropdown item: Heart and Brain SpikerBox Pro");
                                     }
+                                    else
+                                    {
+                                        if(it->deviceType == ArduinoSerial::neuronOneChannel)
+                                        {
+                                            touchSerialPortWidget->addItem("Neuron SpikerBox");
+                                            Log::msg("Serial dropdown item: Neuron SpikerBox");
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -557,6 +565,14 @@ void ConfigView::SetupScreen()
                                     {
                                         serialPortWidget->addItem("Heart And Brain SpikerBox Pro");
                                         Log::msg("Serial dropdown item: Heart and Brain SpikerBox Pro");
+                                    }
+                                    else
+                                    {
+                                        if(it->deviceType == ArduinoSerial::neuronOneChannel)
+                                        {
+                                            serialPortWidget->addItem("Neuron SpikerBox");
+                                            Log::msg("Serial dropdown item: Neuron SpikerBox");
+                                        }
                                     }
                                 }
                             }
@@ -637,7 +653,7 @@ void ConfigView::SetupScreen()
 
         //-------------- Serial Number of channels chooser ----------------------------------------
         Log::msg("Check if in serial mode for Num. ch. dropdown");
-        if(_manager.serialMode() && !(_manager.getCurrentPort().deviceType == ArduinoSerial::heartOneChannel || _manager.getCurrentPort().deviceType == ArduinoSerial::plant || _manager.getCurrentPort().deviceType == ArduinoSerial::heartPro))
+        if(_manager.serialMode() && !(_manager.getCurrentPort().deviceType == ArduinoSerial::heartOneChannel || _manager.getCurrentPort().deviceType == ArduinoSerial::plant || _manager.getCurrentPort().deviceType == ArduinoSerial::heartPro || _manager.getCurrentPort().deviceType == ArduinoSerial::neuronOneChannel))
         {
                 //Number of channels chooser
                 Log::msg("Create box layout");

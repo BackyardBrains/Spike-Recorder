@@ -1989,6 +1989,15 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                             {
                                 setDeviceTypeToCurrentPort(ArduinoSerial::heartPro);
                             }
+                            else
+                            {
+                                //NEURONSS
+                                std::size_t found=hardwareType.find("NEURONSS");//neuron SpikerBox one channel
+                                if (found!=std::string::npos)
+                                {
+                                    setDeviceTypeToCurrentPort(ArduinoSerial::neuronOneChannel);
+                                }
+                            }
                         }
                     }
                 }

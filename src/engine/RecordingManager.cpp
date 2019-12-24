@@ -2693,6 +2693,16 @@ void RecordingManager::initInputConfigPersistance()
     audioInputConfigArray[INPUT_TYPE_HEARTSS].gain = 0.5f;
     audioInputConfigArray[INPUT_TYPE_HEARTSS].timeScale = 1.0f;
     audioInputConfigArray[INPUT_TYPE_HEARTSS].initialized = true;
+    
+    //arduino Neuron SpikerBox
+    audioInputConfigArray[INPUT_TYPE_NEURONSS].inputType = INPUT_TYPE_NEURONSS;
+    audioInputConfigArray[INPUT_TYPE_NEURONSS].filter50Hz = false;
+    audioInputConfigArray[INPUT_TYPE_NEURONSS].filter60Hz = true;
+    audioInputConfigArray[INPUT_TYPE_NEURONSS].filterLowPass = 5000.0f;
+    audioInputConfigArray[INPUT_TYPE_NEURONSS].filterHighPass = 1.0f;
+    audioInputConfigArray[INPUT_TYPE_NEURONSS].gain = 0.5f;
+    audioInputConfigArray[INPUT_TYPE_NEURONSS].timeScale = 0.1f;
+    audioInputConfigArray[INPUT_TYPE_NEURONSS].initialized = true;
 
     //HID - SpikerBox Pro
     audioInputConfigArray[INPUT_TYPE_SB_PRO].inputType = INPUT_TYPE_SB_PRO;
@@ -2750,6 +2760,9 @@ int RecordingManager::getCurrentInputType()
                 break;
             case ArduinoSerial::heart:
                 return INPUT_TYPE_HEARTSS;
+                break;
+            case ArduinoSerial::neuronOneChannel:
+                return INPUT_TYPE_NEURONSS;
                 break;
             case ArduinoSerial::heartOneChannel:
                 return INPUT_TYPE_HEARTSS;
@@ -2855,6 +2868,9 @@ void RecordingManager::makeNewSerialAudioConfig(std::string nameOfThePort)
                 break;
             case ArduinoSerial::heartPro:
                 audioInputType = INPUT_TYPE_HEARTSS;
+                break;
+            case ArduinoSerial::neuronOneChannel:
+                audioInputType = INPUT_TYPE_NEURONSS;
                 break;
             case ArduinoSerial::muscle:
                 audioInputType =  INPUT_TYPE_MUSCLESS;
