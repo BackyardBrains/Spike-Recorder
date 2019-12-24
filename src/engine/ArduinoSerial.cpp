@@ -795,7 +795,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         }
 
         // http://msdn2.microsoft.com/en-us/library/aa363188(VS.85).aspx
-        port_cfg.dcb.BaudRate = 230400; //for high speed 2Mbit/s communication just change this number to 2000000
+        port_cfg.dcb.BaudRate = 222222;//230400; //for high speed 2Mbit/s communication just change this number to 2000000
 
         port_cfg.dcb.fBinary = TRUE;
         port_cfg.dcb.fParity = FALSE;
