@@ -694,17 +694,17 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
         //traditional setup of baud rates
         //------------------------ traditional setup of baud rates for Mac and Linux --------------
-        cfsetispeed(&options, B230400);
+        /*cfsetispeed(&options, B230400);
         cfsetospeed(&options, B230400);
         // set the new port options
-        tcsetattr(portDescriptor, TCSANOW, &options);
+        tcsetattr(portDescriptor, TCSANOW, &options);*/
         //------------------------ traditional setup of baud rates for Mac and Linux --------------
 
         //--------------------------- Patch for Mac for nonstandard bauds --------------------------
-        /*speed_t speed = 2000000; // Set 2Mbaud
+        speed_t speed = 222222;//2000000; // Set 2Mbaud
          if (ioctl(portDescriptor, IOSSIOSPEED, &speed) == -1) {
          std::cout<<"Error setting speed";
-         }*/
+         }
 
 
 
