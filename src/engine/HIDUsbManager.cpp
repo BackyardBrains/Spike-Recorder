@@ -312,7 +312,7 @@ namespace BackyardBrains {
 
     void HIDUsbManager::executeOneMessage(std::string typeOfMessage, std::string valueOfMessage, int offsetin)
     {
-        //std::cout<<"\nMESSAGE: "<<typeOfMessage<<" - "<<valueOfMessage<<"\n";
+        std::cout<<"\nMESSAGE: "<<typeOfMessage<<" - "<<valueOfMessage<<"\n";
         Log::msg("HID - MESSAGE: %s - %s", typeOfMessage.c_str(), valueOfMessage.c_str());
         if(typeOfMessage == "FWV")
         {
