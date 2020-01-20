@@ -159,8 +159,9 @@ public:
 			if (_head == SIZE)
 				_head = 0;
 		}
-
+        //std::cout<<"Adding inside: _pos = "<<_pos<<"\n";
 		_pos += len;//add to cumulative number of samples (number of samples since begining of the time)
+		//std::cout<<"After Adding inside: _pos = "<<_pos<<"\n";
        // std::cout<<"Head: "<<_head<<" Pos: "<<_pos<<"\n";
 	}
 

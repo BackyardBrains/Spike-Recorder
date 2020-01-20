@@ -1105,6 +1105,7 @@ int64_t RecordingManager::fileLength() {
 }
 
 void RecordingManager::addMarker(const std::string &id, int64_t offset) {
+    std::cout<<"\n\n Add marker _pos: "<<_pos<<" offset: "<<offset<< "  ";
 	_markers.push_back(std::make_pair(id, _pos + offset));
 	char tempChar = id.at(0);
     int i_dec = tempChar -48;//std::stoi (id);
@@ -1401,7 +1402,7 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 	//get interleaved data for all channels
 
     int samplerateDiv10 = _sampleRate/10;
-
+    //std::cout<<"start"<<"\n";
 	int samplesRead = _arduinoSerial.getNewSamples(buffer);
     //	uint32_t numTicksAfter = SDL_GetTicks();
 	//std::cout<<"Time: "<<SDL_GetTicks()<< " It takes: " <<SDL_GetTicks() - numTicksBefore<<" Samples read: "<<samplesRead<<"\n";
@@ -1570,6 +1571,7 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
             }
 
 	        if(_devices.begin()->sampleBuffers[0].empty()) {
+                   // std::cout<<"set pos??"<<"\n";
 	            _devices.begin()->sampleBuffers[chan].setPos(_pos);
 	        }
 	        //Here we add data to Sample buffer !!!!!
@@ -1631,8 +1633,10 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
         }
 
 
-
+        //std::cout<<" Advance _pos: "<<_pos<<"\n";
          _pos+=samplesRead;
+        //std::cout<<" After Advance _pos: "<<_pos<<"\n";
+         //std::cout<<"End"<<"\n";
 	}
 	else
 	{
@@ -2693,7 +2697,7 @@ void RecordingManager::initInputConfigPersistance()
     audioInputConfigArray[INPUT_TYPE_HEARTSS].gain = 0.5f;
     audioInputConfigArray[INPUT_TYPE_HEARTSS].timeScale = 1.0f;
     audioInputConfigArray[INPUT_TYPE_HEARTSS].initialized = true;
-    
+
     //arduino Neuron SpikerBox
     audioInputConfigArray[INPUT_TYPE_NEURONSS].inputType = INPUT_TYPE_NEURONSS;
     audioInputConfigArray[INPUT_TYPE_NEURONSS].filter50Hz = false;

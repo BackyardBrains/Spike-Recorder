@@ -1494,7 +1494,8 @@ void  ArduinoSerial::enumerateSerialPortsFriendlyNames()
         int writeInteger = 0;
         // std::cout<<"------------------ Size: "<<size<<"\n";
 
-
+        int numberOfZeros = 0;
+        int lastWasZero = 0;
         for(int i=0;i<size;i++)
         {
             if(weAreInsideEscapeSequence)
@@ -1513,7 +1514,20 @@ void  ArduinoSerial::enumerateSerialPortsFriendlyNames()
                     cBufHead = 0;
                 }
             }
-             testEscapeSequence(((unsigned int) buffer[i]) & 0xFF,  (i/2)/_numberOfChannels);
+            if(buffer[i]==0)
+            {
+                if(lastWasZero==1)
+                {
+                    numberOfZeros++;
+                }
+                lastWasZero = 1;
+            }
+            else
+            {
+                lastWasZero =0;
+            }
+
+             testEscapeSequence(((unsigned int) buffer[i]) & 0xFF,  ((i-(numberOfZeros>0?numberOfZeros+1:0))/2)/_numberOfChannels-1);
         }
         if(size==-1)
         {
