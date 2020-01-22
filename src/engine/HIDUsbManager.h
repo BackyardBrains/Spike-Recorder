@@ -13,7 +13,9 @@ typedef enum
 {
     HID_BOARD_TYPE_NONE,
     HID_BOARD_TYPE_MUSCLE,
-    HID_BOARD_TYPE_NEURON
+    HID_BOARD_TYPE_NEURON,
+    HID_BOARD_TYPE_H_B
+
 } HIDBoardType;
 
 #include <stdio.h>
@@ -95,6 +97,8 @@ class HIDUsbManager
         std::string firmwareVersion;
         std::string hardwareVersion;
         std::string hardwareType;
+
+        bool ignoreReconnect();
     protected:
 
         void startDevice();
@@ -153,6 +157,9 @@ class HIDUsbManager
         void setJoystickLeds(uint8_t state);
         void turnONJoystickLed(int ledIndex);
         void turnOFFJoystickLed(int ledIndex);
+        HIDManagerDevice rememberLastActiveDevice;
+        void rememberCurrentDeviceOfType(HIDBoardType bt);
+        int foundSameDeviceAgain;
     private:
         uint8_t previousButtonState;
         uint8_t currentButtonState;

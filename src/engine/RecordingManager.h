@@ -168,6 +168,7 @@ public:
     bool _HIDShouldBeReloaded;
     int currentlyConnectedHIDBoardType();
     bool isHIDBoardTypeAvailable(HIDBoardType hd);
+    bool ignoreHIDReconnect();
 
 
     int numberOfChannels();

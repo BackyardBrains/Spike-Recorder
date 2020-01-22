@@ -25,7 +25,7 @@
 #define BOARD_WITH_ADDITIONAL_INPUTS 1
 #define BOARD_WITH_HAMMER 4
 #define BOARD_WITH_JOYSTICK 5
-//#define LOG_HID_SCANNING 1
+#define LOG_HID_SCANNING 1
 
 namespace BackyardBrains {
 
@@ -60,6 +60,7 @@ namespace BackyardBrains {
         _numberOfChannels = 2;
         restartDevice = false;
         handle = NULL;
+        foundSameDeviceAgain = 0;
 
         #if defined(_WIN32)
 
@@ -105,6 +106,8 @@ namespace BackyardBrains {
     int HIDUsbManager::openDevice(RecordingManager * managerin, HIDBoardType hidBoardType)
     {
         _manager = managerin;
+
+        rememberCurrentDeviceOfType(hidBoardType);
         std::stringstream sstm;//variable for log
 
         if(hidBoardType == HID_BOARD_TYPE_MUSCLE)
@@ -1010,9 +1013,24 @@ namespace BackyardBrains {
         #ifdef LOG_HID_SCANNING
          std::cout<<"Get HID device List--------------------------------\n";
         #endif
+                    std::cout<<"Number of devices before: "<<list.size()<<"\n";
             list.clear();
+            if(!deviceOpened() && !(foundSameDeviceAgain>0))
+            {
+                foundSameDeviceAgain--;
+                if(foundSameDeviceAgain<-3)
+                {
+                        rememberLastActiveDevice.devicePath = "";
+                }
+
+            }
+            if(foundSameDeviceAgain >0)
+            {
+                foundSameDeviceAgain = 0;
+            }
             enumerateDevicesForVIDAndPID(BYB_VID, BYB_PID_MUSCLE_SB_PRO);
             enumerateDevicesForVIDAndPID(BYB_VID, BYB_PID_NEURON_SB_PRO);
+            std::cout<<"Number of devices after: "<<list.size()<<"\n";
     }
 
 
@@ -1055,6 +1073,15 @@ namespace BackyardBrains {
                     int sizeOfPath = (int)strlen(cur_dev->path);
                     newDevice.devicePath.assign(cur_dev->path, sizeOfPath);
 
+                    if(newDevice.devicePath.compare(rememberLastActiveDevice.devicePath)==0)
+                    {
+
+                        foundSameDeviceAgain = 1;
+                        rememberLastActiveDevice.devicePath = "";
+                    }
+
+
+
                     if(cur_dev->serial_number)
                     {
                         std::wstring wsn(cur_dev->serial_number);
@@ -1084,7 +1111,7 @@ namespace BackyardBrains {
                     // your new String
 
                     std::string nameOfHID(wname.begin(), wname.end());
-                      std::cout<<"HID name: "<<nameOfHID<<"\n";
+                      std::cout<<"******* HID name: "<<nameOfHID<<" *****\n";
                     //  std::cout<<"Name took \n";
                     Log::msg("HID - Found our HID push it");
 
@@ -1142,6 +1169,36 @@ namespace BackyardBrains {
         }
         return false;
     }
+
+
+    void HIDUsbManager::rememberCurrentDeviceOfType(HIDBoardType bt)
+    {
+         std::list<HIDManagerDevice>::iterator HIDListIt;
+
+        for( HIDListIt = list.begin(); // not listMyClass.begin()
+            HIDListIt != list.end(); // not listMyClass.end()
+            HIDListIt ++)
+        {
+            if(HIDListIt->deviceType == bt)
+            {
+                rememberLastActiveDevice.devicePath = HIDListIt->devicePath;
+                foundSameDeviceAgain = 0;
+                return;
+            }
+        }
+    }
+
+    bool HIDUsbManager::ignoreReconnect()
+    {
+        if (foundSameDeviceAgain>0)
+        {
+            foundSameDeviceAgain = 0;
+            return true;
+        }
+        foundSameDeviceAgain = 0;
+        return false;
+    }
+
 
     int HIDUsbManager::currentlyConnectedHIDBoardType()
     {

@@ -269,6 +269,11 @@ int RecordingManager::currentlyConnectedHIDBoardType()
     return _hidUsbManager.currentlyConnectedHIDBoardType();
 }
 
+bool RecordingManager::ignoreHIDReconnect()
+{
+        return _hidUsbManager.ignoreReconnect();
+}
+
 
 void RecordingManager::scanUSBDevices()
 {

@@ -560,7 +560,7 @@ void MainView::analysisPressed() {
         bool connected = _manager.initSerial(selectedPort.portName.c_str());
         //Used so that config knows which one is selected in dropdown
         _manager.changeSerialPort(portIndex);
-        
+
         if(!connected)
         {
             Log::error("Can't init serial port.");
@@ -680,7 +680,7 @@ void MainView::analysisPressed() {
 void MainView::muscleHIDPressed()
 {
     //connect/diconnect
-
+    std::cout<<"HId mode:"<<_manager.hidMode()<<" Currently connected type: "<<_manager.currentlyConnectedHIDBoardType()<<"\n";
     if(_manager.hidMode() && (_manager.currentlyConnectedHIDBoardType() == HID_BOARD_TYPE_MUSCLE))
     {
         _manager.disconnectFromHID();
@@ -928,8 +928,12 @@ void MainView::paintEvent()
         _muscleHIDButton->setSizeHint(Widgets::Size(53,48));
         if(_muscleHIDButton->isHidden())
         {
+
             _muscleHIDButton->setVisible(true);
-            muscleHIDPressed();
+            if(!_manager.ignoreHIDReconnect())
+            {
+                    muscleHIDPressed();
+            }
         }
 
         Widgets::Application::getInstance()->updateLayout();
@@ -947,7 +951,10 @@ void MainView::paintEvent()
         if(_neuronHIDButton->isHidden())
         {
             _neuronHIDButton->setVisible(true);
-            neuronHIDPressed();
+            if(!_manager.ignoreHIDReconnect())
+            {
+                neuronHIDPressed();
+            }
         }
 
         Widgets::Application::getInstance()->updateLayout();
@@ -961,7 +968,7 @@ void MainView::paintEvent()
 
     //-------------- Check if we have new serial buttons ----------------------------------------------------------
     //-------------- Compare buttons and ports in “_portScanningArduinoSerial.ports” ----------------
-    
+
     //get ports from “_portScanningArduinoSerial.ports”
     std::list<ArduinoSerial::SerialPort> sps =  _manager.serailPorts();
     std::list<ArduinoSerial::SerialPort>::iterator it;
@@ -1083,7 +1090,7 @@ void MainView::paintEvent()
    // std::cout<<"Number of USB: "<<numberOfUSBDevicesConnected<<"\n";
 
     // --------------------- Update all serial buttons -----------------------------
-    
+
     //Now we have sinchronized port and button list
     //check if we had changes and update screen
 
@@ -1146,16 +1153,16 @@ void MainView::paintEvent()
             else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::neuronOneChannel)
             {
                 currentNeuron++;
-                
+
                 if(currentNeuron>6)
                 {
                     numberOfNeuron = 1;
                 }
-                
+
                 if(numberOfNeuron>1)
                 {
                     std::stringstream s;
-                    
+
                     std::size_t found;
                     found  = _manager.getCurrentPort().portName.find(buttonsIterator->serialPort.portName);
                     if (found!=std::string::npos)
@@ -1168,7 +1175,7 @@ void MainView::paintEvent()
                     }
                     newButton->setNormalTex(Widgets::TextureGL::get(s.str().c_str()));
                     newButton->setHoverTex(Widgets::TextureGL::get(s.str().c_str()));
-                    
+
                 }
                 else
                 {
@@ -1183,9 +1190,9 @@ void MainView::paintEvent()
                         newButton->setHoverTex(Widgets::TextureGL::get("data/neuroncon.bmp"));//TODO
                     }
                 }
-                
+
                 newButton->clickedWithRef.connect(this, &MainView::neuronPressed);
-                
+
             }
             else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::muscle)
             {
@@ -1279,7 +1286,7 @@ void MainView::paintEvent()
             buttonsIterator->button = newButton;
             shieldsButtonBoxLayout->addWidget(newButton);
 
-            
+
             // -------------------------------- Autoconnect to serial ---------------------------------------------
             // If we have new button
             // CONNECT TO IT!!!
@@ -1386,17 +1393,17 @@ void MainView::paintEvent()
             else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::neuronOneChannel)
             {
                 currentNeuron++;
-                
+
                 if(currentNeuron>6)
                 {
                     numberOfNeuron = 1;
                 }
-                
+
                 if(numberOfNeuron>1)
                 {
                     std::stringstream s;
-                    
-                    
+
+
                     if (buttonIsActive)
                     {
                         s << "data/dconnn"<<currentNeuron<<".bmp";//TODO
@@ -1407,7 +1414,7 @@ void MainView::paintEvent()
                     }
                     buttonsIterator->button->setNormalTex(Widgets::TextureGL::get(s.str().c_str()));
                     buttonsIterator->button->setHoverTex(Widgets::TextureGL::get(s.str().c_str()));
-                    
+
                 }
                 else
                 {
@@ -1438,8 +1445,8 @@ void MainView::paintEvent()
                         }
                     }
                 }
-                
-                
+
+
             }
             else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::muscle)
             {
