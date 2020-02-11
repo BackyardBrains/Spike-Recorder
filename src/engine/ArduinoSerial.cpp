@@ -451,7 +451,13 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 #endif // defined
 
         list.sort();
+
+        
+        
+
+        #ifdef _WIN32
         enumerateSerialPortsFriendlyNames();
+        #endif
         refreshPortsDataList();
 
         return;
@@ -514,88 +520,90 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         }
     }
 
-void  ArduinoSerial::enumerateSerialPortsFriendlyNames()
-{
-    SP_DEVINFO_DATA devInfoData = {};
-    devInfoData.cbSize = sizeof(devInfoData);
-
-    // get the tree containing the info for the ports
-    HDEVINFO hDeviceInfo = SetupDiGetClassDevs(&GUID_DEVCLASS_PORTS,
-                                               0,
-                                               nullptr,
-                                               DIGCF_PRESENT
-                                               );
-    if (hDeviceInfo == INVALID_HANDLE_VALUE)
-    {
-        return;
-    }
-
-    // iterate over all the devices in the tree
-    int nDevice = 0;
-    while (SetupDiEnumDeviceInfo(hDeviceInfo,            // Our device tree
-                                 nDevice++,            // The member to look for
-                                 &devInfoData))
-    {
-        DWORD regDataType;
-        DWORD reqSize = 0;
-
-        // find the size required to hold the device info
-        SetupDiGetDeviceRegistryProperty(hDeviceInfo, &devInfoData, SPDRP_HARDWAREID, nullptr, nullptr, 0, &reqSize);
-        BYTE* hardwareId = new BYTE[(reqSize > 1) ? reqSize : 1];
-        // now store it in a buffer
-        if (SetupDiGetDeviceRegistryProperty(hDeviceInfo, &devInfoData, SPDRP_HARDWAREID, &regDataType, hardwareId, sizeof(hardwareId) * reqSize, nullptr))
-        {
-            // find the size required to hold the friendly name
-            reqSize = 0;
-            SetupDiGetDeviceRegistryProperty(hDeviceInfo, &devInfoData, SPDRP_FRIENDLYNAME, nullptr, nullptr, 0, &reqSize);
-            BYTE* friendlyName = new BYTE[(reqSize > 1) ? reqSize : 1];
-            // now store it in a buffer
-            if (!SetupDiGetDeviceRegistryProperty(hDeviceInfo, &devInfoData, SPDRP_FRIENDLYNAME, nullptr, friendlyName, sizeof(friendlyName) * reqSize, nullptr))
+    
+#ifdef _WIN32
+            void  ArduinoSerial::enumerateSerialPortsFriendlyNames()
             {
-                // device does not have this property set
-                memset(friendlyName, 0, reqSize > 1 ? reqSize : 1);
-            }
-            // use friendlyName here
-            std::string nameOfDeviceForTest((char *)friendlyName, reqSize);
-            std::string nameOfDevice = "";
-            nameOfDevice = nameOfDevice+nameOfDeviceForTest;
-            std::transform(nameOfDeviceForTest.begin(), nameOfDeviceForTest.end(), nameOfDeviceForTest.begin(), ::tolower);
-            if (nameOfDeviceForTest.find("bluetooth") != std::string::npos)
-            {
-                std::cout << "Found Bluetooth device in: "<< nameOfDevice <<" skip it." << '\n';
-                Log::msg("Found Bluetooth device in: %s ",nameOfDevice);
-                //eliminate bluetooth device
-                std::list<std::string>::iterator list_it;
-                for(list_it = list.begin(); list_it!= list.end(); list_it++)
+                SP_DEVINFO_DATA devInfoData = {};
+                devInfoData.cbSize = sizeof(devInfoData);
+
+                // get the tree containing the info for the ports
+                HDEVINFO hDeviceInfo = SetupDiGetClassDevs(&GUID_DEVCLASS_PORTS,
+                                                           0,
+                                                           nullptr,
+                                                           DIGCF_PRESENT
+                                                           );
+                if (hDeviceInfo == INVALID_HANDLE_VALUE)
                 {
+                    return;
+                }
 
-                        std::string nameOfPortToCheck =std::string((*list_it));
-                        int lenghtToCopy = nameOfPortToCheck.length()-1;
-                        if(lenghtToCopy<0)
-                        {
-                            lenghtToCopy = 0;
-                        }
+                // iterate over all the devices in the tree
+                int nDevice = 0;
+                while (SetupDiEnumDeviceInfo(hDeviceInfo,            // Our device tree
+                                             nDevice++,            // The member to look for
+                                             &devInfoData))
+                {
+                    DWORD regDataType;
+                    DWORD reqSize = 0;
 
-                        nameOfPortToCheck = nameOfPortToCheck.substr(0,lenghtToCopy);
-                        std::size_t found=nameOfDevice.find(nameOfPortToCheck);
-                        if (found!=std::string::npos)
+                    // find the size required to hold the device info
+                    SetupDiGetDeviceRegistryProperty(hDeviceInfo, &devInfoData, SPDRP_HARDWAREID, nullptr, nullptr, 0, &reqSize);
+                    BYTE* hardwareId = new BYTE[(reqSize > 1) ? reqSize : 1];
+                    // now store it in a buffer
+                    if (SetupDiGetDeviceRegistryProperty(hDeviceInfo, &devInfoData, SPDRP_HARDWAREID, &regDataType, hardwareId, sizeof(hardwareId) * reqSize, nullptr))
+                    {
+                        // find the size required to hold the friendly name
+                        reqSize = 0;
+                        SetupDiGetDeviceRegistryProperty(hDeviceInfo, &devInfoData, SPDRP_FRIENDLYNAME, nullptr, nullptr, 0, &reqSize);
+                        BYTE* friendlyName = new BYTE[(reqSize > 1) ? reqSize : 1];
+                        // now store it in a buffer
+                        if (!SetupDiGetDeviceRegistryProperty(hDeviceInfo, &devInfoData, SPDRP_FRIENDLYNAME, nullptr, friendlyName, sizeof(friendlyName) * reqSize, nullptr))
                         {
-                            std::cout<<"Eliminate port: "<<nameOfDevice<<" \n";
-                            Log::msg("Skip it: %s skip it",nameOfDevice);
-                            list_it = list.erase(list_it);
-                            list_it--;
+                            // device does not have this property set
+                            memset(friendlyName, 0, reqSize > 1 ? reqSize : 1);
                         }
+                        // use friendlyName here
+                        std::string nameOfDeviceForTest((char *)friendlyName, reqSize);
+                        std::string nameOfDevice = "";
+                        nameOfDevice = nameOfDevice+nameOfDeviceForTest;
+                        std::transform(nameOfDeviceForTest.begin(), nameOfDeviceForTest.end(), nameOfDeviceForTest.begin(), ::tolower);
+                        if (nameOfDeviceForTest.find("bluetooth") != std::string::npos)
+                        {
+                            std::cout << "Found Bluetooth device in: "<< nameOfDevice <<" skip it." << '\n';
+                            Log::msg("Found Bluetooth device in: %s ",nameOfDevice);
+                            //eliminate bluetooth device
+                            std::list<std::string>::iterator list_it;
+                            for(list_it = list.begin(); list_it!= list.end(); list_it++)
+                            {
+
+                                    std::string nameOfPortToCheck =std::string((*list_it));
+                                    int lenghtToCopy = nameOfPortToCheck.length()-1;
+                                    if(lenghtToCopy<0)
+                                    {
+                                        lenghtToCopy = 0;
+                                    }
+
+                                    nameOfPortToCheck = nameOfPortToCheck.substr(0,lenghtToCopy);
+                                    std::size_t found=nameOfDevice.find(nameOfPortToCheck);
+                                    if (found!=std::string::npos)
+                                    {
+                                        std::cout<<"Eliminate port: "<<nameOfDevice<<" \n";
+                                        Log::msg("Skip it: %s skip it",nameOfDevice);
+                                        list_it = list.erase(list_it);
+                                        list_it--;
+                                    }
+                                }
+
+
+                        }
+                        std::cout<< nameOfDevice<<"\n";
+                        delete[] friendlyName;
                     }
-
-
+                    delete[] hardwareId;
+                }
             }
-            std::cout<< nameOfDevice<<"\n";
-            delete[] friendlyName;
-        }
-        delete[] hardwareId;
-    }
-}
-
+#endif
     //
     // Used during scanning when we receive message
     //
