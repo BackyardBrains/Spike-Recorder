@@ -140,6 +140,12 @@ namespace BackyardBrains {
 
         _shouldRestartDevice = false;
         currentAddOnBoard = BOARD_WITH_EVENT_INPUTS;
+        
+
+        headHardwareCircular = 0;
+        tailHardwareCircular = 0;
+        prepareForDisconnect = false;
+
     }
 
 void ArduinoSerial::setRecordingManager(RecordingManager *rm)
@@ -451,7 +457,10 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 #endif // defined
 
         list.sort();
+#if defined(_WIN32)
+        
         enumerateSerialPortsFriendlyNames();
+#endif
         refreshPortsDataList();
 
         return;
@@ -513,7 +522,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             }
         }
     }
-
+#if defined(_WIN32)
 void  ArduinoSerial::enumerateSerialPortsFriendlyNames()
 {
     SP_DEVINFO_DATA devInfoData = {};
@@ -595,7 +604,7 @@ void  ArduinoSerial::enumerateSerialPortsFriendlyNames()
         delete[] hardwareId;
     }
 }
-
+#endif
     //
     // Used during scanning when we receive message
     //
@@ -949,7 +958,7 @@ void  ArduinoSerial::enumerateSerialPortsFriendlyNames()
         #ifdef LOG_SCANNING_OF_ARDUINO
         Log::msg("openSerialDevice before lock: %s", portName);
         #endif
-
+        prepareForDisconnect = false;
         while(ArduinoSerial::openPortLock==true){
             #ifdef LOG_SCANNING_OF_ARDUINO
             Log::msg("openSerialDevice  lock---- User waiting");
@@ -979,6 +988,9 @@ void  ArduinoSerial::enumerateSerialPortsFriendlyNames()
 
         //unlock port connection
         ArduinoSerial::openPortLock = false;
+        
+        readingHardwareThread = std::thread(&ArduinoSerial::readHardwareThreadFunction, this, this);
+        readingHardwareThread.detach();
         return fd;
     }
 
@@ -1199,12 +1211,22 @@ void  ArduinoSerial::enumerateSerialPortsFriendlyNames()
     }
 
 
+    void ArduinoSerial::closeCurrentMainSerial(void)
+    {
+#ifdef LOG_SCANNING_OF_ARDUINO
+        Log::msg("Close main port: %s", currentPort.portName.c_str());
+#endif
+        prepareForDisconnect = true;
+    }
+    
     // Close the port
     void ArduinoSerial::closeSerial(void)
     {
+        
         #ifdef LOG_SCANNING_OF_ARDUINO
         Log::msg("Close serial port: %s", currentPort.portName.c_str());
         #endif
+
         currentPort.deviceType = ArduinoSerial::unknown;
         currentPort.portName = "";
         if(_portOpened)
@@ -1318,6 +1340,59 @@ void  ArduinoSerial::enumerateSerialPortsFriendlyNames()
 #pragma mark - Reading and processing
 
 
+    void ArduinoSerial::readHardwareThreadFunction(ArduinoSerial* ref)
+    {
+
+        ref->headHardwareCircular = 0;
+        ref->tailHardwareCircular = 0;
+        char tempb[33024];
+        char *buffer = tempb;
+
+        while (ref->prepareForDisconnect==false)
+        {
+            ssize_t numberOfBytesRead = -1;
+            try
+            {
+                numberOfBytesRead = ref->readPort(buffer); 
+            }
+            catch(std::exception &e)
+            {
+
+                Log::msg("Serial - Error on read 1: %s", e.what() );
+            }
+            catch(...)
+            {
+                Log::msg("Serial - Error on read 2");
+            }
+            
+            
+
+            //std::cout<<numberOfFrames<<"-";
+            for(int i=0;i<numberOfBytesRead;i++)
+            {
+                
+                    ref->circularInputBuffer[ref->headHardwareCircular++] = buffer[i];
+                    
+                    if(ref->headHardwareCircular>=SIZE_OF_INPUT_HARDWARE_CIRC_BUFFER)
+                    {
+                        ref->headHardwareCircular = 0;
+                    }
+            }
+            
+            #if defined(__APPLE__) || defined(__linux__)
+                        usleep(7000);
+            #else
+                        Sleep(7);
+            #endif
+        }//end of while
+ 
+        ref->closeSerial();
+    
+    }
+    
+    
+    
+    
     int ArduinoSerial::readPort(char * buffer)
     {
 
@@ -1460,6 +1535,32 @@ void  ArduinoSerial::enumerateSerialPortsFriendlyNames()
         return (int)size;
     }
 
+    
+    
+    int ArduinoSerial::getNewDataFromHardwareBuffer(char* buffer, int max_data_length)
+    {
+        int num_of_bytes;
+        
+        int tempMainHead = headHardwareCircular;//keep head position because input thread will move it.
+        
+        if(tailHardwareCircular>tempMainHead)
+        {
+            // std::cout<<"Head: "<<tempMainHead<<" tail "<<mainTail<<"\n";
+            memcpy ( buffer, &circularInputBuffer[tailHardwareCircular], sizeof(char)*(SIZE_OF_INPUT_HARDWARE_CIRC_BUFFER-tailHardwareCircular));
+            memcpy ( &buffer[SIZE_OF_INPUT_HARDWARE_CIRC_BUFFER-tailHardwareCircular], circularInputBuffer, sizeof(char)*(tempMainHead));
+            num_of_bytes = ((SIZE_OF_INPUT_HARDWARE_CIRC_BUFFER-tailHardwareCircular)+tempMainHead);
+            
+        }
+        else
+        {
+            memcpy ( buffer, &circularInputBuffer[tailHardwareCircular], sizeof(char)*(tempMainHead-tailHardwareCircular));
+            num_of_bytes = (tempMainHead-tailHardwareCircular);
+        }
+        
+        tailHardwareCircular = tempMainHead;
+        return num_of_bytes;
+        
+    }
 
     //
     // Read port and process frames into samples
@@ -1469,7 +1570,7 @@ void  ArduinoSerial::enumerateSerialPortsFriendlyNames()
         char buffer[33024];
         checkIfWeHavetoAskBoardSomething();
 
-        int bytesRead = readPort(buffer);
+        int bytesRead = getNewDataFromHardwareBuffer(buffer, 33024);
         int numberOfSamples =  processDataIntoSamples(buffer, bytesRead, obuffer);
         return numberOfSamples;
     }

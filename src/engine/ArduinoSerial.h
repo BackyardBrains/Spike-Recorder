@@ -13,11 +13,13 @@
 #define SIZE_OF_CIRC_BUFFER 4024
 #define SIZE_OF_MESSAGES_BUFFER 64
 #define ESCAPE_SEQUENCE_LENGTH 6
+#define SIZE_OF_INPUT_HARDWARE_CIRC_BUFFER 64384
 
 
 
 #include <iostream>
 #include <fcntl.h>
+#include <string.h>
 #include <list>
 #include <string>
 #include "constants.h"
@@ -120,6 +122,8 @@ namespace BackyardBrains {
 
         void pressKey(int keyIndex);
         void releaseKey(int keyIndex);
+        
+        void closeCurrentMainSerial(void);
     private:
         RecordingManager *_manager;
         bool _shouldRestartDevice;
@@ -187,6 +191,17 @@ namespace BackyardBrains {
         bool checkIfKeyWasReleased(int keyIndex);
         void turnONJoystickLed(int ledIndex);
         void turnOFFJoystickLed(int ledIndex);
+        
+        
+        //buffering from serial device
+        char circularInputBuffer[SIZE_OF_INPUT_HARDWARE_CIRC_BUFFER];
+        int headHardwareCircular;
+        int tailHardwareCircular;
+        int getNewDataFromHardwareBuffer(char * buffer, int max_data_length);
+        std::thread readingHardwareThread;
+        void readHardwareThreadFunction(ArduinoSerial* ref);
+        bool prepareForDisconnect;
+        
     };
 
 

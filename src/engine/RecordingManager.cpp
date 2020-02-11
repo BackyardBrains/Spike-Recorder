@@ -705,7 +705,7 @@ void RecordingManager::closeSerial()
 {
 	_numOfSerialChannels = 1;
    // _arduinoSerial.setNumberOfChannelsAndSamplingRate(1, _arduinoSerial.maxSamplingRate());
-	_arduinoSerial.closeSerial();
+	_arduinoSerial.closeCurrentMainSerial();
 	_serialMode = false;
 }
 
