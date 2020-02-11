@@ -318,14 +318,16 @@ void MainView::recordPressed() {
 		time_t t = time(NULL);
 		strftime(buf, sizeof(buf), "%Y-%m-%d_%H.%M.%S.wav", localtime(&t));
 		std::string filename = getRecordingPath()+"/BYB_Recording_"+buf;
-
+        Log::msg("Record in file: %s",filename.c_str());
 		if(!_fileRec.start(filename.c_str())) {
 			const char *error = strerror(errno);
 			std::stringstream s;
 			s << "Error: Failed to open '" << filename.c_str() << "' for recording: " << error << ".";
 			Widgets::ErrorBox *box = new Widgets::ErrorBox(s.str().c_str());
+
 			box->setGeometry(Widgets::Rect(this->width()/2-200, this->height()/2-40, 400, 80));
 			Widgets::Application::getInstance()->addPopup(box);
+			Log::msg("\n\n%s\n\n",s.str().c_str());
 			return;
 		}
 		_configButton->setSizeHint(Widgets::Size(0, 48));
@@ -350,6 +352,7 @@ void MainView::recordPressed() {
 		Widgets::ErrorBox *box = new Widgets::ErrorBox(s.str().c_str());
 		box->setGeometry(Widgets::Rect(this->width()/2-250, this->height()/2-40, 500, 80));
 		Widgets::Application::getInstance()->addPopup(box);
+		Log::msg("%s",s.str().c_str());
 	}
 
 	Widgets::Application::getInstance()->updateLayout();
@@ -390,6 +393,7 @@ void MainView::filePressed() {
 		Widgets::ErrorBox *box = new Widgets::ErrorBox(s.str().c_str());
 		box->setGeometry(Widgets::Rect(width()/2-200, height()/2-40, 400, 80));
 		Widgets::Application::getInstance()->addPopup(box);
+		Log::msg("\n\n%s\n\n",s.str().c_str());
 		return;
 	}
 	Log::msg("Loading metadata, if present...");
