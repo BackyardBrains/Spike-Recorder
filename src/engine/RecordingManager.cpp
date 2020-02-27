@@ -1396,7 +1396,7 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 void RecordingManager::advanceSerialMode(uint32_t samples)
 {
 
-    uint32_t len = 33024;
+    uint32_t len = 64024;
     //len = std::min(samples, len);
    // std::cout<<len<<"\n";
 	const int channum = _arduinoSerial.numberOfChannels();
@@ -1638,6 +1638,8 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
         }
 
 
+
+        printf("SamplesRead in advance: %d\n", samplesRead);
         //std::cout<<" Advance _pos: "<<_pos<<"\n";
          _pos+=samplesRead;
         //std::cout<<" After Advance _pos: "<<_pos<<"\n";

@@ -140,7 +140,7 @@ namespace BackyardBrains {
 
         _shouldRestartDevice = false;
         currentAddOnBoard = BOARD_WITH_EVENT_INPUTS;
-        
+
 
         headHardwareCircular = 0;
         tailHardwareCircular = 0;
@@ -458,7 +458,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
         list.sort();
 #if defined(_WIN32)
-        
+
         enumerateSerialPortsFriendlyNames();
 #endif
         refreshPortsDataList();
@@ -988,7 +988,7 @@ void  ArduinoSerial::enumerateSerialPortsFriendlyNames()
 
         //unlock port connection
         ArduinoSerial::openPortLock = false;
-        
+
         readingHardwareThread = std::thread(&ArduinoSerial::readHardwareThreadFunction, this, this);
         readingHardwareThread.detach();
         return fd;
@@ -1218,11 +1218,11 @@ void  ArduinoSerial::enumerateSerialPortsFriendlyNames()
 #endif
         prepareForDisconnect = true;
     }
-    
+
     // Close the port
     void ArduinoSerial::closeSerial(void)
     {
-        
+
         #ifdef LOG_SCANNING_OF_ARDUINO
         Log::msg("Close serial port: %s", currentPort.portName.c_str());
         #endif
@@ -1353,7 +1353,9 @@ void  ArduinoSerial::enumerateSerialPortsFriendlyNames()
             ssize_t numberOfBytesRead = -1;
             try
             {
-                numberOfBytesRead = ref->readPort(buffer); 
+
+                numberOfBytesRead = ref->readPort(buffer);
+
             }
             catch(std::exception &e)
             {
@@ -1364,35 +1366,35 @@ void  ArduinoSerial::enumerateSerialPortsFriendlyNames()
             {
                 Log::msg("Serial - Error on read 2");
             }
-            
-            
+
+
 
             //std::cout<<numberOfFrames<<"-";
             for(int i=0;i<numberOfBytesRead;i++)
             {
-                
+
                     ref->circularInputBuffer[ref->headHardwareCircular++] = buffer[i];
-                    
+
                     if(ref->headHardwareCircular>=SIZE_OF_INPUT_HARDWARE_CIRC_BUFFER)
                     {
                         ref->headHardwareCircular = 0;
                     }
             }
-            
+
             #if defined(__APPLE__) || defined(__linux__)
                         usleep(7000);
             #else
                         Sleep(7);
             #endif
         }//end of while
- 
+
         ref->closeSerial();
-    
+
     }
-    
-    
-    
-    
+
+
+
+
     int ArduinoSerial::readPort(char * buffer)
     {
 
@@ -1464,7 +1466,7 @@ void  ArduinoSerial::enumerateSerialPortsFriendlyNames()
 
         if (st.cbInQue <= 0)
         {
-             printf("Read -- %lu\n",st.cbInQue);
+             //printf("Read -- %lu\n",st.cbInQue);
              batchSizeForSerial -=15;
              if(batchSizeForSerial<100)
              {
@@ -1535,31 +1537,32 @@ void  ArduinoSerial::enumerateSerialPortsFriendlyNames()
         return (int)size;
     }
 
-    
-    
+
+
     int ArduinoSerial::getNewDataFromHardwareBuffer(char* buffer, int max_data_length)
     {
         int num_of_bytes;
-        
+
         int tempMainHead = headHardwareCircular;//keep head position because input thread will move it.
-        
+
         if(tailHardwareCircular>tempMainHead)
         {
             // std::cout<<"Head: "<<tempMainHead<<" tail "<<mainTail<<"\n";
             memcpy ( buffer, &circularInputBuffer[tailHardwareCircular], sizeof(char)*(SIZE_OF_INPUT_HARDWARE_CIRC_BUFFER-tailHardwareCircular));
             memcpy ( &buffer[SIZE_OF_INPUT_HARDWARE_CIRC_BUFFER-tailHardwareCircular], circularInputBuffer, sizeof(char)*(tempMainHead));
             num_of_bytes = ((SIZE_OF_INPUT_HARDWARE_CIRC_BUFFER-tailHardwareCircular)+tempMainHead);
-            
+
         }
         else
         {
             memcpy ( buffer, &circularInputBuffer[tailHardwareCircular], sizeof(char)*(tempMainHead-tailHardwareCircular));
             num_of_bytes = (tempMainHead-tailHardwareCircular);
         }
-        
+
         tailHardwareCircular = tempMainHead;
+        printf("read: %d\n",num_of_bytes);
         return num_of_bytes;
-        
+
     }
 
     //
@@ -1594,7 +1597,7 @@ void  ArduinoSerial::enumerateSerialPortsFriendlyNames()
         int obufferIndex = 0;
         int writeInteger = 0;
         // std::cout<<"------------------ Size: "<<size<<"\n";
-
+        printf("Size before parsing: %d\n", size);
         int numberOfZeros = 0;
         int lastWasZero = 0;
         for(int i=0;i<size;i++)
@@ -1746,7 +1749,7 @@ void  ArduinoSerial::enumerateSerialPortsFriendlyNames()
 
 
         }
-
+        printf("Number of frames: %d\n",numberOfFrames);
         return numberOfFrames;
     }
 

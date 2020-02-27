@@ -10,7 +10,7 @@
 #ifndef BACKYARDBRAINS_ARDUINOSERIAL_H
 #define BACKYARDBRAINS_ARDUINOSERIAL_H
 
-#define SIZE_OF_CIRC_BUFFER 4024
+#define SIZE_OF_CIRC_BUFFER 64384
 #define SIZE_OF_MESSAGES_BUFFER 64
 #define ESCAPE_SEQUENCE_LENGTH 6
 #define SIZE_OF_INPUT_HARDWARE_CIRC_BUFFER 64384
@@ -122,7 +122,7 @@ namespace BackyardBrains {
 
         void pressKey(int keyIndex);
         void releaseKey(int keyIndex);
-        
+
         void closeCurrentMainSerial(void);
     private:
         RecordingManager *_manager;
@@ -191,8 +191,8 @@ namespace BackyardBrains {
         bool checkIfKeyWasReleased(int keyIndex);
         void turnONJoystickLed(int ledIndex);
         void turnOFFJoystickLed(int ledIndex);
-        
-        
+
+
         //buffering from serial device
         char circularInputBuffer[SIZE_OF_INPUT_HARDWARE_CIRC_BUFFER];
         int headHardwareCircular;
@@ -201,7 +201,7 @@ namespace BackyardBrains {
         std::thread readingHardwareThread;
         void readHardwareThreadFunction(ArduinoSerial* ref);
         bool prepareForDisconnect;
-        
+
     };
 
 
