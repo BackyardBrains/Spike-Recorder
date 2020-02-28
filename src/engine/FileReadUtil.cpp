@@ -56,7 +56,16 @@ bool ReadWAVFile(std::vector<std::vector<int16_t> > &channels, int len, HSTREAM 
 			if(bytespersample == 1) { // unsigned 8 bit format
 				channels[chan][i] = (buffer[i*nchan + chan]-128)<<7;
 			} else { // else assume signedness and take the 2 most significant bytes
-				memcpy(&channels[chan][i], buffer+(i*nchan + chan)*bytespersample, 2);
+                if(bytespersample==4)
+                {
+                    float tempBuffer;
+                   memcpy(&tempBuffer, buffer+(i*nchan + chan)*bytespersample, 4);
+                    channels[chan][i] = tempBuffer*32000;
+                }
+                else
+                {
+                    memcpy(&channels[chan][i], buffer+(i*nchan + chan)*bytespersample, 2);
+                }
 			}
 		}
 	}

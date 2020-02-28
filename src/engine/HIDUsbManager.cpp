@@ -25,7 +25,7 @@
 #define BOARD_WITH_ADDITIONAL_INPUTS 1
 #define BOARD_WITH_HAMMER 4
 #define BOARD_WITH_JOYSTICK 5
-#define LOG_HID_SCANNING 1
+//#define LOG_HID_SCANNING 1
 
 namespace BackyardBrains {
 
@@ -1013,7 +1013,7 @@ namespace BackyardBrains {
         #ifdef LOG_HID_SCANNING
          std::cout<<"Get HID device List--------------------------------\n";
         #endif
-                    std::cout<<"Number of devices before: "<<list.size()<<"\n";
+                    //std::cout<<"Number of devices before: "<<list.size()<<"\n";
             list.clear();
             if(!deviceOpened() && !(foundSameDeviceAgain>0))
             {
@@ -1030,7 +1030,7 @@ namespace BackyardBrains {
             }
             enumerateDevicesForVIDAndPID(BYB_VID, BYB_PID_MUSCLE_SB_PRO);
             enumerateDevicesForVIDAndPID(BYB_VID, BYB_PID_NEURON_SB_PRO);
-            std::cout<<"Number of devices after: "<<list.size()<<"\n";
+            //std::cout<<"Number of devices after: "<<list.size()<<"\n";
     }
 
 

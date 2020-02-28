@@ -734,7 +734,8 @@ bool RecordingManager::loadFile(const char *filename) {
 	BASS_CHANNELINFO info;
 	BASS_ChannelGetInfo(stream, &info);
 
-	int bytespersample = info.origres/8;
+
+	int bytespersample = LOWORD(info.origres)/8;
 	if(bytespersample == 0)
 	{
 		bytespersample = 2;
@@ -742,7 +743,17 @@ bool RecordingManager::loadFile(const char *filename) {
 	}
 
 	if(bytespersample >= 3)
-		bytespersample = 4; // bass converts everything it doesn't support.
+    {
+        stream = BASS_StreamCreateFile(false, filename, 0, 0, BASS_SAMPLE_FLOAT | BASS_STREAM_DECODE);
+        if(stream == 0) {
+            Log::error("Bass Error: Failed to load float file '%s': %s", filename, GetBassStrError());
+            return false;
+        }
+
+        BASS_ChannelGetInfo(stream, &info);
+        bytespersample = 4; // bass converts everything it doesn't support.
+    }
+		
 
 	setSampleRate(info.freq);
 	_devices.push_back(Device(0,info.chans,_sampleRate));
