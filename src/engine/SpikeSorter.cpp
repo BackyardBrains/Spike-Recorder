@@ -16,7 +16,14 @@ static int16_t convert_bytedepth(int8_t *pos, int bytes) {
 	int16_t res;
 	if(bytes == 1) { // unsigned 8 bit format
 		res = (*pos-128)<<7;
-	} else { // else assume signedness and take the 2 most significant bytes
+	}
+    else if(bytes==4)
+    {
+        float tempBuffer;
+        memcpy(&tempBuffer, pos, 4);
+        res = (int)(tempBuffer*32766);
+    }
+    else { // else assume signedness and take the 2 most significant bytes
 		memcpy(&res, pos, 2);
 	}
 
@@ -105,6 +112,9 @@ void SpikeSorter::findAllSpikes(const std::string &filename, int holdoff)
       
     
 void SpikeSorter::findSpikes(const std::string &filename, int channel, int holdoff) {
+    
+    
+    
 	HSTREAM handle = BASS_StreamCreateFile(false, filename.c_str(), 0, 0, BASS_STREAM_DECODE);
 	if(handle == 0) {
 		Log::error("Bass Error: Failed to load file '%s': %s", filename.c_str(), GetBassStrError());
@@ -115,11 +125,26 @@ void SpikeSorter::findSpikes(const std::string &filename, int channel, int holdo
 
 	BASS_CHANNELINFO info;
 	BASS_ChannelGetInfo(handle, &info);
-	int bytespersample = info.origres/8;
+	int bytespersample = LOWORD(info.origres)/8;
+    
     if(bytespersample == 0)
     {
         bytespersample = 2;
     }
+
+    if(bytespersample >= 3)
+    {//assume that it is 4 byte float and load it like that
+        handle = BASS_StreamCreateFile(false, filename.c_str(), 0, 0, BASS_SAMPLE_FLOAT |BASS_STREAM_DECODE);
+        
+        if(handle == 0) {
+            Log::error("Bass Error: Failed to load float file in spike sorting: %s", GetBassStrError());
+            return;
+        }
+        
+        BASS_ChannelGetInfo(handle, &info);
+        bytespersample = 4; // bass converts everything it doesn't support.
+    }
+
 	_spikes.reserve(256);
 
     double meanValue = 0;
@@ -135,15 +160,15 @@ void SpikeSorter::findSpikes(const std::string &filename, int channel, int holdo
     int64_t peakposNegative = 0;
     
     std::vector<std::pair<int64_t, int16_t> > posspikes, negspikes;
-    long long testMaxSize = posspikes.max_size();
+
 	while(left > 0)
     {
 		DWORD bytesread = BASS_ChannelGetData(handle, buffer, std::min(left,(int64_t)BUFSIZE));
 		if(bytesread == (DWORD)-1) {
 			Log::error("Bass Error: getting channel data failed: %s", GetBassStrError());
 			break;
-    }
-
+        }
+        
 		
 
         const int nsamples = bytesread/info.chans/bytespersample;

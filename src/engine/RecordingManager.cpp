@@ -1270,32 +1270,11 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
             continue;
         }
 
-
-       /* //if we fillsegment of buffer (half the buffer)
-        if(_devices[idx].sampleBuffers[0].head()%(SampleBuffer::SIZE/2) >= SampleBuffer::SIZE/2-1)
-        {
-            if(_devices[idx].sampleBuffers[0].pos()<_pos || loadSecondSegmentOfBuffer)//if we need to load 2 segments of buffer
-            {
-                loadSecondSegmentOfBuffer= false;
-                _devices[idx].sampleBuffers[0].setHead((_devices[idx].sampleBuffers[0].head()+1)%SampleBuffer::SIZE);
-                _devices[idx].sampleBuffers[0].setPos(_devices[idx].sampleBuffers[0].pos()+1);
-                BASS_ChannelSetPosition(_devices[idx].handle, _devices[idx].bytespersample*_devices[idx].sampleBuffers[0].pos()*_devices[idx].channels, BASS_POS_BYTE);
-
-            }
-            else
-            {
-                setPos(_pos, true);
-                continue;//if we don't need to load 2 segments of buffer
-            }
-        }*/
-
-
 		const int bytespersample = _devices[idx].bytespersample;
 		std::vector<std::vector<int16_t> > channels;
 
-
-
-       // std::cout<<"Read "<<std::min(len,bufsize)<<" samples\n";
+        
+        //-------- Read data ------------
 		bool rc = ReadWAVFile(channels, channum*bufsize*bytespersample, _devices[idx].handle,
 				channum, bytespersample);
 
