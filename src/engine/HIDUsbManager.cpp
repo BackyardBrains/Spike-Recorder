@@ -789,8 +789,31 @@ namespace BackyardBrains {
         numberOfFrames = 0;
     }
 
+    bool HIDUsbManager::frameHasAllBytes()
+    {
+        int tempTail = cBufTail + 1;
+        if(tempTail>= SIZE_OF_CIRC_BUFFER)
+        {
+            tempTail = 0;
+        }
+        for(int i=0;i<(_numberOfChannels*2-1);i++)
+        {
+            unsigned int nextByte  = ((unsigned int)(circularBuffer[tempTail])) & 0xFF;
+            if(nextByte > 127)
+            {
+                Log::msg("HID frame with less bytes");
+                return false;
+            }
+            tempTail++;
+            if(tempTail>= SIZE_OF_CIRC_BUFFER)
+            {
+                tempTail = 0;
+            }
+        }
+        return true;
+    }
 
-
+#pragma mark - Read/parse
     //
     // Read one batch of data from HID usb
     //
@@ -888,13 +911,13 @@ namespace BackyardBrains {
 
         unsigned int LSB;
         unsigned int MSB;
-
+        int lastValue = 0;
         bool haveData = true;
         while (haveData)
         {
 
             MSB  = ((unsigned int)(circularBuffer[cBufTail])) & 0xFF;
-            if(MSB > 127)//if we are at the begining of frame
+            if(MSB > 127 && frameHasAllBytes())//if we are at the begining of frame
             {
                 if(checkIfHaveWholeFrame() && obufferIndex<1000)
                 {
@@ -904,7 +927,8 @@ namespace BackyardBrains {
                     {
                         //make sample value from two consecutive bytes
                         // std::cout<<"Tail: "<<cBufTail<<"\n";
-                        //  MSB  = ((uint)(circularBuffer[cBufTail])) & 0xFF;
+                        
+                        
                         //std::cout<< cBufTail<<" -M "<<MSB<<"\n";
                         MSB  = ((unsigned int)(circularBuffer[cBufTail])) & 0x7F;
 
@@ -928,7 +952,15 @@ namespace BackyardBrains {
 
                         //write decoded integer to buffer
                         obuffer[obufferIndex++] = (writeInteger-512)*62;
-
+                        if(lastValue!=0 &&
+                           (((((writeInteger-512)*62)>-12000) && (lastValue>-12000)) ||
+                           ((((writeInteger-512)*62)<-12000) && (lastValue<-12000))))
+                        {
+                           
+                            printf("%d : %d\n", lastValue,(writeInteger-512)*62);
+                            printf("found");
+                        }
+                        lastValue = (writeInteger-512)*62;
                         if(areWeAtTheEndOfFrame() || obufferIndex>1000)
                         {
                          //   std::cout<<"We brake at areWeAtTheEndOfFrame!!!!\n";
@@ -968,6 +1000,9 @@ namespace BackyardBrains {
         return numberOfFrames;
     }
 
+    
+    
+    
     //
     //  Read newly arrived data from circular buffer.
     // And return number of readed frames

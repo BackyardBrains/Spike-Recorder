@@ -1681,6 +1681,7 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 	    for (int i = 0; i < samplesRead; i++) {
 	        for(int chan = 0; chan < channum; chan++) {
 	            channels[chan][i] = buffer[i*channum + chan];//sort data to channels
+                
 	        }
 	    }
 

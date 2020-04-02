@@ -137,6 +137,7 @@ class HIDUsbManager
         void executeContentOfMessageBuffer(int offset);
         int escapeSequenceDetectorIndex;
         bool weAreInsideEscapeSequence;
+        bool frameHasAllBytes();
         char messagesBuffer[SIZE_OF_MESSAGES_BUFFER];//contains payload inside escape sequence
         int messageBufferIndex;
         unsigned int escapeSequence[ESCAPE_SEQUENCE_LENGTH];
