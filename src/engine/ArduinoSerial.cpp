@@ -70,7 +70,7 @@
 #endif
 
 
-//#define LOG_SCANNING_OF_ARDUINO 1
+#define LOG_SCANNING_OF_ARDUINO 1
 #define BOARD_WITH_EVENT_INPUTS 0
 #define BOARD_WITH_ADDITIONAL_INPUTS 1
 #define BOARD_WITH_HAMMER 4
@@ -452,8 +452,8 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
         list.sort();
 
-        
-        
+
+
 
         #ifdef _WIN32
         enumerateSerialPortsFriendlyNames();
@@ -520,7 +520,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         }
     }
 
-    
+
 #ifdef _WIN32
             void  ArduinoSerial::enumerateSerialPortsFriendlyNames()
             {
