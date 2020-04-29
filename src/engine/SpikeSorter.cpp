@@ -79,7 +79,7 @@ int SpikeSorter::findThreshold(int handle, int channel, int channels, int bytede
 	rms.resize(i+1);
 	std::sort(rms.begin(),rms.end());
 	BASS_ChannelSetPosition(handle, 0, BASS_POS_BYTE);
-	return rms[rms.size()*4/10];
+	return rms[int(rms.size()*0.4)];
 }
 
 void SpikeSorter::findAllSpikes(const std::string &filename, int holdoff)
