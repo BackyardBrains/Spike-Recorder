@@ -103,7 +103,7 @@ protected:
 
 	int determineThreshHover(int x, int y, int thresholdPos, int *yoffset);
 	int determineGainControlHover(int x, int y);
-
+    int determineGainControlHoverFromAnalysisView(int x, int y);
     void setTimeScale(float newTimesScale);
     void mousePressEventFromAnalysisView(Widgets::MouseEvent *event);
 

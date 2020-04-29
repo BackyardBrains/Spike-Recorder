@@ -1006,7 +1006,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         }
     }
 
-
+#if defined(_WIN32)
     void ArduinoSerial::closePortPatchThreadFunction(ArduinoSerial * selfRef)
     {
          try
@@ -1022,7 +1022,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
             }
     }
-
+#endif
     //
     // Used by Recording manager to open serial device
     //

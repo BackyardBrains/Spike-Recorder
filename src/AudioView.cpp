@@ -565,7 +565,7 @@ void AudioView::drawAudio() {
 		} else {
 			data = _manager.getTriggerSamplesEnvelope(_channels[i].virtualDevice, samples, screenw == 0 ? 1 : std::max(samples/screenw,1));
 		}
-
+        
 		drawData(data, i, samples, xoff, yoff, screenw,numOfSamplesToAvoid);
 
 		Widgets::TextureGL::get("data/pin.bmp")->bind();
@@ -900,6 +900,15 @@ void AudioView::advance() {
 	}
 }
 
+    
+int AudioView::determineGainControlHoverFromAnalysisView(int x, int y)
+{
+    analysisViewIsActive = true;
+    int ret = determineGainControlHover(x,y);
+    analysisViewIsActive = false;
+    return ret;
+}
+    
 int AudioView::determineGainControlHover(int x, int y) {
 	if(_channels.size() == 0)
     {
@@ -912,7 +921,15 @@ int AudioView::determineGainControlHover(int x, int y) {
     }
 
 	int xx = GAINCONTROL_XOFF-x;
-	int dy = _channels[selectedChannel()].pos*height()-y;
+    int dy = 0;
+    if(analysisViewIsActive)
+    {
+        dy = 0.5*height()-y;//it is always in the middle of the screen "0.5"
+    }
+    else
+    {
+        dy = _channels[selectedChannel()].pos*height()-y;
+    }
 	xx *= xx;
 
 	dy -= GAINCONTROL_YOFF;
