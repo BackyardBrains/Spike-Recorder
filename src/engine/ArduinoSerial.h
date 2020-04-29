@@ -125,6 +125,8 @@ namespace BackyardBrains {
         bool _shouldRestartDevice;
         int openPort(const char *portName);
         std::thread scanningThread;
+        std::thread closePortPatchThread;
+        void closePortPatchThreadFunction(ArduinoSerial * selfRef);
         void refreshPortList(std::list<SerialPort> newPorts);
         void scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSerial * workingArduinoRef);
         int openSerialDeviceWithoutLock(const char *portName);
