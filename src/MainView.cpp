@@ -484,6 +484,7 @@ void MainView::analysisPressed() {
     {
         std::list<SerialPortIndicator> ::iterator buttonsIterator;
         std::cout<<"\n connectToShieldForButton\n";
+
         //find port name
         bool foundButton = false;
         ArduinoSerial::SerialPort selectedPort;
@@ -582,6 +583,7 @@ void MainView::analysisPressed() {
 
         if(_manager.paused())
             pausePressed();
+
     }
 
 
