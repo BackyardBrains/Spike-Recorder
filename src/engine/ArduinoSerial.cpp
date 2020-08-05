@@ -75,6 +75,7 @@
 #define BOARD_WITH_ADDITIONAL_INPUTS 1
 #define BOARD_WITH_HAMMER 4
 #define BOARD_WITH_JOYSTICK 5
+#define BOARD_ERG 9
 
 
 namespace BackyardBrains {
@@ -1352,6 +1353,11 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                     _samplingRate = 1000;
                     _numberOfChannels  =2;
             }
+            else if(currentAddOnBoard == BOARD_ERG)
+            {
+                _samplingRate = 3000;
+                _numberOfChannels  =3;
+            }
 
         }
         else
@@ -2216,6 +2222,17 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                         currentAddOnBoard =newAddOnBoard;
                         _shouldRestartDevice = true;
 
+                    }
+                }
+                else if(newAddOnBoard == BOARD_ERG)
+                {
+                    if(currentAddOnBoard != BOARD_ERG)
+                    {
+                        _samplingRate = 3000;
+                        _numberOfChannels  =3;
+                        currentAddOnBoard =newAddOnBoard;
+                        _shouldRestartDevice = true;
+                        
                     }
                 }
                 else

@@ -67,7 +67,8 @@ namespace BackyardBrains {
             heart = 3,
             heartOneChannel = 4,
             heartPro = 5,
-            neuronOneChannel = 6
+            neuronOneChannel = 6,
+            erg=7
         };
         struct SerialPort
         {
