@@ -2232,7 +2232,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                         _numberOfChannels  =3;
                         currentAddOnBoard =newAddOnBoard;
                         _shouldRestartDevice = true;
-                        
+
                     }
                 }
                 else

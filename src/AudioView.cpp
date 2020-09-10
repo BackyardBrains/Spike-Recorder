@@ -381,7 +381,7 @@ void AudioView::drawData(std::vector<std::pair<int16_t, int16_t> > &data, int ch
 		dist = 1.f; // we don’t want round off artifacts
 
 	float scale = height()*ampScale;
-	glLineWidth(1.0f);
+	glLineWidth(4.0f);
 	glBegin(GL_LINE_STRIP);
 
     //std::cout<<"Wave gain: "<<_channels[channel].gain<<" scale:"<<scale<<"\n";
@@ -565,7 +565,7 @@ void AudioView::drawAudio() {
 		} else {
 			data = _manager.getTriggerSamplesEnvelope(_channels[i].virtualDevice, samples, screenw == 0 ? 1 : std::max(samples/screenw,1));
 		}
-        
+
 		drawData(data, i, samples, xoff, yoff, screenw,numOfSamplesToAvoid);
 
 		Widgets::TextureGL::get("data/pin.bmp")->bind();
@@ -900,7 +900,7 @@ void AudioView::advance() {
 	}
 }
 
-    
+
 int AudioView::determineGainControlHoverFromAnalysisView(int x, int y)
 {
     analysisViewIsActive = true;
@@ -908,7 +908,7 @@ int AudioView::determineGainControlHoverFromAnalysisView(int x, int y)
     analysisViewIsActive = false;
     return ret;
 }
-    
+
 int AudioView::determineGainControlHover(int x, int y) {
 	if(_channels.size() == 0)
     {
