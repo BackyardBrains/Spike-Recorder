@@ -95,6 +95,7 @@ struct MetadataChunk {
 		: timeScale(1.f) { }
 	void print();
 	float timeScale;
+    int deviceType;
 	std::vector<MetadataChannel> channels;
 	std::list<std::pair<std::string, int64_t> > markers;
 };

@@ -169,7 +169,7 @@ MainView::MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder
 
     //topBar->addSpacing(5);
 	topBar->addWidget(_analysisButton);
-    topBar->addSpacing(5);
+    topBar->addSpacing(30);
 	topBar->addWidget(_threshavgGroup, Widgets::AlignVCenter);
 	topBar->addStretch();
     topBar->addWidget(_alphaFeedbackButton);

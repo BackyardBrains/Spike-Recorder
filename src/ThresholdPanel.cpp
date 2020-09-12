@@ -1,6 +1,7 @@
 #include "ThresholdPanel.h"
 #include "engine/RecordingManager.h"
 #include "engine/AnalysisManager.h"
+
 #include "widgets/PushButton.h"
 #include "widgets/Label.h"
 #include "widgets/BoxLayout.h"
@@ -10,6 +11,7 @@
 #include "widgets/Application.h"
 #include "widgets/BitmapFontGL.h"
 #include "widgets/Painter.h"
+
 #include "Log.h"
 #include <sstream>
 #include <SDL.h>
@@ -24,17 +26,22 @@ ThresholdPanel::ThresholdPanel(RecordingManager &manager, AnalysisManager &anama
 	_triggerButton->setSizeHint(Widgets::Size(42,32));
 	_triggerButton->setRightPadding(10);
 	_triggerButton->clicked.connect(this, &ThresholdPanel::triggerPressed);
-
+    _triggerButton->setVisible(true);
+    
 	_ekgButton = new Widgets::PushButton(this);
 	_ekgButton->setNormalTex(Widgets::TextureGL::get("data/ekg.bmp"));
 	_ekgButton->setHoverTex(Widgets::TextureGL::get("data/ekghigh.bmp"));
 	_ekgButton->setSizeHint(Widgets::Size(42,32));
 	_ekgButton->setRightPadding(10);
 	_ekgButton->clicked.connect(this, &ThresholdPanel::ekgPressed);
-	if(!(_manager->serialMode() || _manager->hidMode()))
+	if(_manager->getCurrentInputType()==INPUT_TYPE_AM_AUDIO || _manager->getCurrentInputType()==INPUT_TYPE_HEARTSS || (_manager->fileMode() && (_manager->deviceUsedForRecordingFile()==INPUT_TYPE_HEARTSS || _manager->deviceUsedForRecordingFile()==INPUT_TYPE_AM_AUDIO)))
 	{
-		_ekgButton->setVisible(false);
+		_ekgButton->setVisible(true);
 	}
+    else
+    {
+        _ekgButton->setVisible(false);
+    }
 
 
 	_ekgWidget = new EkgWidget(anaman, this);
@@ -74,6 +81,7 @@ ThresholdPanel::ThresholdPanel(RecordingManager &manager, AnalysisManager &anama
 
 
 	Widgets::BoxLayout *layout = new Widgets::BoxLayout(Widgets::Horizontal, this);
+    //layout->addSpacing(30);
 	layout->addWidget(_ekgButton);
 	layout->addWidget(_triggerButton);
 
@@ -81,7 +89,7 @@ ThresholdPanel::ThresholdPanel(RecordingManager &manager, AnalysisManager &anama
 	// layout->addWidget(_thresholdWidget, Widgets::AlignTop);
 	//layout->addSpacing(10);
 
-	//layout->addSpacing(10);
+	//layout->addSpacing(20);
 	layout->addLayout(_switchLayout);
 	layout->update();
 
@@ -107,7 +115,10 @@ void ThresholdPanel::setTriggerButtonImage()
     
 void ThresholdPanel::paintEvent()
 {
-    if(_manager->serialMode() || _manager->hidMode())
+    
+    
+    
+    if(_manager->getCurrentInputType()==INPUT_TYPE_AM_AUDIO || _manager->getCurrentInputType()==INPUT_TYPE_HEARTSS || (_manager->fileMode() && (_manager->deviceUsedForRecordingFile()==INPUT_TYPE_HEARTSS || _manager->deviceUsedForRecordingFile()==INPUT_TYPE_AM_AUDIO)))
     {
         _ekgButton->setVisible(true);
         _ekgButton->setSizeHint(Widgets::Size(43,32));
@@ -115,7 +126,7 @@ void ThresholdPanel::paintEvent()
     else
     {
         int state = _switchLayout->selected();
-       
+        
         if(state) {
             _ekgButton->setNormalTex(Widgets::TextureGL::get("data/ekg.bmp"));
             _ekgButton->setHoverTex(Widgets::TextureGL::get("data/ekghigh.bmp"));
@@ -123,7 +134,6 @@ void ThresholdPanel::paintEvent()
             _switchLayout->setSelected(!state);
         }
         _ekgButton->setVisible(false);
-        
     }
 }
     

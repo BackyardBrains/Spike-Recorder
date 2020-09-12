@@ -172,7 +172,10 @@ void FileRecorder::writeMetadata(const MetadataChunk *meta) {
         calibrationCoefficient << _manager.getCalibrationCoeficient() << ';';
         write_subchunk("clbr", calibrationCoefficient.str(), _file);
     }
-
+    std::stringstream deviceTypeID;
+    deviceTypeID << _manager.getCurrentInputType() << ';';
+    write_subchunk("cdev", deviceTypeID.str(), _file);
+    
 	uint32_t size = ftell(_file)-sizepos-4;
 	fseek(_file, sizepos, SEEK_SET);
 	put32(size, _file);
@@ -328,7 +331,8 @@ int FileRecorder::parseMetadataStr(MetadataChunk *meta, const char *str, Recordi
 			CCLR,
 			CTMS,
 			CNAM,
-            CLBR
+            CLBR,
+            CDEV
 		} keytype = CINVAL;
 
 		const char *beg = p;
@@ -354,6 +358,8 @@ int FileRecorder::parseMetadataStr(MetadataChunk *meta, const char *str, Recordi
 					keytype = CNAM;
                 else if(strncmp(beg, "clbr", p-beg) == 0)
                     keytype = CLBR;
+                else if(strncmp(beg, "cdev", p-beg) == 0)
+                    keytype = CDEV;
 				else {
 					Log::error("Metadata Parser Error: skipped key '%s'.", std::string(beg,p).c_str());
 					mode = MVAL;
@@ -388,10 +394,15 @@ int FileRecorder::parseMetadataStr(MetadataChunk *meta, const char *str, Recordi
 					meta->channels[entry].name = val;
 					break;
 				case CTMS:
-					meta->timeScale = atof(val.c_str());
+                        meta->timeScale = atof(val.c_str());
+                        entry--;
 					break;
                 case CLBR:
                         manager.setCalibrationCoeficient(atof(val.c_str()));
+                        entry--;
+                    break;
+                case CDEV:
+                        meta->deviceType = atoi(val.c_str());
                         entry--;
                     break;
 				case CINVAL:

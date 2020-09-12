@@ -235,6 +235,8 @@ public:
 
     std::string hidError;
 
+    int getCurrentInputType();
+    int deviceUsedForRecordingFile();
 
 private:
 	struct Device
@@ -317,12 +319,12 @@ private:
     int debugNumberOfSamplesThatWeGet;
 
     //it keeps last zoom, gain and filter configs for each type of inputs
-    AudioInputConfig audioInputConfigArray[8];//standard audio, file, HID, 3  shields, and unknown shield
+    AudioInputConfig audioInputConfigArray[9];//standard audio, file, HID, 3  shields, and unknown shield
     std::list<AudioInputConfig> arduinoShieldsConfigs;
     void initInputConfigPersistance();
     void saveInputConfigSettings();
     AudioInputConfig * getInputConfigForType(int inputType);
-    int getCurrentInputType();
+    
     void loadFilterSettings();
     void makeNewSerialAudioConfig(std::string nameOfThePort);
     std::list<AudioInputConfig>::iterator iteratorPointerToCurrentSerialAudioConfig;
@@ -383,6 +385,9 @@ private:
     float rmsOfOriginalSignal = 0;
     float rmsOfNotchedAMSignal = 0;
     bool weAreReceivingAMSignal = false;
+    
+    
+    int deviceTypeUsedDuringRecordingOfCurrentFile = 0;
 
 };
 

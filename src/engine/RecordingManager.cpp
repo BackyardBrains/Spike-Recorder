@@ -897,13 +897,17 @@ void RecordingManager::initRecordingDevices() {
         m->markers = _markers;
     }
 
+    
+
 void RecordingManager::applyMetadata(const MetadataChunk &m) {
     //assert(_virtualDevices.size() == m.channels.size());
     for(unsigned int i = 0; i < m.channels.size(); i++) {
         _virtualDevices[i].threshold = m.channels[i].threshold;
         _virtualDevices[i].name = m.channels[i].name;
     }
-
+    
+    deviceTypeUsedDuringRecordingOfCurrentFile = m.deviceType;
+    
     std::vector<int> neuronIds;
     _spikeTrains.clear();
     _markers.clear();
@@ -959,6 +963,12 @@ void RecordingManager::applyMetadata(const MetadataChunk &m) {
     }
 }
 
+    
+int RecordingManager::deviceUsedForRecordingFile()
+{
+    return deviceTypeUsedDuringRecordingOfCurrentFile;
+}
+    
 void RecordingManager::clear() {
 
 
@@ -2651,6 +2661,16 @@ void RecordingManager::initInputConfigPersistance()
     audioInputConfigArray[INPUT_TYPE_STANDARD_AUDIO].gain = 0.5f;
     audioInputConfigArray[INPUT_TYPE_STANDARD_AUDIO].timeScale = 0.1f;
     audioInputConfigArray[INPUT_TYPE_STANDARD_AUDIO].initialized = true;
+    
+    //am modulated audio
+    audioInputConfigArray[INPUT_TYPE_AM_AUDIO].inputType = INPUT_TYPE_AM_AUDIO;
+    audioInputConfigArray[INPUT_TYPE_AM_AUDIO].filter50Hz = false;
+    audioInputConfigArray[INPUT_TYPE_AM_AUDIO].filter60Hz = false;
+    audioInputConfigArray[INPUT_TYPE_AM_AUDIO].filterLowPass = DEFAULT_SAMPLE_RATE/2;
+    audioInputConfigArray[INPUT_TYPE_AM_AUDIO].filterHighPass = 0.0f;
+    audioInputConfigArray[INPUT_TYPE_AM_AUDIO].gain = 0.5f;
+    audioInputConfigArray[INPUT_TYPE_AM_AUDIO].timeScale = 0.1f;
+    audioInputConfigArray[INPUT_TYPE_AM_AUDIO].initialized = true;
 
     //arduino unknown
     audioInputConfigArray[INPUT_TYPE_ARDUINO_UNKOWN].inputType = INPUT_TYPE_ARDUINO_UNKOWN;
@@ -2731,7 +2751,7 @@ void RecordingManager::initInputConfigPersistance()
 //
 AudioInputConfig * RecordingManager::getInputConfigForType(int inputType)
 {
-  if(inputType>=INPUT_TYPE_STANDARD_AUDIO && inputType<=INPUT_TYPE_FILE)
+  if(inputType!=INPUT_TYPE_STANDARD_AUDIO && inputType!=INPUT_TYPE_FILE)
   {
       return &(audioInputConfigArray[inputType]);
   }
@@ -2784,7 +2804,14 @@ int RecordingManager::getCurrentInputType()
     }
     else
     {//normal audio input
-        return INPUT_TYPE_STANDARD_AUDIO;
+        if(weAreReceivingAMSignal)
+        {
+            return INPUT_TYPE_AM_AUDIO;
+        }
+        else
+        {
+            return INPUT_TYPE_STANDARD_AUDIO;
+        }
     }
 }
 

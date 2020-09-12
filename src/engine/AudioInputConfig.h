@@ -18,6 +18,7 @@
 #define INPUT_TYPE_HEARTSS 5
 #define INPUT_TYPE_NEURONSS 6
 #define INPUT_TYPE_ARDUINO_UNKOWN 7
+#define INPUT_TYPE_AM_AUDIO 8
 
 #include <stdio.h>
 #include <string>
