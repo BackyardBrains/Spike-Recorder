@@ -206,12 +206,14 @@ bool RecordingManager::initHIDUSB(HIDBoardType deviceType)
             bindVirtualDevice(0);
            // bindVirtualDevice(1);
         }
-        //for(unsigned int i = 0; i < (unsigned int)_numOfHidChannels;i++)
-        //{
-            //bindVirtualDevice(i);
-        //}
+
     }
 
+    /* for(unsigned int i = 0; i < (unsigned int)_numOfHidChannels;i++)
+     {
+            bindVirtualDevice(i);
+     }
+*/
     //setCalibrationCoeficient(0.005f);
 
     //_player.stop();
@@ -753,7 +755,7 @@ bool RecordingManager::loadFile(const char *filename) {
         BASS_ChannelGetInfo(stream, &info);
         bytespersample = 4; // bass converts everything it doesn't support.
     }
-		
+
 
 	setSampleRate(info.freq);
 	_devices.push_back(Device(0,info.chans,_sampleRate));
@@ -897,7 +899,7 @@ void RecordingManager::initRecordingDevices() {
         m->markers = _markers;
     }
 
-    
+
 
 void RecordingManager::applyMetadata(const MetadataChunk &m) {
     //assert(_virtualDevices.size() == m.channels.size());
@@ -905,9 +907,9 @@ void RecordingManager::applyMetadata(const MetadataChunk &m) {
         _virtualDevices[i].threshold = m.channels[i].threshold;
         _virtualDevices[i].name = m.channels[i].name;
     }
-    
+
     deviceTypeUsedDuringRecordingOfCurrentFile = m.deviceType;
-    
+
     std::vector<int> neuronIds;
     _spikeTrains.clear();
     _markers.clear();
@@ -963,12 +965,12 @@ void RecordingManager::applyMetadata(const MetadataChunk &m) {
     }
 }
 
-    
+
 int RecordingManager::deviceUsedForRecordingFile()
 {
     return deviceTypeUsedDuringRecordingOfCurrentFile;
 }
-    
+
 void RecordingManager::clear() {
 
 
@@ -1283,7 +1285,7 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 		const int bytespersample = _devices[idx].bytespersample;
 		std::vector<std::vector<int16_t> > channels;
 
-        
+
         //-------- Read data ------------
 		bool rc = ReadWAVFile(channels, channum*bufsize*bytespersample, _devices[idx].handle,
 				channum, bytespersample);
@@ -1691,7 +1693,7 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 	    for (int i = 0; i < samplesRead; i++) {
 	        for(int chan = 0; chan < channum; chan++) {
 	            channels[chan][i] = buffer[i*channum + chan];//sort data to channels
-                
+
 	        }
 	    }
 
@@ -2661,7 +2663,7 @@ void RecordingManager::initInputConfigPersistance()
     audioInputConfigArray[INPUT_TYPE_STANDARD_AUDIO].gain = 0.5f;
     audioInputConfigArray[INPUT_TYPE_STANDARD_AUDIO].timeScale = 0.1f;
     audioInputConfigArray[INPUT_TYPE_STANDARD_AUDIO].initialized = true;
-    
+
     //am modulated audio
     audioInputConfigArray[INPUT_TYPE_AM_AUDIO].inputType = INPUT_TYPE_AM_AUDIO;
     audioInputConfigArray[INPUT_TYPE_AM_AUDIO].filter50Hz = false;
