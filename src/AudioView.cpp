@@ -295,7 +295,7 @@ void AudioView::setRelOffset(int reloffset) {
         //std::cout<<f*count<<" ";
 		_manager.setPos(f*count);
 	}
-
+    _manager.clearTriggers();
 }
 
 void AudioView::navigateCurrentRecordingPosition(bool navigateForward)
@@ -381,7 +381,7 @@ void AudioView::drawData(std::vector<std::pair<int16_t, int16_t> > &data, int ch
 		dist = 1.f; // we don’t want round off artifacts
 
 	float scale = height()*ampScale;
-	glLineWidth(4.0f);
+	glLineWidth(1.0f);
 	glBegin(GL_LINE_STRIP);
 
     //std::cout<<"Wave gain: "<<_channels[channel].gain<<" scale:"<<scale<<"\n";
