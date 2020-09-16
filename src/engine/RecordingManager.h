@@ -117,6 +117,7 @@ public:
 	int selectedVDevice() const {return _selectedVDevice;}
     int getThresholdSource();
     void setThresholdSource(int newThresholdSource);
+    void clearTriggers();
     int getLastEventThresholded(void){return _lastThresholdedEvent;}
     void clearLastEventThresholded(void){_lastThresholdedEvent = -1;}
 

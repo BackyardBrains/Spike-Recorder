@@ -1094,6 +1094,12 @@ int RecordingManager::getThresholdSource()
     return _thresholdSource;
 }
 
+void RecordingManager::clearTriggers()
+{
+    _triggers.clear();
+    _lastThresholdedEvent = -1;
+}
+    
 void RecordingManager::setThresholdSource(int newThresholdSource)
 {
     _thresholdSource = newThresholdSource;
@@ -1319,7 +1325,7 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 	if(!_paused) {
 		if(_threshMode) {
 
-            if(_thresholdSource==0)
+            if(_thresholdSource==0)//we are triggering on signal
             {
                 bool triggerd = false;
                 SampleBuffer &s = *sampleBuffer(_selectedVDevice);

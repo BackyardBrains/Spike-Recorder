@@ -295,7 +295,7 @@ void AudioView::setRelOffset(int reloffset) {
         //std::cout<<f*count<<" ";
 		_manager.setPos(f*count);
 	}
-
+    _manager.clearTriggers();
 }
 
 void AudioView::navigateCurrentRecordingPosition(bool navigateForward)
