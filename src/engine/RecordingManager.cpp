@@ -1099,7 +1099,7 @@ void RecordingManager::clearTriggers()
     _triggers.clear();
     _lastThresholdedEvent = -1;
 }
-    
+
 void RecordingManager::setThresholdSource(int newThresholdSource)
 {
     _thresholdSource = newThresholdSource;
@@ -2705,7 +2705,7 @@ void RecordingManager::initInputConfigPersistance()
     //arduino EMG
     audioInputConfigArray[INPUT_TYPE_MUSCLESS].inputType = INPUT_TYPE_MUSCLESS;
     audioInputConfigArray[INPUT_TYPE_MUSCLESS].filter50Hz = false;
-    audioInputConfigArray[INPUT_TYPE_MUSCLESS].filter60Hz = false;
+    audioInputConfigArray[INPUT_TYPE_MUSCLESS].filter60Hz = true;
     audioInputConfigArray[INPUT_TYPE_MUSCLESS].filterLowPass = 2500.0f;
     audioInputConfigArray[INPUT_TYPE_MUSCLESS].filterHighPass = 70.0f;
     audioInputConfigArray[INPUT_TYPE_MUSCLESS].gain = 0.5f;
@@ -2799,6 +2799,9 @@ int RecordingManager::getCurrentInputType()
                 return INPUT_TYPE_HEARTSS;
                 break;
             case ArduinoSerial::muscle:
+                return INPUT_TYPE_MUSCLESS;
+                break;
+            case ArduinoSerial::muscleusb:
                 return INPUT_TYPE_MUSCLESS;
                 break;
             default:
@@ -2908,6 +2911,9 @@ void RecordingManager::makeNewSerialAudioConfig(std::string nameOfThePort)
                 audioInputType = INPUT_TYPE_NEURONSS;
                 break;
             case ArduinoSerial::muscle:
+                audioInputType =  INPUT_TYPE_MUSCLESS;
+                break;
+            case ArduinoSerial::muscleusb:
                 audioInputType =  INPUT_TYPE_MUSCLESS;
                 break;
             default:

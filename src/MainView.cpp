@@ -1046,7 +1046,7 @@ void MainView::paintEvent()
             thereWasChange = true;
         }
     }
-
+    //TODO: if adding device add new type to this places:
     //------------------- prepare to update serial buttons -----------------------------------
     int numberOfMuscle = 0;
     int numberOfHeart = 0;
@@ -1064,7 +1064,7 @@ void MainView::paintEvent()
         {
             numberOfNeuron++;
         }
-        else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::muscle)
+        else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::muscle || buttonsIterator->serialPort.deviceType == ArduinoSerial::muscleusb )
         {
             numberOfMuscle++;
         }
@@ -1113,7 +1113,7 @@ void MainView::paintEvent()
             newButton->setRightPadding(5);
             newButton->setSizeHint(Widgets::Size(53,48));
             newButton->setVisible(true);
-
+//TODO: if adding device add new type to this places:
             if(buttonsIterator->serialPort.deviceType == ArduinoSerial::plant)
             {
                 currentPlant++;
@@ -1200,7 +1200,7 @@ void MainView::paintEvent()
                 newButton->clickedWithRef.connect(this, &MainView::neuronPressed);
 
             }
-            else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::muscle)
+            else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::muscle || buttonsIterator->serialPort.deviceType == ArduinoSerial::muscleusb)
             {
                 currentMuscle++;
 
@@ -1301,12 +1301,12 @@ void MainView::paintEvent()
             foundTemp  = lastNewButton.serialPort.portName.find(buttonsIterator->serialPort.portName);
             if (foundTemp!=std::string::npos)
             {
-               //it is the same
+//TODO: if adding device add new type to this places:
                 if(buttonsIterator->serialPort.deviceType == ArduinoSerial::plant)
                 {
                     plantPressed(NULL, buttonsIterator->button);
                 }
-                else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::muscle)
+                else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::muscle || buttonsIterator->serialPort.deviceType == ArduinoSerial::muscleusb)
                 {
                     musclePressed(NULL,buttonsIterator->button );
                 }
@@ -1326,7 +1326,7 @@ void MainView::paintEvent()
     }
     else//if there was no change just update icons on button
     {
-
+//TODO: if adding device add new type to this places:
         //refresh icons
         for(buttonsIterator = shieldButtons.begin();buttonsIterator!=shieldButtons.end();buttonsIterator++)
         {
@@ -1454,7 +1454,7 @@ void MainView::paintEvent()
 
 
             }
-            else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::muscle)
+            else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::muscle || buttonsIterator->serialPort.deviceType == ArduinoSerial::muscleusb)
             {
                 currentMuscle++;
 

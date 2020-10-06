@@ -2158,6 +2158,14 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                 {
                                     setDeviceTypeToCurrentPort(ArduinoSerial::neuronOneChannel);
                                 }
+                                else
+                                {
+                                    std::size_t found=hardwareType.find("MUSCUSB1");
+                                    if (found!=std::string::npos)
+                                    {
+                                        setDeviceTypeToCurrentPort(ArduinoSerial::muscleusb);
+                                    }
+                                }
                             }
                         }
                     }
