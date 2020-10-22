@@ -22,7 +22,7 @@ namespace Widgets {
 class MainView : public Widgets::Widget {
 public:
 	MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder &fileRec, Widget *parent = NULL);
-    
+
     struct SerialPortIndicator
     {
         ArduinoSerial::SerialPort serialPort;
@@ -34,16 +34,16 @@ public:
             connected = false;
         }
     };
-    
+
 	~MainView();
 private:
 	RecordingManager &_manager;
 	AnalysisManager &_anaman;
 	FileRecorder &_fileRec;
-    
+
     std::list<SerialPortIndicator> shieldButtons;
-    
-    
+
+
 	Widgets::PushButton *_pauseButton;
 	Widgets::PushButton *_ekgButton;
 	Widgets::PushButton *_configButton;
@@ -55,7 +55,7 @@ private:
 	Widgets::PushButton *_muscleHIDButton;
     Widgets::PushButton *_neuronHIDButton;
 	Widgets::PushButton *threshButton;
-    
+
     Widgets::BoxLayout * shieldsButtonBoxLayout;
    // Widgets::PushButton *_plantSSButton;
    // Widgets::PushButton *_muscleSSButton;
@@ -66,6 +66,7 @@ private:
     void heartPressed(Widgets::MouseEvent *mouseEv, Widgets::PushButton* buttonInst);
     void neuronPressed(Widgets::MouseEvent *mouseEv, Widgets::PushButton* buttonInst);
     Widgets::PushButton *_alphaFeedbackButton;
+    Widgets::PushButton * _backwardButton;
     void alphaFeedbackPressed();
     bool alphaFeedbackAcive;
 
