@@ -122,11 +122,11 @@ MainView::MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder
 
 
 
-	Widgets::PushButton * const backwardButton = new Widgets::PushButton(this);
-	backwardButton->setNormalTex(Widgets::TextureGL::get("data/backward.bmp"));
-	backwardButton->setHoverTex(Widgets::TextureGL::get("data/backwardhigh.bmp"));
-	backwardButton->setSizeHint(Widgets::Size(32,32));
-	backwardButton->clicked.connect(this, &MainView::backwardPressed);
+	_backwardButton = new Widgets::PushButton(this);
+	_backwardButton->setNormalTex(Widgets::TextureGL::get("data/backward.bmp"));
+	_backwardButton->setHoverTex(Widgets::TextureGL::get("data/backwardhigh.bmp"));
+	_backwardButton->setSizeHint(Widgets::Size(32,32));
+	_backwardButton->clicked.connect(this, &MainView::backwardPressed);
 
 	_forwardButton = new Widgets::PushButton(this);
 	_forwardButton->setNormalTex(Widgets::TextureGL::get("data/forward.bmp"));
@@ -183,7 +183,7 @@ MainView::MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder
 	Widgets::BoxLayout * const seekBarBox = new Widgets::BoxLayout(Widgets::Horizontal);
 	seekBarBox->setAlignment(Widgets::AlignHCenter);
 
-	seekBarBox->addWidget(backwardButton,Widgets::AlignVCenter);
+	seekBarBox->addWidget(_backwardButton,Widgets::AlignVCenter);
 	seekBarBox->addSpacing(10);
 	seekBarBox->addWidget(_pauseButton);
 	seekBarBox->addSpacing(10);
@@ -314,6 +314,9 @@ void MainView::recordPressed() {
 			return;
 		}
 
+        //in case we are looking at some point in past we want to go to present signal and start recording
+        forwardPressed();
+
 		char buf[64];
 		time_t t = time(NULL);
 		strftime(buf, sizeof(buf), "%Y-%m-%d_%H.%M.%S.wav", localtime(&t));
@@ -330,10 +333,15 @@ void MainView::recordPressed() {
 			Log::msg("\n\n%s\n\n",s.str().c_str());
 			return;
 		}
+		//disable buttons during recording
 		_configButton->setSizeHint(Widgets::Size(0, 48));
 		_configButton->setVisible(false);
 		_fileButton->setSizeHint(Widgets::Size(0, 48));
 		_fileButton->setVisible(false);
+		_pauseButton->setVisible(false);
+		_forwardButton->setVisible(false);
+		_backwardButton->setVisible(false);
+
 		_recBar->setActive(true);
 	} else {
 		MetadataChunk m;
@@ -341,10 +349,16 @@ void MainView::recordPressed() {
 		_manager.constructMetadata(&m);
 
 		_fileRec.stop(&m);
+
+		//enable buttons when we stopped recording
 		_configButton->setVisible(true);
 		_configButton->setSizeHint(Widgets::Size(48, 48));
 		_fileButton->setVisible(true);
 		_fileButton->setSizeHint(Widgets::Size(48, 48));
+		_pauseButton->setVisible(true);
+		_forwardButton->setVisible(true);
+		_backwardButton->setVisible(true);
+
 		_recBar->setActive(false);
 
 		std::stringstream s;
