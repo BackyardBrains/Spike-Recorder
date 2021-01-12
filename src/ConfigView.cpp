@@ -498,7 +498,7 @@ void ConfigView::SetupScreen()
                                         {
                                             if(it->deviceType == ArduinoSerial::muscleusb)
                                             {
-                                                serialPortWidget->addItem("Muscle SpikerBox");
+                                                touchSerialPortWidget->addItem("Muscle SpikerBox");
                                                 Log::msg("Serial dropdown item: Muscle SpikerBox");
                                             }
                                         }
