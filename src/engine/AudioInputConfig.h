@@ -19,6 +19,7 @@
 #define INPUT_TYPE_NEURONSS 6
 #define INPUT_TYPE_ARDUINO_UNKOWN 7
 #define INPUT_TYPE_AM_AUDIO 8
+#define INPUT_TYPE_HUMANSB 9
 
 #include <stdio.h>
 #include <string>
@@ -37,7 +38,7 @@ namespace BackyardBrains {
         AudioInputConfig();
         ~AudioInputConfig();
     private:
-       
+
     };
 
 }

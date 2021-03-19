@@ -1661,7 +1661,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                             break;//continue as if we have new frame
                         }
 
-                        obuffer[obufferIndex++] = (writeInteger-512)*30;
+                        obuffer[obufferIndex++] =  (writeInteger-512)*30;//(writeInteger-8192);
 
 
                         if(areWeAtTheEndOfFrame())
@@ -2164,6 +2164,15 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                     if (found!=std::string::npos)
                                     {
                                         setDeviceTypeToCurrentPort(ArduinoSerial::muscleusb);
+                                    }
+                                    else
+                                    {
+                                        std::size_t found=hardwareType.find("HUMANSB");
+                                        if (found!=std::string::npos)
+                                        {
+                                            setDeviceTypeToCurrentPort(ArduinoSerial::humansb);
+                                        }
+
                                     }
                                 }
                             }
