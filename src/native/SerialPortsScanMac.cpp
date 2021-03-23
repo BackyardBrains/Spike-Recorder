@@ -33,7 +33,7 @@
 #include <IOKit/IOBSD.h>
 
 
-//#define LOG_USB 1
+#define LOG_USB 1
 
 // Arduino VIDs:
 //0x2341 - Arduino
@@ -52,8 +52,8 @@
 //M0 pro  VID: 0x03eb - Atmel corp VID actualy (pid 2111 = Xplained Pro board debugger and programmer)
 
 //0x2E73 - BYB VID
-#define NUMBER_OF_VIDS 6
-UInt16 enabledVIDs[NUMBER_OF_VIDS] = {0x2341, 0x2A03, 0x0403, 0x1A86, 0x2E73, 0x10C4};//conservative list: Arduino, FTDI, China and BYB
+#define NUMBER_OF_VIDS 7
+UInt16 enabledVIDs[NUMBER_OF_VIDS] = {0x2341, 0x2A03, 0x0403, 0x1A86, 0x2E73, 0x10C4, 1155};//conservative list: Arduino, FTDI, China and BYB
 //int enabledVIDs[] = {0x2341, 0x2A03, 0x1B4F, 0x239A, 0x0403, 0x1A86, 0x4348, 0x10C4, 0x067B, 0x04D8, 0x04B4};//All VIDs
 
 
@@ -159,6 +159,18 @@ namespace BackyardBrains {
             {
                  #ifdef LOG_USB
                 Log::msg("Interesting board Arduino Due");
+                #endif
+            }
+            else if(strcmp(deviceName,"H&B SpikerBox Pro")==0)
+            {
+                #ifdef LOG_USB
+                Log::msg("Interesting board H&B SpikerBox Pro");
+                #endif
+            }
+            else if(strcmp(deviceName,"STM32 Virtual ComPort")==0)
+            {
+                #ifdef LOG_USB
+                Log::msg("Interesting board STM32 Virtual ComPort");
                 #endif
             }
             else
