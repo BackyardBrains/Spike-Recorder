@@ -2804,6 +2804,9 @@ int RecordingManager::getCurrentInputType()
             case ArduinoSerial::muscleusb:
                 return INPUT_TYPE_MUSCLESS;
                 break;
+            case ArduinoSerial::humansb:
+                return INPUT_TYPE_HUMANSB;
+                break;
             default:
                 return INPUT_TYPE_ARDUINO_UNKOWN;
                 break;
@@ -2915,6 +2918,9 @@ void RecordingManager::makeNewSerialAudioConfig(std::string nameOfThePort)
                 break;
             case ArduinoSerial::muscleusb:
                 audioInputType =  INPUT_TYPE_MUSCLESS;
+                break;
+            case ArduinoSerial::humansb:
+                audioInputType =  INPUT_TYPE_HUMANSB;
                 break;
             default:
                 audioInputType = INPUT_TYPE_ARDUINO_UNKOWN;

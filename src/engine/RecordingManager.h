@@ -320,12 +320,12 @@ private:
     int debugNumberOfSamplesThatWeGet;
 
     //it keeps last zoom, gain and filter configs for each type of inputs
-    AudioInputConfig audioInputConfigArray[9];//standard audio, file, HID, 3  shields, and unknown shield
+    AudioInputConfig audioInputConfigArray[10];//standard audio, file, HID, 3  shields, and unknown shield
     std::list<AudioInputConfig> arduinoShieldsConfigs;
     void initInputConfigPersistance();
     void saveInputConfigSettings();
     AudioInputConfig * getInputConfigForType(int inputType);
-    
+
     void loadFilterSettings();
     void makeNewSerialAudioConfig(std::string nameOfThePort);
     std::list<AudioInputConfig>::iterator iteratorPointerToCurrentSerialAudioConfig;
@@ -386,8 +386,8 @@ private:
     float rmsOfOriginalSignal = 0;
     float rmsOfNotchedAMSignal = 0;
     bool weAreReceivingAMSignal = false;
-    
-    
+
+
     int deviceTypeUsedDuringRecordingOfCurrentFile = 0;
 
 };
