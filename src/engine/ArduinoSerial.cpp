@@ -1360,6 +1360,32 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             }
 
         }
+        else if(currentPort.deviceType == SerialDevice::humansb)
+        {
+            _samplingRate = 5000;
+            _numberOfChannels = 2;
+
+            if(currentAddOnBoard == BOARD_WITH_ADDITIONAL_INPUTS)
+            {
+                    _numberOfChannels  =4;
+            }
+            else if(currentAddOnBoard == BOARD_WITH_HAMMER)
+            {
+                    _numberOfChannels  =3;
+            }
+            else if(currentAddOnBoard == BOARD_WITH_JOYSTICK)
+            {
+                    _numberOfChannels  =3;
+            }
+            else if(currentAddOnBoard == BOARD_WITH_EVENT_INPUTS)
+            {
+                    _numberOfChannels  =2;
+            }
+            else if(currentAddOnBoard == BOARD_ERG)
+            {
+                _numberOfChannels  =3;
+            }
+        }
         else
         {
             _numberOfChannels = numberOfChannels();
@@ -1661,7 +1687,14 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                             break;//continue as if we have new frame
                         }
 
-                        obuffer[obufferIndex++] =  (writeInteger-512)*30;//(writeInteger-8192);
+                        if(currentPort.deviceType == ArduinoSerial::humansb)
+                        {
+                            obuffer[obufferIndex++] =  (writeInteger-8192);
+                        }
+                        else
+                        {
+                            obuffer[obufferIndex++] =  (writeInteger-512)*30;//(writeInteger-8192);
+                        }
 
 
                         if(areWeAtTheEndOfFrame())
