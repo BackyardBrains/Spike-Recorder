@@ -38,6 +38,7 @@ void Log::init() {
 
 void Log::msg(const char *fmt, ...) {
 	init();
+
 struct timeval tp;
 gettimeofday(&tp, NULL);
 long ms = tp.tv_sec * 1000 + tp.tv_usec / 1000;
