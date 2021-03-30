@@ -173,6 +173,12 @@ namespace BackyardBrains {
                 Log::msg("Interesting board STM32 Virtual ComPort");
                 #endif
             }
+            else if(strcmp(deviceName,"SpikerBox")==0)
+            {
+                #ifdef LOG_USB
+                Log::msg("Interesting board MFi board SpikerBox");
+                #endif
+            }
             else
             {
                 #ifdef LOG_USB

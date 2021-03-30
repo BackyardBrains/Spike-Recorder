@@ -843,7 +843,7 @@ namespace BackyardBrains {
             }
 
             size = hid_read_timeout(handle, buffer, sizeof(buffer), 100);
-            Log::msg("%d\n", size);
+            //Log::msg("%d\n", size);
         }
         catch(std::exception &e)
         {
