@@ -544,7 +544,7 @@ bool RecordingManager::weShouldDisplayWaveform()
 }
 
 
-bool RecordingManager::initSerial(const char *portName)
+bool RecordingManager::initSerial(const char *portName, int baudRate)
 {
 
     resetCalibrationCoeficient();
@@ -552,6 +552,7 @@ bool RecordingManager::initSerial(const char *portName)
 
     if(!_arduinoSerial.portOpened())
     {
+        _arduinoSerial.setBaudRate(baudRate);
         Log::msg("initSerial - Open serial device %s |||||||||||||||||||||||||||||||||||||||||", portName);
         if(_arduinoSerial.openSerialDevice(portName) == -1)
         {
@@ -661,7 +662,7 @@ void RecordingManager::setSerialNumberOfChannels(int numberOfChannels)
 	std::cout<<"Number of channels on serial: "<<numberOfChannels<<"\n";
 	_numOfSerialChannels = numberOfChannels;
 	_arduinoSerial.setNumberOfChannelsAndSamplingRate(numberOfChannels, _arduinoSerial.maxSamplingRate()/numberOfChannels);
-	initSerial(_arduinoSerial.currentPortName());
+	initSerial(_arduinoSerial.currentPortName(), _arduinoSerial.getBaudRate());
 }
 
 int RecordingManager::numberOfSerialChannels()
@@ -2752,6 +2753,24 @@ void RecordingManager::initInputConfigPersistance()
     audioInputConfigArray[INPUT_TYPE_FILE].gain = 0.5f;
     audioInputConfigArray[INPUT_TYPE_FILE].timeScale = 0.1f;
     audioInputConfigArray[INPUT_TYPE_FILE].initialized = true;
+
+    audioInputConfigArray[INPUT_TYPE_HHIBOX].inputType = INPUT_TYPE_HHIBOX;
+    audioInputConfigArray[INPUT_TYPE_HHIBOX].filter50Hz = false;
+    audioInputConfigArray[INPUT_TYPE_HHIBOX].filter60Hz = true;
+    audioInputConfigArray[INPUT_TYPE_HHIBOX].filterLowPass = 2500;
+    audioInputConfigArray[INPUT_TYPE_HHIBOX].filterHighPass = 70.0f;
+    audioInputConfigArray[INPUT_TYPE_HHIBOX].gain = 0.5f;
+    audioInputConfigArray[INPUT_TYPE_HHIBOX].timeScale = 0.1f;
+    audioInputConfigArray[INPUT_TYPE_HHIBOX].initialized = true;
+
+    audioInputConfigArray[INPUT_TYPE_HHIBOX].inputType = INPUT_TYPE_HUMANSB;
+    audioInputConfigArray[INPUT_TYPE_HHIBOX].filter50Hz = false;
+    audioInputConfigArray[INPUT_TYPE_HHIBOX].filter60Hz = true;
+    audioInputConfigArray[INPUT_TYPE_HHIBOX].filterLowPass = 2500;
+    audioInputConfigArray[INPUT_TYPE_HHIBOX].filterHighPass = 1.0f;
+    audioInputConfigArray[INPUT_TYPE_HHIBOX].gain = 0.5f;
+    audioInputConfigArray[INPUT_TYPE_HHIBOX].timeScale = 0.1f;
+    audioInputConfigArray[INPUT_TYPE_HHIBOX].initialized = true;
 }
 
 //
@@ -2806,6 +2825,9 @@ int RecordingManager::getCurrentInputType()
                 break;
             case ArduinoSerial::humansb:
                 return INPUT_TYPE_HUMANSB;
+                break;
+            case ArduinoSerial::hhibox:
+                return INPUT_TYPE_HHIBOX;
                 break;
             default:
                 return INPUT_TYPE_ARDUINO_UNKOWN;
@@ -2921,6 +2943,9 @@ void RecordingManager::makeNewSerialAudioConfig(std::string nameOfThePort)
                 break;
             case ArduinoSerial::humansb:
                 audioInputType =  INPUT_TYPE_HUMANSB;
+                break;
+            case ArduinoSerial::hhibox:
+                audioInputType =  INPUT_TYPE_HHIBOX;
                 break;
             default:
                 audioInputType = INPUT_TYPE_ARDUINO_UNKOWN;

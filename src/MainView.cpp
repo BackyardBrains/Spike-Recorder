@@ -576,7 +576,7 @@ void MainView::analysisPressed() {
 
         }
 
-        bool connected = _manager.initSerial(selectedPort.portName.c_str());
+        bool connected = _manager.initSerial(selectedPort.portName.c_str(), selectedPort.baudRate);
         //Used so that config knows which one is selected in dropdown
         _manager.changeSerialPort(portIndex);
 
@@ -672,7 +672,7 @@ void MainView::analysisPressed() {
                     _manager.disconnectFromSerial();
                 }
 
-                bool connected = _manager.initSerial(it->portName.c_str());
+                bool connected = _manager.initSerial(it->portName.c_str(),it->baudRate);
                 _manager.changeSerialPort(portIndex);
                 if(!connected)
                 {
@@ -1078,7 +1078,7 @@ void MainView::paintEvent()
         {
             numberOfNeuron++;
         }
-        else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::muscle || buttonsIterator->serialPort.deviceType == ArduinoSerial::muscleusb )
+        else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::muscle || buttonsIterator->serialPort.deviceType == ArduinoSerial::muscleusb || buttonsIterator->serialPort.deviceType == ArduinoSerial::hhibox)
         {
             numberOfMuscle++;
         }
@@ -1214,7 +1214,7 @@ void MainView::paintEvent()
                 newButton->clickedWithRef.connect(this, &MainView::neuronPressed);
 
             }
-            else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::muscle || buttonsIterator->serialPort.deviceType == ArduinoSerial::muscleusb)
+            else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::muscle || buttonsIterator->serialPort.deviceType == ArduinoSerial::muscleusb || buttonsIterator->serialPort.deviceType == ArduinoSerial::hhibox)
             {
                 currentMuscle++;
 
@@ -1320,7 +1320,7 @@ void MainView::paintEvent()
                 {
                     plantPressed(NULL, buttonsIterator->button);
                 }
-                else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::muscle || buttonsIterator->serialPort.deviceType == ArduinoSerial::muscleusb)
+                else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::muscle || buttonsIterator->serialPort.deviceType == ArduinoSerial::muscleusb || buttonsIterator->serialPort.deviceType == ArduinoSerial::hhibox)
                 {
                     musclePressed(NULL,buttonsIterator->button );
                 }
@@ -1468,7 +1468,7 @@ void MainView::paintEvent()
 
 
             }
-            else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::muscle || buttonsIterator->serialPort.deviceType == ArduinoSerial::muscleusb)
+            else if(buttonsIterator->serialPort.deviceType == ArduinoSerial::muscle || buttonsIterator->serialPort.deviceType == ArduinoSerial::muscleusb || buttonsIterator->serialPort.deviceType == ArduinoSerial::hhibox)
             {
                 currentMuscle++;
 

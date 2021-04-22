@@ -144,7 +144,7 @@ public:
     //Serial port functions
     bool serialMode() const {return _serialMode;}
     void changeSerialPort(int portIndex);
-    bool initSerial(const char *portName);
+    bool initSerial(const char *portNamem, int baudRate);
     void disconnectFromSerial();
     int serialPortIndex();
     void setSerialNumberOfChannels(int numberOfChannels);
@@ -320,7 +320,7 @@ private:
     int debugNumberOfSamplesThatWeGet;
 
     //it keeps last zoom, gain and filter configs for each type of inputs
-    AudioInputConfig audioInputConfigArray[10];//standard audio, file, HID, 3  shields, and unknown shield
+    AudioInputConfig audioInputConfigArray[11];//standard audio, file, HID, 3  shields, and unknown shield
     std::list<AudioInputConfig> arduinoShieldsConfigs;
     void initInputConfigPersistance();
     void saveInputConfigSettings();
