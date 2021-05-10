@@ -179,6 +179,12 @@ namespace BackyardBrains {
                 Log::msg("Interesting board MFi board SpikerBox");
                 #endif
             }
+            else if(strcmp(deviceName,"HHI 1v0")==0)
+            {
+                #ifdef LOG_USB
+                Log::msg("Interesting board HHI 1v0");
+                #endif
+            }
             else
             {
                 #ifdef LOG_USB

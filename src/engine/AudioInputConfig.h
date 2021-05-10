@@ -20,6 +20,7 @@
 #define INPUT_TYPE_ARDUINO_UNKOWN 7
 #define INPUT_TYPE_AM_AUDIO 8
 #define INPUT_TYPE_HUMANSB 9
+#define INPUT_TYPE_HHIBOX 10
 
 #include <stdio.h>
 #include <string>

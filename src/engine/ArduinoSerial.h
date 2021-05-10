@@ -70,7 +70,8 @@ namespace BackyardBrains {
             neuronOneChannel = 6,
             erg=7,
             muscleusb=8,
-            humansb=9
+            humansb=9,
+            hhibox=10
         };
         struct SerialPort
         {
@@ -78,9 +79,11 @@ namespace BackyardBrains {
             {
                 deviceType = ArduinoSerial::SerialDevice::unknown;
                 numOfTrials = 0;
+                baudRate = 222222;
             }
             std::string portName;
             SerialDevice deviceType;
+            int baudRate;
             int numOfTrials;
         };
 
@@ -108,6 +111,9 @@ namespace BackyardBrains {
         void checkAllPortsForArduino(ArduinoSerial * workingArduinoRef);
         void askForBoardType();
         void askForExpansionBoardType();
+        void setBaudRate(int baudRate);
+        int getBaudRate(){return currentTestingBaudRate;}
+
         //std::string firmwareVersion;
         //std::string hardwareVersion;
         std::string hardwareType;
@@ -150,6 +156,8 @@ namespace BackyardBrains {
         bool checkIfNextByteExist();
         bool areWeAtTheEndOfFrame();
         bool checkIfHaveWholeFrame();
+        int currentTestingBaudRate;
+        bool testingHighBaudRate;
 
         void testEscapeSequence(unsigned int newByte, int offset);
         void executeContentOfMessageBuffer(int offset);

@@ -77,6 +77,8 @@
 #define BOARD_WITH_JOYSTICK 5
 #define BOARD_ERG 9
 
+#define LOW_BAUD_RATE 222222
+#define HIGH_BAUD_RATE 500000
 
 namespace BackyardBrains {
 
@@ -100,7 +102,8 @@ namespace BackyardBrains {
         //start thread that will periodicaly read HID
         batchSizeForSerial = 600;
         _justScanning = false;
-
+        currentTestingBaudRate = LOW_BAUD_RATE;
+        testingHighBaudRate = false;
 
         #if defined(_WIN32)
 
@@ -148,6 +151,10 @@ void ArduinoSerial::setRecordingManager(RecordingManager *rm)
     _manager = rm;
 }
 
+void  ArduinoSerial::setBaudRate(int baudRate)
+{
+    currentTestingBaudRate = baudRate;
+}
 
 //---------------------------------- Port scanning and opening ------------------------------
 #pragma mark - Port scanning and opening
@@ -180,7 +187,19 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         Log::msg("\nNew cycle in serial scanning thread ---------------------------------");
         #endif
         selfRef->_justScanning = true;
+
         selfRef->checkAllPortsForArduino(workingArduinoRef);
+        if(testingHighBaudRate)
+        {
+            selfRef->currentTestingBaudRate = LOW_BAUD_RATE;
+            selfRef->testingHighBaudRate = false;
+        }
+        else
+        {
+             selfRef->currentTestingBaudRate = HIGH_BAUD_RATE;
+            selfRef->testingHighBaudRate = true;
+        }
+
 
     }
 }
@@ -620,6 +639,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             {
                 portsIterator->deviceType = deviceType;
                 currentPort.portName = portsIterator->portName;
+
                 if(!_justScanning)
                 {
                     if(currentPort.deviceType == SerialDevice::unknown)
@@ -631,6 +651,8 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                         }
                     }
                 }
+                currentPort.baudRate = currentTestingBaudRate;
+                portsIterator->baudRate = currentTestingBaudRate;
                 currentPort.deviceType = deviceType;
                 break;
             }
@@ -801,7 +823,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         //------------------------ traditional setup of baud rates for Mac and Linux --------------
 
         //--------------------------- Patch for Mac for nonstandard bauds --------------------------
-        speed_t speed = 222222;//2000000; // Set 2Mbaud
+        speed_t speed = currentTestingBaudRate;//2000000; // Set 2Mbaud
          if (ioctl(portDescriptor, IOSSIOSPEED, &speed) == -1) {
          std::cout<<"Error setting speed";
          }
@@ -895,7 +917,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         }
 
         // http://msdn2.microsoft.com/en-us/library/aa363188(VS.85).aspx
-        port_cfg.dcb.BaudRate = 222222;//230400; //for high speed 2Mbit/s communication just change this number to 2000000
+        port_cfg.dcb.BaudRate = currentTestingBaudRate;//230400; //for high speed 2Mbit/s communication just change this number to 2000000
 
         port_cfg.dcb.fBinary = TRUE;
         port_cfg.dcb.fParity = FALSE;
@@ -1238,25 +1260,40 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                             Log::msg("checkAllPortsForArduino - Read board type response.");
                             std::cout<<"checkAllPortsForArduino - Read board type response.\n";
                         #endif
-                        int bytesRead = readPort(buffer);
-                        #ifdef LOG_SCANNING_OF_ARDUINO
-                            Log::msg("checkAllPortsForArduino - After reaading board type response. # of Bytes: %d", bytesRead);
-                            std::cout<<"checkAllPortsForArduino - After reaading board type response. # of Bytes: "<< bytesRead<<"\n";
-                        #endif
-
-                        for(int i=0;i<bytesRead;i++)
+                        std::cout<<"Baud rate: "<<currentTestingBaudRate<<"\n";
+                        for(int r=0;r<10;r++)
                         {
-                            if(weAreInsideEscapeSequence)
-                            {
-                                messagesBuffer[messageBufferIndex] = buffer[i];
-                                messageBufferIndex++;
-                            }
-                            testEscapeSequence(((unsigned int) buffer[i]) & 0xFF,  (i/2)/_numberOfChannels);
-                        }
+                                int bytesRead = readPort(buffer);
+                                #ifdef LOG_SCANNING_OF_ARDUINO
+                                    Log::msg("checkAllPortsForArduino - After reaading board type response. # of Bytes: %d", bytesRead);
+                                    std::cout<<"checkAllPortsForArduino - After reaading board type response. # of Bytes: "<< bytesRead<<"\n";
+                                #endif
 
+                                for(int i=0;i<bytesRead;i++)
+                                {
+                                    if(weAreInsideEscapeSequence)
+                                    {
+                                        messagesBuffer[messageBufferIndex] = buffer[i];
+                                        messageBufferIndex++;
+                                    }
+                                    /*if(buffer[i]<125 && buffer[i]>32)
+                                    {
+
+
+                                        std::cout<<(((char) buffer[i]));
+                                    }
+                                    else
+                                    {
+                                        std::cout<<" "<<(((unsigned int) buffer[i]) & 0xFF)<<" ";
+                                    }*/
+                                    testEscapeSequence(((unsigned int) buffer[i]) & 0xFF,  (i/2)/_numberOfChannels);
+                                }
+                        }
+                        std::cout<<"\n";
                         if(hardwareType.length()>0)
                         {
                             //found Arduino board that responded
+                            list_it->baudRate = currentTestingBaudRate;
                             #ifdef LOG_SCANNING_OF_ARDUINO
                             Log::msg("checkAllPortsForArduino - Board responded! (with hardware type)");
                             std::cout<<"checkAllPortsForArduino - Board responded! (with hardware type) \n";
@@ -1321,6 +1358,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                 SerialPort newPort;
                 newPort.portName = portsIterator->portName;
                 newPort.deviceType = portsIterator->deviceType;
+                newPort.baudRate = portsIterator->baudRate;
                 ports.push_back(newPort);
         }
     }
@@ -1385,6 +1423,11 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             {
                 _numberOfChannels  =3;
             }
+        }
+        else if(currentPort.deviceType == SerialDevice::hhibox)
+        {
+            _samplingRate = 10000;
+            _numberOfChannels = 1;
         }
         else
         {
@@ -1501,7 +1544,10 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         //num_request =  ((DWORD)count < st.cbInQue) ? (DWORD)count : st.cbInQue;
 
         unsigned long numInCueue = st.cbInQue;
-
+        if(_justScanning)
+        {
+            num_request = 10000;
+        }
 
 
         ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -2204,6 +2250,15 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                         if (found!=std::string::npos)
                                         {
                                             setDeviceTypeToCurrentPort(ArduinoSerial::humansb);
+                                        }
+                                        else
+                                        {
+                                            std::size_t found=hardwareType.find("HHIBOX");
+                                            if (found!=std::string::npos)
+                                            {
+                                                setDeviceTypeToCurrentPort(ArduinoSerial::hhibox);
+                                            }
+
                                         }
 
                                     }
