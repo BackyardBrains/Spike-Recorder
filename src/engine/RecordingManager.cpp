@@ -708,7 +708,8 @@ void RecordingManager::closeSerial()
 {
 	_numOfSerialChannels = 1;
    // _arduinoSerial.setNumberOfChannelsAndSamplingRate(1, _arduinoSerial.maxSamplingRate());
-	_arduinoSerial.closeSerial();
+    _arduinoSerial.closeCurrentMainSerial();
+	//_arduinoSerial.closeSerial();
 	_serialMode = false;
 }
 
@@ -1405,7 +1406,7 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 void RecordingManager::advanceSerialMode(uint32_t samples)
 {
 
-    uint32_t len = 33024;
+    uint32_t len = SIZE_OF_INPUT_HARDWARE_CIRC_BUFFER;
     //len = std::min(samples, len);
    // std::cout<<len<<"\n";
 	const int channum = _arduinoSerial.numberOfChannels();
@@ -1419,7 +1420,7 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
     //std::cout<<"start"<<"\n";
 	int samplesRead = _arduinoSerial.getNewSamples(buffer);
     //	uint32_t numTicksAfter = SDL_GetTicks();
-	//std::cout<<"Time: "<<SDL_GetTicks()<< " It takes: " <<SDL_GetTicks() - numTicksBefore<<" Samples read: "<<samplesRead<<"\n";
+	//std::cout<<"read: "<<samplesRead<<"\n";
 	//numTicksBefore = SDL_GetTicks();
 
     if(samplesRead == -1)
