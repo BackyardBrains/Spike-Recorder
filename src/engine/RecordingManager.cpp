@@ -619,7 +619,7 @@ bool RecordingManager::initSerial(const char *portName, int baudRate)
     _devices[0].handle = stream;
     _fileMode = false;
     _hidMode = false;
-    _serialMode = true;
+
    // devicesChanged.emit();
 
     for(unsigned int i = 0; i < (unsigned int)_numOfSerialChannels;i++)
@@ -632,6 +632,7 @@ bool RecordingManager::initSerial(const char *portName, int baudRate)
   //  _player.start(_arduinoSerial.maxSamplingRate()/_numOfSerialChannels);
     _player.setVolume(0);
     loadFilterSettings();
+    _serialMode = true;
     _arduinoSerial.askForExpansionBoardType();
 	return true;
 }

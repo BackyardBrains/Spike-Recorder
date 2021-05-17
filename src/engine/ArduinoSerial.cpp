@@ -1028,7 +1028,8 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             }
         }
 #endif
-
+            //headHardwareCircular = 0;
+            //tailHardwareCircular = 0;
             _portOpened = false;
         }
     }
@@ -1119,7 +1120,10 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             {
 
                 numberOfBytesRead = ref->readPort(buffer);
-
+                if(numberOfBytesRead ==-1)
+                {
+                    _manager->disconnectFromSerial();
+                }
             }
             catch(std::exception &e)
             {
@@ -1151,7 +1155,6 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                         Sleep(7);
             #endif
         }//end of while
-
         ref->closeSerial();
 
     }
@@ -2617,7 +2620,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
     void ArduinoSerial::askForExpansionBoardType()
     {
-        if(currentPort.deviceType == SerialDevice::heartPro )
+        if(currentPort.deviceType == SerialDevice::heartPro || currentPort.deviceType == SerialDevice::hhibox)
         {
             std::stringstream sstm;
             sstm << "board:;\n";
