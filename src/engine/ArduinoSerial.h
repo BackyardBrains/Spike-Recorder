@@ -153,6 +153,7 @@ namespace BackyardBrains {
         int _numberOfChannels;
         int _samplingRate;
         int serialCounter;
+        int numberOfTimouts;
 
         bool returnTailForOneAndCheck();
         bool checkIfNextByteExist();

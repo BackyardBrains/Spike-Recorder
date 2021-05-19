@@ -76,7 +76,7 @@
 #define BOARD_WITH_HAMMER 4
 #define BOARD_WITH_JOYSTICK 5
 #define BOARD_ERG 9
-
+#define MAX_NUMBER_OF_TIMEOUTS_ON_MAC 10
 #define LOW_BAUD_RATE 222222
 #define HIGH_BAUD_RATE 500000
 
@@ -144,7 +144,7 @@ namespace BackyardBrains {
 
         _shouldRestartDevice = false;
         currentAddOnBoard = BOARD_WITH_EVENT_INPUTS;
-
+        numberOfTimouts = 0;
         headHardwareCircular = 0;
         tailHardwareCircular = 0;
         prepareForDisconnect = false;
@@ -1112,6 +1112,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         ref->tailHardwareCircular = 0;
         char tempb[33024];
         char *buffer = tempb;
+        ref->numberOfTimouts = 0;
 
         while (ref->prepareForDisconnect==false)
         {
@@ -1591,17 +1592,30 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         {
             //std::cout<<"Serial read error: Timeout\n";
             Log::msg("Serial read error: Timeout");
+            numberOfTimouts++;
+            if(numberOfTimouts>MAX_NUMBER_OF_TIMEOUTS_ON_MAC)
+            {
+                numberOfTimouts = 0;
+                return -1;
+            }
+            else
+            {
+                return 0;
+            }
         }
         if (size < 0)
         {
             if(errno == EAGAIN)
             {
                 Log::msg("Serial read error: 1");
+                return -1;
             }
             if(errno == EINTR)
             {
                 Log::msg("Serial read error: 2");
+                return -1;
             }
+            
         }
 #endif // defined
 #if defined(__linux__)
@@ -1685,7 +1699,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
         int availableData = 0;
         int bytesRead = getNewDataFromHardwareBuffer(buffer, batchSizeForSerial, &availableData);
-        printf("Av %lu  - %lu\n",availableData,batchSizeForSerial);
+        //printf("Av %lu  - %lu\n",availableData,batchSizeForSerial);
         if(batchSizeForSerial>5000)
         {
             batchSizeForSerial = 600;
