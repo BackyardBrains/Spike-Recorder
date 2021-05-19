@@ -55,7 +55,7 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
     #endif
 	_player.start(_sampleRate);
     _HIDShouldBeReloaded = false;
-
+    waitToDisconnectFromSerial = false;
     systemIsCalibrated = false;
     calibrationCoeficient = 1.0f;
 
@@ -619,7 +619,7 @@ bool RecordingManager::initSerial(const char *portName, int baudRate)
     _devices[0].handle = stream;
     _fileMode = false;
     _hidMode = false;
-
+    _serialMode = true;
    // devicesChanged.emit();
 
     for(unsigned int i = 0; i < (unsigned int)_numOfSerialChannels;i++)
@@ -632,7 +632,6 @@ bool RecordingManager::initSerial(const char *portName, int baudRate)
   //  _player.start(_arduinoSerial.maxSamplingRate()/_numOfSerialChannels);
     _player.setVolume(0);
     loadFilterSettings();
-    _serialMode = true;
     _arduinoSerial.askForExpansionBoardType();
 	return true;
 }
@@ -700,8 +699,13 @@ int RecordingManager::serialPortIndex()
 
 void RecordingManager::disconnectFromSerial()
 {
+    waitToDisconnectFromSerial = true;
+}
 
-	closeSerial();
+void RecordingManager::sincDisconnectFromSerial()
+{
+    waitToDisconnectFromSerial = false;
+    closeSerial();
 	initRecordingDevices();
 }
 
@@ -1421,7 +1425,8 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
     //std::cout<<"start"<<"\n";
 	int samplesRead = _arduinoSerial.getNewSamples(buffer);
     //	uint32_t numTicksAfter = SDL_GetTicks();
-	//std::cout<<"read: "<<samplesRead<<"\n";
+//	std::cout<<"Read: "<<samplesRead<<"\n";
+//	Log::msg("Read %d\n", samplesRead);
 	//numTicksBefore = SDL_GetTicks();
 
     if(samplesRead == -1)
@@ -1933,6 +1938,10 @@ void RecordingManager::advance(uint32_t samples) {
     {
         resetCurrentSerial();
         _arduinoSerial.deviceRestarted();
+    }
+    if(waitToDisconnectFromSerial)
+    {
+        sincDisconnectFromSerial();
     }
 	if(_serialMode)
 	{
