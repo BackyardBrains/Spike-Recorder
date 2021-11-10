@@ -173,6 +173,12 @@ namespace BackyardBrains {
                 Log::msg("Interesting board STM32 Virtual ComPort");
                 #endif
             }
+            else if (strcmp(deviceName,"Nano 33 BLE")==0)
+            {
+                #ifdef LOG_USB
+                Log::msg("Interesting board MFi board SpikerBox");
+                #endif
+            }
             else if(strcmp(deviceName,"SpikerBox")==0)
             {
                 #ifdef LOG_USB
@@ -183,6 +189,12 @@ namespace BackyardBrains {
             {
                 #ifdef LOG_USB
                 Log::msg("Interesting board HHI 1v0");
+                #endif
+            }
+            else if(strcmp(deviceName,"HHI 1v1")==0)
+            {
+                #ifdef LOG_USB
+                Log::msg("Interesting board HHI 1v1");
                 #endif
             }
             else

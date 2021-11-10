@@ -2585,7 +2585,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         Log::msg("setNumberOfChannelsAndSamplingRate");
         _numberOfChannels = numberOfChannels;
         _samplingRate = samplingRate;
-        //"conf s:%d;c:%d;"
+        //"conf s:%d;sww%d;"
         std::stringstream sstm;
         sstm << "conf s:" << samplingRate<<";c:"<<numberOfChannels<<";\n";
         writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
