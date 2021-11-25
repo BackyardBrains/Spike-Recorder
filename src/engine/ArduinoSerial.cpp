@@ -1030,7 +1030,9 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 #endif
             //headHardwareCircular = 0;
             //tailHardwareCircular = 0;
+            
             _portOpened = false;
+            currentAddOnBoard = BOARD_WITH_EVENT_INPUTS;
         }
     }
 
