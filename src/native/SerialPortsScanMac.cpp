@@ -71,14 +71,16 @@ namespace BackyardBrains {
     static void traverse(unsigned int options,
                          io_name_t plane, io_iterator_t services,
                          io_registry_entry_t first,
-                         int depth, UInt64 stackOfBits);
-    
+                         int depth, UInt64 stackOfBits,io_name_t nameOfDeviceToInspect);
+    static bool searchNowForPath = false;
+    static bool foundThePath = false;
+    static char actualPathThatWeFound[MAXPATHLEN];
     enum {
         kDoPropsOption = 1,
         kDoRootOption  = 2
     };
     
-    int test()
+    int test(io_name_t nameOfDeviceToInspect)
     {
         io_registry_entry_t    root;
 
@@ -124,17 +126,20 @@ namespace BackyardBrains {
         
         // Traverse below the root in the plane.
         
-        traverse(options, kIOServicePlane, 0, root, 0, 0);
+        traverse(options, kIOServicePlane, 0, root, 0, 0, nameOfDeviceToInspect);
         
         // Quit.
         
-        exit(0);
+        //exit(0);
+        return 0;
     }
     
     void traverse(unsigned int options,
                   io_name_t plane, io_iterator_t services,
                   io_registry_entry_t serviceUpNext,
-                  int depth, UInt64 stackOfBits)
+                  int depth,
+                  UInt64 stackOfBits,
+                  io_name_t nameOfDeviceToInspect)
     {
         io_registry_entry_t service;                                ///ok
         Boolean        doProps;
@@ -178,15 +183,22 @@ namespace BackyardBrains {
             else
                 stackOfBits &= ~(2 << depth);
             
-            indent(true, depth, stackOfBits);
+            //indent(true, depth, stackOfBits);
             
             // Print out the name of the service.
             
             status = IORegistryEntryGetName(service, name);
             assert(status == KERN_SUCCESS);
             
-            printf("%s", name);
             
+            //printf("%s", name);
+            bool searchingForPath = false;
+            if (strcmp(nameOfDeviceToInspect, name)== 0)
+            {
+                searchingForPath = true;
+                searchNowForPath = true;
+                printf("Found name of the device in reg");
+            }
             if (strcmp("Root", name))
                 doProps = (options & kDoPropsOption) != 0;
             else
@@ -196,14 +208,14 @@ namespace BackyardBrains {
             
             status = IOObjectGetClass(service, name);
             assert(status == KERN_SUCCESS);
-            printf("  <class %s", name);
+            //printf("  <class %s", name);
             
             /*status = IOServiceGetBusyState(service, &busy);
             if(status == KERN_SUCCESS)
                 printf(", busy %d", busy);*/
             // Print out the retain count of the service.
             
-            printf(", retain count %d>\n", IOObjectGetRetainCount(service));
+            //printf(", retain count %d>\n", IOObjectGetRetainCount(service));
             
             // Print out the properties of the service.
             
@@ -212,8 +224,13 @@ namespace BackyardBrains {
             
             // Recurse down.
             
-            traverse(options, plane, children, child, depth + 1, stackOfBits);
-            
+            traverse(options, plane, children, child, depth + 1, stackOfBits, nameOfDeviceToInspect);
+            if(searchingForPath)
+            {
+                searchingForPath = false;
+                searchNowForPath = false;
+                //printf("----------- END OF SEACH-------");
+            }
             // Release resources.
             
             IOObjectRelease(children); children = 0;
@@ -246,40 +263,71 @@ namespace BackyardBrains {
     {
         struct indent_ctxt * ctxt = (indent_ctxt *)context;
         
-#if 1
+
         // IOKit pretty
         CFDataRef    data;
+        bool foundTheCallout = false;
+        //indent(false, ctxt->depth, ctxt->stackOfBits);
+        //printf("  ");
+        if(searchNowForPath)
+        {
+            if(CFStringCompare((CFStringRef)key,CFSTR("IOCalloutDevice"),0)==kCFCompareEqualTo)
+            {
+                foundTheCallout = true;
+            }
+        }
+        //printCFString( (CFStringRef)key );
+        //printf(" = ");
+        if(foundTheCallout)
+        {
+                data = IOCFSerialize((CFStringRef)value, kNilOptions);
+                if( data)
+                {
+                   
+                    if( 10000 > CFDataGetLength(data))
+                    {
+                        foundThePath = true;
+                        int i=0;
+                        bool inside = false;
+                        int pathi = 0;
+                        while(((char*)CFDataGetBytePtr(data))[i]!=0  && i<MAXPATHLEN)
+                        {
+                            if(((char*)CFDataGetBytePtr(data))[i]=='<')
+                            {
+                                if(inside)
+                                {
+                                    i++;
+                                    break;
+                                }
+                            }
+                            if(inside)
+                            {
+                                actualPathThatWeFound[pathi] = ((char*)CFDataGetBytePtr(data))[i];
+                                pathi++;
+                            }
+                            if(((char*)CFDataGetBytePtr(data))[i]=='>')
+                            {
+                                inside = true;
+                            }
+                            i++;
+                        }
+                        actualPathThatWeFound[pathi] = 0;
+                        printf((char*)CFDataGetBytePtr(data));
+                    }
+                    else
+                    {
+                        //printf("<is BIG>");
+                    }
+                    
+                    CFRelease(data);
+                } else
+                {
+                    //printf("<IOCFSerialize failed>");
+                }
+        }
+        //printf("\n");
         
-        indent(false, ctxt->depth, ctxt->stackOfBits);
-        printf("  ");
-        printCFString( (CFStringRef)key );
-        printf(" = ");
-        
-        data = IOCFSerialize((CFStringRef)value, kNilOptions);
-        if( data) {
-            if( 10000 > CFDataGetLength(data))
-                printf((char*)CFDataGetBytePtr(data));
-            else
-                printf("<is BIG>");
-            CFRelease(data);
-        } else
-            printf("<IOCFSerialize failed>");
-        printf("\n");
-        
-#else
-        // CF ugly
-        CFStringRef      keyStr = (CFStringRef) key;
-        CFStringRef      valueStr = CFCopyDescription((CFTypeRef) val);
-        CFStringRef      outStr;
-        
-        indent(false, ctxt->depth, ctxt->stackOfBits);
-        outStr = CFStringCreateWithFormat(kCFAllocatorDefault, 0,
-                                          CFSTR("  %@ = %@\n"), keyStr, valueStr);
-        assert(outStr);
-        printCFString(outStr);
-        CFRelease(valueStr);
-        CFRelease(outStr);
-#endif
+
     }
     
     static void properties(io_registry_entry_t service,
@@ -294,8 +342,8 @@ namespace BackyardBrains {
         context.stackOfBits = stackOfBits;
         
         // Prepare to print out the service's properties.
-        indent(false, context.depth, context.stackOfBits);
-        printf("{\n");
+        //indent(false, context.depth, context.stackOfBits);
+        //printf("{\n");
         
         // Obtain the service's properties.
         
@@ -310,10 +358,10 @@ namespace BackyardBrains {
         
         CFRelease(dictionary);
         
-        indent(false, context.depth, context.stackOfBits);
-        printf("}\n");
-        indent(false, context.depth, context.stackOfBits);
-        printf("\n");
+        //indent(false, context.depth, context.stackOfBits);
+        //printf("}\n");
+        //indent(false, context.depth, context.stackOfBits);
+        //printf("\n");
         
     }
     
@@ -346,7 +394,7 @@ namespace BackyardBrains {
     
     int getListOfSerialPorts( std::list<std::string>& listOfPorts)
     {
-        //test();
+        
         
         listOfPorts.clear();
         CFMutableDictionaryRef matchingDict;
@@ -552,20 +600,37 @@ namespace BackyardBrains {
             {
                     CFTypeRef nameCFstring;
                     char s[MAXPATHLEN];
-             
                 
-                    CFStringRef deviceBSDName_cf = ( CFStringRef ) IORegistryEntrySearchCFProperty (device,
+                
+                    /*CFStringRef deviceBSDName_cf = ( CFStringRef ) IORegistryEntrySearchCFProperty (device,
                                                                                                 kIOServicePlane,
                                                                                                 CFSTR (kIOCalloutDeviceKey ),
                                                                                                 kCFAllocatorDefault,
                                                                                                 kIORegistryIterateRecursively | kIORegistryIterateParents);
                 
+                */
                 
+                    foundThePath = false;
+                    test(deviceName);
+                    if(foundThePath)
+                    {
+                        
+                        
+                        int i = 0;
+                        while(actualPathThatWeFound[i]!=0 && i<MAXPATHLEN)
+                        {
+                            s[i] =actualPathThatWeFound[i];
+                            i++;
+                        }
+                        s[i]=0;
+                        #ifdef LOG_USB
+                        Log::msg("Path: %s", s);
+                        #endif
+                        listOfPorts.push_back(s);
+                    }
                 
-                /* deviceBSDName_cf = ( CFStringRef ) IORegistryEntrySearchCFProperty (device, kIOServicePlane, CFSTR("BSD Name"),
-                                                        kCFAllocatorDefault, kIORegistryIterateRecursively);
-*/
-                    if (deviceBSDName_cf)
+              
+                   /* if (deviceBSDName_cf)
                     {
                         //const char *cs = CFStringGetCStringPtr( deviceBSDName_cf, kCFStringEncodingMacRoman ) ;
                         CFStringGetCString((const __CFString *)deviceBSDName_cf,s, sizeof(s), kCFStringEncodingASCII);
@@ -575,7 +640,7 @@ namespace BackyardBrains {
                         Log::msg("Path: %s", s);
                         #endif
                         listOfPorts.push_back(s);
-                    }
+                    }*/
             }
             
             (*plugInInterface)->Release(plugInInterface);
