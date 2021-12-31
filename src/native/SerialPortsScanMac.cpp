@@ -602,33 +602,45 @@ namespace BackyardBrains {
                     char s[MAXPATHLEN];
                 
                 
-                    /*CFStringRef deviceBSDName_cf = ( CFStringRef ) IORegistryEntrySearchCFProperty (device,
+                    CFStringRef deviceBSDName_cf = ( CFStringRef ) IORegistryEntrySearchCFProperty (device,
                                                                                                 kIOServicePlane,
                                                                                                 CFSTR (kIOCalloutDeviceKey ),
                                                                                                 kCFAllocatorDefault,
                                                                                                 kIORegistryIterateRecursively | kIORegistryIterateParents);
                 
-                */
-                
-                    foundThePath = false;
-                    test(deviceName);
-                    if(foundThePath)
+                    if (deviceBSDName_cf)
                     {
-                        
-                        
-                        int i = 0;
-                        while(actualPathThatWeFound[i]!=0 && i<MAXPATHLEN)
-                        {
-                            s[i] =actualPathThatWeFound[i];
-                            i++;
-                        }
-                        s[i]=0;
-                        #ifdef LOG_USB
-                        Log::msg("Path: %s", s);
-                        #endif
-                        listOfPorts.push_back(s);
+                         //const char *cs = CFStringGetCStringPtr( deviceBSDName_cf, kCFStringEncodingMacRoman ) ;
+                         CFStringGetCString((const __CFString *)deviceBSDName_cf,s, sizeof(s), kCFStringEncodingASCII);
+                                            
+                         //printf("Path: %s\n", cs);
+                         #ifdef LOG_USB
+                         Log::msg("Path: %s", s);
+                         #endif
+                         listOfPorts.push_back(s);
                     }
+                    else
+                    {
                 
+                        foundThePath = false;
+                        test(deviceName);
+                        if(foundThePath)
+                        {
+                            
+                            
+                            int i = 0;
+                            while(actualPathThatWeFound[i]!=0 && i<MAXPATHLEN)
+                            {
+                                s[i] =actualPathThatWeFound[i];
+                                i++;
+                            }
+                            s[i]=0;
+                            #ifdef LOG_USB
+                            Log::msg("Path: %s", s);
+                            #endif
+                            listOfPorts.push_back(s);
+                        }
+                    }
               
                    /* if (deviceBSDName_cf)
                     {
