@@ -12,6 +12,7 @@
 #include <IOKit/IOCFPlugIn.h>
 #include <IOKit/serial/IOSerialKeys.h>
 #include <IOKit/IOBSD.h>
+#include <IOKit/IOCFSerialize.h>
 
 #include <sys/uio.h>
 #include <stdio.h>
@@ -59,8 +60,342 @@ UInt16 enabledVIDs[NUMBER_OF_VIDS] = {0x2341, 0x2A03, 0x0403, 0x1A86, 0x2E73, 0x
 
 
 namespace BackyardBrains {
+    
+    
+    static mach_port_t masterPort;
+    
+    static void indent(Boolean node, int depth, UInt64 stackOfBits);
+    static void properties(io_registry_entry_t service,
+                           int depth,
+                           UInt64 stackOfBits);
+    static void traverse(unsigned int options,
+                         io_name_t plane, io_iterator_t services,
+                         io_registry_entry_t first,
+                         int depth, UInt64 stackOfBits,io_name_t nameOfDeviceToInspect);
+    static bool searchNowForPath = false;
+    static bool foundThePath = false;
+    static char actualPathThatWeFound[MAXPATHLEN];
+    enum {
+        kDoPropsOption = 1,
+        kDoRootOption  = 2
+    };
+    
+    int test(io_name_t nameOfDeviceToInspect)
+    {
+        io_registry_entry_t    root;
+
+        unsigned int    options;
+        kern_return_t     status;   ///na
+        int            arg;
+        
+        // Parse args
+        
+       
+        options = kDoPropsOption;
+       /* for(arg = 1; arg < argc; arg++)
+        {
+            if ('-' == argv[arg][0]) switch(argv[arg][1])
+            {
+                case 'h':
+                    printf("%s [-p] [-r] [-h] [plane]\n", argv[0]);
+                    exit(0);
+                    break;
+                case 'p':
+                    options &= ~kDoPropsOption;
+                    break;
+                case 'r':
+                    options |= kDoRootOption;
+                    break;
+            }
+            else
+            {
+                plane = argv[arg];
+            }
+        }*/
+        
+        // Obtain the I/O Kit communication handle.
+        
+        //    status = IOGetMasterPort(&masterPort);
+        status = IOMasterPort(bootstrap_port, &masterPort);
+        assert(status == KERN_SUCCESS);
+        
+        // Obtain the registry root entry.
+        
+        root = IORegistryGetRootEntry(masterPort);
+        assert(root);
+        
+        // Traverse below the root in the plane.
+        
+        traverse(options, kIOServicePlane, 0, root, 0, 0, nameOfDeviceToInspect);
+        
+        // Quit.
+        
+        //exit(0);
+        return 0;
+    }
+    
+    void traverse(unsigned int options,
+                  io_name_t plane, io_iterator_t services,
+                  io_registry_entry_t serviceUpNext,
+                  int depth,
+                  UInt64 stackOfBits,
+                  io_name_t nameOfDeviceToInspect)
+    {
+        io_registry_entry_t service;                                ///ok
+        Boolean        doProps;
+        
+        // We loop for every service in the list of services provided.
+        
+        while ( (service = serviceUpNext) )
+        {
+            io_iterator_t        children;
+            Boolean            hasChildren;
+            io_name_t            name;
+            kern_return_t        status;
+            io_registry_entry_t    child;
+            int            busy;
+            
+            // Obtain the next service entry, if any.
+            
+            serviceUpNext = IOIteratorNext(services);
+            
+            // Obtain the current service entry's children, if any.
+            
+            status = IORegistryEntryGetChildIterator(service,
+                                                     plane,
+                                                     &children);
+            assert(status == KERN_SUCCESS);
+            
+            child = IOIteratorNext(children); ///ok
+            hasChildren = child ? true : false;
+            
+            // Save has-more-siblings state into stackOfBits for this depth.
+            
+            if (serviceUpNext)
+                stackOfBits |=  (1 << depth);
+            else
+                stackOfBits &= ~(1 << depth);
+            
+            // Save has-children state into stackOfBits for this depth.
+            
+            if (hasChildren)
+                stackOfBits |=  (2 << depth);
+            else
+                stackOfBits &= ~(2 << depth);
+            
+            //indent(true, depth, stackOfBits);
+            
+            // Print out the name of the service.
+            
+            status = IORegistryEntryGetName(service, name);
+            assert(status == KERN_SUCCESS);
+            
+            
+            //printf("%s", name);
+            bool searchingForPath = false;
+            if (strcmp(nameOfDeviceToInspect, name)== 0)
+            {
+                searchingForPath = true;
+                searchNowForPath = true;
+                printf("Found name of the device in reg");
+            }
+            if (strcmp("Root", name))
+                doProps = (options & kDoPropsOption) != 0;
+            else
+                doProps = (options & kDoRootOption) != 0;
+            
+            // Print out the class of the service.
+            
+            status = IOObjectGetClass(service, name);
+            assert(status == KERN_SUCCESS);
+            //printf("  <class %s", name);
+            
+            /*status = IOServiceGetBusyState(service, &busy);
+            if(status == KERN_SUCCESS)
+                printf(", busy %d", busy);*/
+            // Print out the retain count of the service.
+            
+            //printf(", retain count %d>\n", IOObjectGetRetainCount(service));
+            
+            // Print out the properties of the service.
+            
+            if (doProps)
+                properties(service, depth, stackOfBits);
+            
+            // Recurse down.
+            
+            traverse(options, plane, children, child, depth + 1, stackOfBits, nameOfDeviceToInspect);
+            if(searchingForPath)
+            {
+                searchingForPath = false;
+                searchNowForPath = false;
+                //printf("----------- END OF SEACH-------");
+            }
+            // Release resources.
+            
+            IOObjectRelease(children); children = 0;
+            IOObjectRelease(service);  service  = 0;
+        }
+    }
+    
+    struct indent_ctxt {
+        int depth;
+        UInt64 stackOfBits;
+    };
+    
+    static void printCFString(CFStringRef string)
+    {
+        CFIndex    len;
+        char *    buffer;
+        
+        len = CFStringGetMaximumSizeForEncoding(CFStringGetLength(string),
+                                                CFStringGetSystemEncoding()) + sizeof('\0');
+        buffer = (char *)malloc(len);
+        if (buffer && CFStringGetCString(string, buffer, len,
+                                         CFStringGetSystemEncoding()) )
+            printf(buffer);
+        
+        if (buffer)
+            free(buffer);
+    }
+    
+    static void printEntry(const void *key, const void *value, void *context)
+    {
+        struct indent_ctxt * ctxt = (indent_ctxt *)context;
+        
+
+        // IOKit pretty
+        CFDataRef    data;
+        bool foundTheCallout = false;
+        //indent(false, ctxt->depth, ctxt->stackOfBits);
+        //printf("  ");
+        if(searchNowForPath)
+        {
+            if(CFStringCompare((CFStringRef)key,CFSTR("IOCalloutDevice"),0)==kCFCompareEqualTo)
+            {
+                foundTheCallout = true;
+            }
+        }
+        //printCFString( (CFStringRef)key );
+        //printf(" = ");
+        if(foundTheCallout)
+        {
+                data = IOCFSerialize((CFStringRef)value, kNilOptions);
+                if( data)
+                {
+                   
+                    if( 10000 > CFDataGetLength(data))
+                    {
+                        foundThePath = true;
+                        int i=0;
+                        bool inside = false;
+                        int pathi = 0;
+                        while(((char*)CFDataGetBytePtr(data))[i]!=0  && i<MAXPATHLEN)
+                        {
+                            if(((char*)CFDataGetBytePtr(data))[i]=='<')
+                            {
+                                if(inside)
+                                {
+                                    i++;
+                                    break;
+                                }
+                            }
+                            if(inside)
+                            {
+                                actualPathThatWeFound[pathi] = ((char*)CFDataGetBytePtr(data))[i];
+                                pathi++;
+                            }
+                            if(((char*)CFDataGetBytePtr(data))[i]=='>')
+                            {
+                                inside = true;
+                            }
+                            i++;
+                        }
+                        actualPathThatWeFound[pathi] = 0;
+                        printf((char*)CFDataGetBytePtr(data));
+                    }
+                    else
+                    {
+                        //printf("<is BIG>");
+                    }
+                    
+                    CFRelease(data);
+                } else
+                {
+                    //printf("<IOCFSerialize failed>");
+                }
+        }
+        //printf("\n");
+        
+
+    }
+    
+    static void properties(io_registry_entry_t service,
+                           int depth,
+                           UInt64 stackOfBits)
+    {
+        CFMutableDictionaryRef     dictionary; ///ok
+        kern_return_t    status;     ///na
+        struct indent_ctxt    context;
+        
+        context.depth = depth;
+        context.stackOfBits = stackOfBits;
+        
+        // Prepare to print out the service's properties.
+        //indent(false, context.depth, context.stackOfBits);
+        //printf("{\n");
+        
+        // Obtain the service's properties.
+        
+        status = IORegistryEntryCreateCFProperties(service,
+                                                    &dictionary,
+                                                   kCFAllocatorDefault, kNilOptions);
+        assert( KERN_SUCCESS == status );
+        assert( CFDictionaryGetTypeID() == CFGetTypeID(dictionary));
+        
+        CFDictionaryApplyFunction(dictionary,
+                                  (CFDictionaryApplierFunction) printEntry, &context);
+        
+        CFRelease(dictionary);
+        
+        //indent(false, context.depth, context.stackOfBits);
+        //printf("}\n");
+        //indent(false, context.depth, context.stackOfBits);
+        //printf("\n");
+        
+    }
+    
+    void indent(Boolean node, int depth, UInt64 stackOfBits)
+    {
+        int i;
+        
+        // stackOfBits representation, given current depth is n:
+        //   bit n+1             = does depth n have children?       1=yes, 0=no
+        //   bit [n, .. i .., 0] = does depth i have more siblings?  1=yes, 0=no
+        
+        if (node)
+        {
+            for (i = 0; i < depth; i++)
+                printf( (stackOfBits & (1 << i)) ? "| " : "  " );
+            
+            printf("+-o ");
+        }
+        else // if (!node)
+        {
+            for (i = 0; i <= depth + 1; i++)
+                printf( (stackOfBits & (1 << i)) ? "| " : "  " );
+        }
+    }
+    
+    
+    
+    
+    
+    
     int getListOfSerialPorts( std::list<std::string>& listOfPorts)
     {
+        
+        
         listOfPorts.clear();
         CFMutableDictionaryRef matchingDict;
         io_iterator_t iter;
@@ -173,6 +508,12 @@ namespace BackyardBrains {
                 Log::msg("Interesting board STM32 Virtual ComPort");
                 #endif
             }
+            else if (strcmp(deviceName,"Nano 33 BLE")==0)
+            {
+                #ifdef LOG_USB
+                Log::msg("Interesting board MFi board SpikerBox");
+                #endif
+            }
             else if(strcmp(deviceName,"SpikerBox")==0)
             {
                 #ifdef LOG_USB
@@ -183,6 +524,12 @@ namespace BackyardBrains {
             {
                 #ifdef LOG_USB
                 Log::msg("Interesting board HHI 1v0");
+                #endif
+            }
+            else if(strcmp(deviceName,"HHI 1v1")==0)
+            {
+                #ifdef LOG_USB
+                Log::msg("Interesting board HHI 1v1");
                 #endif
             }
             else
@@ -248,19 +595,54 @@ namespace BackyardBrains {
             //printf("\nVendor ID:%04x", vendor);
             //printf("\nProduct ID:%04x", product);
            
-            
+         
             if(isItEnabledVID)
             {
                     CFTypeRef nameCFstring;
                     char s[MAXPATHLEN];
-             
+                
                 
                     CFStringRef deviceBSDName_cf = ( CFStringRef ) IORegistryEntrySearchCFProperty (device,
                                                                                                 kIOServicePlane,
                                                                                                 CFSTR (kIOCalloutDeviceKey ),
                                                                                                 kCFAllocatorDefault,
-                                                                                                kIORegistryIterateRecursively );
+                                                                                                kIORegistryIterateRecursively | kIORegistryIterateParents);
+                
                     if (deviceBSDName_cf)
+                    {
+                         //const char *cs = CFStringGetCStringPtr( deviceBSDName_cf, kCFStringEncodingMacRoman ) ;
+                         CFStringGetCString((const __CFString *)deviceBSDName_cf,s, sizeof(s), kCFStringEncodingASCII);
+                                            
+                         //printf("Path: %s\n", cs);
+                         #ifdef LOG_USB
+                         Log::msg("Path: %s", s);
+                         #endif
+                         listOfPorts.push_back(s);
+                    }
+                    else
+                    {
+                
+                        foundThePath = false;
+                        test(deviceName);
+                        if(foundThePath)
+                        {
+                            
+                            
+                            int i = 0;
+                            while(actualPathThatWeFound[i]!=0 && i<MAXPATHLEN)
+                            {
+                                s[i] =actualPathThatWeFound[i];
+                                i++;
+                            }
+                            s[i]=0;
+                            #ifdef LOG_USB
+                            Log::msg("Path: %s", s);
+                            #endif
+                            listOfPorts.push_back(s);
+                        }
+                    }
+              
+                   /* if (deviceBSDName_cf)
                     {
                         //const char *cs = CFStringGetCStringPtr( deviceBSDName_cf, kCFStringEncodingMacRoman ) ;
                         CFStringGetCString((const __CFString *)deviceBSDName_cf,s, sizeof(s), kCFStringEncodingASCII);
@@ -270,7 +652,7 @@ namespace BackyardBrains {
                         Log::msg("Path: %s", s);
                         #endif
                         listOfPorts.push_back(s);
-                    }
+                    }*/
             }
             
             (*plugInInterface)->Release(plugInInterface);

@@ -286,6 +286,8 @@ private:
 	void advanceSerialMode(uint32_t samples);
 	void advanceFileMode(uint32_t samples);
 	void advanceHidMode(uint32_t samples);
+	void sincDisconnectFromSerial();
+	bool waitToDisconnectFromSerial;
 	void closeSerial();
 	void closeHid();
 	SampleBuffer *sampleBuffer(int virtualDeviceIndex);

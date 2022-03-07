@@ -76,7 +76,7 @@
 #define BOARD_WITH_HAMMER 4
 #define BOARD_WITH_JOYSTICK 5
 #define BOARD_ERG 9
-
+#define MAX_NUMBER_OF_TIMEOUTS_ON_MAC 10
 #define LOW_BAUD_RATE 222222
 #define HIGH_BAUD_RATE 500000
 
@@ -144,6 +144,10 @@ namespace BackyardBrains {
 
         _shouldRestartDevice = false;
         currentAddOnBoard = BOARD_WITH_EVENT_INPUTS;
+        numberOfTimouts = 0;
+        headHardwareCircular = 0;
+        tailHardwareCircular = 0;
+        prepareForDisconnect = false;
     }
 
 void ArduinoSerial::setRecordingManager(RecordingManager *rm)
@@ -1024,8 +1028,11 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             }
         }
 #endif
-
+            //headHardwareCircular = 0;
+            //tailHardwareCircular = 0;
+            
             _portOpened = false;
+            currentAddOnBoard = BOARD_WITH_EVENT_INPUTS;
         }
     }
 
@@ -1054,7 +1061,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         #ifdef LOG_SCANNING_OF_ARDUINO
         Log::msg("openSerialDevice before lock: %s", portName);
         #endif
-
+        prepareForDisconnect = false;
         while(ArduinoSerial::openPortLock==true){
             #ifdef LOG_SCANNING_OF_ARDUINO
             Log::msg("openSerialDevice  lock---- User waiting");
@@ -1085,10 +1092,127 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         //unlock port connection
         ArduinoSerial::openPortLock = false;
         std::cout<<"openSerialDevice open port lock FALSE\n";
+        readingHardwareThread = std::thread(&ArduinoSerial::readHardwareThreadFunction, this, this);
+        readingHardwareThread.detach();
         return fd;
     }
 
 
+      void ArduinoSerial::closeCurrentMainSerial(void)
+    {
+#ifdef LOG_SCANNING_OF_ARDUINO
+        Log::msg("Close main port: %s", currentPort.portName.c_str());
+#endif
+        prepareForDisconnect = true;
+    }
+
+
+    void ArduinoSerial::readHardwareThreadFunction(ArduinoSerial* ref)
+    {
+
+        ref->headHardwareCircular = 0;
+        ref->tailHardwareCircular = 0;
+        char tempb[33024];
+        char *buffer = tempb;
+        ref->numberOfTimouts = 0;
+
+        while (ref->prepareForDisconnect==false)
+        {
+            ssize_t numberOfBytesRead = -1;
+            try
+            {
+
+                numberOfBytesRead = ref->readPort(buffer);
+                if(numberOfBytesRead ==-1)
+                {
+                    _manager->disconnectFromSerial();
+                }
+            }
+            catch(std::exception &e)
+            {
+
+                Log::msg("Serial - Error on read 1: %s", e.what() );
+            }
+            catch(...)
+            {
+                Log::msg("Serial - Error on read 2");
+            }
+
+
+
+            //std::cout<<numberOfBytesRead<<"-";
+            for(int i=0;i<numberOfBytesRead;i++)
+            {
+
+                    ref->circularInputBuffer[ref->headHardwareCircular++] = buffer[i];
+
+                    if(ref->headHardwareCircular>=SIZE_OF_INPUT_HARDWARE_CIRC_BUFFER)
+                    {
+                        ref->headHardwareCircular = 0;
+                    }
+            }
+
+            #if defined(__APPLE__) || defined(__linux__)
+                        usleep(7000);
+            #else
+                        Sleep(7);
+            #endif
+        }//end of while
+        ref->closeSerial();
+
+    }
+
+    int ArduinoSerial::getNewDataFromHardwareBuffer(char* buffer, int max_data_length,int* availableData)
+    {
+        int num_of_bytes;
+
+        int tempMainHead = headHardwareCircular;//keep head position because input thread will move it.
+
+        if(tailHardwareCircular>tempMainHead)
+        {
+            // std::cout<<"Head: "<<tempMainHead<<" tail "<<mainTail<<"\n";
+            int firstSegment = SIZE_OF_INPUT_HARDWARE_CIRC_BUFFER-tailHardwareCircular;
+            *availableData = firstSegment+tempMainHead;
+            if(max_data_length<firstSegment)
+            {
+                //if we have to take it from just one segment
+                num_of_bytes = max_data_length;
+                memcpy ( buffer, &circularInputBuffer[tailHardwareCircular], sizeof(char)*(num_of_bytes));
+                tailHardwareCircular = tailHardwareCircular + num_of_bytes;
+            }
+            else
+            {
+                //if we have to take it from two segments
+                int numOfBytesFromSecondSegment = max_data_length -firstSegment;
+                if(numOfBytesFromSecondSegment>tempMainHead)
+                {
+                    numOfBytesFromSecondSegment =  tempMainHead;
+                }
+                memcpy ( buffer, &circularInputBuffer[tailHardwareCircular], sizeof(char)*(firstSegment));
+                memcpy ( &buffer[SIZE_OF_INPUT_HARDWARE_CIRC_BUFFER-tailHardwareCircular], circularInputBuffer, sizeof(char)*(numOfBytesFromSecondSegment));
+                num_of_bytes = numOfBytesFromSecondSegment+firstSegment;
+                tailHardwareCircular = numOfBytesFromSecondSegment;
+            }
+
+
+        }
+        else
+        {
+            num_of_bytes = tempMainHead-tailHardwareCircular;
+            *availableData = num_of_bytes;
+            if(num_of_bytes>max_data_length)
+            {
+                num_of_bytes = max_data_length;
+            }
+            memcpy ( buffer, &circularInputBuffer[tailHardwareCircular], sizeof(char)*(num_of_bytes));
+            tailHardwareCircular = tailHardwareCircular + num_of_bytes;
+        }
+
+
+        //printf("read: %d\n",num_of_bytes);
+        return num_of_bytes;
+
+    }
 
     int ArduinoSerial::openSerialDeviceWithoutLock(const char *portName)
     {
@@ -1470,17 +1594,30 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         {
             //std::cout<<"Serial read error: Timeout\n";
             Log::msg("Serial read error: Timeout");
+            numberOfTimouts++;
+            if(numberOfTimouts>MAX_NUMBER_OF_TIMEOUTS_ON_MAC)
+            {
+                numberOfTimouts = 0;
+                return -1;
+            }
+            else
+            {
+                return 0;
+            }
         }
         if (size < 0)
         {
             if(errno == EAGAIN)
             {
                 Log::msg("Serial read error: 1");
+                return -1;
             }
             if(errno == EINTR)
             {
                 Log::msg("Serial read error: 2");
+                return -1;
             }
+            
         }
 #endif // defined
 #if defined(__linux__)
@@ -1508,46 +1645,11 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         {
             return -1;
         }
-        //printf("Read, %d requested, %lu buffered\n", count, st.cbInQue);
-        //std::cout<<"Serial read  " << currentDateTime()<<"\n";
-        //Log::msg("");
 
-        if (st.cbInQue <= 0)
-        {
-             printf("Read -- %lu\n",st.cbInQue);
-             batchSizeForSerial -=15;
-             if(batchSizeForSerial<100)
-             {
-                batchSizeForSerial = 100;
-             }
-            return 0;
-        }
-
-        // now do a ReadFile, now that we know how much we can read
-        // a blocking (non-overlapped) read would be simple, but win32
-        // is all-or-nothing on async I/O and we must have it enabled
-        // because it's the only way to get a timeout for WaitCommEvent
-
-        if(count<st.cbInQue)
-        {
-            num_request = (DWORD)count;
-        }
-        else
-        {
-            num_request = st.cbInQue;
-            batchSizeForSerial -=15;
-             if(batchSizeForSerial<100)
-             {
-                batchSizeForSerial = 100;
-             }
-        }
-        //num_request =  ((DWORD)count < st.cbInQue) ? (DWORD)count : st.cbInQue;
 
         unsigned long numInCueue = st.cbInQue;
-        if(_justScanning)
-        {
-            num_request = 10000;
-        }
+        num_request = 10000;
+
 
 
         ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -1594,10 +1696,42 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
     //
     int ArduinoSerial::getNewSamples(int16_t * obuffer)
     {
-        char buffer[33024];
+        char buffer[SIZE_OF_INPUT_HARDWARE_CIRC_BUFFER];
         checkIfWeHavetoAskBoardSomething();
 
-        int bytesRead = readPort(buffer);
+        int availableData = 0;
+        int bytesRead = getNewDataFromHardwareBuffer(buffer, batchSizeForSerial, &availableData);
+        //printf("Av %lu  - %lu\n",availableData,batchSizeForSerial);
+        if(batchSizeForSerial>5000)
+        {
+            batchSizeForSerial = 600;
+        }
+        if (availableData <= 0)
+        {
+
+             batchSizeForSerial -=15;
+             if(batchSizeForSerial<100)
+             {
+                batchSizeForSerial = 100;
+             }
+        }
+        if(batchSizeForSerial<availableData)
+        {
+            batchSizeForSerial++;
+        }
+        else
+        {
+            batchSizeForSerial -=15;
+             if(batchSizeForSerial<100)
+             {
+                batchSizeForSerial = 100;
+             }
+        }
+        if(availableData>5000)
+        {
+            batchSizeForSerial += 200;
+        }
+
         int numberOfSamples =  processDataIntoSamples(buffer, bytesRead, obuffer);
         return numberOfSamples;
     }
@@ -1620,7 +1754,10 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         int numberOfFrames = 0;
         int obufferIndex = 0;
         int writeInteger = 0;
-        // std::cout<<"------------------ Size: "<<size<<"\n";
+        int g=0;
+        bool enablePrint = false;
+
+
 
         int numberOfZeros = 0;
         int lastWasZero = 0;
@@ -1635,9 +1772,8 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             {
                 circularBuffer[cBufHead++] = buffer[i];
                  //uint debugMSB  = ((uint)(buffer[i])) & 0xFF;
-                  //std::cout<<"M: " << debugMSB<<"\n";
 
-                if(cBufHead>=SIZE_OF_CIRC_BUFFER)
+                if(cBufHead>=SIZE_OF_INPUT_HARDWARE_CIRC_BUFFER)
                 {
                     cBufHead = 0;
                 }
@@ -1700,7 +1836,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                         weAlreadyProcessedBeginingOfTheFrame = true;
 
                         cBufTail++;
-                        if(cBufTail>=SIZE_OF_CIRC_BUFFER)
+                        if(cBufTail>=SIZE_OF_INPUT_HARDWARE_CIRC_BUFFER)
                         {
                             cBufTail = 0;
                         }
@@ -1750,7 +1886,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                         else
                         {
                             cBufTail++;
-                            if(cBufTail>=SIZE_OF_CIRC_BUFFER)
+                            if(cBufTail>=SIZE_OF_INPUT_HARDWARE_CIRC_BUFFER)
                             {
                                 cBufTail = 0;
                             }
@@ -1768,7 +1904,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                 break;
             }
             cBufTail++;
-            if(cBufTail>=SIZE_OF_CIRC_BUFFER)
+            if(cBufTail>=SIZE_OF_INPUT_HARDWARE_CIRC_BUFFER)
             {
                 cBufTail = 0;
             }
@@ -1790,7 +1926,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
     bool ArduinoSerial::checkIfNextByteExist()
     {
         int tempTail = cBufTail + 1;
-        if(tempTail>= SIZE_OF_CIRC_BUFFER)
+        if(tempTail>= SIZE_OF_INPUT_HARDWARE_CIRC_BUFFER)
         {
             tempTail = 0;
         }
@@ -1804,7 +1940,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
     bool ArduinoSerial::checkIfHaveWholeFrame()
     {
         int tempTail = cBufTail + 1;
-        if(tempTail>= SIZE_OF_CIRC_BUFFER)
+        if(tempTail>= SIZE_OF_INPUT_HARDWARE_CIRC_BUFFER)
         {
             tempTail = 0;
         }
@@ -1816,7 +1952,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                 return true;
             }
             tempTail++;
-            if(tempTail>= SIZE_OF_CIRC_BUFFER)
+            if(tempTail>= SIZE_OF_INPUT_HARDWARE_CIRC_BUFFER)
             {
                 tempTail = 0;
             }
@@ -1827,7 +1963,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
     bool ArduinoSerial::areWeAtTheEndOfFrame()
     {
         int tempTail = cBufTail + 1;
-        if(tempTail>= SIZE_OF_CIRC_BUFFER)
+        if(tempTail>= SIZE_OF_INPUT_HARDWARE_CIRC_BUFFER)
         {
             tempTail = 0;
         }
@@ -1896,7 +2032,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                         cBufHead--;
                         if(cBufHead<0)
                         {
-                            cBufHead = SIZE_OF_CIRC_BUFFER-1;
+                            cBufHead = SIZE_OF_INPUT_HARDWARE_CIRC_BUFFER-1;
                         }
                     }
                 }
@@ -2451,7 +2587,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         Log::msg("setNumberOfChannelsAndSamplingRate");
         _numberOfChannels = numberOfChannels;
         _samplingRate = samplingRate;
-        //"conf s:%d;c:%d;"
+        //"conf s:%d;sww%d;"
         std::stringstream sstm;
         sstm << "conf s:" << samplingRate<<";c:"<<numberOfChannels<<";\n";
         writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
@@ -2500,7 +2636,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
     void ArduinoSerial::askForExpansionBoardType()
     {
-        if(currentPort.deviceType == SerialDevice::heartPro )
+        if(currentPort.deviceType == SerialDevice::heartPro || currentPort.deviceType == SerialDevice::hhibox)
         {
             std::stringstream sstm;
             sstm << "board:;\n";
