@@ -34,7 +34,11 @@ ThresholdPanel::ThresholdPanel(RecordingManager &manager, AnalysisManager &anama
 	_ekgButton->setSizeHint(Widgets::Size(42,32));
 	_ekgButton->setRightPadding(10);
 	_ekgButton->clicked.connect(this, &ThresholdPanel::ekgPressed);
-	if(_manager->getCurrentInputType()==INPUT_TYPE_AM_AUDIO || _manager->getCurrentInputType()==INPUT_TYPE_HEARTSS || (_manager->fileMode() && (_manager->deviceUsedForRecordingFile()==INPUT_TYPE_HEARTSS || _manager->deviceUsedForRecordingFile()==INPUT_TYPE_AM_AUDIO)))
+	if(_manager->getCurrentInputType()==INPUT_TYPE_AM_AUDIO ||
+       _manager->getCurrentInputType()==INPUT_TYPE_HUMANSB ||
+       _manager->getCurrentInputType()==INPUT_TYPE_HEARTSS || (_manager->fileMode() && (_manager->deviceUsedForRecordingFile()==INPUT_TYPE_HEARTSS ||
+            _manager->deviceUsedForRecordingFile()==INPUT_TYPE_HUMANSB ||
+            _manager->deviceUsedForRecordingFile()==INPUT_TYPE_AM_AUDIO)))
 	{
 		_ekgButton->setVisible(true);
 	}
@@ -118,7 +122,11 @@ void ThresholdPanel::paintEvent()
     
     
     
-    if(_manager->getCurrentInputType()==INPUT_TYPE_AM_AUDIO || _manager->getCurrentInputType()==INPUT_TYPE_HEARTSS || (_manager->fileMode() && (_manager->deviceUsedForRecordingFile()==INPUT_TYPE_HEARTSS || _manager->deviceUsedForRecordingFile()==INPUT_TYPE_AM_AUDIO)))
+    if(_manager->getCurrentInputType()==INPUT_TYPE_AM_AUDIO ||
+       _manager->getCurrentInputType()==INPUT_TYPE_HUMANSB ||
+       _manager->getCurrentInputType()==INPUT_TYPE_HEARTSS || (_manager->fileMode() && (_manager->deviceUsedForRecordingFile()==INPUT_TYPE_HEARTSS ||
+            _manager->deviceUsedForRecordingFile()==INPUT_TYPE_HUMANSB ||
+            _manager->deviceUsedForRecordingFile()==INPUT_TYPE_AM_AUDIO)))
     {
         _ekgButton->setVisible(true);
         _ekgButton->setSizeHint(Widgets::Size(43,32));

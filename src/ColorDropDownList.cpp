@@ -5,6 +5,7 @@
 #include "widgets/BoxLayout.h"
 #include "widgets/ScrollBar.h"
 #include "widgets/TextureGL.h"
+#include "widgets/BitmapFontGL.h"
 
 namespace BackyardBrains {
 
@@ -50,6 +51,15 @@ void ColorDropDownList::paintEvent() {
 	Widgets::Painter::setColor(Widgets::Colors::button);
 	Widgets::Painter::drawTexRect(Widgets::Rect(SLICE_W+2,height()/2-3,width()-SLICE_W-6, 6));
 	glBindTexture(GL_TEXTURE_2D, 0);
+    
+    //if we want to turn OFF the channel display label OFF
+    if(_selection==0)
+    {
+        const Widgets::BitmapFontGL &font = *Widgets::Application::font();
+        Widgets::Painter::setColor(Widgets::Colors::white);
+        font.draw("OFF", 10, 8);
+    }
+
 
 }
 
@@ -104,6 +114,13 @@ void ColorDropDownPopup::paintEvent() {
 		y = std::max(0, y);
 
 		Widgets::Painter::drawRect(Widgets::Rect(2,y+2, SLICE_W-4, h-4));
+        
+        if((i+start)==0 && h>20)
+        {
+            const Widgets::BitmapFontGL &font = *Widgets::Application::font();
+            Widgets::Painter::setColor(Widgets::Colors::white);
+            font.draw("OFF", 10, h-22);
+        }
 	}
 
 }
