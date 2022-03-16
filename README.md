@@ -21,8 +21,8 @@ To build BYB Spike Recorder follow these steps.
   - Update the package database and base packages: ```pacman -Syu```
   - Update the rest of the base packages with: ```pacman -Su```
   - Install Ming32 with: pacman ```-S mingw-w64-i686-toolchain```
-- Checkout this repository.
-- Open Visual Studio Code in root folder
+- Clone this repository.
+- Open Visual Studio Code in root folder of this repository.
 - Check in .vscode/task.json if absolute paths are OK.
 - Ctrl-Shift-B to build. The SpikeRecorder.exe should be built in win/build/ folder.
 
