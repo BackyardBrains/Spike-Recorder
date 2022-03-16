@@ -89,7 +89,7 @@ namespace BackyardBrains
         void FirmwareUpdater::LoadXMLFile()
         {
             try{
-                    XMLDocument doc;
+                    tinyxml2::XMLDocument doc;
                     if(doc.LoadFile("compatibility.xml")!= XML_NO_ERROR)
                     {
                         logError("Can not load XML file");

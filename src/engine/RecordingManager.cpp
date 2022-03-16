@@ -300,7 +300,7 @@ void RecordingManager::scanUSBDevices()
              _currentFirmwares.clear();
 
             //first check if there are firmwares that have same hardware version and same hardware type
-            for( std::list<BYBFirmwareVO>::iterator ti = _xmlFirmwareUpdater.firmwares.begin();
+           /* for( std::list<BYBFirmwareVO>::iterator ti = _xmlFirmwareUpdater.firmwares.begin();
                     ti != _xmlFirmwareUpdater.firmwares.end();
                     ti ++)
                 {
@@ -324,7 +324,7 @@ void RecordingManager::scanUSBDevices()
 
                 }
 
-
+*/
             std::vector<BYBFirmwareVO> tempLocalFirmwares =  getAllFirmwaresFromLocal();
             for (int i=0;i<tempLocalFirmwares.size();i++)
             {
@@ -385,7 +385,7 @@ void RecordingManager::scanUSBDevices()
         {
 
                 std::list<BYBFirmwareVO> tempCurrentFirmwares;
-
+/*
                 //first check if there are firmwares that have same hardware version and hardware type
                 for( std::list<BYBFirmwareVO>::iterator ti = _xmlFirmwareUpdater.firmwares.begin();
                     ti != _xmlFirmwareUpdater.firmwares.end();
@@ -423,7 +423,7 @@ void RecordingManager::scanUSBDevices()
                 {
                     _currentFirmwares.push_back(tempLocalFirmwares[i]);
                 }
-
+*/
                 return tempCurrentFirmwares.size()>0;
         }
 
@@ -436,7 +436,7 @@ void RecordingManager::scanUSBDevices()
         //
         int RecordingManager::getUSBFirmwareUpdateStage()
         {
-
+/*
             if(_bslFirmwareUpdater.currentStage>=0)
             {
                 return _firmwareUpdateStage+_bslFirmwareUpdater.currentStage;
@@ -446,7 +446,8 @@ void RecordingManager::scanUSBDevices()
               _firmwareUpdateStage = 0;
               return -1;
             }
-
+*/
+return -1;
         }
 
         //
@@ -456,7 +457,7 @@ void RecordingManager::scanUSBDevices()
         int RecordingManager::finishAndCleanFirmwareUpdate()
         {
             _firmwareUpdateStage = 0;
-            _bslFirmwareUpdater.currentStage = 0;
+            //_bslFirmwareUpdater.currentStage = 0;
         }
 
 
@@ -466,7 +467,7 @@ void RecordingManager::scanUSBDevices()
         int RecordingManager::prepareForHIDFirmwareUpdate(BYBFirmwareVO * firmwareToUpdate)
         {
                  //download selected firmware from BYB server
-                 if(firmwareToUpdate->location == REMOTE_FIRMWARE)
+            /*     if(firmwareToUpdate->location == REMOTE_FIRMWARE)
                  {
                     if(_xmlFirmwareUpdater.downloadFirmware(firmwareToUpdate))
                     {
@@ -481,16 +482,18 @@ void RecordingManager::scanUSBDevices()
                 _firmwareUpdateStage = 1;
                 _hidUsbManager.askForStateOfPowerRail();
                 shouldStartFirmwareUpdatePresentation = true;//this will open the firmware update view
+                */
                 return 0;
         }
 
         void RecordingManager::startActualFirmwareUpdateOnDevice()
         {
-             //send command to HID device to prepare for update
+       /*      //send command to HID device to prepare for update
              // this will disconnect HID device and it will enumerate with different VID/PID (TI's update VID/PID)
              _hidUsbManager.putInFirmwareUpdateMode();
              //Start procedure of programming firmware
              _bslFirmwareUpdater.customSelectedFirmware("newfirmware.txt");
+             */
         }
 
         int RecordingManager::powerStateOnHID()

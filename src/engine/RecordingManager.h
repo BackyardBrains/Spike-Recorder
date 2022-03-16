@@ -18,9 +18,9 @@
 #include "defaults/DefaultConfig.h"
 
 #if defined(_WIN32)
-    #include "FirmwareUpdater.h"
+   // #include "FirmwareUpdater.h"
     #include "BYBFirmwareVO.h"
-    #include "BSLFirmwareUpdater.h"
+   // #include "BSLFirmwareUpdater.h"
     #define LOCATION_OF_FIRMWARES "./firmwares"
 #endif
 
@@ -367,8 +367,8 @@ private:
 	int _firmwareUpdateStage;//this needs to be outside exclusive win block
 
     #if defined(_WIN32)
-        FirmwareUpdater _xmlFirmwareUpdater;
-        BSLFirmwareUpdater _bslFirmwareUpdater;
+       // FirmwareUpdater _xmlFirmwareUpdater;
+      //  BSLFirmwareUpdater _bslFirmwareUpdater;
         std::list<BYBFirmwareVO> _currentFirmwares;
         std::vector<BYBFirmwareVO> getAllFirmwaresFromLocal();
     #endif
