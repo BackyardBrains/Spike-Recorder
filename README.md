@@ -18,7 +18,7 @@ To build BYB Spike Recorder follow these steps.
 - Get the latest version of Mingw32 via MSYS2:
   - Install MSYS2: https://github.com/msys2/msys2-installer/releases/download/2022-01-28/msys2-x86_64-20220128.exe
   Through MSYS2 terminal (Run "MSYS2 MSYS" from Start menu):
-  - Update the package database and base packages: pacman -Syu
+  - Update the package database and base packages: ```pacman -Syu```
   - Update the rest of the base packages with: pacman -Su
   - Install Ming32 with: pacman -S mingw-w64-i686-toolchain
 - Checkout this repository.
