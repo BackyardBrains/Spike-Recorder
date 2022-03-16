@@ -24,7 +24,7 @@ To build BYB Spike Recorder follow these steps.
 - Checkout this repository.
 - Open Visual Studio Code in root folder
 - Check in .vscode/task.json if absolute paths are OK.
-- Ctrl-Shift-B to build
+- Ctrl-Shift-B to build. The SpikeRecorder.exe should be built in win/build/ folder.
 
 ***on Linux***
 
