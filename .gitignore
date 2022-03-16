@@ -13,6 +13,7 @@ SpikeRecorder.dSYM
 *~.nib
 DerivedData/
 build/
+!win/build
 *.pbxuser
 *.mode1v3
 *.mode2v3
