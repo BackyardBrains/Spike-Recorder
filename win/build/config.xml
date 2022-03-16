@@ -1,0 +1,13 @@
+<Root>
+    <IntValue>10</IntValue>
+    <FloatValue>0.5</FloatValue>
+    <Date day="26" month="April" year="2014" dateFormat="26/04/2014"/>
+    <List>
+        <Item>0</Item>
+        <Item>1</Item>
+        <Item>2</Item>
+        <Item>3</Item>
+        <Item>4</Item>
+        <Item>5</Item>
+    </List>
+</Root>

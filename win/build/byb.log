@@ -1,0 +1,188 @@
+1647429305 869 - BYB SpikeRecorder started on Wed Mar 16 12:15:05 2022
+
+1647429305 877 - Texture 'data/ascii.bmp' loaded.
+1647429305 878 - Initializing font...
+1647429305 878 - Initializing libbass...
+1647429305 956 - Player::setSampleRate - Sample rate set OK
+1647429306 712 - RecordingManager::Device - BASS enable 0 device
+1647429306 960 - Player::setSampleRate - Sample rate set OK
+1647429306 960 - Found 2 recording devices.
+1647429306 963 - Loading Resources...
+1647429306 963 - Texture 'data/pause.bmp' loaded.
+1647429306 963 - Texture 'data/pausehigh.bmp' loaded.
+1647429306 963 - Texture 'data/play.bmp' loaded.
+1647429306 963 - Texture 'data/playhigh.bmp' loaded.
+1647429306 963 - Texture 'data/forward.bmp' loaded.
+1647429306 963 - Texture 'data/forwardhigh.bmp' loaded.
+1647429306 963 - Texture 'data/backward.bmp' loaded.
+1647429306 963 - Texture 'data/backwardhigh.bmp' loaded.
+1647429306 963 - Texture 'data/config.bmp' loaded.
+1647429306 963 - Texture 'data/confighigh.bmp' loaded.
+1647429306 963 - Texture 'data/thresh.bmp' loaded.
+1647429306 963 - Texture 'data/threshhigh.bmp' loaded.
+1647429306 963 - Texture 'data/ekg.bmp' loaded.
+1647429306 963 - Texture 'data/ekghigh.bmp' loaded.
+1647429306 963 - Texture 'data/rec.bmp' loaded.
+1647429306 963 - Texture 'data/rechigh.bmp' loaded.
+1647429306 963 - Texture 'data/file.bmp' loaded.
+1647429306 963 - Texture 'data/filehigh.bmp' loaded.
+1647429306 963 - Texture 'data/analysis.bmp' loaded.
+1647429306 963 - Texture 'data/analysishigh.bmp' loaded.
+1647429306 963 - Texture 'data/fft.bmp' loaded.
+1647429306 963 - Texture 'data/ffthigh.bmp' loaded.
+1647429306 963 - Texture 'data/save.bmp' loaded.
+1647429306 963 - Texture 'data/savehigh.bmp' loaded.
+1647429306 963 - Texture 'data/pin.bmp' loaded.
+1647429306 963 - Texture 'data/threshpin.bmp' loaded.
+1647429306 963 - Texture 'data/dropdown.bmp' loaded.
+1647429306 963 - Texture 'data/gainup.bmp' loaded.
+1647429306 963 - Texture 'data/gaindown.bmp' loaded.
+1647429306 963 - Texture 'data/ckboxon.bmp' loaded.
+1647429306 963 - Texture 'data/ckboxoff.bmp' loaded.
+1647429306 963 - Texture 'data/plotview.bmp' loaded.
+1647429306 963 - Texture 'data/plotviewhigh.bmp' loaded.
+1647429306 963 - Texture 'data/plotviewdown.bmp' loaded.
+1647429306 963 - Texture 'data/plotviewdownhigh.bmp' loaded.
+1647429306 963 - Texture 'data/disconnected.bmp' loaded.
+1647429306 963 - Texture 'data/connected-high.bmp' loaded.
+1647429306 963 - Texture 'data/disconnected-high.bmp' loaded.
+1647429306 963 - Texture 'data/connected.bmp' loaded.
+1647429306 963 - Texture 'data/bdisconnected.bmp' loaded.
+1647429306 963 - Texture 'data/bconnected-high.bmp' loaded.
+1647429306 963 - Texture 'data/bdisconnected-high.bmp' loaded.
+1647429306 963 - Texture 'data/bconnected.bmp' loaded.
+1647429306 963 - Texture 'data/update.bmp' loaded.
+1647429306 963 - Texture 'data/update-high.bmp' loaded.
+1647429306 963 - Texture 'data/bupdate.bmp' loaded.
+1647429306 963 - Texture 'data/bupdate-high.bmp' loaded.
+1647429306 963 - Texture 'data/usbcon.bmp' loaded.
+1647429306 963 - Texture 'data/usbconhigh.bmp' loaded.
+1647429306 963 - Texture 'data/usbdiscon.bmp' loaded.
+1647429306 963 - Texture 'data/neuronprocon.bmp' loaded.
+1647429306 964 - Texture 'data/neuronproconhigh.bmp' loaded.
+1647429306 964 - Texture 'data/neuronprodiscon.bmp' loaded.
+1647429306 964 - Texture 'data/emgprocon.bmp' loaded.
+1647429306 964 - Texture 'data/emgproconhigh.bmp' loaded.
+1647429306 964 - Texture 'data/emgprodiscon.bmp' loaded.
+1647429306 964 - Texture 'data/plantcon.bmp' loaded.
+1647429306 964 - Texture 'data/plantconhigh.bmp' loaded.
+1647429306 964 - Texture 'data/plantdiscon.bmp' loaded.
+1647429306 964 - Texture 'data/musclecon.bmp' loaded.
+1647429306 964 - Texture 'data/muscleconhigh.bmp' loaded.
+1647429306 964 - Texture 'data/musclediscon.bmp' loaded.
+1647429306 964 - Texture 'data/neuroncon.bmp' loaded.
+1647429306 964 - Texture 'data/neurondiscon.bmp' loaded.
+1647429306 964 - Texture 'data/heartcon.bmp' loaded.
+1647429306 964 - Texture 'data/heartconhigh.bmp' loaded.
+1647429306 964 - Texture 'data/heartdiscon.bmp' loaded.
+1647429306 964 - Texture 'data/conne1.bmp' loaded.
+1647429306 964 - Texture 'data/conne2.bmp' loaded.
+1647429306 964 - Texture 'data/conne3.bmp' loaded.
+1647429306 964 - Texture 'data/conne4.bmp' loaded.
+1647429306 964 - Texture 'data/conne5.bmp' loaded.
+1647429306 964 - Texture 'data/conne6.bmp' loaded.
+1647429306 964 - Texture 'data/dconne1.bmp' loaded.
+1647429306 964 - Texture 'data/dconne2.bmp' loaded.
+1647429306 964 - Texture 'data/dconne3.bmp' loaded.
+1647429306 964 - Texture 'data/dconne4.bmp' loaded.
+1647429306 964 - Texture 'data/dconne5.bmp' loaded.
+1647429306 964 - Texture 'data/dconne6.bmp' loaded.
+1647429306 964 - Texture 'data/connn1.bmp' loaded.
+1647429306 964 - Texture 'data/connn2.bmp' loaded.
+1647429306 964 - Texture 'data/connn3.bmp' loaded.
+1647429306 964 - Texture 'data/connn4.bmp' loaded.
+1647429306 964 - Texture 'data/connn5.bmp' loaded.
+1647429306 964 - Texture 'data/connn6.bmp' loaded.
+1647429306 964 - Texture 'data/dconnn1.bmp' loaded.
+1647429306 964 - Texture 'data/dconnn2.bmp' loaded.
+1647429306 964 - Texture 'data/dconnn3.bmp' loaded.
+1647429306 964 - Texture 'data/dconnn4.bmp' loaded.
+1647429306 964 - Texture 'data/dconnn5.bmp' loaded.
+1647429306 964 - Texture 'data/dconnn6.bmp' loaded.
+1647429306 964 - Texture 'data/connm1.bmp' loaded.
+1647429306 964 - Texture 'data/connm2.bmp' loaded.
+1647429306 964 - Texture 'data/connm3.bmp' loaded.
+1647429306 964 - Texture 'data/connm4.bmp' loaded.
+1647429306 964 - Texture 'data/connm5.bmp' loaded.
+1647429306 964 - Texture 'data/connm6.bmp' loaded.
+1647429306 964 - Texture 'data/dconnm1.bmp' loaded.
+1647429306 964 - Texture 'data/dconnm2.bmp' loaded.
+1647429306 964 - Texture 'data/dconnm3.bmp' loaded.
+1647429306 964 - Texture 'data/dconnm4.bmp' loaded.
+1647429306 964 - Texture 'data/dconnm5.bmp' loaded.
+1647429306 964 - Texture 'data/dconnm6.bmp' loaded.
+1647429306 964 - Texture 'data/connp1.bmp' loaded.
+1647429306 964 - Texture 'data/connp2.bmp' loaded.
+1647429306 965 - Texture 'data/connp3.bmp' loaded.
+1647429306 965 - Texture 'data/connp4.bmp' loaded.
+1647429306 965 - Texture 'data/connp5.bmp' loaded.
+1647429306 965 - Texture 'data/connp6.bmp' loaded.
+1647429306 965 - Texture 'data/dconnp1.bmp' loaded.
+1647429306 965 - Texture 'data/dconnp2.bmp' loaded.
+1647429306 965 - Texture 'data/dconnp3.bmp' loaded.
+1647429306 965 - Texture 'data/dconnp4.bmp' loaded.
+1647429306 965 - Texture 'data/dconnp5.bmp' loaded.
+1647429306 965 - Texture 'data/dconnp6.bmp' loaded.
+1647429306 965 - Texture 'data/heart.bmp' loaded.
+1647429306 965 - Texture 'data/speaker.bmp' loaded.
+1647429306 965 - Texture 'data/speakeroff.bmp' loaded.
+1647429306 965 - Texture 'data/bncconn.bmp' loaded.
+1647429306 965 - Texture 'data/bncconnhigh.bmp' loaded.
+1647429306 965 - Texture 'data/rtimer.bmp' loaded.
+1647429306 965 - Texture 'data/rtimerhigh.bmp' loaded.
+1647429306 965 - Texture 'data/devbrd.bmp' loaded.
+1647429306 965 - Texture 'data/devbrdhigh.bmp' loaded.
+1647429306 965 - Texture 'data/okbtn.bmp' loaded.
+1647429306 965 - Texture 'data/okbtnhigh.bmp' loaded.
+1647429306 965 - Texture 'data/trigger.bmp' loaded.
+1647429306 965 - Texture 'data/triggerhigh.bmp' loaded.
+1647429306 965 - Texture 'data/e1.bmp' loaded.
+1647429306 965 - Texture 'data/e2.bmp' loaded.
+1647429306 965 - Texture 'data/e3.bmp' loaded.
+1647429306 965 - Texture 'data/e4.bmp' loaded.
+1647429306 965 - Texture 'data/e5.bmp' loaded.
+1647429306 965 - Texture 'data/e6.bmp' loaded.
+1647429306 965 - Texture 'data/e7.bmp' loaded.
+1647429306 965 - Texture 'data/e8.bmp' loaded.
+1647429306 965 - Texture 'data/e9.bmp' loaded.
+1647429306 965 - Texture 'data/e10.bmp' loaded.
+1647429306 965 - Texture 'data/analysiscrossed.bmp' loaded.
+1647429306 965 - Texture 'data/fftcrossed.bmp' loaded.
+1647429306 965 - Texture 'data/threshcrossed.bmp' loaded.
+1647429306 965 - Texture 'data/configcrossed.bmp' loaded.
+1647429306 965 - Texture 'data/calibratebtn-high.bmp' loaded.
+1647429306 965 - Texture 'data/cancel-high.bmp' loaded.
+1647429306 965 - Texture 'data/calibratebtn-normal.bmp' loaded.
+1647429306 965 - Texture 'data/cancel-normal.bmp' loaded.
+1647429306 965 - Texture 'data/okbtn-normal.bmp' loaded.
+1647429306 965 - Texture 'data/okbtn-high.bmp' loaded.
+1647429306 965 - Creating Window...
+1647429307 660 - 
+New cycle in serial scanning thread ---------------------------------
+1647429307 661 - checkAllPortsForArduino - Check for Arduino boards
+1647429307 662 - checkAllPortsForArduino Before lock
+1647429307 662 - checkAllPortsForArduino After lock
+1647429307 662 - checkAllPortsForArduino relaese lock
+1647429307 745 - Starting GUI...
+1647429308 362 - 
+New cycle in serial scanning thread ---------------------------------
+1647429308 362 - checkAllPortsForArduino - Check for Arduino boards
+1647429308 363 - checkAllPortsForArduino Before lock
+1647429308 363 - checkAllPortsForArduino After lock
+1647429308 363 - checkAllPortsForArduino relaese lock
+1647429309 63 - 
+New cycle in serial scanning thread ---------------------------------
+1647429309 63 - checkAllPortsForArduino - Check for Arduino boards
+1647429309 64 - checkAllPortsForArduino Before lock
+1647429309 64 - checkAllPortsForArduino After lock
+1647429309 64 - checkAllPortsForArduino relaese lock
+1647429309 765 - 
+New cycle in serial scanning thread ---------------------------------
+1647429309 765 - checkAllPortsForArduino - Check for Arduino boards
+1647429309 765 - checkAllPortsForArduino Before lock
+1647429309 765 - checkAllPortsForArduino After lock
+1647429309 765 - checkAllPortsForArduino relaese lock
+1647429310 8 - BYB SpikeRecorder exited normally.
+1647429310 9 - RecordingManager::Device - BASS disable 0 device
+1647429310 67 - libbass deinitialized.
+1647429310 162 - GUI closed.
