@@ -3,7 +3,7 @@
 	"tasks": [
 		{
 			"type": "cppbuild",
-			"label": "C/C++: g++.exe build active file",
+			"label": "C/C++: GCC build for Spike Recorder",
 			"command": "C:\\msys64\\mingw32\\bin\\gcc.exe",
 			"args": [
 				"-fdiagnostics-color=always",
@@ -12,8 +12,8 @@
 				"-std=gnu++11",
 				"-x",
 				"c++",
-				"-IC:/sdk/x32/SDL2/include/SDL2",
-				"-IC:/sdk/x32/SDL2Image/include/SDL2",
+				"-I${workspaceFolder}/support/SDL2/include/SDL2",
+				"-I${workspaceFolder}/support/SDL2Image/include/SDL2",
 				"-I${workspaceFolder}/support",
 				"-I${workspaceFolder}/src",
 				"-I${workspaceFolder}/src/libraries",
@@ -165,9 +165,9 @@
 				"${workspaceFolder}/support/mingw.thread.h",
 				"${workspaceFolder}/support/sigslot.h",
 				"-o",
-				"${workspaceFolder}/build/SpikeRecorder.exe",
-				"-LC:/sdk/x32/SDL2/lib",
-				"-LC:/sdk/x32/SDL2Image/lib",
+				"${workspaceFolder}/win/build/SpikeRecorder.exe",
+				"-L${workspaceFolder}/support/SDL2/lib",
+				"-L${workspaceFolder}/support/SDL2Image/lib",
 				"-LC:/msys64/mingw32/lib",
 				"-lmingw32",
 				"-lSDL2main",
