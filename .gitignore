@@ -25,3 +25,4 @@ build/
 xcuserdata
 
 *.xccheckout
+win/build/byb.log
