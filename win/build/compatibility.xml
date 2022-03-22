@@ -47,15 +47,8 @@
 		<build>
 			<version>1.7.0</version><!-- This version has BYB VID-->
 			<firmwares>
-				<firmwareid>16</firmwareid>
-				<firmwareid>17</firmwareid>
-				<firmwareid>18</firmwareid>
-				<firmwareid>19</firmwareid>
-				<firmwareid>20</firmwareid>
-				<firmwareid>21</firmwareid>
-				<firmwareid>22</firmwareid>
-				<firmwareid>23</firmwareid>
-				<firmwareid>24</firmwareid>
+				<firmwareid>26</firmwareid>
+				<firmwareid>25</firmwareid>
 			</firmwares>
 		</build>
 	</software>
@@ -183,7 +176,7 @@
 		<firmware>
 			<id>21</id>
 			<version>1.08</version>
-			<desc>Muscle SB Pro H:1.0</desc>
+			<desc>Muscle SpikerBox Pro</desc>
 			<type>MUSCLESB</type>
 			<hardware>1.0</hardware>
 			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f1_08muscle1_0.txt</url>
@@ -199,7 +192,7 @@
 		<firmware>
 			<id>23</id>
 			<version>1.08</version>
-			<desc>Neuron SB Pro H:1.0</desc>
+			<desc>Neuron SpikerBox Pro H:1.0</desc>
 			<type>NEURONSB</type>
 			<hardware>1.0</hardware>
 			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f1_08neuron1_0.txt</url>
@@ -211,6 +204,22 @@
 			<type>NEURONSB</type>
 			<hardware>1.0</hardware>
 			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f1_09neuron1_0.txt</url>
+		</firmware>
+		<firmware>
+			<id>25</id>
+			<version>1.11</version>
+			<desc>Muscle SpikerBox Pro</desc>
+			<type>MUSCLESB</type>
+			<hardware>1.0</hardware>
+			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f1_11muscle1_0.txt</url>
+		</firmware>
+		<firmware>
+			<id>26</id>
+			<version>1.11</version>
+			<desc>Neuron SpikerBox Pro</desc>
+			<type>NEURONSB</type>
+			<hardware>1.0</hardware>
+			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f1_11neuron1_0.txt</url>
 		</firmware>
 	</firmwares>
 </compatibility>
