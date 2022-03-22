@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<DOCUMENT Type="Advanced Installer" CreateVersion="19.2" version="19.2" Modules="simple" RootPath="." Language="en" Id="{A22F23B5-CD96-48D0-9DF6-9A5A18890EEA}">
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiPropsComponent">
+    <ROW Property="AI_BITMAP_DISPLAY_MODE" Value="0"/>
+    <ROW Property="AI_CURRENT_YEAR" Value="2022" ValueLocId="-"/>
+    <ROW Property="ALLUSERS" Value="1"/>
+    <ROW Property="ARPCOMMENTS" Value="This installer database contains the logic and data required to install [|ProductName]." ValueLocId="*"/>
+    <ROW Property="ARPCONTACT" Value="hello@backyardbrains.com"/>
+    <ROW Property="ARPHELPLINK" Value="https://backyardbrains.com/products/files/SpikeRecorderDocumentation.2018.02.pdf"/>
+    <ROW Property="ARPHELPTELEPHONE" Value="+1 (855) 855-438-7745"/>
+    <ROW Property="ARPNOMODIFY" MultiBuildValue="DefaultBuild:1"/>
+    <ROW Property="ARPNOREPAIR" Value="1"/>
+    <ROW Property="ARPPRODUCTICON" Value="SpikeRecorder.exe" Type="8"/>
+    <ROW Property="ARPURLINFOABOUT" Value="https://help.backyardbrains.com/support/home"/>
+    <ROW Property="ARPURLUPDATEINFO" Value="https://backyardbrains.com/products/spikerecorder"/>
+    <ROW Property="Manufacturer" Value="Backyard Brains"/>
+    <ROW Property="ProductCode" Value="1033:{E94D158D-EACF-43C3-9FBC-FA0EB27501B4} " Type="16"/>
+    <ROW Property="ProductLanguage" Value="1033"/>
+    <ROW Property="ProductName" Value="Spike Recorder"/>
+    <ROW Property="ProductVersion" Value="1.9.13"/>
+    <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND"/>
+    <ROW Property="UpgradeCode" Value="{28EA391C-48E9-4B2A-901E-2CCF5B8E7556}"/>
+    <ROW Property="WindowsType9X" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
+    <ROW Property="WindowsType9XDisplay" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT40" MultiBuildValue="DefaultBuild:Windows NT 4.0" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT40Display" MultiBuildValue="DefaultBuild:Windows NT 4.0" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT50" MultiBuildValue="DefaultBuild:Windows 2000" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT50Display" MultiBuildValue="DefaultBuild:Windows 2000" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT5X" MultiBuildValue="DefaultBuild:Windows XP/2003" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT5XDisplay" MultiBuildValue="DefaultBuild:Windows XP/2003" ValueLocId="-"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiDirsComponent">
+    <ROW Directory="AE005188F84ED7A6F97EA37A6B11A3_Dir" Directory_Parent="ISSetupPrerequisites_Dir" DefaultDir="{29AE0~1|{29AE0051-88F8-4ED7-A6F9-7EA37A6B11A3}"/>
+    <ROW Directory="APPDIR" Directory_Parent="TARGETDIR" DefaultDir="APPDIR:." IsPseudoRoot="1"/>
+    <ROW Directory="BF2F04CD3D1F444e8960D08EBD285C3_Dir" Directory_Parent="ISSetupPrerequisites_Dir" DefaultDir="{BF2F0~1|{BF2F04CD-3D1F-444e-8960-D08EBD285C3F}"/>
+    <ROW Directory="BackyardBrains_Dir" Directory_Parent="ProgramFilesFolder" DefaultDir="BACKYA~1|Backyard Brains"/>
+    <ROW Directory="DesktopFolder" Directory_Parent="TARGETDIR" DefaultDir="DESKTO~1|DesktopFolder" IsPseudoRoot="1"/>
+    <ROW Directory="ISSetupPrerequisites_Dir" Directory_Parent="SpikeRecorder_Dir" DefaultDir="ISSETU~1|ISSetupPrerequisites"/>
+    <ROW Directory="ProgramFilesFolder" Directory_Parent="TARGETDIR" DefaultDir="PROGRA~1|ProgramFilesFolder" IsPseudoRoot="1"/>
+    <ROW Directory="SpikeRecorder_Dir" Directory_Parent="BackyardBrains_Dir" DefaultDir="SPIKER~1|SpikeRecorder"/>
+    <ROW Directory="TARGETDIR" DefaultDir="SourceDir"/>
+    <ROW Directory="data_Dir" Directory_Parent="SpikeRecorder_Dir" DefaultDir="data"/>
+    <ROW Directory="firmwares_Dir" Directory_Parent="SpikeRecorder_Dir" DefaultDir="FIRMWA~1|firmwares"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
+    <ROW Component="APPDIR" ComponentId="{65D6A08F-C02E-48F3-9EE2-A9BADF78AB69}" Directory_="APPDIR" Attributes="0"/>
+    <ROW Component="BSL430.dll" ComponentId="{28D62981-34E1-4F45-8CD7-18BF6EBA9302}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="BSL430.dll"/>
+    <ROW Component="BSL430.lib" ComponentId="{02C6D0C6-1EF1-497E-88D1-D5E769278BFB}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="BSL430.lib" Type="0"/>
+    <ROW Component="ProductInformation" ComponentId="{3B60805D-EB29-432D-A91A-F2E887F9402E}" Directory_="APPDIR" Attributes="4" KeyPath="Version"/>
+    <ROW Component="SDL2.dll" ComponentId="{EC2E4730-7A69-4415-B1EB-80DFF44244AC}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="SDL2.dll"/>
+    <ROW Component="SDL2_image.dll" ComponentId="{764B61A1-F982-42DE-963B-9EE13977590F}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="SDL2_image.dll"/>
+    <ROW Component="SpikeRecorder.exe" ComponentId="{3CEC6A27-D574-4ACE-BF97-FAEA04722E36}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="SpikeRecorder.exe"/>
+    <ROW Component="analysis.bmp" ComponentId="{E8583EBF-26EA-4D5C-8EFF-DDA03EEF9D93}" Directory_="data_Dir" Attributes="0" KeyPath="analysis.bmp" Type="0"/>
+    <ROW Component="bass.dll" ComponentId="{79CD145D-27FE-4C73-81E4-B962FE6853A8}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="bass.dll"/>
+    <ROW Component="bass_aac.dll" ComponentId="{296E2E2F-DBB4-44B9-9FC2-2839AD2B3AD3}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="bass_aac.dll"/>
+    <ROW Component="bassalac.dll" ComponentId="{D741B032-971F-406D-BA12-A902D6C55E7C}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="bassalac.dll"/>
+    <ROW Component="firmwares" ComponentId="{1C80071C-68D9-4EF7-9DCB-BF18726E7AAA}" Directory_="firmwares_Dir" Attributes="0"/>
+    <ROW Component="hidapi.dll" ComponentId="{4CA721DA-D313-49D7-86E3-7CDA88533049}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="hidapi.dll"/>
+    <ROW Component="libcurl.dll" ComponentId="{70D635A8-DD48-4985-9AB3-58A9DCA6234C}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="libcurl.dll"/>
+    <ROW Component="libeay32.dll" ComponentId="{6D0E96D5-4AF7-43CF-ACAE-F4FA37DE202C}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="libeay32.dll"/>
+    <ROW Component="libgcc_s_dw21.dll" ComponentId="{3CD2B20F-E697-429F-8D74-4F44AFA38435}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="libgcc_s_dw21.dll"/>
+    <ROW Component="libjpeg9.dll" ComponentId="{4B7C611C-FEE9-428C-9C59-28C8518957D0}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="libjpeg9.dll"/>
+    <ROW Component="libpng1616.dll" ComponentId="{BA6A7BA8-2DC7-4F4E-B449-2124B8D973C3}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="libpng1616.dll"/>
+    <ROW Component="libssh2.dll" ComponentId="{9323E765-78C5-44AA-9AE1-4158358D974B}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="libssh2.dll"/>
+    <ROW Component="libstdc6.dll" ComponentId="{1FFBF781-04CB-4462-B59C-4A0E85011F04}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="libstdc6.dll"/>
+    <ROW Component="libtiff5.dll" ComponentId="{73D6B528-36B3-4F95-BAC5-676F160B8E5D}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="libtiff5.dll"/>
+    <ROW Component="libwebp4.dll" ComponentId="{9715CEA5-ADC1-4BF5-A581-CEF7B0F4C621}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="libwebp4.dll"/>
+    <ROW Component="libwinpthread1.dll" ComponentId="{B8179BC0-70E4-496C-9D15-003040505333}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="libwinpthread1.dll"/>
+    <ROW Component="msvcr120.dll" ComponentId="{0488C70B-37E9-4E8E-8390-95DB355576E3}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="msvcr120.dll"/>
+    <ROW Component="ssleay32.dll" ComponentId="{5E830BEA-576D-481C-8B9E-4265E4E08C45}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="ssleay32.dll"/>
+    <ROW Component="vc_redist.x86.exe" ComponentId="{658815E5-E1C7-48DF-B189-B153039B67A0}" Directory_="AE005188F84ED7A6F97EA37A6B11A3_Dir" Attributes="0" KeyPath="vc_redist.x86.exe"/>
+    <ROW Component="vcredist_x86.exe" ComponentId="{3C2E3802-E530-421C-B9E4-4770DB0AB5D0}" Directory_="BF2F04CD3D1F444e8960D08EBD285C3_Dir" Attributes="0" KeyPath="vcredist_x86.exe"/>
+    <ROW Component="zlib1.dll" ComponentId="{DE412FA7-58E4-4B45-BED7-DC7A4B3CAB23}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="zlib1.dll"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
+    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0"/>
+    <ATTRIBUTE name="CurrentFeature" value="MainFeature"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
+    <ROW File="bass.dll" Component_="bass.dll" FileName="bass.dll" Attributes="0" SourcePath="..\build\bass.dll" SelfReg="false"/>
+    <ROW File="bass_aac.dll" Component_="bass_aac.dll" FileName="bass_aac.dll" Attributes="0" SourcePath="..\build\bass_aac.dll" SelfReg="false"/>
+    <ROW File="bassalac.dll" Component_="bassalac.dll" FileName="bassalac.dll" Attributes="0" SourcePath="..\build\bassalac.dll" SelfReg="false"/>
+    <ROW File="BSL430.dll" Component_="BSL430.dll" FileName="BSL430.dll" Attributes="0" SourcePath="..\build\BSL430.dll" SelfReg="false"/>
+    <ROW File="BSL430.lib" Component_="BSL430.lib" FileName="BSL430.lib" Attributes="0" SourcePath="..\build\BSL430.lib" SelfReg="false"/>
+    <ROW File="bsltext.txt" Component_="BSL430.lib" FileName="bsltext.txt" Attributes="0" SourcePath="..\build\bsltext.txt" SelfReg="false"/>
+    <ROW File="byb.log" Component_="BSL430.lib" FileName="byb.log" Attributes="0" SourcePath="..\build\byb.log" SelfReg="false"/>
+    <ROW File="compatibility.xml" Component_="BSL430.lib" FileName="COMPAT~1.XML|compatibility.xml" Attributes="0" SourcePath="..\build\compatibility.xml" SelfReg="false"/>
+    <ROW File="config.xml" Component_="BSL430.lib" FileName="config.xml" Attributes="0" SourcePath="..\build\config.xml" SelfReg="false"/>
+    <ROW File="hidapi.dll" Component_="hidapi.dll" FileName="hidapi.dll" Attributes="0" SourcePath="..\build\hidapi.dll" SelfReg="false"/>
+    <ROW File="hidapi.lib" Component_="BSL430.lib" FileName="hidapi.lib" Attributes="0" SourcePath="..\build\hidapi.lib" SelfReg="false"/>
+    <ROW File="libcurl.dll" Component_="libcurl.dll" FileName="libcurl.dll" Attributes="0" SourcePath="..\build\libcurl.dll" SelfReg="false"/>
+    <ROW File="libeay32.dll" Component_="libeay32.dll" FileName="libeay32.dll" Attributes="0" SourcePath="..\build\libeay32.dll" SelfReg="false"/>
+    <ROW File="libgcc_s_dw21.dll" Component_="libgcc_s_dw21.dll" FileName="LIBGCC~1.DLL|libgcc_s_dw2-1.dll" Attributes="0" SourcePath="..\build\libgcc_s_dw2-1.dll" SelfReg="false"/>
+    <ROW File="libjpeg9.dll" Component_="libjpeg9.dll" FileName="LIBJPE~1.DLL|libjpeg-9.dll" Attributes="0" SourcePath="..\build\libjpeg-9.dll" SelfReg="false"/>
+    <ROW File="libpng1616.dll" Component_="libpng1616.dll" FileName="LIBPNG~1.DLL|libpng16-16.dll" Attributes="0" SourcePath="..\build\libpng16-16.dll" SelfReg="false"/>
+    <ROW File="libssh2.dll" Component_="libssh2.dll" FileName="libssh2.dll" Attributes="0" SourcePath="..\build\libssh2.dll" SelfReg="false"/>
+    <ROW File="libstdc6.dll" Component_="libstdc6.dll" FileName="LIBSTD~1.DLL|libstdc++-6.dll" Attributes="0" SourcePath="..\build\libstdc++-6.dll" SelfReg="false"/>
+    <ROW File="libtiff5.dll" Component_="libtiff5.dll" FileName="LIBTIF~1.DLL|libtiff-5.dll" Attributes="0" SourcePath="..\build\libtiff-5.dll" SelfReg="false"/>
+    <ROW File="libwebp4.dll" Component_="libwebp4.dll" FileName="LIBWEB~1.DLL|libwebp-4.dll" Attributes="0" SourcePath="..\build\libwebp-4.dll" SelfReg="false"/>
+    <ROW File="libwinpthread1.dll" Component_="libwinpthread1.dll" FileName="LIBWIN~1.DLL|libwinpthread-1.dll" Attributes="0" SourcePath="..\build\libwinpthread-1.dll" SelfReg="false"/>
+    <ROW File="msvcr120.dll" Component_="msvcr120.dll" FileName="msvcr120.dll" Attributes="0" SourcePath="..\build\msvcr120.dll" SelfReg="false"/>
+    <ROW File="newfirmware.txt" Component_="BSL430.lib" FileName="NEWFIR~1.TXT|newfirmware.txt" Attributes="0" SourcePath="..\build\newfirmware.txt" SelfReg="false"/>
+    <ROW File="SDL2.dll" Component_="SDL2.dll" FileName="SDL2.dll" Attributes="0" SourcePath="..\build\SDL2.dll" SelfReg="false"/>
+    <ROW File="SDL2_image.dll" Component_="SDL2_image.dll" FileName="SDL2_I~1.DLL|SDL2_image.dll" Attributes="0" SourcePath="..\build\SDL2_image.dll" SelfReg="false"/>
+    <ROW File="SpikeRecorder.exe" Component_="SpikeRecorder.exe" FileName="SPIKER~1.EXE|SpikeRecorder.exe" Attributes="0" SourcePath="..\build\SpikeRecorder.exe" SelfReg="false" DigSign="true"/>
+    <ROW File="SpikeRecorder.ico" Component_="BSL430.lib" FileName="SPIKER~1.ICO|SpikeRecorder.ico" Attributes="0" SourcePath="..\build\SpikeRecorder.ico" SelfReg="false"/>
+    <ROW File="ssleay32.dll" Component_="ssleay32.dll" FileName="ssleay32.dll" Attributes="0" SourcePath="..\build\ssleay32.dll" SelfReg="false"/>
+    <ROW File="zlib1.dll" Component_="zlib1.dll" FileName="zlib1.dll" Attributes="0" SourcePath="..\build\zlib1.dll" SelfReg="false"/>
+    <ROW File="analysis.bmp" Component_="analysis.bmp" FileName="analysis.bmp" Attributes="0" SourcePath="..\build\data\analysis.bmp" SelfReg="false"/>
+    <ROW File="analysis.svg" Component_="analysis.bmp" FileName="analysis.svg" Attributes="0" SourcePath="..\build\data\analysis.svg" SelfReg="false"/>
+    <ROW File="analysiscrossed.bmp" Component_="analysis.bmp" FileName="ANALYS~1.BMP|analysiscrossed.bmp" Attributes="0" SourcePath="..\build\data\analysiscrossed.bmp" SelfReg="false"/>
+    <ROW File="analysiscrossed.svg" Component_="analysis.bmp" FileName="ANALYS~1.SVG|analysiscrossed.svg" Attributes="0" SourcePath="..\build\data\analysiscrossed.svg" SelfReg="false"/>
+    <ROW File="analysishigh.bmp" Component_="analysis.bmp" FileName="ANALYS~2.BMP|analysishigh.bmp" Attributes="0" SourcePath="..\build\data\analysishigh.bmp" SelfReg="false"/>
+    <ROW File="ascii.bmp" Component_="analysis.bmp" FileName="ascii.bmp" Attributes="0" SourcePath="..\build\data\ascii.bmp" SelfReg="false"/>
+    <ROW File="backward.bmp" Component_="analysis.bmp" FileName="backward.bmp" Attributes="0" SourcePath="..\build\data\backward.bmp" SelfReg="false"/>
+    <ROW File="backward.svg" Component_="analysis.bmp" FileName="backward.svg" Attributes="0" SourcePath="..\build\data\backward.svg" SelfReg="false"/>
+    <ROW File="backwardhigh.bmp" Component_="analysis.bmp" FileName="BACKWA~1.BMP|backwardhigh.bmp" Attributes="0" SourcePath="..\build\data\backwardhigh.bmp" SelfReg="false"/>
+    <ROW File="bconnectedhigh.bmp" Component_="analysis.bmp" FileName="BCONNE~1.BMP|bconnected-high.bmp" Attributes="0" SourcePath="..\build\data\bconnected-high.bmp" SelfReg="false"/>
+    <ROW File="bconnected.bmp" Component_="analysis.bmp" FileName="BCONNE~2.BMP|bconnected.bmp" Attributes="0" SourcePath="..\build\data\bconnected.bmp" SelfReg="false"/>
+    <ROW File="bdisconnectedhigh.bmp" Component_="analysis.bmp" FileName="BDISCO~1.BMP|bdisconnected-high.bmp" Attributes="0" SourcePath="..\build\data\bdisconnected-high.bmp" SelfReg="false"/>
+    <ROW File="bdisconnected.bmp" Component_="analysis.bmp" FileName="BDISCO~2.BMP|bdisconnected.bmp" Attributes="0" SourcePath="..\build\data\bdisconnected.bmp" SelfReg="false"/>
+    <ROW File="bncconn.bmp" Component_="analysis.bmp" FileName="bncconn.bmp" Attributes="0" SourcePath="..\build\data\bncconn.bmp" SelfReg="false"/>
+    <ROW File="bncconn.svg" Component_="analysis.bmp" FileName="bncconn.svg" Attributes="0" SourcePath="..\build\data\bncconn.svg" SelfReg="false"/>
+    <ROW File="bncconnhigh.bmp" Component_="analysis.bmp" FileName="BNCCON~1.BMP|bncconnhigh.bmp" Attributes="0" SourcePath="..\build\data\bncconnhigh.bmp" SelfReg="false"/>
+    <ROW File="bupdatehigh.bmp" Component_="analysis.bmp" FileName="BUPDAT~1.BMP|bupdate-high.bmp" Attributes="0" SourcePath="..\build\data\bupdate-high.bmp" SelfReg="false"/>
+    <ROW File="bupdate.bmp" Component_="analysis.bmp" FileName="bupdate.bmp" Attributes="0" SourcePath="..\build\data\bupdate.bmp" SelfReg="false"/>
+    <ROW File="calibratebtnhigh.bmp" Component_="analysis.bmp" FileName="CALIBR~1.BMP|calibratebtn-high.bmp" Attributes="0" SourcePath="..\build\data\calibratebtn-high.bmp" SelfReg="false"/>
+    <ROW File="calibratebtnnormal.bmp" Component_="analysis.bmp" FileName="CALIBR~2.BMP|calibratebtn-normal.bmp" Attributes="0" SourcePath="..\build\data\calibratebtn-normal.bmp" SelfReg="false"/>
+    <ROW File="cancelhigh.bmp" Component_="analysis.bmp" FileName="CANCEL~1.BMP|cancel-high.bmp" Attributes="0" SourcePath="..\build\data\cancel-high.bmp" SelfReg="false"/>
+    <ROW File="cancelnormal.bmp" Component_="analysis.bmp" FileName="CANCEL~2.BMP|cancel-normal.bmp" Attributes="0" SourcePath="..\build\data\cancel-normal.bmp" SelfReg="false"/>
+    <ROW File="ckboxoff.bmp" Component_="analysis.bmp" FileName="ckboxoff.bmp" Attributes="0" SourcePath="..\build\data\ckboxoff.bmp" SelfReg="false"/>
+    <ROW File="ckboxoff.svg" Component_="analysis.bmp" FileName="ckboxoff.svg" Attributes="0" SourcePath="..\build\data\ckboxoff.svg" SelfReg="false"/>
+    <ROW File="ckboxon.bmp" Component_="analysis.bmp" FileName="ckboxon.bmp" Attributes="0" SourcePath="..\build\data\ckboxon.bmp" SelfReg="false"/>
+    <ROW File="ckboxon.svg" Component_="analysis.bmp" FileName="ckboxon.svg" Attributes="0" SourcePath="..\build\data\ckboxon.svg" SelfReg="false"/>
+    <ROW File="config.bmp" Component_="analysis.bmp" FileName="config.bmp" Attributes="0" SourcePath="..\build\data\config.bmp" SelfReg="false"/>
+    <ROW File="config.svg" Component_="analysis.bmp" FileName="config.svg" Attributes="0" SourcePath="..\build\data\config.svg" SelfReg="false"/>
+    <ROW File="configcrossed.bmp" Component_="analysis.bmp" FileName="CONFIG~1.BMP|configcrossed.bmp" Attributes="0" SourcePath="..\build\data\configcrossed.bmp" SelfReg="false"/>
+    <ROW File="configcrossed.svg" Component_="analysis.bmp" FileName="CONFIG~1.SVG|configcrossed.svg" Attributes="0" SourcePath="..\build\data\configcrossed.svg" SelfReg="false"/>
+    <ROW File="confighigh.bmp" Component_="analysis.bmp" FileName="CONFIG~2.BMP|confighigh.bmp" Attributes="0" SourcePath="..\build\data\confighigh.bmp" SelfReg="false"/>
+    <ROW File="conne1.bmp" Component_="analysis.bmp" FileName="conne1.bmp" Attributes="0" SourcePath="..\build\data\conne1.bmp" SelfReg="false"/>
+    <ROW File="conne2.bmp" Component_="analysis.bmp" FileName="conne2.bmp" Attributes="0" SourcePath="..\build\data\conne2.bmp" SelfReg="false"/>
+    <ROW File="conne3.bmp" Component_="analysis.bmp" FileName="conne3.bmp" Attributes="0" SourcePath="..\build\data\conne3.bmp" SelfReg="false"/>
+    <ROW File="conne4.bmp" Component_="analysis.bmp" FileName="conne4.bmp" Attributes="0" SourcePath="..\build\data\conne4.bmp" SelfReg="false"/>
+    <ROW File="conne5.bmp" Component_="analysis.bmp" FileName="conne5.bmp" Attributes="0" SourcePath="..\build\data\conne5.bmp" SelfReg="false"/>
+    <ROW File="conne6.bmp" Component_="analysis.bmp" FileName="conne6.bmp" Attributes="0" SourcePath="..\build\data\conne6.bmp" SelfReg="false"/>
+    <ROW File="connectedhigh.bmp" Component_="analysis.bmp" FileName="CONNEC~1.BMP|connected-high.bmp" Attributes="0" SourcePath="..\build\data\connected-high.bmp" SelfReg="false"/>
+    <ROW File="connected.bmp" Component_="analysis.bmp" FileName="CONNEC~2.BMP|connected.bmp" Attributes="0" SourcePath="..\build\data\connected.bmp" SelfReg="false"/>
+    <ROW File="connected.svg" Component_="analysis.bmp" FileName="CONNEC~1.SVG|connected.svg" Attributes="0" SourcePath="..\build\data\connected.svg" SelfReg="false"/>
+    <ROW File="connm1.bmp" Component_="analysis.bmp" FileName="connm1.bmp" Attributes="0" SourcePath="..\build\data\connm1.bmp" SelfReg="false"/>
+    <ROW File="connm2.bmp" Component_="analysis.bmp" FileName="connm2.bmp" Attributes="0" SourcePath="..\build\data\connm2.bmp" SelfReg="false"/>
+    <ROW File="connm3.bmp" Component_="analysis.bmp" FileName="connm3.bmp" Attributes="0" SourcePath="..\build\data\connm3.bmp" SelfReg="false"/>
+    <ROW File="connm4.bmp" Component_="analysis.bmp" FileName="connm4.bmp" Attributes="0" SourcePath="..\build\data\connm4.bmp" SelfReg="false"/>
+    <ROW File="connm5.bmp" Component_="analysis.bmp" FileName="connm5.bmp" Attributes="0" SourcePath="..\build\data\connm5.bmp" SelfReg="false"/>
+    <ROW File="connm6.bmp" Component_="analysis.bmp" FileName="connm6.bmp" Attributes="0" SourcePath="..\build\data\connm6.bmp" SelfReg="false"/>
+    <ROW File="connp1.bmp" Component_="analysis.bmp" FileName="connp1.bmp" Attributes="0" SourcePath="..\build\data\connp1.bmp" SelfReg="false"/>
+    <ROW File="connp2.bmp" Component_="analysis.bmp" FileName="connp2.bmp" Attributes="0" SourcePath="..\build\data\connp2.bmp" SelfReg="false"/>
+    <ROW File="connp3.bmp" Component_="analysis.bmp" FileName="connp3.bmp" Attributes="0" SourcePath="..\build\data\connp3.bmp" SelfReg="false"/>
+    <ROW File="connp4.bmp" Component_="analysis.bmp" FileName="connp4.bmp" Attributes="0" SourcePath="..\build\data\connp4.bmp" SelfReg="false"/>
+    <ROW File="connp5.bmp" Component_="analysis.bmp" FileName="connp5.bmp" Attributes="0" SourcePath="..\build\data\connp5.bmp" SelfReg="false"/>
+    <ROW File="connp6.bmp" Component_="analysis.bmp" FileName="connp6.bmp" Attributes="0" SourcePath="..\build\data\connp6.bmp" SelfReg="false"/>
+    <ROW File="dconne1.bmp" Component_="analysis.bmp" FileName="dconne1.bmp" Attributes="0" SourcePath="..\build\data\dconne1.bmp" SelfReg="false"/>
+    <ROW File="dconne2.bmp" Component_="analysis.bmp" FileName="dconne2.bmp" Attributes="0" SourcePath="..\build\data\dconne2.bmp" SelfReg="false"/>
+    <ROW File="dconne3.bmp" Component_="analysis.bmp" FileName="dconne3.bmp" Attributes="0" SourcePath="..\build\data\dconne3.bmp" SelfReg="false"/>
+    <ROW File="dconne4.bmp" Component_="analysis.bmp" FileName="dconne4.bmp" Attributes="0" SourcePath="..\build\data\dconne4.bmp" SelfReg="false"/>
+    <ROW File="dconne5.bmp" Component_="analysis.bmp" FileName="dconne5.bmp" Attributes="0" SourcePath="..\build\data\dconne5.bmp" SelfReg="false"/>
+    <ROW File="dconne6.bmp" Component_="analysis.bmp" FileName="dconne6.bmp" Attributes="0" SourcePath="..\build\data\dconne6.bmp" SelfReg="false"/>
+    <ROW File="dconnm1.bmp" Component_="analysis.bmp" FileName="dconnm1.bmp" Attributes="0" SourcePath="..\build\data\dconnm1.bmp" SelfReg="false"/>
+    <ROW File="dconnm2.bmp" Component_="analysis.bmp" FileName="dconnm2.bmp" Attributes="0" SourcePath="..\build\data\dconnm2.bmp" SelfReg="false"/>
+    <ROW File="dconnm3.bmp" Component_="analysis.bmp" FileName="dconnm3.bmp" Attributes="0" SourcePath="..\build\data\dconnm3.bmp" SelfReg="false"/>
+    <ROW File="dconnm4.bmp" Component_="analysis.bmp" FileName="dconnm4.bmp" Attributes="0" SourcePath="..\build\data\dconnm4.bmp" SelfReg="false"/>
+    <ROW File="dconnm5.bmp" Component_="analysis.bmp" FileName="dconnm5.bmp" Attributes="0" SourcePath="..\build\data\dconnm5.bmp" SelfReg="false"/>
+    <ROW File="dconnm6.bmp" Component_="analysis.bmp" FileName="dconnm6.bmp" Attributes="0" SourcePath="..\build\data\dconnm6.bmp" SelfReg="false"/>
+    <ROW File="dconnp1.bmp" Component_="analysis.bmp" FileName="dconnp1.bmp" Attributes="0" SourcePath="..\build\data\dconnp1.bmp" SelfReg="false"/>
+    <ROW File="dconnp2.bmp" Component_="analysis.bmp" FileName="dconnp2.bmp" Attributes="0" SourcePath="..\build\data\dconnp2.bmp" SelfReg="false"/>
+    <ROW File="dconnp3.bmp" Component_="analysis.bmp" FileName="dconnp3.bmp" Attributes="0" SourcePath="..\build\data\dconnp3.bmp" SelfReg="false"/>
+    <ROW File="dconnp4.bmp" Component_="analysis.bmp" FileName="dconnp4.bmp" Attributes="0" SourcePath="..\build\data\dconnp4.bmp" SelfReg="false"/>
+    <ROW File="dconnp5.bmp" Component_="analysis.bmp" FileName="dconnp5.bmp" Attributes="0" SourcePath="..\build\data\dconnp5.bmp" SelfReg="false"/>
+    <ROW File="dconnp6.bmp" Component_="analysis.bmp" FileName="dconnp6.bmp" Attributes="0" SourcePath="..\build\data\dconnp6.bmp" SelfReg="false"/>
+    <ROW File="devbrd.bmp" Component_="analysis.bmp" FileName="devbrd.bmp" Attributes="0" SourcePath="..\build\data\devbrd.bmp" SelfReg="false"/>
+    <ROW File="devbrd.svg" Component_="analysis.bmp" FileName="devbrd.svg" Attributes="0" SourcePath="..\build\data\devbrd.svg" SelfReg="false"/>
+    <ROW File="devbrdhigh.bmp" Component_="analysis.bmp" FileName="DEVBRD~1.BMP|devbrdhigh.bmp" Attributes="0" SourcePath="..\build\data\devbrdhigh.bmp" SelfReg="false"/>
+    <ROW File="disconnectedhigh.bmp" Component_="analysis.bmp" FileName="DISCON~1.BMP|disconnected-high.bmp" Attributes="0" SourcePath="..\build\data\disconnected-high.bmp" SelfReg="false"/>
+    <ROW File="disconnected.bmp" Component_="analysis.bmp" FileName="DISCON~2.BMP|disconnected.bmp" Attributes="0" SourcePath="..\build\data\disconnected.bmp" SelfReg="false"/>
+    <ROW File="disconnected.svg" Component_="analysis.bmp" FileName="DISCON~1.SVG|disconnected.svg" Attributes="0" SourcePath="..\build\data\disconnected.svg" SelfReg="false"/>
+    <ROW File="dropdown.bmp" Component_="analysis.bmp" FileName="dropdown.bmp" Attributes="0" SourcePath="..\build\data\dropdown.bmp" SelfReg="false"/>
+    <ROW File="dropdown.svg" Component_="analysis.bmp" FileName="dropdown.svg" Attributes="0" SourcePath="..\build\data\dropdown.svg" SelfReg="false"/>
+    <ROW File="drum.wav" Component_="analysis.bmp" FileName="drum.wav" Attributes="0" SourcePath="..\build\data\drum.wav" SelfReg="false"/>
+    <ROW File="e1.bmp" Component_="analysis.bmp" FileName="e1.bmp" Attributes="0" SourcePath="..\build\data\e1.bmp" SelfReg="false"/>
+    <ROW File="e1.svg" Component_="analysis.bmp" FileName="e1.svg" Attributes="0" SourcePath="..\build\data\e1.svg" SelfReg="false"/>
+    <ROW File="e10.bmp" Component_="analysis.bmp" FileName="e10.bmp" Attributes="0" SourcePath="..\build\data\e10.bmp" SelfReg="false"/>
+    <ROW File="e2.bmp" Component_="analysis.bmp" FileName="e2.bmp" Attributes="0" SourcePath="..\build\data\e2.bmp" SelfReg="false"/>
+    <ROW File="e2.svg" Component_="analysis.bmp" FileName="e2.svg" Attributes="0" SourcePath="..\build\data\e2.svg" SelfReg="false"/>
+    <ROW File="e3.bmp" Component_="analysis.bmp" FileName="e3.bmp" Attributes="0" SourcePath="..\build\data\e3.bmp" SelfReg="false"/>
+    <ROW File="e3.svg" Component_="analysis.bmp" FileName="e3.svg" Attributes="0" SourcePath="..\build\data\e3.svg" SelfReg="false"/>
+    <ROW File="e4.bmp" Component_="analysis.bmp" FileName="e4.bmp" Attributes="0" SourcePath="..\build\data\e4.bmp" SelfReg="false"/>
+    <ROW File="e4.svg" Component_="analysis.bmp" FileName="e4.svg" Attributes="0" SourcePath="..\build\data\e4.svg" SelfReg="false"/>
+    <ROW File="e5.bmp" Component_="analysis.bmp" FileName="e5.bmp" Attributes="0" SourcePath="..\build\data\e5.bmp" SelfReg="false"/>
+    <ROW File="e5.svg" Component_="analysis.bmp" FileName="e5.svg" Attributes="0" SourcePath="..\build\data\e5.svg" SelfReg="false"/>
+    <ROW File="e6.bmp" Component_="analysis.bmp" FileName="e6.bmp" Attributes="0" SourcePath="..\build\data\e6.bmp" SelfReg="false"/>
+    <ROW File="e6.svg" Component_="analysis.bmp" FileName="e6.svg" Attributes="0" SourcePath="..\build\data\e6.svg" SelfReg="false"/>
+    <ROW File="e7.bmp" Component_="analysis.bmp" FileName="e7.bmp" Attributes="0" SourcePath="..\build\data\e7.bmp" SelfReg="false"/>
+    <ROW File="e7.svg" Component_="analysis.bmp" FileName="e7.svg" Attributes="0" SourcePath="..\build\data\e7.svg" SelfReg="false"/>
+    <ROW File="e8.bmp" Component_="analysis.bmp" FileName="e8.bmp" Attributes="0" SourcePath="..\build\data\e8.bmp" SelfReg="false"/>
+    <ROW File="e8.svg" Component_="analysis.bmp" FileName="e8.svg" Attributes="0" SourcePath="..\build\data\e8.svg" SelfReg="false"/>
+    <ROW File="e9.bmp" Component_="analysis.bmp" FileName="e9.bmp" Attributes="0" SourcePath="..\build\data\e9.bmp" SelfReg="false"/>
+    <ROW File="e9.svg" Component_="analysis.bmp" FileName="e9.svg" Attributes="0" SourcePath="..\build\data\e9.svg" SelfReg="false"/>
+    <ROW File="ekg.bmp" Component_="analysis.bmp" FileName="ekg.bmp" Attributes="0" SourcePath="..\build\data\ekg.bmp" SelfReg="false"/>
+    <ROW File="ekg.svg" Component_="analysis.bmp" FileName="ekg.svg" Attributes="0" SourcePath="..\build\data\ekg.svg" SelfReg="false"/>
+    <ROW File="ekg.wav" Component_="analysis.bmp" FileName="ekg.wav" Attributes="0" SourcePath="..\build\data\ekg.wav" SelfReg="false"/>
+    <ROW File="ekghigh.bmp" Component_="analysis.bmp" FileName="ekghigh.bmp" Attributes="0" SourcePath="..\build\data\ekghigh.bmp" SelfReg="false"/>
+    <ROW File="emgprocon.bmp" Component_="analysis.bmp" FileName="EMGPRO~1.BMP|emgprocon.bmp" Attributes="0" SourcePath="..\build\data\emgprocon.bmp" SelfReg="false"/>
+    <ROW File="emgproconhigh.bmp" Component_="analysis.bmp" FileName="EMGPRO~2.BMP|emgproconhigh.bmp" Attributes="0" SourcePath="..\build\data\emgproconhigh.bmp" SelfReg="false"/>
+    <ROW File="emgprodiscon.bmp" Component_="analysis.bmp" FileName="EMGPRO~3.BMP|emgprodiscon.bmp" Attributes="0" SourcePath="..\build\data\emgprodiscon.bmp" SelfReg="false"/>
+    <ROW File="fft.bmp" Component_="analysis.bmp" FileName="fft.bmp" Attributes="0" SourcePath="..\build\data\fft.bmp" SelfReg="false"/>
+    <ROW File="fft.svg" Component_="analysis.bmp" FileName="fft.svg" Attributes="0" SourcePath="..\build\data\fft.svg" SelfReg="false"/>
+    <ROW File="fftcrossed.bmp" Component_="analysis.bmp" FileName="FFTCRO~1.BMP|fftcrossed.bmp" Attributes="0" SourcePath="..\build\data\fftcrossed.bmp" SelfReg="false"/>
+    <ROW File="fftcrossed.svg" Component_="analysis.bmp" FileName="FFTCRO~1.SVG|fftcrossed.svg" Attributes="0" SourcePath="..\build\data\fftcrossed.svg" SelfReg="false"/>
+    <ROW File="ffthigh.bmp" Component_="analysis.bmp" FileName="ffthigh.bmp" Attributes="0" SourcePath="..\build\data\ffthigh.bmp" SelfReg="false"/>
+    <ROW File="file.bmp" Component_="analysis.bmp" FileName="file.bmp" Attributes="0" SourcePath="..\build\data\file.bmp" SelfReg="false"/>
+    <ROW File="file.svg" Component_="analysis.bmp" FileName="file.svg" Attributes="0" SourcePath="..\build\data\file.svg" SelfReg="false"/>
+    <ROW File="filehigh.bmp" Component_="analysis.bmp" FileName="filehigh.bmp" Attributes="0" SourcePath="..\build\data\filehigh.bmp" SelfReg="false"/>
+    <ROW File="forward.bmp" Component_="analysis.bmp" FileName="forward.bmp" Attributes="0" SourcePath="..\build\data\forward.bmp" SelfReg="false"/>
+    <ROW File="forward.svg" Component_="analysis.bmp" FileName="forward.svg" Attributes="0" SourcePath="..\build\data\forward.svg" SelfReg="false"/>
+    <ROW File="forwardhigh.bmp" Component_="analysis.bmp" FileName="FORWAR~1.BMP|forwardhigh.bmp" Attributes="0" SourcePath="..\build\data\forwardhigh.bmp" SelfReg="false"/>
+    <ROW File="gaindown.bmp" Component_="analysis.bmp" FileName="gaindown.bmp" Attributes="0" SourcePath="..\build\data\gaindown.bmp" SelfReg="false"/>
+    <ROW File="gainup.bmp" Component_="analysis.bmp" FileName="gainup.bmp" Attributes="0" SourcePath="..\build\data\gainup.bmp" SelfReg="false"/>
+    <ROW File="gainup.svg" Component_="analysis.bmp" FileName="gainup.svg" Attributes="0" SourcePath="..\build\data\gainup.svg" SelfReg="false"/>
+    <ROW File="heart.bmp" Component_="analysis.bmp" FileName="heart.bmp" Attributes="0" SourcePath="..\build\data\heart.bmp" SelfReg="false"/>
+    <ROW File="heart.svg" Component_="analysis.bmp" FileName="heart.svg" Attributes="0" SourcePath="..\build\data\heart.svg" SelfReg="false"/>
+    <ROW File="heartcon.bmp" Component_="analysis.bmp" FileName="heartcon.bmp" Attributes="0" SourcePath="..\build\data\heartcon.bmp" SelfReg="false"/>
+    <ROW File="heartconhigh.bmp" Component_="analysis.bmp" FileName="HEARTC~1.BMP|heartconhigh.bmp" Attributes="0" SourcePath="..\build\data\heartconhigh.bmp" SelfReg="false"/>
+    <ROW File="heartdiscon.bmp" Component_="analysis.bmp" FileName="HEARTD~1.BMP|heartdiscon.bmp" Attributes="0" SourcePath="..\build\data\heartdiscon.bmp" SelfReg="false"/>
+    <ROW File="musclecon.bmp" Component_="analysis.bmp" FileName="MUSCLE~1.BMP|musclecon.bmp" Attributes="0" SourcePath="..\build\data\musclecon.bmp" SelfReg="false"/>
+    <ROW File="muscleconhigh.bmp" Component_="analysis.bmp" FileName="MUSCLE~2.BMP|muscleconhigh.bmp" Attributes="0" SourcePath="..\build\data\muscleconhigh.bmp" SelfReg="false"/>
+    <ROW File="musclediscon.bmp" Component_="analysis.bmp" FileName="MUSCLE~3.BMP|musclediscon.bmp" Attributes="0" SourcePath="..\build\data\musclediscon.bmp" SelfReg="false"/>
+    <ROW File="neuronprocon.bmp" Component_="analysis.bmp" FileName="NEURON~1.BMP|neuronprocon.bmp" Attributes="0" SourcePath="..\build\data\neuronprocon.bmp" SelfReg="false"/>
+    <ROW File="neuronproconhigh.bmp" Component_="analysis.bmp" FileName="NEURON~2.BMP|neuronproconhigh.bmp" Attributes="0" SourcePath="..\build\data\neuronproconhigh.bmp" SelfReg="false"/>
+    <ROW File="neuronprodiscon.bmp" Component_="analysis.bmp" FileName="NEURON~3.BMP|neuronprodiscon.bmp" Attributes="0" SourcePath="..\build\data\neuronprodiscon.bmp" SelfReg="false"/>
+    <ROW File="okbtnhigh.bmp" Component_="analysis.bmp" FileName="OKBTN-~1.BMP|okbtn-high.bmp" Attributes="0" SourcePath="..\build\data\okbtn-high.bmp" SelfReg="false"/>
+    <ROW File="okbtnnormal.bmp" Component_="analysis.bmp" FileName="OKBTN-~2.BMP|okbtn-normal.bmp" Attributes="0" SourcePath="..\build\data\okbtn-normal.bmp" SelfReg="false"/>
+    <ROW File="okbtn.bmp" Component_="analysis.bmp" FileName="okbtn.bmp" Attributes="0" SourcePath="..\build\data\okbtn.bmp" SelfReg="false"/>
+    <ROW File="okbtn.svg" Component_="analysis.bmp" FileName="okbtn.svg" Attributes="0" SourcePath="..\build\data\okbtn.svg" SelfReg="false"/>
+    <ROW File="okbtnhigh.bmp_1" Component_="analysis.bmp" FileName="OKBTNH~1.BMP|okbtnhigh.bmp" Attributes="0" SourcePath="..\build\data\okbtnhigh.bmp" SelfReg="false"/>
+    <ROW File="pause.bmp" Component_="analysis.bmp" FileName="pause.bmp" Attributes="0" SourcePath="..\build\data\pause.bmp" SelfReg="false"/>
+    <ROW File="pause.svg" Component_="analysis.bmp" FileName="pause.svg" Attributes="0" SourcePath="..\build\data\pause.svg" SelfReg="false"/>
+    <ROW File="pausehigh.bmp" Component_="analysis.bmp" FileName="PAUSEH~1.BMP|pausehigh.bmp" Attributes="0" SourcePath="..\build\data\pausehigh.bmp" SelfReg="false"/>
+    <ROW File="pin.bmp" Component_="analysis.bmp" FileName="pin.bmp" Attributes="0" SourcePath="..\build\data\pin.bmp" SelfReg="false"/>
+    <ROW File="pin.svg" Component_="analysis.bmp" FileName="pin.svg" Attributes="0" SourcePath="..\build\data\pin.svg" SelfReg="false"/>
+    <ROW File="plantcon.bmp" Component_="analysis.bmp" FileName="plantcon.bmp" Attributes="0" SourcePath="..\build\data\plantcon.bmp" SelfReg="false"/>
+    <ROW File="plantconhigh.bmp" Component_="analysis.bmp" FileName="PLANTC~1.BMP|plantconhigh.bmp" Attributes="0" SourcePath="..\build\data\plantconhigh.bmp" SelfReg="false"/>
+    <ROW File="plantdiscon.bmp" Component_="analysis.bmp" FileName="PLANTD~1.BMP|plantdiscon.bmp" Attributes="0" SourcePath="..\build\data\plantdiscon.bmp" SelfReg="false"/>
+    <ROW File="play.bmp" Component_="analysis.bmp" FileName="play.bmp" Attributes="0" SourcePath="..\build\data\play.bmp" SelfReg="false"/>
+    <ROW File="play.svg" Component_="analysis.bmp" FileName="play.svg" Attributes="0" SourcePath="..\build\data\play.svg" SelfReg="false"/>
+    <ROW File="playhigh.bmp" Component_="analysis.bmp" FileName="playhigh.bmp" Attributes="0" SourcePath="..\build\data\playhigh.bmp" SelfReg="false"/>
+    <ROW File="plotview.bmp" Component_="analysis.bmp" FileName="plotview.bmp" Attributes="0" SourcePath="..\build\data\plotview.bmp" SelfReg="false"/>
+    <ROW File="plotview.svg" Component_="analysis.bmp" FileName="plotview.svg" Attributes="0" SourcePath="..\build\data\plotview.svg" SelfReg="false"/>
+    <ROW File="plotviewdown.bmp" Component_="analysis.bmp" FileName="PLOTVI~1.BMP|plotviewdown.bmp" Attributes="0" SourcePath="..\build\data\plotviewdown.bmp" SelfReg="false"/>
+    <ROW File="plotviewdownhigh.bmp" Component_="analysis.bmp" FileName="PLOTVI~2.BMP|plotviewdownhigh.bmp" Attributes="0" SourcePath="..\build\data\plotviewdownhigh.bmp" SelfReg="false"/>
+    <ROW File="plotviewhigh.bmp" Component_="analysis.bmp" FileName="PLOTVI~3.BMP|plotviewhigh.bmp" Attributes="0" SourcePath="..\build\data\plotviewhigh.bmp" SelfReg="false"/>
+    <ROW File="rec.bmp" Component_="analysis.bmp" FileName="rec.bmp" Attributes="0" SourcePath="..\build\data\rec.bmp" SelfReg="false"/>
+    <ROW File="rec.svg" Component_="analysis.bmp" FileName="rec.svg" Attributes="0" SourcePath="..\build\data\rec.svg" SelfReg="false"/>
+    <ROW File="rechigh.bmp" Component_="analysis.bmp" FileName="rechigh.bmp" Attributes="0" SourcePath="..\build\data\rechigh.bmp" SelfReg="false"/>
+    <ROW File="rtimer.bmp" Component_="analysis.bmp" FileName="rtimer.bmp" Attributes="0" SourcePath="..\build\data\rtimer.bmp" SelfReg="false"/>
+    <ROW File="rtimer.svg" Component_="analysis.bmp" FileName="rtimer.svg" Attributes="0" SourcePath="..\build\data\rtimer.svg" SelfReg="false"/>
+    <ROW File="rtimerhigh.bmp" Component_="analysis.bmp" FileName="RTIMER~1.BMP|rtimerhigh.bmp" Attributes="0" SourcePath="..\build\data\rtimerhigh.bmp" SelfReg="false"/>
+    <ROW File="save.bmp" Component_="analysis.bmp" FileName="save.bmp" Attributes="0" SourcePath="..\build\data\save.bmp" SelfReg="false"/>
+    <ROW File="save.svg" Component_="analysis.bmp" FileName="save.svg" Attributes="0" SourcePath="..\build\data\save.svg" SelfReg="false"/>
+    <ROW File="savehigh.bmp" Component_="analysis.bmp" FileName="savehigh.bmp" Attributes="0" SourcePath="..\build\data\savehigh.bmp" SelfReg="false"/>
+    <ROW File="speaker.bmp" Component_="analysis.bmp" FileName="speaker.bmp" Attributes="0" SourcePath="..\build\data\speaker.bmp" SelfReg="false"/>
+    <ROW File="speaker.svg" Component_="analysis.bmp" FileName="speaker.svg" Attributes="0" SourcePath="..\build\data\speaker.svg" SelfReg="false"/>
+    <ROW File="speakeroff.bmp" Component_="analysis.bmp" FileName="SPEAKE~1.BMP|speakeroff.bmp" Attributes="0" SourcePath="..\build\data\speakeroff.bmp" SelfReg="false"/>
+    <ROW File="thresh.bmp" Component_="analysis.bmp" FileName="thresh.bmp" Attributes="0" SourcePath="..\build\data\thresh.bmp" SelfReg="false"/>
+    <ROW File="thresh.svg" Component_="analysis.bmp" FileName="thresh.svg" Attributes="0" SourcePath="..\build\data\thresh.svg" SelfReg="false"/>
+    <ROW File="threshcrossed.bmp" Component_="analysis.bmp" FileName="THRESH~1.BMP|threshcrossed.bmp" Attributes="0" SourcePath="..\build\data\threshcrossed.bmp" SelfReg="false"/>
+    <ROW File="threshcrossed.svg" Component_="analysis.bmp" FileName="THRESH~1.SVG|threshcrossed.svg" Attributes="0" SourcePath="..\build\data\threshcrossed.svg" SelfReg="false"/>
+    <ROW File="threshhigh.bmp" Component_="analysis.bmp" FileName="THRESH~2.BMP|threshhigh.bmp" Attributes="0" SourcePath="..\build\data\threshhigh.bmp" SelfReg="false"/>
+    <ROW File="threshpin.bmp" Component_="analysis.bmp" FileName="THRESH~3.BMP|threshpin.bmp" Attributes="0" SourcePath="..\build\data\threshpin.bmp" SelfReg="false"/>
+    <ROW File="threshpin.svg" Component_="analysis.bmp" FileName="THRESH~2.SVG|threshpin.svg" Attributes="0" SourcePath="..\build\data\threshpin.svg" SelfReg="false"/>
+    <ROW File="trigger.bmp" Component_="analysis.bmp" FileName="trigger.bmp" Attributes="0" SourcePath="..\build\data\trigger.bmp" SelfReg="false"/>
+    <ROW File="trigger.svg" Component_="analysis.bmp" FileName="trigger.svg" Attributes="0" SourcePath="..\build\data\trigger.svg" SelfReg="false"/>
+    <ROW File="triggerhigh.bmp" Component_="analysis.bmp" FileName="TRIGGE~1.BMP|triggerhigh.bmp" Attributes="0" SourcePath="..\build\data\triggerhigh.bmp" SelfReg="false"/>
+    <ROW File="updatehigh.bmp" Component_="analysis.bmp" FileName="UPDATE~1.BMP|update-high.bmp" Attributes="0" SourcePath="..\build\data\update-high.bmp" SelfReg="false"/>
+    <ROW File="update.bmp" Component_="analysis.bmp" FileName="update.bmp" Attributes="0" SourcePath="..\build\data\update.bmp" SelfReg="false"/>
+    <ROW File="usbcon.bmp" Component_="analysis.bmp" FileName="usbcon.bmp" Attributes="0" SourcePath="..\build\data\usbcon.bmp" SelfReg="false"/>
+    <ROW File="usbconhigh.bmp" Component_="analysis.bmp" FileName="USBCON~1.BMP|usbconhigh.bmp" Attributes="0" SourcePath="..\build\data\usbconhigh.bmp" SelfReg="false"/>
+    <ROW File="usbdiscon.bmp" Component_="analysis.bmp" FileName="USBDIS~1.BMP|usbdiscon.bmp" Attributes="0" SourcePath="..\build\data\usbdiscon.bmp" SelfReg="false"/>
+    <ROW File="vc_redist.x86.exe" Component_="vc_redist.x86.exe" FileName="VC_RED~1.EXE|vc_redist.x86.exe" Attributes="0" SourcePath="ISSetupPrerequisites\{29AE0051-88F8-4ED7-A6F9-7EA37A6B11A3}\vc_redist.x86.exe" SelfReg="false"/>
+    <ROW File="vcredist_x86.exe" Component_="vcredist_x86.exe" FileName="VCREDI~1.EXE|vcredist_x86.exe" Attributes="0" SourcePath="ISSetupPrerequisites\{BF2F04CD-3D1F-444e-8960-D08EBD285C3F}\vcredist_x86.exe" SelfReg="false"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.BootstrOptComponent">
+    <ROW BootstrOptKey="GlobalOptions" DownloadFolder="[AppDataFolder][|Manufacturer]\[|ProductName]\prerequisites" Options="2"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.BuildComponent">
+    <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="0" PackageFolder="installer" PackageFileName="SpikeRecorderInstaller" Languages="en" InstallationType="4" UseLargeSchema="true"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.DictionaryComponent">
+    <ROW Path="&lt;AI_DICTS&gt;ui.ail"/>
+    <ROW Path="&lt;AI_DICTS&gt;ui_en.ail"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.FragmentComponent">
+    <ROW Fragment="CommonUI.aip" Path="&lt;AI_FRAGS&gt;CommonUI.aip"/>
+    <ROW Fragment="FolderDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\FolderDlg.aip"/>
+    <ROW Fragment="MaintenanceTypeDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\MaintenanceTypeDlg.aip"/>
+    <ROW Fragment="MaintenanceWelcomeDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\MaintenanceWelcomeDlg.aip"/>
+    <ROW Fragment="SequenceDialogs.aip" Path="&lt;AI_THEMES&gt;classic\fragments\SequenceDialogs.aip"/>
+    <ROW Fragment="Sequences.aip" Path="&lt;AI_FRAGS&gt;Sequences.aip"/>
+    <ROW Fragment="StaticUIStrings.aip" Path="&lt;AI_FRAGS&gt;StaticUIStrings.aip"/>
+    <ROW Fragment="Themes.aip" Path="&lt;AI_FRAGS&gt;Themes.aip"/>
+    <ROW Fragment="UI.aip" Path="&lt;AI_THEMES&gt;classic\fragments\UI.aip"/>
+    <ROW Fragment="Validation.aip" Path="&lt;AI_FRAGS&gt;Validation.aip"/>
+    <ROW Fragment="VerifyRemoveDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\VerifyRemoveDlg.aip"/>
+    <ROW Fragment="VerifyRepairDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\VerifyRepairDlg.aip"/>
+    <ROW Fragment="WelcomeDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\WelcomeDlg.aip"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiBinaryComponent">
+    <ROW Name="aicustact.dll" SourcePath="&lt;AI_CUSTACTS&gt;aicustact.dll"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiControlEventComponent">
+    <ROW Dialog_="WelcomeDlg" Control_="Next" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="FolderDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL" Ordering="201"/>
+    <ROW Dialog_="FolderDlg" Control_="Back" Event="NewDialog" Argument="WelcomeDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="MaintenanceWelcomeDlg" Control_="Next" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT" Ordering="99"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_MAINT" Ordering="198"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="CustomizeDlg" Condition="AI_MAINT" Ordering="202"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_INSTALL" Ordering="197"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="201"/>
+    <ROW Dialog_="CustomizeDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_MAINT" Ordering="101"/>
+    <ROW Dialog_="CustomizeDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT" Ordering="1"/>
+    <ROW Dialog_="MaintenanceTypeDlg" Control_="ChangeButton" Event="NewDialog" Argument="CustomizeDlg" Condition="AI_MAINT" Ordering="501"/>
+    <ROW Dialog_="MaintenanceTypeDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceWelcomeDlg" Condition="AI_MAINT" Ordering="1"/>
+    <ROW Dialog_="MaintenanceTypeDlg" Control_="RemoveButton" Event="NewDialog" Argument="VerifyRemoveDlg" Condition="AI_MAINT AND InstallMode=&quot;Remove&quot;" Ordering="601"/>
+    <ROW Dialog_="VerifyRemoveDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT AND InstallMode=&quot;Remove&quot;" Ordering="1"/>
+    <ROW Dialog_="MaintenanceTypeDlg" Control_="RepairButton" Event="NewDialog" Argument="VerifyRepairDlg" Condition="AI_MAINT AND InstallMode=&quot;Repair&quot;" Ordering="601"/>
+    <ROW Dialog_="VerifyRepairDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT AND InstallMode=&quot;Repair&quot;" Ordering="1"/>
+    <ROW Dialog_="VerifyRepairDlg" Control_="Repair" Event="EndDialog" Argument="Return" Condition="AI_MAINT AND InstallMode=&quot;Repair&quot;" Ordering="399" Options="1"/>
+    <ROW Dialog_="VerifyRemoveDlg" Control_="Remove" Event="EndDialog" Argument="Return" Condition="AI_MAINT AND InstallMode=&quot;Remove&quot;" Ordering="299" Options="1"/>
+    <ROW Dialog_="PatchWelcomeDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_PATCH" Ordering="201"/>
+    <ROW Dialog_="ResumeDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_RESUME" Ordering="299"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_PATCH" Ordering="199"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="PatchWelcomeDlg" Condition="AI_PATCH" Ordering="203"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiCreateFolderComponent">
+    <ROW Directory_="APPDIR" Component_="APPDIR" ManualDelete="true"/>
+    <ROW Directory_="firmwares_Dir" Component_="firmwares" ManualDelete="false"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiCustActComponent">
+    <ROW Action="AI_DOWNGRADE" Type="19" Target="4010"/>
+    <ROW Action="AI_DpiContentScale" Type="1" Source="aicustact.dll" Target="DpiContentScale"/>
+    <ROW Action="AI_EnableDebugLog" Type="321" Source="aicustact.dll" Target="EnableDebugLog"/>
+    <ROW Action="AI_InstallModeCheck" Type="1" Source="aicustact.dll" Target="UpdateInstallMode" WithoutSeq="true"/>
+    <ROW Action="AI_PREPARE_UPGRADE" Type="65" Source="aicustact.dll" Target="PrepareUpgrade"/>
+    <ROW Action="AI_RESTORE_LOCATION" Type="65" Source="aicustact.dll" Target="RestoreLocation"/>
+    <ROW Action="AI_ResolveKnownFolders" Type="1" Source="aicustact.dll" Target="AI_ResolveKnownFolders"/>
+    <ROW Action="AI_SHOW_LOG" Type="65" Source="aicustact.dll" Target="LaunchLogFile" WithoutSeq="true"/>
+    <ROW Action="AI_STORE_LOCATION" Type="51" Source="ARPINSTALLLOCATION" Target="[APPDIR]"/>
+    <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]"/>
+    <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
+    <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatCompsComponent">
+    <ROW Feature_="MainFeature" Component_="APPDIR"/>
+    <ROW Feature_="MainFeature" Component_="ProductInformation"/>
+    <ROW Feature_="MainFeature" Component_="bass.dll"/>
+    <ROW Feature_="MainFeature" Component_="bass_aac.dll"/>
+    <ROW Feature_="MainFeature" Component_="bassalac.dll"/>
+    <ROW Feature_="MainFeature" Component_="BSL430.dll"/>
+    <ROW Feature_="MainFeature" Component_="BSL430.lib"/>
+    <ROW Feature_="MainFeature" Component_="hidapi.dll"/>
+    <ROW Feature_="MainFeature" Component_="libcurl.dll"/>
+    <ROW Feature_="MainFeature" Component_="libeay32.dll"/>
+    <ROW Feature_="MainFeature" Component_="libgcc_s_dw21.dll"/>
+    <ROW Feature_="MainFeature" Component_="libjpeg9.dll"/>
+    <ROW Feature_="MainFeature" Component_="libpng1616.dll"/>
+    <ROW Feature_="MainFeature" Component_="libssh2.dll"/>
+    <ROW Feature_="MainFeature" Component_="libstdc6.dll"/>
+    <ROW Feature_="MainFeature" Component_="libtiff5.dll"/>
+    <ROW Feature_="MainFeature" Component_="libwebp4.dll"/>
+    <ROW Feature_="MainFeature" Component_="libwinpthread1.dll"/>
+    <ROW Feature_="MainFeature" Component_="msvcr120.dll"/>
+    <ROW Feature_="MainFeature" Component_="SDL2.dll"/>
+    <ROW Feature_="MainFeature" Component_="SDL2_image.dll"/>
+    <ROW Feature_="MainFeature" Component_="SpikeRecorder.exe"/>
+    <ROW Feature_="MainFeature" Component_="ssleay32.dll"/>
+    <ROW Feature_="MainFeature" Component_="zlib1.dll"/>
+    <ROW Feature_="MainFeature" Component_="firmwares"/>
+    <ROW Feature_="MainFeature" Component_="analysis.bmp"/>
+    <ROW Feature_="MainFeature" Component_="vc_redist.x86.exe"/>
+    <ROW Feature_="MainFeature" Component_="vcredist_x86.exe"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiIconsComponent">
+    <ROW Name="SpikeRecorder.exe" SourcePath="..\build\SpikeRecorder.ico" Index="0"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiInstExSeqComponent">
+    <ROW Action="AI_DOWNGRADE" Condition="AI_NEWERPRODUCTFOUND AND (UILevel &lt;&gt; 5)" Sequence="210"/>
+    <ROW Action="AI_RESTORE_LOCATION" Condition="APPDIR=&quot;&quot;" Sequence="749"/>
+    <ROW Action="AI_STORE_LOCATION" Condition="(Not Installed) OR REINSTALL" Sequence="1501"/>
+    <ROW Action="AI_PREPARE_UPGRADE" Condition="AI_UPGRADE=&quot;No&quot; AND (Not Installed)" Sequence="1399"/>
+    <ROW Action="AI_ResolveKnownFolders" Sequence="52"/>
+    <ROW Action="AI_EnableDebugLog" Sequence="51"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
+    <ROW Action="AI_RESTORE_LOCATION" Condition="APPDIR=&quot;&quot;" Sequence="749"/>
+    <ROW Action="AI_ResolveKnownFolders" Sequence="53"/>
+    <ROW Action="AI_DpiContentScale" Sequence="52"/>
+    <ROW Action="AI_EnableDebugLog" Sequence="51"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiLaunchConditionsComponent">
+    <ROW Condition="((VersionNT &lt;&gt; 501) AND (VersionNT &lt;&gt; 502))" Description="[ProductName] cannot be installed on [WindowsTypeNT5XDisplay]." DescriptionLocId="AI.LaunchCondition.NoNT5X" IsPredefined="true" Builds="DefaultBuild"/>
+    <ROW Condition="(VersionNT &lt;&gt; 400)" Description="[ProductName] cannot be installed on [WindowsTypeNT40Display]." DescriptionLocId="AI.LaunchCondition.NoNT40" IsPredefined="true" Builds="DefaultBuild"/>
+    <ROW Condition="(VersionNT &lt;&gt; 500)" Description="[ProductName] cannot be installed on [WindowsTypeNT50Display]." DescriptionLocId="AI.LaunchCondition.NoNT50" IsPredefined="true" Builds="DefaultBuild"/>
+    <ROW Condition="VersionNT" Description="[ProductName] cannot be installed on [WindowsType9XDisplay]." DescriptionLocId="AI.LaunchCondition.No9X" IsPredefined="true" Builds="DefaultBuild"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiRegsComponent">
+    <ROW Registry="Manufacturer" Root="-1" Key="Software\[Manufacturer]" Name="\"/>
+    <ROW Registry="Path" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Path" Value="[APPDIR]" Component_="ProductInformation"/>
+    <ROW Registry="ProductName" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="\"/>
+    <ROW Registry="Software" Root="-1" Key="Software" Name="\"/>
+    <ROW Registry="Version" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Version" Value="[ProductVersion]" Component_="ProductInformation"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiShortsComponent">
+    <ROW Shortcut="SpikeRecorder" Directory_="DesktopFolder" Name="SPIKER~1|SpikeRecorder" Component_="SpikeRecorder.exe" Target="[#SpikeRecorder.exe]" Hotkey="0" Icon_="SpikeRecorder.exe" IconIndex="0" ShowCmd="1" WkDir="SpikeRecorder_Dir"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiThemeComponent">
+    <ATTRIBUTE name="UsedTheme" value="classic"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiUpgradeComponent">
+    <ROW UpgradeCode="[|UpgradeCode]" VersionMin="0.0.1" VersionMax="[|ProductVersion]" Attributes="257" ActionProperty="OLDPRODUCTS"/>
+    <ROW UpgradeCode="[|UpgradeCode]" VersionMin="[|ProductVersion]" Attributes="2" ActionProperty="AI_NEWERPRODUCTFOUND"/>
+  </COMPONENT>
+</DOCUMENT>
