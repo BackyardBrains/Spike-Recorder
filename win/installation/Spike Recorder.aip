@@ -3,6 +3,7 @@
   <COMPONENT cid="caphyon.advinst.msicomp.MsiPropsComponent">
     <ROW Property="AI_BITMAP_DISPLAY_MODE" Value="0"/>
     <ROW Property="AI_CURRENT_YEAR" Value="2022" ValueLocId="-"/>
+    <ROW Property="AI_FINDEXE_TITLE" Value="Select the installation package for [|ProductName]" ValueLocId="AI.Property.FindExeTitle"/>
     <ROW Property="AI_PREDEF_LCONDS_PROPS" Value="AI_DETECTED_INTERNET_CONNECTION"/>
     <ROW Property="AI_ThemeStyle" Value="aero" MultiBuildValue="DefaultBuild:classic" MsiKey="AI_ThemeStyle"/>
     <ROW Property="ALLUSERS" Value="1"/>
@@ -11,7 +12,7 @@
     <ROW Property="ARPHELPLINK" Value="https://backyardbrains.com/products/files/SpikeRecorderDocumentation.2018.02.pdf"/>
     <ROW Property="ARPHELPTELEPHONE" Value="+1 (855) 855-438-7745"/>
     <ROW Property="ARPNOMODIFY" MultiBuildValue="DefaultBuild:1"/>
-    <ROW Property="ARPNOREPAIR" Value="1"/>
+    <ROW Property="ARPNOREPAIR" Value="1" MultiBuildValue="DefaultBuild:1"/>
     <ROW Property="ARPPRODUCTICON" Value="SpikeRecorder.exe" Type="8"/>
     <ROW Property="ARPURLINFOABOUT" Value="https://help.backyardbrains.com/support/home"/>
     <ROW Property="ARPURLUPDATEINFO" Value="https://backyardbrains.com/products/spikerecorder"/>
@@ -20,7 +21,7 @@
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="Spike Recorder"/>
     <ROW Property="ProductVersion" Value="1.9.13"/>
-    <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND"/>
+    <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND;AI_SETUPEXEPATH;SETUPEXEDIR"/>
     <ROW Property="UpgradeCode" Value="{28EA391C-48E9-4B2A-901E-2CCF5B8E7556}"/>
     <ROW Property="WindowsType9X" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
     <ROW Property="WindowsType9XDisplay" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
@@ -43,10 +44,13 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
     <ROW Component="A918597FE054CCCB65ABDBA0AD8F63C" ComponentId="{CDB05782-EF1E-40A6-A9C2-9EC1E6E7E517}" Directory_="APPDIR" Attributes="4" KeyPath="A918597FE054CCCB65ABDBA0AD8F63C" Options="2"/>
+    <ROW Component="AI_ExePath" ComponentId="{FE8E23BD-CD95-4000-9C42-9340DF433C3C}" Directory_="APPDIR" Attributes="4" KeyPath="AI_ExePath"/>
     <ROW Component="APPDIR" ComponentId="{65D6A08F-C02E-48F3-9EE2-A9BADF78AB69}" Directory_="APPDIR" Attributes="0"/>
     <ROW Component="BSL430.dll" ComponentId="{28D62981-34E1-4F45-8CD7-18BF6EBA9302}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="BSL430.dll"/>
     <ROW Component="BSL430.lib" ComponentId="{02C6D0C6-1EF1-497E-88D1-D5E769278BFB}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="BSL430.lib" Type="0"/>
     <ROW Component="C67108D39D05435F9BE6B977F2CCED25" ComponentId="{DBFC8941-B132-457B-81CC-364B458BBF8D}" Directory_="APPDIR" Attributes="4" KeyPath="C67108D39D05435F9BE6B977F2CCED25" Options="2"/>
+    <ROW Component="DriverPackageInsta" ComponentId="{7CD2F891-212B-4BA9-B11D-503DBF96655B}" Directory_="APPDIR" Attributes="4" KeyPath="DriverPackageInsta" Options="2"/>
+    <ROW Component="DriverPackageInsta_1" ComponentId="{127D047A-E883-465E-8D26-43844E0DC879}" Directory_="APPDIR" Attributes="4" KeyPath="DriverPackageInsta_1" Options="2"/>
     <ROW Component="ProductInformation" ComponentId="{3B60805D-EB29-432D-A91A-F2E887F9402E}" Directory_="APPDIR" Attributes="4" KeyPath="Version"/>
     <ROW Component="SDL2.dll" ComponentId="{EC2E4730-7A69-4415-B1EB-80DFF44244AC}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="SDL2.dll"/>
     <ROW Component="SDL2_image.dll" ComponentId="{764B61A1-F982-42DE-963B-9EE13977590F}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="SDL2_image.dll"/>
@@ -74,6 +78,8 @@
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
     <ROW Feature="A918597FE054CCCB65ABDBA0AD8F63C" Title="Visual C++ Redistributable for Visual Studio 2015-2022 x86" Description="Visual C++ Redistributable for Visual Studio 2015-2022 x86" Display="5" Level="1" Attributes="0"/>
     <ROW Feature="C67108D39D05435F9BE6B977F2CCED25" Title="Visual C++ Redistributable for Visual Studio 2012 Update 4 x86" Description="Visual C++ Redistributable for Visual Studio 2012 Update 4 x86" Display="3" Level="1" Attributes="0"/>
+    <ROW Feature="DriverPackageInsta" Title="Driver Package Installer (DPInst) x64" Description="Driver Package Installer (DPInst) x64" Display="7" Level="1" Attributes="0"/>
+    <ROW Feature="DriverPackageInsta_1" Title="Driver Package Installer (DPInst) x32" Description="Driver Package Installer (DPInst) x32" Display="9" Level="1" Attributes="0"/>
     <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0"/>
     <ATTRIBUTE name="CurrentFeature" value="MainFeature"/>
   </COMPONENT>
@@ -293,7 +299,7 @@
     <ROW Action="AI_DetectSoftware" Sequence="151"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BuildComponent">
-    <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="0" PackageFolder="installer" PackageFileName="SpikeRecorderInstaller" Languages="en" InstallationType="4" ExtUI="true" UseLargeSchema="true"/>
+    <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="0" PackageFolder="installer" PackageFileName="SpikeRecorderInstaller" Languages="en" InstallationType="4" CabsLocation="1" PackageType="1" FilesInsideExe="true" ExtractionFolder="[AppDataFolder][|Manufacturer]\[|ProductName] [|ProductVersion]\install" ExtUI="true" UseLargeSchema="true"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.DictionaryComponent">
     <ROW Path="&lt;AI_DICTS&gt;ui.ail"/>
@@ -315,17 +321,26 @@
     <ROW Fragment="WelcomeDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\WelcomeDlg.aip"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiActionTextComponent">
+    <ROW Action="AI_DeleteLzma" Description="Deleting files extracted from archive" DescriptionLocId="ActionText.Description.AI_DeleteLzma" TemplateLocId="-"/>
+    <ROW Action="AI_DeleteRLzma" Description="Deleting files extracted from archive" DescriptionLocId="ActionText.Description.AI_DeleteLzma" TemplateLocId="-"/>
     <ROW Action="AI_DownloadPrereq" Description="Downloading prerequisite software" DescriptionLocId="ActionText.Description.AI_DownloadPrereq" Template="Downloading [1]{[2] completed}" TemplateLocId="ActionText.Template.AI_DownloadPrereq"/>
+    <ROW Action="AI_ExtractFiles" Description="Extracting files from archive" DescriptionLocId="ActionText.Description.AI_ExtractLzma" TemplateLocId="-"/>
+    <ROW Action="AI_ExtractLzma" Description="Extracting files from archive" DescriptionLocId="ActionText.Description.AI_ExtractLzma" TemplateLocId="-"/>
     <ROW Action="AI_ExtractPrereq" Description="Extracting prerequisite software" DescriptionLocId="ActionText.Description.AI_ExtractPrereq" Template="Extracting [1]{[2] completed}" TemplateLocId="ActionText.Template.AI_ExtractPrereq"/>
     <ROW Action="AI_InstallPostPrerequisite" Description="Installing prerequisite software" DescriptionLocId="ActionText.Description.AI_InstallPrerequisite" Template="Installing [1]{[2] completed}" TemplateLocId="ActionText.Template.AI_InstallPrerequisite"/>
     <ROW Action="AI_InstallPrerequisite" Description="Installing prerequisite software" DescriptionLocId="ActionText.Description.AI_InstallPrerequisite" Template="Installing [1]{[2] completed}" TemplateLocId="ActionText.Template.AI_InstallPrerequisite"/>
     <ROW Action="AI_VerifyPrereq" Description="Verifying prerequisites" DescriptionLocId="ActionText.Description.AI_VerifyPrereq" Template="[1] was not installed correctly." TemplateLocId="ActionText.Template.AI_VerifyPrereq"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiAppSearchComponent">
+    <ROW Property="AI_SETUPEXEPATH" Signature_="AI_EXE_PATH_LM" Builds="DefaultBuild"/>
+    <ROW Property="AI_SETUPEXEPATH" Signature_="AI_EXE_PATH_CU" Builds="DefaultBuild"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiBinaryComponent">
     <ROW Name="Prereq.dll" SourcePath="&lt;AI_CUSTACTS&gt;Prereq.dll"/>
     <ROW Name="SoftwareDetector.dll" SourcePath="&lt;AI_CUSTACTS&gt;SoftwareDetector.dll"/>
     <ROW Name="aicustact.dll" SourcePath="&lt;AI_CUSTACTS&gt;aicustact.dll"/>
     <ROW Name="file_deleter.ps1" SourcePath="&lt;AI_SCRIPTS&gt;file_deleter.ps1"/>
+    <ROW Name="lzmaextractor.dll" SourcePath="&lt;AI_CUSTACTS&gt;lzmaextractor.dll"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlEventComponent">
     <ROW Dialog_="WelcomeDlg" Control_="Next" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="1"/>
@@ -362,12 +377,21 @@
     <ROW Action="AI_AppSearchEx" Type="1" Source="Prereq.dll" Target="DoAppSearchEx"/>
     <ROW Action="AI_BACKUP_AI_SETUPEXEPATH" Type="51" Source="AI_SETUPEXEPATH_ORIGINAL" Target="[AI_SETUPEXEPATH]"/>
     <ROW Action="AI_CleanPrereq" Type="65" Source="Prereq.dll" Target="CleanPrereq" WithoutSeq="true"/>
+    <ROW Action="AI_DATA_SETTER" Type="51" Source="CustomActionData" Target="[AI_SETUPEXEPATH]"/>
     <ROW Action="AI_DOWNGRADE" Type="19" Target="4010"/>
+    <ROW Action="AI_DeleteCadLzma" Type="51" Source="AI_DeleteLzma" Target="[AI_SETUPEXEPATH]"/>
+    <ROW Action="AI_DeleteLzma" Type="1025" Source="lzmaextractor.dll" Target="DeleteLZMAFiles"/>
+    <ROW Action="AI_DeleteRCadLzma" Type="51" Source="AI_DeleteRLzma" Target="[AI_SETUPEXEPATH]"/>
+    <ROW Action="AI_DeleteRLzma" Type="1281" Source="lzmaextractor.dll" Target="DeleteLZMAFiles"/>
     <ROW Action="AI_DetectSoftware" Type="257" Source="SoftwareDetector.dll" Target="OnDetectSoftware"/>
     <ROW Action="AI_DownloadPrereq" Type="1" Source="Prereq.dll" Target="DownloadPrereq"/>
     <ROW Action="AI_DpiContentScale" Type="1" Source="aicustact.dll" Target="DpiContentScale"/>
     <ROW Action="AI_EnableDebugLog" Type="321" Source="aicustact.dll" Target="EnableDebugLog"/>
+    <ROW Action="AI_ExtractCadLzma" Type="51" Source="AI_ExtractLzma" Target="[AI_SETUPEXEPATH]"/>
+    <ROW Action="AI_ExtractFiles" Type="1" Source="Prereq.dll" Target="ExtractSourceFiles" AdditionalSeq="AI_DATA_SETTER"/>
+    <ROW Action="AI_ExtractLzma" Type="1025" Source="lzmaextractor.dll" Target="ExtractLZMAFiles"/>
     <ROW Action="AI_ExtractPrereq" Type="65" Source="Prereq.dll" Target="ExtractPrereq"/>
+    <ROW Action="AI_FindExeLzma" Type="1" Source="lzmaextractor.dll" Target="FindEXE"/>
     <ROW Action="AI_InstallModeCheck" Type="1" Source="aicustact.dll" Target="UpdateInstallMode" WithoutSeq="true"/>
     <ROW Action="AI_InstallPostPrerequisite" Type="1" Source="Prereq.dll" Target="InstallPostPrereq"/>
     <ROW Action="AI_InstallPrerequisite" Type="1" Source="Prereq.dll" Target="InstallPrereq"/>
@@ -411,6 +435,9 @@
     <ROW Feature_="MainFeature" Component_="analysis.bmp"/>
     <ROW Feature_="C67108D39D05435F9BE6B977F2CCED25" Component_="C67108D39D05435F9BE6B977F2CCED25"/>
     <ROW Feature_="A918597FE054CCCB65ABDBA0AD8F63C" Component_="A918597FE054CCCB65ABDBA0AD8F63C"/>
+    <ROW Feature_="MainFeature" Component_="AI_ExePath"/>
+    <ROW Feature_="DriverPackageInsta" Component_="DriverPackageInsta"/>
+    <ROW Feature_="DriverPackageInsta_1" Component_="DriverPackageInsta_1"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiIconsComponent">
     <ROW Name="SpikeRecorder.exe" SourcePath="..\build\SpikeRecorder.ico" Index="0"/>
@@ -423,8 +450,19 @@
     <ROW Action="AI_ResolveKnownFolders" Sequence="52"/>
     <ROW Action="AI_EnableDebugLog" Sequence="51"/>
     <ROW Action="AI_VerifyPrereq" Sequence="1101"/>
-    <ROW Action="AI_AppSearchEx" Sequence="102"/>
-    <ROW Action="AI_DetectSoftware" Sequence="101"/>
+    <ROW Action="AI_AppSearchEx" Sequence="103"/>
+    <ROW Action="AI_DetectSoftware" Sequence="102"/>
+    <ROW Action="AI_BACKUP_AI_SETUPEXEPATH" Sequence="99" Builds="DefaultBuild"/>
+    <ROW Action="AI_RESTORE_AI_SETUPEXEPATH" Condition="AI_SETUPEXEPATH_ORIGINAL" Sequence="101" Builds="DefaultBuild"/>
+    <ROW Action="AI_DeleteCadLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="199" Builds="DefaultBuild"/>
+    <ROW Action="AI_DeleteRCadLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="198" Builds="DefaultBuild"/>
+    <ROW Action="AI_ExtractCadLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="197" Builds="DefaultBuild"/>
+    <ROW Action="AI_FindExeLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="196" Builds="DefaultBuild"/>
+    <ROW Action="AI_ExtractLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="1549" Builds="DefaultBuild"/>
+    <ROW Action="AI_DeleteRLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="1548" Builds="DefaultBuild"/>
+    <ROW Action="AI_DeleteLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="6599" Builds="DefaultBuild"/>
+    <ROW Action="AI_ExtractFiles" Sequence="1399" Builds="DefaultBuild"/>
+    <ROW Action="AI_DATA_SETTER" Sequence="1398"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
     <ROW Action="AI_RESTORE_LOCATION" Condition="APPDIR=&quot;&quot;" Sequence="749"/>
@@ -446,19 +484,30 @@
     <ROW Condition="(VersionNT &lt;&gt; 400)" Description="[ProductName] cannot be installed on [WindowsTypeNT40Display]." DescriptionLocId="AI.LaunchCondition.NoNT40" IsPredefined="true" Builds="DefaultBuild"/>
     <ROW Condition="(VersionNT &lt;&gt; 500)" Description="[ProductName] cannot be installed on [WindowsTypeNT50Display]." DescriptionLocId="AI.LaunchCondition.NoNT50" IsPredefined="true" Builds="DefaultBuild"/>
     <ROW Condition="AI_DETECTED_INTERNET_CONNECTION" Description="[ProductName] requires an active Internet connection for installation. Please check your network configuration and proxy settings." DescriptionLocId="AI.LaunchCondition.Internet" IsPredefined="true" Builds="DefaultBuild"/>
+    <ROW Condition="SETUPEXEDIR OR (REMOVE=&quot;ALL&quot;)" Description="This package can only be run from a bootstrapper." DescriptionLocId="AI.LaunchCondition.RequireBootstrapper" IsPredefined="true" Builds="DefaultBuild"/>
     <ROW Condition="VersionNT" Description="[ProductName] cannot be installed on [WindowsType9XDisplay]." DescriptionLocId="AI.LaunchCondition.No9X" IsPredefined="true" Builds="DefaultBuild"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiRegLocatorComponent">
+    <ROW Signature_="AI_EXE_PATH_CU" Root="1" Key="Software\Caphyon\Advanced Installer\LZMA\[ProductCode]\[ProductVersion]" Name="AI_ExePath" Type="2"/>
+    <ROW Signature_="AI_EXE_PATH_LM" Root="2" Key="Software\Caphyon\Advanced Installer\LZMA\[ProductCode]\[ProductVersion]" Name="AI_ExePath" Type="2"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiRegsComponent">
     <ROW Registry="A918597FE054CCCB65ABDBA0AD8F63C" Root="-1" Key="Software\Caphyon\Advanced Installer\Prereqs\[ProductCode]\[ProductVersion]" Name="A918597FE054CCCB65ABDBA0AD8F63C" Value="1" Component_="A918597FE054CCCB65ABDBA0AD8F63C"/>
+    <ROW Registry="AI_ExePath" Root="-1" Key="Software\Caphyon\Advanced Installer\LZMA\[ProductCode]\[ProductVersion]" Name="AI_ExePath" Value="[AI_SETUPEXEPATH]" Component_="AI_ExePath"/>
     <ROW Registry="AdvancedInstaller" Root="-1" Key="Software\Caphyon\Advanced Installer" Name="\"/>
     <ROW Registry="C67108D39D05435F9BE6B977F2CCED25" Root="-1" Key="Software\Caphyon\Advanced Installer\Prereqs\[ProductCode]\[ProductVersion]" Name="C67108D39D05435F9BE6B977F2CCED25" Value="1" Component_="C67108D39D05435F9BE6B977F2CCED25"/>
     <ROW Registry="Caphyon" Root="-1" Key="Software\Caphyon" Name="\"/>
+    <ROW Registry="DriverPackageInsta" Root="-1" Key="Software\Caphyon\Advanced Installer\Prereqs\[ProductCode]\[ProductVersion]" Name="DriverPackageInsta" Value="1" Component_="DriverPackageInsta"/>
+    <ROW Registry="DriverPackageInsta_1" Root="-1" Key="Software\Caphyon\Advanced Installer\Prereqs\[ProductCode]\[ProductVersion]" Name="DriverPackageInsta_1" Value="1" Component_="DriverPackageInsta_1"/>
+    <ROW Registry="LZMA" Root="-1" Key="Software\Caphyon\Advanced Installer\LZMA" Name="\"/>
     <ROW Registry="Manufacturer" Root="-1" Key="Software\[Manufacturer]" Name="\"/>
     <ROW Registry="Path" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Path" Value="[APPDIR]" Component_="ProductInformation"/>
     <ROW Registry="Prereqs" Root="-1" Key="Software\Caphyon\Advanced Installer\Prereqs" Name="\"/>
     <ROW Registry="ProductCode" Root="-1" Key="Software\Caphyon\Advanced Installer\Prereqs\[ProductCode]" Name="\"/>
+    <ROW Registry="ProductCode_1" Root="-1" Key="Software\Caphyon\Advanced Installer\LZMA\[ProductCode]" Name="\"/>
     <ROW Registry="ProductName" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="\"/>
     <ROW Registry="ProductVersion" Root="-1" Key="Software\Caphyon\Advanced Installer\Prereqs\[ProductCode]\[ProductVersion]" Name="\"/>
+    <ROW Registry="ProductVersion_1" Root="-1" Key="Software\Caphyon\Advanced Installer\LZMA\[ProductCode]\[ProductVersion]" Name="\"/>
     <ROW Registry="Software" Root="-1" Key="Software" Name="\"/>
     <ROW Registry="Version" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Version" Value="[ProductVersion]" Component_="ProductInformation"/>
   </COMPONENT>
@@ -475,11 +524,15 @@
   <COMPONENT cid="caphyon.advinst.msicomp.PreReqComponent">
     <ROW PrereqKey="A918597FE054CCCB65ABDBA0AD8F63C" DisplayName="Visual C++ Redistributable for Visual Studio 2015-2022 x86" VersionMin="14.30" SetupFileUrl="Prerequisites\Visual C++ Redistributable for Visual Studio 2015-2022\VC_redist.x86.exe" Location="0" ExactSize="0" WinNTVersions="Windows Vista RTM x86, Windows Vista SP1 x86, Windows Server 2008 RTM x86, Windows 7 RTM x86" WinNT64Versions="Windows Vista RTM x64, Windows Vista SP1 x64, Windows Server 2008 RTM x64, Windows 7 RTM x64, Windows Server 2008 R2 RTM x64" Operator="0" NoUiComLine="/q /norestart" Options="f" TargetName="Visual C++ Redistributable for Visual Studio 2015-2022\VC_redist.x86.exe" Feature="A918597FE054CCCB65ABDBA0AD8F63C"/>
     <ROW PrereqKey="C67108D39D05435F9BE6B977F2CCED25" DisplayName="Visual C++ Redistributable for Visual Studio 2012 Update 4 x86" VersionMin="11.0" SetupFileUrl="Prerequisites\Visual C++ Redistributable for Visual Studio 2012\vcredist_x86.exe" Location="0" ExactSize="0" Operator="1" NoUiComLine="/q /norestart" Options="f" TargetName="Visual C++ Redistributable for Visual Studio 2012\vcredist_x86.exe" Feature="C67108D39D05435F9BE6B977F2CCED25"/>
-    <ATTRIBUTE name="PrereqsOrder" value="C67108D39D05435F9BE6B977F2CCED25 A918597FE054CCCB65ABDBA0AD8F63C"/>
+    <ROW PrereqKey="DriverPackageInsta" DisplayName="Driver Package Installer (DPInst) x64" VersionMin="2.1.0.0" SetupFileUrl="..\..\..\..\Users\Greg\Desktop\backup\drivers\dpinst-amd64.exe" Location="0" ExactSize="0" WinNTVersions="Windows 9x/ME/NT/2000/XP/Vista/Windows 7/Windows 8 x86/Windows 8.1 x86/Windows 10 x86" Operator="1" Options="ip" TargetName="Driver Package Installer (DPInst)\dpinst-amd64.exe" Feature="DriverPackageInsta"/>
+    <ROW PrereqKey="DriverPackageInsta_1" DisplayName="Driver Package Installer (DPInst) x32" VersionMin="2.1.0.0" SetupFileUrl="..\..\..\..\Users\Greg\Desktop\backup\drivers\dpinst-x86.exe" Location="0" ExactSize="0" WinNT64Versions="Windows XP/Vista/Windows 7/Windows 8 x64/Windows 8.1 x64/Windows 10 x64/Windows 11 x64" Operator="1" Options="ip" TargetName="Driver Package Installer (DPInst)_1\dpinst-x86.exe" Feature="DriverPackageInsta_1"/>
+    <ATTRIBUTE name="PrereqsOrder" value="C67108D39D05435F9BE6B977F2CCED25 A918597FE054CCCB65ABDBA0AD8F63C DriverPackageInsta DriverPackageInsta_1"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.PreReqSearchComponent">
     <ROW SearchKey="A918597FE054CCCB65ABDBA0AD8F63CSyst" Prereq="A918597FE054CCCB65ABDBA0AD8F63C" SearchType="0" SearchString="[SystemFolder]vcruntime140.dll" VerMin="14.30.30704" Order="2" Property="PreReqSearch_1_A918597FE054CCCB65AB"/>
     <ROW SearchKey="A918597FE054CCCB65ABDBA0AD8F63CVers" Prereq="A918597FE054CCCB65ABDBA0AD8F63C" SearchType="2" SearchString="HKLM\SOFTWARE\Microsoft\DevDiv\VC\Servicing\14.0\RuntimeMinimum\Version" VerMin="14.30.30704" Order="1" Property="PreReqSearch_A918597FE054CCCB65ABDB"/>
     <ROW SearchKey="C67108D39D05435F9BE6B977F2CCED25Ver" Prereq="C67108D39D05435F9BE6B977F2CCED25" SearchType="2" SearchString="HKLM\SOFTWARE\Microsoft\DevDiv\VC\Servicing\11.0\RuntimeMinimum\Version" VerMin="11.0.61030" Order="1" Property="PreReqSearch_C67108D39D05435F9BE6B9"/>
+    <ROW SearchKey="SystemFolderfile.dll" Prereq="DriverPackageInsta" SearchType="0" SearchString="[SystemFolder]file.dll" VerMin="1.0" Order="1" Property="PreReqSearch"/>
+    <ROW SearchKey="SystemFolderfile.dll_1" Prereq="DriverPackageInsta_1" SearchType="0" SearchString="[SystemFolder]file.dll" VerMin="1.0" Order="1" Property="PreReqSearch_1"/>
   </COMPONENT>
 </DOCUMENT>
