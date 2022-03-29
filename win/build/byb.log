@@ -1,0 +1,276 @@
+1647449825 40 - BYB SpikeRecorder started on Wed Mar 16 17:57:05 2022
+
+1647449825 45 - Texture 'data/ascii.bmp' loaded.
+1647449825 45 - Initializing font...
+1647449825 46 - Initializing libbass...
+1647449825 129 - Player::setSampleRate - Sample rate set OK
+1647449825 444 - RecordingManager::Device - BASS enable 0 device
+1647449825 543 - Player::setSampleRate - Sample rate set OK
+1647449825 543 - Found 2 recording devices.
+1647449825 549 - Loading Resources...
+1647449825 549 - Texture 'data/pause.bmp' loaded.
+1647449825 549 - Texture 'data/pausehigh.bmp' loaded.
+1647449825 549 - Texture 'data/play.bmp' loaded.
+1647449825 549 - Texture 'data/playhigh.bmp' loaded.
+1647449825 549 - Texture 'data/forward.bmp' loaded.
+1647449825 549 - Texture 'data/forwardhigh.bmp' loaded.
+1647449825 549 - Texture 'data/backward.bmp' loaded.
+1647449825 549 - Texture 'data/backwardhigh.bmp' loaded.
+1647449825 549 - Texture 'data/config.bmp' loaded.
+1647449825 549 - Texture 'data/confighigh.bmp' loaded.
+1647449825 549 - Texture 'data/thresh.bmp' loaded.
+1647449825 549 - Texture 'data/threshhigh.bmp' loaded.
+1647449825 549 - Texture 'data/ekg.bmp' loaded.
+1647449825 549 - Texture 'data/ekghigh.bmp' loaded.
+1647449825 549 - Texture 'data/rec.bmp' loaded.
+1647449825 549 - Texture 'data/rechigh.bmp' loaded.
+1647449825 549 - Texture 'data/file.bmp' loaded.
+1647449825 549 - Texture 'data/filehigh.bmp' loaded.
+1647449825 549 - Texture 'data/analysis.bmp' loaded.
+1647449825 549 - Texture 'data/analysishigh.bmp' loaded.
+1647449825 549 - Texture 'data/fft.bmp' loaded.
+1647449825 549 - Texture 'data/ffthigh.bmp' loaded.
+1647449825 549 - Texture 'data/save.bmp' loaded.
+1647449825 549 - Texture 'data/savehigh.bmp' loaded.
+1647449825 549 - Texture 'data/pin.bmp' loaded.
+1647449825 549 - Texture 'data/threshpin.bmp' loaded.
+1647449825 549 - Texture 'data/dropdown.bmp' loaded.
+1647449825 549 - Texture 'data/gainup.bmp' loaded.
+1647449825 549 - Texture 'data/gaindown.bmp' loaded.
+1647449825 549 - Texture 'data/ckboxon.bmp' loaded.
+1647449825 549 - Texture 'data/ckboxoff.bmp' loaded.
+1647449825 549 - Texture 'data/plotview.bmp' loaded.
+1647449825 549 - Texture 'data/plotviewhigh.bmp' loaded.
+1647449825 549 - Texture 'data/plotviewdown.bmp' loaded.
+1647449825 549 - Texture 'data/plotviewdownhigh.bmp' loaded.
+1647449825 549 - Texture 'data/disconnected.bmp' loaded.
+1647449825 549 - Texture 'data/connected-high.bmp' loaded.
+1647449825 549 - Texture 'data/disconnected-high.bmp' loaded.
+1647449825 549 - Texture 'data/connected.bmp' loaded.
+1647449825 549 - Texture 'data/bdisconnected.bmp' loaded.
+1647449825 549 - Texture 'data/bconnected-high.bmp' loaded.
+1647449825 549 - Texture 'data/bdisconnected-high.bmp' loaded.
+1647449825 549 - Texture 'data/bconnected.bmp' loaded.
+1647449825 549 - Texture 'data/update.bmp' loaded.
+1647449825 549 - Texture 'data/update-high.bmp' loaded.
+1647449825 549 - Texture 'data/bupdate.bmp' loaded.
+1647449825 549 - Texture 'data/bupdate-high.bmp' loaded.
+1647449825 549 - Texture 'data/usbcon.bmp' loaded.
+1647449825 549 - Texture 'data/usbconhigh.bmp' loaded.
+1647449825 549 - Texture 'data/usbdiscon.bmp' loaded.
+1647449825 549 - Texture 'data/neuronprocon.bmp' loaded.
+1647449825 549 - Texture 'data/neuronproconhigh.bmp' loaded.
+1647449825 549 - Texture 'data/neuronprodiscon.bmp' loaded.
+1647449825 549 - Texture 'data/emgprocon.bmp' loaded.
+1647449825 549 - Texture 'data/emgproconhigh.bmp' loaded.
+1647449825 549 - Texture 'data/emgprodiscon.bmp' loaded.
+1647449825 549 - Texture 'data/plantcon.bmp' loaded.
+1647449825 549 - Texture 'data/plantconhigh.bmp' loaded.
+1647449825 549 - Texture 'data/plantdiscon.bmp' loaded.
+1647449825 549 - Texture 'data/musclecon.bmp' loaded.
+1647449825 549 - Texture 'data/muscleconhigh.bmp' loaded.
+1647449825 549 - Texture 'data/musclediscon.bmp' loaded.
+1647449825 549 - Texture 'data/neuroncon.bmp' loaded.
+1647449825 549 - Texture 'data/neurondiscon.bmp' loaded.
+1647449825 549 - Texture 'data/heartcon.bmp' loaded.
+1647449825 549 - Texture 'data/heartconhigh.bmp' loaded.
+1647449825 549 - Texture 'data/heartdiscon.bmp' loaded.
+1647449825 549 - Texture 'data/conne1.bmp' loaded.
+1647449825 549 - Texture 'data/conne2.bmp' loaded.
+1647449825 549 - Texture 'data/conne3.bmp' loaded.
+1647449825 549 - Texture 'data/conne4.bmp' loaded.
+1647449825 549 - Texture 'data/conne5.bmp' loaded.
+1647449825 549 - Texture 'data/conne6.bmp' loaded.
+1647449825 549 - Texture 'data/dconne1.bmp' loaded.
+1647449825 549 - Texture 'data/dconne2.bmp' loaded.
+1647449825 549 - Texture 'data/dconne3.bmp' loaded.
+1647449825 549 - Texture 'data/dconne4.bmp' loaded.
+1647449825 549 - Texture 'data/dconne5.bmp' loaded.
+1647449825 549 - Texture 'data/dconne6.bmp' loaded.
+1647449825 549 - Texture 'data/connn1.bmp' loaded.
+1647449825 549 - Texture 'data/connn2.bmp' loaded.
+1647449825 549 - Texture 'data/connn3.bmp' loaded.
+1647449825 549 - Texture 'data/connn4.bmp' loaded.
+1647449825 549 - Texture 'data/connn5.bmp' loaded.
+1647449825 549 - Texture 'data/connn6.bmp' loaded.
+1647449825 549 - Texture 'data/dconnn1.bmp' loaded.
+1647449825 549 - Texture 'data/dconnn2.bmp' loaded.
+1647449825 549 - Texture 'data/dconnn3.bmp' loaded.
+1647449825 549 - Texture 'data/dconnn4.bmp' loaded.
+1647449825 549 - Texture 'data/dconnn5.bmp' loaded.
+1647449825 549 - Texture 'data/dconnn6.bmp' loaded.
+1647449825 549 - Texture 'data/connm1.bmp' loaded.
+1647449825 549 - Texture 'data/connm2.bmp' loaded.
+1647449825 549 - Texture 'data/connm3.bmp' loaded.
+1647449825 549 - Texture 'data/connm4.bmp' loaded.
+1647449825 549 - Texture 'data/connm5.bmp' loaded.
+1647449825 549 - Texture 'data/connm6.bmp' loaded.
+1647449825 549 - Texture 'data/dconnm1.bmp' loaded.
+1647449825 549 - Texture 'data/dconnm2.bmp' loaded.
+1647449825 549 - Texture 'data/dconnm3.bmp' loaded.
+1647449825 549 - Texture 'data/dconnm4.bmp' loaded.
+1647449825 549 - Texture 'data/dconnm5.bmp' loaded.
+1647449825 549 - Texture 'data/dconnm6.bmp' loaded.
+1647449825 549 - Texture 'data/connp1.bmp' loaded.
+1647449825 549 - Texture 'data/connp2.bmp' loaded.
+1647449825 549 - Texture 'data/connp3.bmp' loaded.
+1647449825 549 - Texture 'data/connp4.bmp' loaded.
+1647449825 549 - Texture 'data/connp5.bmp' loaded.
+1647449825 549 - Texture 'data/connp6.bmp' loaded.
+1647449825 549 - Texture 'data/dconnp1.bmp' loaded.
+1647449825 549 - Texture 'data/dconnp2.bmp' loaded.
+1647449825 549 - Texture 'data/dconnp3.bmp' loaded.
+1647449825 549 - Texture 'data/dconnp4.bmp' loaded.
+1647449825 549 - Texture 'data/dconnp5.bmp' loaded.
+1647449825 549 - Texture 'data/dconnp6.bmp' loaded.
+1647449825 549 - Texture 'data/heart.bmp' loaded.
+1647449825 549 - Texture 'data/speaker.bmp' loaded.
+1647449825 549 - Texture 'data/speakeroff.bmp' loaded.
+1647449825 549 - Texture 'data/bncconn.bmp' loaded.
+1647449825 549 - Texture 'data/bncconnhigh.bmp' loaded.
+1647449825 549 - Texture 'data/rtimer.bmp' loaded.
+1647449825 549 - Texture 'data/rtimerhigh.bmp' loaded.
+1647449825 549 - Texture 'data/devbrd.bmp' loaded.
+1647449825 549 - Texture 'data/devbrdhigh.bmp' loaded.
+1647449825 549 - Texture 'data/okbtn.bmp' loaded.
+1647449825 549 - Texture 'data/okbtnhigh.bmp' loaded.
+1647449825 549 - Texture 'data/trigger.bmp' loaded.
+1647449825 549 - Texture 'data/triggerhigh.bmp' loaded.
+1647449825 549 - Texture 'data/e1.bmp' loaded.
+1647449825 549 - Texture 'data/e2.bmp' loaded.
+1647449825 549 - Texture 'data/e3.bmp' loaded.
+1647449825 549 - Texture 'data/e4.bmp' loaded.
+1647449825 549 - Texture 'data/e5.bmp' loaded.
+1647449825 549 - Texture 'data/e6.bmp' loaded.
+1647449825 549 - Texture 'data/e7.bmp' loaded.
+1647449825 549 - Texture 'data/e8.bmp' loaded.
+1647449825 549 - Texture 'data/e9.bmp' loaded.
+1647449825 549 - Texture 'data/e10.bmp' loaded.
+1647449825 549 - Texture 'data/analysiscrossed.bmp' loaded.
+1647449825 549 - Texture 'data/fftcrossed.bmp' loaded.
+1647449825 549 - Texture 'data/threshcrossed.bmp' loaded.
+1647449825 549 - Texture 'data/configcrossed.bmp' loaded.
+1647449825 549 - Texture 'data/calibratebtn-high.bmp' loaded.
+1647449825 549 - Texture 'data/cancel-high.bmp' loaded.
+1647449825 549 - Texture 'data/calibratebtn-normal.bmp' loaded.
+1647449825 549 - Texture 'data/cancel-normal.bmp' loaded.
+1647449825 549 - Texture 'data/okbtn-normal.bmp' loaded.
+1647449825 549 - Texture 'data/okbtn-high.bmp' loaded.
+1647449825 549 - Creating Window...
+1647449825 994 - Starting GUI...
+1647449826 243 - 
+New cycle in serial scanning thread ---------------------------------
+1647449826 244 - checkAllPortsForArduino - Check for Arduino boards
+1647449826 245 - checkAllPortsForArduino Before lock
+1647449826 245 - checkAllPortsForArduino After lock
+1647449826 245 - checkAllPortsForArduino Try port: COM1:
+1647449826 245 - checkAllPortsForArduino Now open port: COM1:
+1647449826 245 - openSerialDeviceWithoutLock - Try to open port: COM1:
+1647449826 322 - openSerialDeviceWithoutLock - failed to open port COM1:
+1647449826 322 - checkAllPortsForArduino failed
+1647449826 322 - Close serial port: 
+1647449826 322 - checkAllPortsForArduino refresh working instance list
+1647449826 322 - checkAllPortsForArduino relaese lock
+1647449827 22 - 
+New cycle in serial scanning thread ---------------------------------
+1647449827 22 - checkAllPortsForArduino - Check for Arduino boards
+1647449827 23 - checkAllPortsForArduino Before lock
+1647449827 23 - checkAllPortsForArduino After lock
+1647449827 23 - checkAllPortsForArduino Try port: COM1:
+1647449827 23 - checkAllPortsForArduino Now open port: COM1:
+1647449827 23 - openSerialDeviceWithoutLock - Try to open port: COM1:
+1647449827 100 - openSerialDeviceWithoutLock - failed to open port COM1:
+1647449827 100 - checkAllPortsForArduino failed
+1647449827 100 - Close serial port: 
+1647449827 100 - checkAllPortsForArduino refresh working instance list
+1647449827 100 - checkAllPortsForArduino relaese lock
+1647449827 800 - 
+New cycle in serial scanning thread ---------------------------------
+1647449827 800 - checkAllPortsForArduino - Check for Arduino boards
+1647449827 801 - checkAllPortsForArduino Before lock
+1647449827 801 - checkAllPortsForArduino After lock
+1647449827 801 - checkAllPortsForArduino Try port: COM1:
+1647449827 801 - checkAllPortsForArduino Now open port: COM1:
+1647449827 801 - openSerialDeviceWithoutLock - Try to open port: COM1:
+1647449827 878 - openSerialDeviceWithoutLock - failed to open port COM1:
+1647449827 878 - checkAllPortsForArduino failed
+1647449827 878 - Close serial port: 
+1647449827 878 - checkAllPortsForArduino refresh working instance list
+1647449827 878 - checkAllPortsForArduino relaese lock
+1647449828 578 - 
+New cycle in serial scanning thread ---------------------------------
+1647449828 578 - checkAllPortsForArduino - Check for Arduino boards
+1647449828 579 - checkAllPortsForArduino Before lock
+1647449828 579 - checkAllPortsForArduino After lock
+1647449828 579 - checkAllPortsForArduino Try port: COM1:
+1647449828 579 - checkAllPortsForArduino Now open port: COM1:
+1647449828 579 - openSerialDeviceWithoutLock - Try to open port: COM1:
+1647449828 656 - openSerialDeviceWithoutLock - failed to open port COM1:
+1647449828 656 - checkAllPortsForArduino failed
+1647449828 656 - Close serial port: 
+1647449828 656 - checkAllPortsForArduino refresh working instance list
+1647449828 656 - checkAllPortsForArduino relaese lock
+1647449829 356 - 
+New cycle in serial scanning thread ---------------------------------
+1647449829 356 - checkAllPortsForArduino - Check for Arduino boards
+1647449829 356 - checkAllPortsForArduino Before lock
+1647449829 356 - checkAllPortsForArduino After lock
+1647449829 356 - checkAllPortsForArduino Try port: COM1:
+1647449829 356 - checkAllPortsForArduino Now open port: COM1:
+1647449829 356 - openSerialDeviceWithoutLock - Try to open port: COM1:
+1647449829 432 - openSerialDeviceWithoutLock - failed to open port COM1:
+1647449829 432 - checkAllPortsForArduino failed
+1647449829 432 - Close serial port: 
+1647449829 432 - checkAllPortsForArduino refresh working instance list
+1647449829 432 - checkAllPortsForArduino relaese lock
+1647449830 133 - 
+New cycle in serial scanning thread ---------------------------------
+1647449830 133 - checkAllPortsForArduino - Check for Arduino boards
+1647449830 134 - checkAllPortsForArduino Before lock
+1647449830 134 - checkAllPortsForArduino After lock
+1647449830 134 - checkAllPortsForArduino Try port: COM1:
+1647449830 134 - checkAllPortsForArduino Now open port: COM1:
+1647449830 134 - openSerialDeviceWithoutLock - Try to open port: COM1:
+1647449830 210 - openSerialDeviceWithoutLock - failed to open port COM1:
+1647449830 210 - checkAllPortsForArduino failed
+1647449830 210 - Close serial port: 
+1647449830 210 - checkAllPortsForArduino refresh working instance list
+1647449830 210 - checkAllPortsForArduino relaese lock
+1647449830 911 - 
+New cycle in serial scanning thread ---------------------------------
+1647449830 911 - checkAllPortsForArduino - Check for Arduino boards
+1647449830 911 - checkAllPortsForArduino Before lock
+1647449830 911 - checkAllPortsForArduino After lock
+1647449830 911 - checkAllPortsForArduino Try port: COM1:
+1647449830 911 - checkAllPortsForArduino Now open port: COM1:
+1647449830 911 - openSerialDeviceWithoutLock - Try to open port: COM1:
+1647449830 988 - openSerialDeviceWithoutLock - failed to open port COM1:
+1647449830 988 - checkAllPortsForArduino failed
+1647449830 988 - Close serial port: 
+1647449830 988 - checkAllPortsForArduino refresh working instance list
+1647449830 988 - checkAllPortsForArduino relaese lock
+1647449831 689 - 
+New cycle in serial scanning thread ---------------------------------
+1647449831 689 - checkAllPortsForArduino - Check for Arduino boards
+1647449831 689 - checkAllPortsForArduino Before lock
+1647449831 689 - checkAllPortsForArduino After lock
+1647449831 689 - checkAllPortsForArduino Try port: COM1:
+1647449831 689 - checkAllPortsForArduino Now open port: COM1:
+1647449831 689 - openSerialDeviceWithoutLock - Try to open port: COM1:
+1647449831 766 - openSerialDeviceWithoutLock - failed to open port COM1:
+1647449831 766 - checkAllPortsForArduino failed
+1647449831 766 - Close serial port: 
+1647449831 766 - checkAllPortsForArduino refresh working instance list
+1647449831 766 - checkAllPortsForArduino relaese lock
+1647449832 299 - BYB SpikeRecorder exited normally.
+1647449832 299 - RecordingManager::Device - BASS disable 0 device
+1647449832 467 - 
+New cycle in serial scanning thread ---------------------------------
+1647449832 467 - checkAllPortsForArduino - Check for Arduino boards
+1647449832 469 - checkAllPortsForArduino Before lock
+1647449832 469 - checkAllPortsForArduino After lock
+1647449832 469 - checkAllPortsForArduino Try port: COM1:
+1647449832 469 - checkAllPortsForArduino Now open port: COM1:
+1647449832 469 - openSerialDeviceWithoutLock - Try to open port: COM1:
+1647449832 479 - libbass deinitialized.
+1647449832 520 - GUI closed.
