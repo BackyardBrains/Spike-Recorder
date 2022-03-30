@@ -5,7 +5,6 @@
     <ROW Property="AI_CURRENT_YEAR" Value="2022" ValueLocId="-"/>
     <ROW Property="AI_FINDEXE_TITLE" Value="Select the installation package for [|ProductName]" ValueLocId="AI.Property.FindExeTitle"/>
     <ROW Property="AI_PREDEF_LCONDS_PROPS" Value="AI_DETECTED_INTERNET_CONNECTION"/>
-    <ROW Property="AI_PREREQ_REPAIR_ENABLED" MultiBuildValue="DefaultBuild:1"/>
     <ROW Property="AI_ThemeStyle" Value="aero" MultiBuildValue="DefaultBuild:classic" MsiKey="AI_ThemeStyle"/>
     <ROW Property="ALLUSERS" Value="1"/>
     <ROW Property="ARPCOMMENTS" Value="This installer database contains the logic and data required to install [|ProductName]." ValueLocId="*"/>
@@ -37,11 +36,23 @@
     <ROW Directory="APPDIR" Directory_Parent="TARGETDIR" DefaultDir="APPDIR:." IsPseudoRoot="1"/>
     <ROW Directory="BackyardBrains_Dir" Directory_Parent="ProgramFilesFolder" DefaultDir="BACKYA~1|Backyard Brains"/>
     <ROW Directory="DesktopFolder" Directory_Parent="TARGETDIR" DefaultDir="DESKTO~1|DesktopFolder" IsPseudoRoot="1"/>
+    <ROW Directory="FTDIUSBDrivers_Dir" Directory_Parent="drivers_Dir" DefaultDir="FTDIUS~1|FTDI USB Drivers"/>
     <ROW Directory="ProgramFilesFolder" Directory_Parent="TARGETDIR" DefaultDir="PROGRA~1|ProgramFilesFolder" IsPseudoRoot="1"/>
     <ROW Directory="SpikeRecorder_Dir" Directory_Parent="BackyardBrains_Dir" DefaultDir="SPIKER~2|Spike Recorder"/>
+    <ROW Directory="Static_Dir" Directory_Parent="FTDIUSBDrivers_Dir" DefaultDir="Static"/>
     <ROW Directory="TARGETDIR" DefaultDir="SourceDir"/>
+    <ROW Directory="amd64_1_Dir" Directory_Parent="FTDIUSBDrivers_Dir" DefaultDir="amd64"/>
+    <ROW Directory="amd64_2_Dir" Directory_Parent="Static_Dir" DefaultDir="amd64"/>
+    <ROW Directory="amd64_Dir" Directory_Parent="drivers_Dir" DefaultDir="amd64"/>
     <ROW Directory="data_Dir" Directory_Parent="SpikeRecorder_Dir" DefaultDir="data"/>
+    <ROW Directory="drivers_Dir" Directory_Parent="SpikeRecorder_Dir" DefaultDir="drivers"/>
     <ROW Directory="firmwares_Dir" Directory_Parent="SpikeRecorder_Dir" DefaultDir="FIRMWA~1|firmwares"/>
+    <ROW Directory="i386_1_Dir" Directory_Parent="Static_Dir" DefaultDir="i386"/>
+    <ROW Directory="i386_Dir" Directory_Parent="FTDIUSBDrivers_Dir" DefaultDir="i386"/>
+    <ROW Directory="ia64_Dir" Directory_Parent="drivers_Dir" DefaultDir="ia64"/>
+    <ROW Directory="libusb0_Dir" Directory_Parent="license_Dir" DefaultDir="libusb0"/>
+    <ROW Directory="license_Dir" Directory_Parent="drivers_Dir" DefaultDir="license"/>
+    <ROW Directory="x86_Dir" Directory_Parent="drivers_Dir" DefaultDir="x86"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
     <ROW Component="A918597FE054CCCB65ABDBA0AD8F63C" ComponentId="{CDB05782-EF1E-40A6-A9C2-9EC1E6E7E517}" Directory_="APPDIR" Attributes="4" KeyPath="A918597FE054CCCB65ABDBA0AD8F63C" Options="2"/>
@@ -50,18 +61,35 @@
     <ROW Component="BSL430.dll" ComponentId="{28D62981-34E1-4F45-8CD7-18BF6EBA9302}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="BSL430.dll"/>
     <ROW Component="BSL430.lib" ComponentId="{02C6D0C6-1EF1-497E-88D1-D5E769278BFB}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="BSL430.lib" Type="0"/>
     <ROW Component="C67108D39D05435F9BE6B977F2CCED25" ComponentId="{DBFC8941-B132-457B-81CC-364B458BBF8D}" Directory_="APPDIR" Attributes="4" KeyPath="C67108D39D05435F9BE6B977F2CCED25" Options="2"/>
-    <ROW Component="DriverPackageInsta" ComponentId="{7CD2F891-212B-4BA9-B11D-503DBF96655B}" Directory_="APPDIR" Attributes="4" KeyPath="DriverPackageInsta" Options="2"/>
-    <ROW Component="DriverPackageInsta_1" ComponentId="{127D047A-E883-465E-8D26-43844E0DC879}" Directory_="APPDIR" Attributes="4" KeyPath="DriverPackageInsta_1" Options="2"/>
     <ROW Component="ProductInformation" ComponentId="{3B60805D-EB29-432D-A91A-F2E887F9402E}" Directory_="APPDIR" Attributes="4" KeyPath="Version"/>
     <ROW Component="SDL2.dll" ComponentId="{EC2E4730-7A69-4415-B1EB-80DFF44244AC}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="SDL2.dll"/>
     <ROW Component="SDL2_image.dll" ComponentId="{764B61A1-F982-42DE-963B-9EE13977590F}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="SDL2_image.dll"/>
     <ROW Component="SpikeRecorder.exe" ComponentId="{3CEC6A27-D574-4ACE-BF97-FAEA04722E36}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="SpikeRecorder.exe"/>
     <ROW Component="analysis.bmp" ComponentId="{E8583EBF-26EA-4D5C-8EFF-DDA03EEF9D93}" Directory_="data_Dir" Attributes="0" KeyPath="analysis.bmp" Type="0"/>
+    <ROW Component="arduinoorg.cat" ComponentId="{BA0D36C7-3A2E-4859-A8B8-6E51FAEB6038}" Directory_="drivers_Dir" Attributes="0" KeyPath="arduinoorg.cat" Type="0"/>
     <ROW Component="bass.dll" ComponentId="{79CD145D-27FE-4C73-81E4-B962FE6853A8}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="bass.dll"/>
     <ROW Component="bass_aac.dll" ComponentId="{296E2E2F-DBB4-44B9-9FC2-2839AD2B3AD3}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="bass_aac.dll"/>
     <ROW Component="bassalac.dll" ComponentId="{D741B032-971F-406D-BA12-A902D6C55E7C}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="bassalac.dll"/>
+    <ROW Component="dpinstamd64.exe" ComponentId="{E76CC16B-847C-4811-B189-2C2A2F0E0B14}" Directory_="drivers_Dir" Attributes="256" KeyPath="dpinstamd64.exe"/>
+    <ROW Component="dpinstx86.exe" ComponentId="{AFCA1B12-BB3C-4E4B-8C20-5F65B265C6D4}" Directory_="drivers_Dir" Attributes="0" KeyPath="dpinstx86.exe"/>
     <ROW Component="firmwares" ComponentId="{1C80071C-68D9-4EF7-9DCB-BF18726E7AAA}" Directory_="firmwares_Dir" Attributes="0"/>
+    <ROW Component="ftbusui.dll" ComponentId="{09B0498A-4D55-44FF-AD0E-8E3B8D7907B3}" Directory_="amd64_1_Dir" Attributes="256" KeyPath="ftbusui.dll"/>
+    <ROW Component="ftbusui.dll_1" ComponentId="{EE3AAD9C-E29D-44AC-A538-05D10EA3D611}" Directory_="i386_Dir" Attributes="0" KeyPath="ftbusui.dll_1"/>
+    <ROW Component="ftcserco.dll" ComponentId="{7C6CC595-466E-4A7F-8FF6-AE7175B59E77}" Directory_="amd64_1_Dir" Attributes="256" KeyPath="ftcserco.dll"/>
+    <ROW Component="ftcserco.dll_1" ComponentId="{2590FBE9-6B0A-4772-A7B8-585BB06E2B70}" Directory_="i386_Dir" Attributes="0" KeyPath="ftcserco.dll_1"/>
+    <ROW Component="ftd2xx.dll" ComponentId="{02F659A2-C40C-4430-8219-914FC49EC20E}" Directory_="i386_Dir" Attributes="0" KeyPath="ftd2xx.dll"/>
+    <ROW Component="ftd2xx.h" ComponentId="{44168A0C-A9CE-41A3-94B2-750559E315A7}" Directory_="FTDIUSBDrivers_Dir" Attributes="0" KeyPath="ftd2xx.h" Type="0"/>
+    <ROW Component="ftd2xx.lib" ComponentId="{C4C7CD87-9F81-4757-AB83-A4930BC19DC0}" Directory_="amd64_1_Dir" Attributes="0" KeyPath="ftd2xx.lib" Type="0"/>
+    <ROW Component="ftd2xx.lib_1" ComponentId="{77EC97C5-8A30-4124-9CAD-F3F65A17AEFB}" Directory_="i386_Dir" Attributes="0" KeyPath="ftd2xx.lib_1" Type="0"/>
+    <ROW Component="ftd2xx.lib_2" ComponentId="{DE3C6070-1568-4F62-99B9-4844066E2AAD}" Directory_="amd64_2_Dir" Attributes="0" KeyPath="ftd2xx.lib_2" Type="0"/>
+    <ROW Component="ftd2xx.lib_3" ComponentId="{054DB666-8E1D-4F8A-8CB2-51BB65E31CAB}" Directory_="i386_1_Dir" Attributes="0" KeyPath="ftd2xx.lib_3" Type="0"/>
+    <ROW Component="ftd2xx64.dll" ComponentId="{1199EDD1-D802-4F8B-9210-7BC568A58003}" Directory_="amd64_1_Dir" Attributes="256" KeyPath="ftd2xx64.dll"/>
+    <ROW Component="ftlang.dll" ComponentId="{7FAA41EF-8F40-402D-ABD2-E311F5F7ABFD}" Directory_="amd64_1_Dir" Attributes="256" KeyPath="ftlang.dll"/>
+    <ROW Component="ftlang.dll_1" ComponentId="{7A177639-5FA9-4FCE-B6B1-D48CC3D0D47F}" Directory_="i386_Dir" Attributes="0" KeyPath="ftlang.dll_1"/>
+    <ROW Component="ftserui2.dll" ComponentId="{3624AFC6-3288-4F0B-AFE1-23F4B1C8AC44}" Directory_="amd64_1_Dir" Attributes="256" KeyPath="ftserui2.dll"/>
+    <ROW Component="ftserui2.dll_1" ComponentId="{0B234EA2-5AB6-443A-A967-C10BDE2C97BB}" Directory_="i386_Dir" Attributes="0" KeyPath="ftserui2.dll_1"/>
     <ROW Component="hidapi.dll" ComponentId="{4CA721DA-D313-49D7-86E3-7CDA88533049}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="hidapi.dll"/>
+    <ROW Component="installer_license.txt" ComponentId="{0A57F1AB-D79A-4D7E-8B33-5FE0FEE1900F}" Directory_="libusb0_Dir" Attributes="0" KeyPath="installer_license.txt" Type="0"/>
     <ROW Component="libcurl.dll" ComponentId="{70D635A8-DD48-4985-9AB3-58A9DCA6234C}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="libcurl.dll"/>
     <ROW Component="libeay32.dll" ComponentId="{6D0E96D5-4AF7-43CF-ACAE-F4FA37DE202C}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="libeay32.dll"/>
     <ROW Component="libgcc_s_dw21.dll" ComponentId="{3CD2B20F-E697-429F-8D74-4F44AFA38435}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="libgcc_s_dw21.dll"/>
@@ -70,6 +98,12 @@
     <ROW Component="libssh2.dll" ComponentId="{9323E765-78C5-44AA-9AE1-4158358D974B}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="libssh2.dll"/>
     <ROW Component="libstdc6.dll" ComponentId="{1FFBF781-04CB-4462-B59C-4A0E85011F04}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="libstdc6.dll"/>
     <ROW Component="libtiff5.dll" ComponentId="{73D6B528-36B3-4F95-BAC5-676F160B8E5D}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="libtiff5.dll"/>
+    <ROW Component="libusb0.dll" ComponentId="{0A2FE5F7-3AF5-4F78-9141-40AC634817DB}" Directory_="amd64_Dir" Attributes="256" KeyPath="libusb0.dll"/>
+    <ROW Component="libusb0.dll_1" ComponentId="{EB76AE6C-5CE6-480B-8861-6B5F3EAC86B3}" Directory_="ia64_Dir" Attributes="256" KeyPath="libusb0.dll_1"/>
+    <ROW Component="libusb0.sys" ComponentId="{FDD1FEB1-0EF1-4342-9B5D-4052B5F2D27B}" Directory_="amd64_Dir" Attributes="256" KeyPath="libusb0.sys" Type="0"/>
+    <ROW Component="libusb0.sys_1" ComponentId="{CB2B6262-CCF2-41F5-9B36-5A3681B8B70B}" Directory_="ia64_Dir" Attributes="256" KeyPath="libusb0.sys_1" Type="0"/>
+    <ROW Component="libusb0.sys_2" ComponentId="{41754F2E-4690-41B6-98E0-875618003C2A}" Directory_="x86_Dir" Attributes="0" KeyPath="libusb0.sys_2" Type="0"/>
+    <ROW Component="libusb0_x86.dll" ComponentId="{662BAAAB-3BD2-4A6E-9263-BC4148926BAE}" Directory_="x86_Dir" Attributes="0" KeyPath="libusb0_x86.dll"/>
     <ROW Component="libwebp4.dll" ComponentId="{9715CEA5-ADC1-4BF5-A581-CEF7B0F4C621}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="libwebp4.dll"/>
     <ROW Component="libwinpthread1.dll" ComponentId="{B8179BC0-70E4-496C-9D15-003040505333}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="libwinpthread1.dll"/>
     <ROW Component="msvcr120.dll" ComponentId="{0488C70B-37E9-4E8E-8390-95DB355576E3}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="msvcr120.dll"/>
@@ -79,8 +113,6 @@
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
     <ROW Feature="A918597FE054CCCB65ABDBA0AD8F63C" Title="Visual C++ Redistributable for Visual Studio 2015-2022 x86" Description="Visual C++ Redistributable for Visual Studio 2015-2022 x86" Display="5" Level="1" Attributes="0"/>
     <ROW Feature="C67108D39D05435F9BE6B977F2CCED25" Title="Visual C++ Redistributable for Visual Studio 2012 Update 4 x86" Description="Visual C++ Redistributable for Visual Studio 2012 Update 4 x86" Display="3" Level="1" Attributes="0"/>
-    <ROW Feature="DriverPackageInsta" Title="Driver Package Installer (DPInst) x64" Description="Driver Package Installer (DPInst) x64" Display="7" Level="1" Attributes="0"/>
-    <ROW Feature="DriverPackageInsta_1" Title="Driver Package Installer (DPInst) x32" Description="Driver Package Installer (DPInst) x32" Display="9" Level="1" Attributes="0"/>
     <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0"/>
     <ATTRIBUTE name="CurrentFeature" value="MainFeature"/>
   </COMPONENT>
@@ -292,6 +324,48 @@
     <ROW File="usbcon.bmp" Component_="analysis.bmp" FileName="usbcon.bmp" Attributes="0" SourcePath="..\build\data\usbcon.bmp" SelfReg="false"/>
     <ROW File="usbconhigh.bmp" Component_="analysis.bmp" FileName="USBCON~1.BMP|usbconhigh.bmp" Attributes="0" SourcePath="..\build\data\usbconhigh.bmp" SelfReg="false"/>
     <ROW File="usbdiscon.bmp" Component_="analysis.bmp" FileName="USBDIS~1.BMP|usbdiscon.bmp" Attributes="0" SourcePath="..\build\data\usbdiscon.bmp" SelfReg="false"/>
+    <ROW File="libusb0.dll" Component_="libusb0.dll" FileName="libusb0.dll" Attributes="0" SourcePath="..\drivers\amd64\libusb0.dll" SelfReg="false"/>
+    <ROW File="libusb0.sys" Component_="libusb0.sys" FileName="libusb0.sys" Attributes="0" SourcePath="..\drivers\amd64\libusb0.sys" SelfReg="false"/>
+    <ROW File="arduinoorg.cat" Component_="arduinoorg.cat" FileName="ARDUIN~1.CAT|arduino-org.cat" Attributes="0" SourcePath="..\drivers\arduino-org.cat" SelfReg="false"/>
+    <ROW File="arduinoorg.inf" Component_="arduinoorg.cat" FileName="ARDUIN~1.INF|arduino-org.inf" Attributes="0" SourcePath="..\drivers\arduino-org.inf" SelfReg="false"/>
+    <ROW File="arduino.cat" Component_="arduinoorg.cat" FileName="arduino.cat" Attributes="0" SourcePath="..\drivers\arduino.cat" SelfReg="false"/>
+    <ROW File="arduino.inf" Component_="arduinoorg.cat" FileName="arduino.inf" Attributes="0" SourcePath="..\drivers\arduino.inf" SelfReg="false"/>
+    <ROW File="arduino_gemma.cat" Component_="arduinoorg.cat" FileName="ARDUIN~2.CAT|arduino_gemma.cat" Attributes="0" SourcePath="..\drivers\arduino_gemma.cat" SelfReg="false"/>
+    <ROW File="arduino_gemma.inf" Component_="arduinoorg.cat" FileName="ARDUIN~2.INF|arduino_gemma.inf" Attributes="0" SourcePath="..\drivers\arduino_gemma.inf" SelfReg="false"/>
+    <ROW File="dpinstamd64.exe" Component_="dpinstamd64.exe" FileName="DPINST~1.EXE|dpinst-amd64.exe" Attributes="0" SourcePath="..\drivers\dpinst-amd64.exe" SelfReg="false"/>
+    <ROW File="dpinstx86.exe" Component_="dpinstx86.exe" FileName="DPINST~2.EXE|dpinst-x86.exe" Attributes="0" SourcePath="..\drivers\dpinst-x86.exe" SelfReg="false"/>
+    <ROW File="ftbusui.dll" Component_="ftbusui.dll" FileName="ftbusui.dll" Attributes="0" SourcePath="..\drivers\FTDI USB Drivers\amd64\ftbusui.dll" SelfReg="false"/>
+    <ROW File="ftcserco.dll" Component_="ftcserco.dll" FileName="ftcserco.dll" Attributes="0" SourcePath="..\drivers\FTDI USB Drivers\amd64\ftcserco.dll" SelfReg="false"/>
+    <ROW File="ftd2xx.lib" Component_="ftd2xx.lib" FileName="ftd2xx.lib" Attributes="0" SourcePath="..\drivers\FTDI USB Drivers\amd64\ftd2xx.lib" SelfReg="false"/>
+    <ROW File="ftd2xx64.dll" Component_="ftd2xx64.dll" FileName="ftd2xx64.dll" Attributes="0" SourcePath="..\drivers\FTDI USB Drivers\amd64\ftd2xx64.dll" SelfReg="false"/>
+    <ROW File="ftdibus.sys" Component_="ftd2xx.lib" FileName="ftdibus.sys" Attributes="0" SourcePath="..\drivers\FTDI USB Drivers\amd64\ftdibus.sys" SelfReg="false"/>
+    <ROW File="ftlang.dll" Component_="ftlang.dll" FileName="ftlang.dll" Attributes="0" SourcePath="..\drivers\FTDI USB Drivers\amd64\ftlang.dll" SelfReg="false"/>
+    <ROW File="ftser2k.sys" Component_="ftd2xx.lib" FileName="ftser2k.sys" Attributes="0" SourcePath="..\drivers\FTDI USB Drivers\amd64\ftser2k.sys" SelfReg="false"/>
+    <ROW File="ftserui2.dll" Component_="ftserui2.dll" FileName="ftserui2.dll" Attributes="0" SourcePath="..\drivers\FTDI USB Drivers\amd64\ftserui2.dll" SelfReg="false"/>
+    <ROW File="ftd2xx.h" Component_="ftd2xx.h" FileName="ftd2xx.h" Attributes="0" SourcePath="..\drivers\FTDI USB Drivers\ftd2xx.h" SelfReg="false"/>
+    <ROW File="ftdibus.cat" Component_="ftd2xx.h" FileName="ftdibus.cat" Attributes="0" SourcePath="..\drivers\FTDI USB Drivers\ftdibus.cat" SelfReg="false"/>
+    <ROW File="ftdibus.inf" Component_="ftd2xx.h" FileName="ftdibus.inf" Attributes="0" SourcePath="..\drivers\FTDI USB Drivers\ftdibus.inf" SelfReg="false"/>
+    <ROW File="ftdiport.cat" Component_="ftd2xx.h" FileName="ftdiport.cat" Attributes="0" SourcePath="..\drivers\FTDI USB Drivers\ftdiport.cat" SelfReg="false"/>
+    <ROW File="ftdiport.inf" Component_="ftd2xx.h" FileName="ftdiport.inf" Attributes="0" SourcePath="..\drivers\FTDI USB Drivers\ftdiport.inf" SelfReg="false"/>
+    <ROW File="ftbusui.dll_1" Component_="ftbusui.dll_1" FileName="ftbusui.dll" Attributes="0" SourcePath="..\drivers\FTDI USB Drivers\i386\ftbusui.dll" SelfReg="false"/>
+    <ROW File="ftcserco.dll_1" Component_="ftcserco.dll_1" FileName="ftcserco.dll" Attributes="0" SourcePath="..\drivers\FTDI USB Drivers\i386\ftcserco.dll" SelfReg="false"/>
+    <ROW File="ftd2xx.dll" Component_="ftd2xx.dll" FileName="ftd2xx.dll" Attributes="0" SourcePath="..\drivers\FTDI USB Drivers\i386\ftd2xx.dll" SelfReg="false"/>
+    <ROW File="ftd2xx.lib_1" Component_="ftd2xx.lib_1" FileName="ftd2xx.lib" Attributes="0" SourcePath="..\drivers\FTDI USB Drivers\i386\ftd2xx.lib" SelfReg="false"/>
+    <ROW File="ftdibus.sys_1" Component_="ftd2xx.lib_1" FileName="ftdibus.sys" Attributes="0" SourcePath="..\drivers\FTDI USB Drivers\i386\ftdibus.sys" SelfReg="false"/>
+    <ROW File="ftlang.dll_1" Component_="ftlang.dll_1" FileName="ftlang.dll" Attributes="0" SourcePath="..\drivers\FTDI USB Drivers\i386\ftlang.dll" SelfReg="false"/>
+    <ROW File="ftser2k.sys_1" Component_="ftd2xx.lib_1" FileName="ftser2k.sys" Attributes="0" SourcePath="..\drivers\FTDI USB Drivers\i386\ftser2k.sys" SelfReg="false"/>
+    <ROW File="ftserui2.dll_1" Component_="ftserui2.dll_1" FileName="ftserui2.dll" Attributes="0" SourcePath="..\drivers\FTDI USB Drivers\i386\ftserui2.dll" SelfReg="false"/>
+    <ROW File="LogoVerificationReport.pdf" Component_="ftd2xx.h" FileName="LOGOVE~1.PDF|LogoVerificationReport.pdf" Attributes="0" SourcePath="..\drivers\FTDI USB Drivers\LogoVerificationReport.pdf" SelfReg="false"/>
+    <ROW File="ftd2xx.lib_2" Component_="ftd2xx.lib_2" FileName="ftd2xx.lib" Attributes="0" SourcePath="..\drivers\FTDI USB Drivers\Static\amd64\ftd2xx.lib" SelfReg="false"/>
+    <ROW File="ftd2xx.lib_3" Component_="ftd2xx.lib_3" FileName="ftd2xx.lib" Attributes="0" SourcePath="..\drivers\FTDI USB Drivers\Static\i386\ftd2xx.lib" SelfReg="false"/>
+    <ROW File="genuino.cat" Component_="arduinoorg.cat" FileName="genuino.cat" Attributes="0" SourcePath="..\drivers\genuino.cat" SelfReg="false"/>
+    <ROW File="genuino.inf" Component_="arduinoorg.cat" FileName="genuino.inf" Attributes="0" SourcePath="..\drivers\genuino.inf" SelfReg="false"/>
+    <ROW File="libusb0.dll_1" Component_="libusb0.dll_1" FileName="libusb0.dll" Attributes="0" SourcePath="..\drivers\ia64\libusb0.dll" SelfReg="false"/>
+    <ROW File="libusb0.sys_1" Component_="libusb0.sys_1" FileName="libusb0.sys" Attributes="0" SourcePath="..\drivers\ia64\libusb0.sys" SelfReg="false"/>
+    <ROW File="installer_license.txt" Component_="installer_license.txt" FileName="INSTAL~1.TXT|installer_license.txt" Attributes="0" SourcePath="..\drivers\license\libusb0\installer_license.txt" SelfReg="false"/>
+    <ROW File="README.txt" Component_="arduinoorg.cat" FileName="README.txt" Attributes="0" SourcePath="..\drivers\README.txt" SelfReg="false"/>
+    <ROW File="libusb0.sys_2" Component_="libusb0.sys_2" FileName="libusb0.sys" Attributes="0" SourcePath="..\drivers\x86\libusb0.sys" SelfReg="false"/>
+    <ROW File="libusb0_x86.dll" Component_="libusb0_x86.dll" FileName="LIBUSB~1.DLL|libusb0_x86.dll" Attributes="0" SourcePath="..\drivers\x86\libusb0_x86.dll" SelfReg="false"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BootstrOptComponent">
     <ROW BootstrOptKey="GlobalOptions" DownloadFolder="[AppDataFolder][|Manufacturer]\[|ProductName]\prerequisites" Options="2"/>
@@ -406,6 +480,8 @@
     <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]"/>
     <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
     <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
+    <ROW Action="dpinstamd64.exe" Type="1106" Source="dpinstamd64.exe"/>
+    <ROW Action="dpinstx86.exe" Type="1106" Source="dpinstx86.exe"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatCompsComponent">
     <ROW Feature_="MainFeature" Component_="APPDIR"/>
@@ -437,8 +513,31 @@
     <ROW Feature_="C67108D39D05435F9BE6B977F2CCED25" Component_="C67108D39D05435F9BE6B977F2CCED25"/>
     <ROW Feature_="A918597FE054CCCB65ABDBA0AD8F63C" Component_="A918597FE054CCCB65ABDBA0AD8F63C"/>
     <ROW Feature_="MainFeature" Component_="AI_ExePath"/>
-    <ROW Feature_="DriverPackageInsta" Component_="DriverPackageInsta"/>
-    <ROW Feature_="DriverPackageInsta_1" Component_="DriverPackageInsta_1"/>
+    <ROW Feature_="MainFeature" Component_="libusb0.dll"/>
+    <ROW Feature_="MainFeature" Component_="libusb0.sys"/>
+    <ROW Feature_="MainFeature" Component_="arduinoorg.cat"/>
+    <ROW Feature_="MainFeature" Component_="dpinstamd64.exe"/>
+    <ROW Feature_="MainFeature" Component_="dpinstx86.exe"/>
+    <ROW Feature_="MainFeature" Component_="ftbusui.dll"/>
+    <ROW Feature_="MainFeature" Component_="ftcserco.dll"/>
+    <ROW Feature_="MainFeature" Component_="ftd2xx.lib"/>
+    <ROW Feature_="MainFeature" Component_="ftd2xx64.dll"/>
+    <ROW Feature_="MainFeature" Component_="ftlang.dll"/>
+    <ROW Feature_="MainFeature" Component_="ftserui2.dll"/>
+    <ROW Feature_="MainFeature" Component_="ftd2xx.h"/>
+    <ROW Feature_="MainFeature" Component_="ftbusui.dll_1"/>
+    <ROW Feature_="MainFeature" Component_="ftcserco.dll_1"/>
+    <ROW Feature_="MainFeature" Component_="ftd2xx.dll"/>
+    <ROW Feature_="MainFeature" Component_="ftd2xx.lib_1"/>
+    <ROW Feature_="MainFeature" Component_="ftlang.dll_1"/>
+    <ROW Feature_="MainFeature" Component_="ftserui2.dll_1"/>
+    <ROW Feature_="MainFeature" Component_="ftd2xx.lib_2"/>
+    <ROW Feature_="MainFeature" Component_="ftd2xx.lib_3"/>
+    <ROW Feature_="MainFeature" Component_="libusb0.dll_1"/>
+    <ROW Feature_="MainFeature" Component_="libusb0.sys_1"/>
+    <ROW Feature_="MainFeature" Component_="installer_license.txt"/>
+    <ROW Feature_="MainFeature" Component_="libusb0.sys_2"/>
+    <ROW Feature_="MainFeature" Component_="libusb0_x86.dll"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiIconsComponent">
     <ROW Name="SpikeRecorder.exe" SourcePath="..\build\SpikeRecorder.ico" Index="0"/>
@@ -464,6 +563,8 @@
     <ROW Action="AI_DeleteLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="6599" Builds="DefaultBuild"/>
     <ROW Action="AI_ExtractFiles" Sequence="1399" Builds="DefaultBuild"/>
     <ROW Action="AI_DATA_SETTER" Sequence="1398"/>
+    <ROW Action="dpinstamd64.exe" Condition="( NOT Installed ) AND ( (VersionNT64) )" Sequence="6402"/>
+    <ROW Action="dpinstx86.exe" Condition="( NOT Installed ) AND ( (NOT VersionNT64) )" Sequence="6401"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
     <ROW Action="AI_RESTORE_LOCATION" Condition="APPDIR=&quot;&quot;" Sequence="749"/>
@@ -498,8 +599,6 @@
     <ROW Registry="AdvancedInstaller" Root="-1" Key="Software\Caphyon\Advanced Installer" Name="\"/>
     <ROW Registry="C67108D39D05435F9BE6B977F2CCED25" Root="-1" Key="Software\Caphyon\Advanced Installer\Prereqs\[ProductCode]\[ProductVersion]" Name="C67108D39D05435F9BE6B977F2CCED25" Value="1" Component_="C67108D39D05435F9BE6B977F2CCED25"/>
     <ROW Registry="Caphyon" Root="-1" Key="Software\Caphyon" Name="\"/>
-    <ROW Registry="DriverPackageInsta" Root="-1" Key="Software\Caphyon\Advanced Installer\Prereqs\[ProductCode]\[ProductVersion]" Name="DriverPackageInsta" Value="1" Component_="DriverPackageInsta"/>
-    <ROW Registry="DriverPackageInsta_1" Root="-1" Key="Software\Caphyon\Advanced Installer\Prereqs\[ProductCode]\[ProductVersion]" Name="DriverPackageInsta_1" Value="1" Component_="DriverPackageInsta_1"/>
     <ROW Registry="LZMA" Root="-1" Key="Software\Caphyon\Advanced Installer\LZMA" Name="\"/>
     <ROW Registry="Manufacturer" Root="-1" Key="Software\[Manufacturer]" Name="\"/>
     <ROW Registry="Path" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Path" Value="[APPDIR]" Component_="ProductInformation"/>
@@ -524,16 +623,12 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.PreReqComponent">
     <ROW PrereqKey="A918597FE054CCCB65ABDBA0AD8F63C" DisplayName="Visual C++ Redistributable for Visual Studio 2015-2022 x86" VersionMin="14.30" SetupFileUrl="Prerequisites\Visual C++ Redistributable for Visual Studio 2015-2022\VC_redist.x86.exe" Location="0" ExactSize="0" WinNTVersions="Windows Vista RTM x86, Windows Vista SP1 x86, Windows Server 2008 RTM x86, Windows 7 RTM x86" WinNT64Versions="Windows Vista RTM x64, Windows Vista SP1 x64, Windows Server 2008 RTM x64, Windows 7 RTM x64, Windows Server 2008 R2 RTM x64" Operator="0" NoUiComLine="/q /norestart" Options="f" TargetName="Visual C++ Redistributable for Visual Studio 2015-2022\VC_redist.x86.exe" Feature="A918597FE054CCCB65ABDBA0AD8F63C"/>
-    <ROW PrereqKey="C67108D39D05435F9BE6B977F2CCED25" DisplayName="Visual C++ Redistributable for Visual Studio 2012 Update 4 x86" VersionMin="11.0" SetupFileUrl="Prerequisites\Visual C++ Redistributable for Visual Studio 2012\vcredist_x86.exe" Location="0" ExactSize="0" Operator="1" NoUiComLine="/q /norestart" Options="f" TargetName="Visual C++ Redistributable for Visual Studio 2012\vcredist_x86.exe" Feature="C67108D39D05435F9BE6B977F2CCED25"/>
-    <ROW PrereqKey="DriverPackageInsta" DisplayName="Driver Package Installer (DPInst) x64" VersionMin="2.1.0.0" SetupFileUrl="..\..\..\..\Users\Greg\Desktop\backup\drivers\dpinst-amd64.exe" Location="0" ExactSize="0" WinNTVersions="Windows 9x/ME/NT/2000/XP/Vista/Windows 7/Windows 8 x86/Windows 8.1 x86/Windows 10 x86" Operator="1" Options="ip" TargetName="Driver Package Installer (DPInst)\dpinst-amd64.exe" Feature="DriverPackageInsta"/>
-    <ROW PrereqKey="DriverPackageInsta_1" DisplayName="Driver Package Installer (DPInst) x32" VersionMin="2.1.0.0" SetupFileUrl="..\..\..\..\Users\Greg\Desktop\backup\drivers\dpinst-x86.exe" Location="0" ExactSize="0" WinNT64Versions="Windows XP/Vista/Windows 7/Windows 8 x64/Windows 8.1 x64/Windows 10 x64/Windows 11 x64" Operator="1" Options="ip" TargetName="Driver Package Installer (DPInst)_1\dpinst-x86.exe" Feature="DriverPackageInsta_1"/>
-    <ATTRIBUTE name="PrereqsOrder" value="C67108D39D05435F9BE6B977F2CCED25 A918597FE054CCCB65ABDBA0AD8F63C DriverPackageInsta DriverPackageInsta_1"/>
+    <ROW PrereqKey="C67108D39D05435F9BE6B977F2CCED25" DisplayName="Visual C++ Redistributable for Visual Studio 2012 Update 4 x86" VersionMin="11.0" SetupFileUrl="Prerequisites\Visual C++ Redistributable for Visual Studio 2012\vcredist_x86.exe" Location="0" ExactSize="0" Operator="1" Options="f" TargetName="Visual C++ Redistributable for Visual Studio 2012\vcredist_x86.exe" Feature="C67108D39D05435F9BE6B977F2CCED25"/>
+    <ATTRIBUTE name="PrereqsOrder" value="C67108D39D05435F9BE6B977F2CCED25 A918597FE054CCCB65ABDBA0AD8F63C"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.PreReqSearchComponent">
     <ROW SearchKey="A918597FE054CCCB65ABDBA0AD8F63CSyst" Prereq="A918597FE054CCCB65ABDBA0AD8F63C" SearchType="0" SearchString="[SystemFolder]vcruntime140.dll" VerMin="14.30.30704" Order="2" Property="PreReqSearch_1_A918597FE054CCCB65AB"/>
     <ROW SearchKey="A918597FE054CCCB65ABDBA0AD8F63CVers" Prereq="A918597FE054CCCB65ABDBA0AD8F63C" SearchType="2" SearchString="HKLM\SOFTWARE\Microsoft\DevDiv\VC\Servicing\14.0\RuntimeMinimum\Version" VerMin="14.30.30704" Order="1" Property="PreReqSearch_A918597FE054CCCB65ABDB"/>
     <ROW SearchKey="C67108D39D05435F9BE6B977F2CCED25Ver" Prereq="C67108D39D05435F9BE6B977F2CCED25" SearchType="2" SearchString="HKLM\SOFTWARE\Microsoft\DevDiv\VC\Servicing\11.0\RuntimeMinimum\Version" VerMin="11.0.61030" Order="1" Property="PreReqSearch_C67108D39D05435F9BE6B9"/>
-    <ROW SearchKey="SystemFolderfile.dll" Prereq="DriverPackageInsta" SearchType="0" SearchString="[SystemFolder]file.dll" VerMin="1.0" Order="1" Property="PreReqSearch"/>
-    <ROW SearchKey="SystemFolderfile.dll_1" Prereq="DriverPackageInsta_1" SearchType="0" SearchString="[SystemFolder]file.dll" VerMin="1.0" Order="1" Property="PreReqSearch_1"/>
   </COMPONENT>
 </DOCUMENT>
