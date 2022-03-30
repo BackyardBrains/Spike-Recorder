@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<compatibility>
+	<software>  <!-- SOFTWARE Version -->
+		<build>
+			<version>1.4.0</version>
+			<firmwares>
+				<firmwareid>6</firmwareid>
+				<firmwareid>7</firmwareid>
+							<id>6</id>
+			<id>7</id>
+			<id>8</id>
+			<id>9</id>
+			<id>10</id>
+			</firmwares>
+		</build>
+		<build>
+			<version>1.5.0</version>
+			<firmwares>
+				<firmwareid>6</firmwareid>
+				<firmwareid>7</firmwareid>
+			<id>6</id>
+			<id>7</id>
+			<id>8</id>
+			<id>9</id>
+			<id>10</id>
+			</firmwares>
+		</build>
+		<build>
+			<version>1.6.0</version><!-- This version has detection of power rail it won't work if firmware does not responds-->
+			<firmwares>
+				<id>6</id>
+				<id>7</id>
+				<id>8</id>
+				<id>9</id>
+				<id>10</id>
+				<firmwareid>8</firmwareid>
+				<firmwareid>9</firmwareid>
+				<firmwareid>10</firmwareid>
+				<firmwareid>11</firmwareid>
+				<firmwareid>12</firmwareid>
+				<firmwareid>13</firmwareid>
+				<firmwareid>14</firmwareid>
+				<firmwareid>15</firmwareid>
+				<firmwareid>16</firmwareid>
+			</firmwares>
+		</build>
+		<build>
+			<version>1.7.0</version><!-- This version has BYB VID-->
+			<firmwares>
+				<firmwareid>26</firmwareid>
+				<firmwareid>25</firmwareid>
+			</firmwares>
+		</build>
+	</software>
+	<firmwares> <!-- FIRMWARE Version -->
+		<firmware>
+			<id>6</id>
+			<version>0.06</version>
+			<desc>For RGB LED power indication</desc>
+			<type>NEURONSB</type>
+			<hardware>0.900</hardware>
+			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f0_06.txt</url>
+		</firmware>
+		<firmware>
+			<id>7</id>
+			<version>0.07</version>
+			<desc>For active LOW RGB LEDs</desc>
+			<type>MUSCLESB</type>
+			<hardware>0.900</hardware>
+			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f0_07.txt</url>
+		</firmware>
+		<firmware>
+			<id>8</id>
+			<version>0.08</version>
+			<desc>Detects power when updating</desc>
+			<type>NEURONSB</type>
+			<hardware>0.5</hardware>
+			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f0_08.txt</url>
+		</firmware>
+		<firmware>
+			<id>9</id>
+			<version>0.09</version>
+			<desc>Neuron SB Pro H:0.77</desc>
+			<type>NEURONSB</type>
+			<hardware>0.77</hardware>
+			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f0_09neuron0_77.txt</url>
+		</firmware>
+		<firmware>
+			<id>10</id>
+			<version>0.09</version>
+			<desc>Muscle SB Pro H:0.91</desc>
+			<type>MUSCLESB</type>
+			<hardware>0.91</hardware>
+			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f0_09muscle0_91.txt</url>
+		</firmware>
+		<firmware>
+			<id>11</id>
+			<version>0.09</version>
+			<desc>Muscle SB Pro H:0.92</desc>
+			<type>MUSCLESB</type>
+			<hardware>0.92</hardware>
+			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f0_09muscle0_92.txt</url>
+		</firmware>
+		<firmware>
+			<id>12</id>
+			<version>0.09</version>
+			<desc>Muscle SB Pro H:0.98</desc>
+			<type>MUSCLESB</type>
+			<hardware>0.98</hardware>
+			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f0_09muscle0_98.txt</url>
+		</firmware>
+		<firmware>
+			<id>13</id>
+			<version>1.00</version>
+			<desc>Muscle SB Pro H:1.0</desc>
+			<type>MUSCLESB</type>
+			<hardware>1.0</hardware>
+			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f1_00neuron1_0.txt</url>
+		</firmware>
+		<firmware>
+			<id>14</id>
+			<version>1.01</version>
+			<desc>Debug Muscle SB Pro H:1.0</desc>
+			<type>MUSCLESB</type>
+			<hardware>1.0</hardware>
+			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f1_01neuron1_0.txt</url>
+		</firmware>
+		<firmware>
+			<id>15</id>
+			<version>1.02</version>
+			<desc>Muscle SB Pro H:1.0</desc>
+			<type>MUSCLESB</type>
+			<hardware>1.0</hardware>
+			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f1_02neuron1_0.txt</url>
+		</firmware>
+		<firmware>
+			<id>16</id>
+			<version>1.03</version>
+			<desc>Muscle SB Pro BYB VID H:1.0</desc>
+			<type>MUSCLESB</type>
+			<hardware>1.0</hardware>
+			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f1_03muscle1_0.txt</url>
+		</firmware>
+		<firmware>
+			<id>17</id>
+			<version>1.04</version>
+			<desc>Muscle SB Pro blink debug VID H:1.0</desc>
+			<type>MUSCLESB</type>
+			<hardware>1.0</hardware>
+			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f1_04muscle1_0.txt</url>
+		</firmware>
+		<firmware>
+			<id>18</id>
+			<version>1.05</version>
+			<desc>Muscle SB Pro VID H:1.0</desc>
+			<type>MUSCLESB</type>
+			<hardware>1.0</hardware>
+			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f1_05muscle1_0.txt</url>
+		</firmware>
+		<firmware>
+			<id>19</id>
+			<version>1.06</version>
+			<desc>Muscle SB Pro short blink debug H:1.0</desc>
+			<type>MUSCLESB</type>
+			<hardware>1.0</hardware>
+			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f1_06muscle1_0.txt</url>
+		</firmware>
+		<firmware>
+			<id>20</id>
+			<version>1.07</version>
+			<desc>Muscle SB Pro H:1.0 Low Batter issue</desc>
+			<type>MUSCLESB</type>
+			<hardware>1.0</hardware>
+			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f1_07muscle1_0.txt</url>
+		</firmware>
+		<firmware>
+			<id>21</id>
+			<version>1.08</version>
+			<desc>Muscle SpikerBox Pro</desc>
+			<type>MUSCLESB</type>
+			<hardware>1.0</hardware>
+			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f1_08muscle1_0.txt</url>
+		</firmware>
+		<firmware>
+			<id>22</id>
+			<version>1.09</version>
+			<desc>Serial SpikerBox Pro</desc>
+			<type>MUSCLESB</type>
+			<hardware>1.0</hardware>
+			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f1_09muscle1_0.txt</url>
+		</firmware>
+		<firmware>
+			<id>23</id>
+			<version>1.08</version>
+			<desc>Neuron SpikerBox Pro H:1.0</desc>
+			<type>NEURONSB</type>
+			<hardware>1.0</hardware>
+			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f1_08neuron1_0.txt</url>
+		</firmware>
+		<firmware>
+			<id>24</id>
+			<version>1.09</version>
+			<desc>Neuron SB Pro H:1.0</desc>
+			<type>NEURONSB</type>
+			<hardware>1.0</hardware>
+			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f1_09neuron1_0.txt</url>
+		</firmware>
+		<firmware>
+			<id>25</id>
+			<version>1.11</version>
+			<desc>Muscle SpikerBox Pro</desc>
+			<type>MUSCLESB</type>
+			<hardware>1.0</hardware>
+			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f1_11muscle1_0.txt</url>
+		</firmware>
+		<firmware>
+			<id>26</id>
+			<version>1.11</version>
+			<desc>Neuron SpikerBox Pro</desc>
+			<type>NEURONSB</type>
+			<hardware>1.0</hardware>
+			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f1_11neuron1_0.txt</url>
+		</firmware>
+	</firmwares>
+</compatibility>

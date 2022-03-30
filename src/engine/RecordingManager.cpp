@@ -481,6 +481,7 @@ void RecordingManager::scanUSBDevices()
                 _firmwareUpdateStage = 1;
                 _hidUsbManager.askForStateOfPowerRail();
                 shouldStartFirmwareUpdatePresentation = true;//this will open the firmware update view
+                
                 return 0;
         }
 
@@ -491,6 +492,7 @@ void RecordingManager::scanUSBDevices()
              _hidUsbManager.putInFirmwareUpdateMode();
              //Start procedure of programming firmware
              _bslFirmwareUpdater.customSelectedFirmware("newfirmware.txt");
+             
         }
 
         int RecordingManager::powerStateOnHID()

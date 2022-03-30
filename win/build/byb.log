@@ -1,0 +1,1253 @@
+1648627452 667 - BYB SpikeRecorder started on Wed Mar 30 10:04:12 2022
+
+1648627452 672 - Texture 'data/ascii.bmp' loaded.
+1648627452 672 - Initializing font...
+1648627453 669 - Initializing libbass...
+1648627453 758 - Player::setSampleRate - Sample rate set OK
+1648627454 551 - RecordingManager::Device - BASS enable 0 device
+1648627454 730 - Player::setSampleRate - Sample rate set OK
+1648627454 730 - Found 2 recording devices.
+1648627454 731 - Loading Resources...
+1648627454 731 - Texture 'data/pause.bmp' loaded.
+1648627454 731 - Texture 'data/pausehigh.bmp' loaded.
+1648627454 731 - Texture 'data/play.bmp' loaded.
+1648627454 731 - Texture 'data/playhigh.bmp' loaded.
+1648627454 731 - Texture 'data/forward.bmp' loaded.
+1648627454 731 - Texture 'data/forwardhigh.bmp' loaded.
+1648627454 731 - Texture 'data/backward.bmp' loaded.
+1648627454 731 - Texture 'data/backwardhigh.bmp' loaded.
+1648627454 731 - Texture 'data/config.bmp' loaded.
+1648627454 731 - Texture 'data/confighigh.bmp' loaded.
+1648627454 731 - Texture 'data/thresh.bmp' loaded.
+1648627454 731 - Texture 'data/threshhigh.bmp' loaded.
+1648627454 731 - Texture 'data/ekg.bmp' loaded.
+1648627454 731 - Texture 'data/ekghigh.bmp' loaded.
+1648627454 731 - Texture 'data/rec.bmp' loaded.
+1648627454 731 - Texture 'data/rechigh.bmp' loaded.
+1648627454 731 - Texture 'data/file.bmp' loaded.
+1648627454 731 - Texture 'data/filehigh.bmp' loaded.
+1648627454 731 - Texture 'data/analysis.bmp' loaded.
+1648627454 731 - Texture 'data/analysishigh.bmp' loaded.
+1648627454 731 - Texture 'data/fft.bmp' loaded.
+1648627454 731 - Texture 'data/ffthigh.bmp' loaded.
+1648627454 731 - Texture 'data/save.bmp' loaded.
+1648627454 731 - Texture 'data/savehigh.bmp' loaded.
+1648627454 731 - Texture 'data/pin.bmp' loaded.
+1648627454 731 - Texture 'data/threshpin.bmp' loaded.
+1648627454 731 - Texture 'data/dropdown.bmp' loaded.
+1648627454 731 - Texture 'data/gainup.bmp' loaded.
+1648627454 731 - Texture 'data/gaindown.bmp' loaded.
+1648627454 731 - Texture 'data/ckboxon.bmp' loaded.
+1648627454 731 - Texture 'data/ckboxoff.bmp' loaded.
+1648627454 731 - Texture 'data/plotview.bmp' loaded.
+1648627454 731 - Texture 'data/plotviewhigh.bmp' loaded.
+1648627454 731 - Texture 'data/plotviewdown.bmp' loaded.
+1648627454 731 - Texture 'data/plotviewdownhigh.bmp' loaded.
+1648627454 731 - Texture 'data/disconnected.bmp' loaded.
+1648627454 731 - Texture 'data/connected-high.bmp' loaded.
+1648627454 731 - Texture 'data/disconnected-high.bmp' loaded.
+1648627454 731 - Texture 'data/connected.bmp' loaded.
+1648627454 731 - Texture 'data/bdisconnected.bmp' loaded.
+1648627454 731 - Texture 'data/bconnected-high.bmp' loaded.
+1648627454 731 - Texture 'data/bdisconnected-high.bmp' loaded.
+1648627454 731 - Texture 'data/bconnected.bmp' loaded.
+1648627454 731 - Texture 'data/update.bmp' loaded.
+1648627454 731 - Texture 'data/update-high.bmp' loaded.
+1648627454 731 - Texture 'data/bupdate.bmp' loaded.
+1648627454 732 - Texture 'data/bupdate-high.bmp' loaded.
+1648627454 732 - Texture 'data/usbcon.bmp' loaded.
+1648627454 732 - Texture 'data/usbconhigh.bmp' loaded.
+1648627454 732 - Texture 'data/usbdiscon.bmp' loaded.
+1648627454 732 - Texture 'data/neuronprocon.bmp' loaded.
+1648627454 732 - Texture 'data/neuronproconhigh.bmp' loaded.
+1648627454 732 - Texture 'data/neuronprodiscon.bmp' loaded.
+1648627454 732 - Texture 'data/emgprocon.bmp' loaded.
+1648627454 732 - Texture 'data/emgproconhigh.bmp' loaded.
+1648627454 732 - Texture 'data/emgprodiscon.bmp' loaded.
+1648627454 732 - Texture 'data/plantcon.bmp' loaded.
+1648627454 732 - Texture 'data/plantconhigh.bmp' loaded.
+1648627454 732 - Texture 'data/plantdiscon.bmp' loaded.
+1648627454 732 - Texture 'data/musclecon.bmp' loaded.
+1648627454 732 - Texture 'data/muscleconhigh.bmp' loaded.
+1648627454 732 - Texture 'data/musclediscon.bmp' loaded.
+1648627454 732 - Texture 'data/neuroncon.bmp' loaded.
+1648627454 732 - Texture 'data/neurondiscon.bmp' loaded.
+1648627454 732 - Texture 'data/heartcon.bmp' loaded.
+1648627454 732 - Texture 'data/heartconhigh.bmp' loaded.
+1648627454 732 - Texture 'data/heartdiscon.bmp' loaded.
+1648627454 732 - Texture 'data/conne1.bmp' loaded.
+1648627454 732 - Texture 'data/conne2.bmp' loaded.
+1648627454 732 - Texture 'data/conne3.bmp' loaded.
+1648627454 732 - Texture 'data/conne4.bmp' loaded.
+1648627454 732 - Texture 'data/conne5.bmp' loaded.
+1648627454 732 - Texture 'data/conne6.bmp' loaded.
+1648627454 732 - Texture 'data/dconne1.bmp' loaded.
+1648627454 732 - Texture 'data/dconne2.bmp' loaded.
+1648627454 732 - Texture 'data/dconne3.bmp' loaded.
+1648627454 732 - Texture 'data/dconne4.bmp' loaded.
+1648627454 732 - Texture 'data/dconne5.bmp' loaded.
+1648627454 732 - Texture 'data/dconne6.bmp' loaded.
+1648627454 732 - Texture 'data/connn1.bmp' loaded.
+1648627454 732 - Texture 'data/connn2.bmp' loaded.
+1648627454 732 - Texture 'data/connn3.bmp' loaded.
+1648627454 732 - Texture 'data/connn4.bmp' loaded.
+1648627454 732 - Texture 'data/connn5.bmp' loaded.
+1648627454 732 - Texture 'data/connn6.bmp' loaded.
+1648627454 732 - Texture 'data/dconnn1.bmp' loaded.
+1648627454 732 - Texture 'data/dconnn2.bmp' loaded.
+1648627454 732 - Texture 'data/dconnn3.bmp' loaded.
+1648627454 732 - Texture 'data/dconnn4.bmp' loaded.
+1648627454 732 - Texture 'data/dconnn5.bmp' loaded.
+1648627454 732 - Texture 'data/dconnn6.bmp' loaded.
+1648627454 732 - Texture 'data/connm1.bmp' loaded.
+1648627454 732 - Texture 'data/connm2.bmp' loaded.
+1648627454 732 - Texture 'data/connm3.bmp' loaded.
+1648627454 732 - Texture 'data/connm4.bmp' loaded.
+1648627454 732 - Texture 'data/connm5.bmp' loaded.
+1648627454 732 - Texture 'data/connm6.bmp' loaded.
+1648627454 732 - Texture 'data/dconnm1.bmp' loaded.
+1648627454 732 - Texture 'data/dconnm2.bmp' loaded.
+1648627454 732 - Texture 'data/dconnm3.bmp' loaded.
+1648627454 732 - Texture 'data/dconnm4.bmp' loaded.
+1648627454 732 - Texture 'data/dconnm5.bmp' loaded.
+1648627454 732 - Texture 'data/dconnm6.bmp' loaded.
+1648627454 732 - Texture 'data/connp1.bmp' loaded.
+1648627454 732 - Texture 'data/connp2.bmp' loaded.
+1648627454 732 - Texture 'data/connp3.bmp' loaded.
+1648627454 732 - Texture 'data/connp4.bmp' loaded.
+1648627454 732 - Texture 'data/connp5.bmp' loaded.
+1648627454 732 - Texture 'data/connp6.bmp' loaded.
+1648627454 732 - Texture 'data/dconnp1.bmp' loaded.
+1648627454 732 - Texture 'data/dconnp2.bmp' loaded.
+1648627454 732 - Texture 'data/dconnp3.bmp' loaded.
+1648627454 732 - Texture 'data/dconnp4.bmp' loaded.
+1648627454 732 - Texture 'data/dconnp5.bmp' loaded.
+1648627454 732 - Texture 'data/dconnp6.bmp' loaded.
+1648627454 732 - Texture 'data/heart.bmp' loaded.
+1648627454 732 - Texture 'data/speaker.bmp' loaded.
+1648627454 732 - Texture 'data/speakeroff.bmp' loaded.
+1648627454 732 - Texture 'data/bncconn.bmp' loaded.
+1648627454 732 - Texture 'data/bncconnhigh.bmp' loaded.
+1648627454 732 - Texture 'data/rtimer.bmp' loaded.
+1648627454 732 - Texture 'data/rtimerhigh.bmp' loaded.
+1648627454 732 - Texture 'data/devbrd.bmp' loaded.
+1648627454 732 - Texture 'data/devbrdhigh.bmp' loaded.
+1648627454 732 - Texture 'data/okbtn.bmp' loaded.
+1648627454 732 - Texture 'data/okbtnhigh.bmp' loaded.
+1648627454 732 - Texture 'data/trigger.bmp' loaded.
+1648627454 732 - Texture 'data/triggerhigh.bmp' loaded.
+1648627454 732 - Texture 'data/e1.bmp' loaded.
+1648627454 732 - Texture 'data/e2.bmp' loaded.
+1648627454 732 - Texture 'data/e3.bmp' loaded.
+1648627454 732 - Texture 'data/e4.bmp' loaded.
+1648627454 732 - Texture 'data/e5.bmp' loaded.
+1648627454 732 - Texture 'data/e6.bmp' loaded.
+1648627454 732 - Texture 'data/e7.bmp' loaded.
+1648627454 732 - Texture 'data/e8.bmp' loaded.
+1648627454 732 - Texture 'data/e9.bmp' loaded.
+1648627454 732 - Texture 'data/e10.bmp' loaded.
+1648627454 732 - Texture 'data/analysiscrossed.bmp' loaded.
+1648627454 732 - Texture 'data/fftcrossed.bmp' loaded.
+1648627454 732 - Texture 'data/threshcrossed.bmp' loaded.
+1648627454 732 - Texture 'data/configcrossed.bmp' loaded.
+1648627454 732 - Texture 'data/calibratebtn-high.bmp' loaded.
+1648627454 732 - Texture 'data/cancel-high.bmp' loaded.
+1648627454 732 - Texture 'data/calibratebtn-normal.bmp' loaded.
+1648627454 733 - Texture 'data/cancel-normal.bmp' loaded.
+1648627454 733 - Texture 'data/okbtn-normal.bmp' loaded.
+1648627454 733 - Texture 'data/okbtn-high.bmp' loaded.
+1648627454 733 - Creating Window...
+1648627455 96 - Starting GUI...
+1648627455 432 - 
+New cycle in serial scanning thread ---------------------------------
+1648627455 432 - checkAllPortsForArduino - Check for Arduino boards
+1648627455 433 - checkAllPortsForArduino Before lock
+1648627455 433 - checkAllPortsForArduino After lock
+1648627455 433 - checkAllPortsForArduino relaese lock
+1648627456 134 - 
+New cycle in serial scanning thread ---------------------------------
+1648627456 134 - checkAllPortsForArduino - Check for Arduino boards
+1648627456 135 - checkAllPortsForArduino Before lock
+1648627456 135 - checkAllPortsForArduino After lock
+1648627456 135 - checkAllPortsForArduino relaese lock
+1648627456 835 - 
+New cycle in serial scanning thread ---------------------------------
+1648627456 835 - checkAllPortsForArduino - Check for Arduino boards
+1648627456 837 - checkAllPortsForArduino Before lock
+1648627456 837 - checkAllPortsForArduino After lock
+1648627456 837 - checkAllPortsForArduino relaese lock
+1648627457 538 - 
+New cycle in serial scanning thread ---------------------------------
+1648627457 538 - checkAllPortsForArduino - Check for Arduino boards
+1648627457 539 - checkAllPortsForArduino Before lock
+1648627457 539 - checkAllPortsForArduino After lock
+1648627457 539 - checkAllPortsForArduino relaese lock
+1648627458 240 - 
+New cycle in serial scanning thread ---------------------------------
+1648627458 240 - checkAllPortsForArduino - Check for Arduino boards
+1648627458 241 - checkAllPortsForArduino Before lock
+1648627458 241 - checkAllPortsForArduino After lock
+1648627458 241 - checkAllPortsForArduino relaese lock
+1648627458 942 - 
+New cycle in serial scanning thread ---------------------------------
+1648627458 942 - checkAllPortsForArduino - Check for Arduino boards
+1648627458 943 - checkAllPortsForArduino Before lock
+1648627458 943 - checkAllPortsForArduino After lock
+1648627458 943 - checkAllPortsForArduino relaese lock
+1648627459 644 - 
+New cycle in serial scanning thread ---------------------------------
+1648627459 644 - checkAllPortsForArduino - Check for Arduino boards
+1648627459 645 - checkAllPortsForArduino Before lock
+1648627459 645 - checkAllPortsForArduino After lock
+1648627459 645 - checkAllPortsForArduino relaese lock
+1648627460 345 - 
+New cycle in serial scanning thread ---------------------------------
+1648627460 345 - checkAllPortsForArduino - Check for Arduino boards
+1648627460 346 - checkAllPortsForArduino Before lock
+1648627460 346 - checkAllPortsForArduino After lock
+1648627460 346 - checkAllPortsForArduino relaese lock
+1648627461 46 - 
+New cycle in serial scanning thread ---------------------------------
+1648627461 46 - checkAllPortsForArduino - Check for Arduino boards
+1648627461 47 - checkAllPortsForArduino Before lock
+1648627461 47 - checkAllPortsForArduino After lock
+1648627461 47 - checkAllPortsForArduino relaese lock
+1648627461 748 - 
+New cycle in serial scanning thread ---------------------------------
+1648627461 748 - checkAllPortsForArduino - Check for Arduino boards
+1648627461 749 - checkAllPortsForArduino Before lock
+1648627461 749 - checkAllPortsForArduino After lock
+1648627461 749 - checkAllPortsForArduino relaese lock
+1648627462 450 - 
+New cycle in serial scanning thread ---------------------------------
+1648627462 450 - checkAllPortsForArduino - Check for Arduino boards
+1648627462 451 - checkAllPortsForArduino Before lock
+1648627462 451 - checkAllPortsForArduino After lock
+1648627462 451 - checkAllPortsForArduino relaese lock
+1648627463 151 - 
+New cycle in serial scanning thread ---------------------------------
+1648627463 151 - checkAllPortsForArduino - Check for Arduino boards
+1648627463 152 - checkAllPortsForArduino Before lock
+1648627463 152 - checkAllPortsForArduino After lock
+1648627463 152 - checkAllPortsForArduino relaese lock
+1648627463 852 - 
+New cycle in serial scanning thread ---------------------------------
+1648627463 852 - checkAllPortsForArduino - Check for Arduino boards
+1648627463 855 - checkAllPortsForArduino Before lock
+1648627463 855 - checkAllPortsForArduino After lock
+1648627463 855 - checkAllPortsForArduino Try port: COM4:
+1648627463 855 - checkAllPortsForArduino Now open port: COM4:
+1648627463 855 - openSerialDeviceWithoutLock - Try to open port: COM4:
+1648627463 857 - openSerialDeviceWithoutLock - Set Number of channels and sample rate at COM4:
+1648627463 858 - setNumberOfChannelsAndSamplingRate
+1648627463 858 - checkAllPortsForArduino Sucess. Port COM4: opened
+1648627463 858 - askForBoardType - Ask for Board type
+1648627463 959 - checkAllPortsForArduino - Read board type response.
+1648627463 960 - checkAllPortsForArduino - After reaading board type response. # of Bytes: 114
+1648627463 960 - checkAllPortsForArduino - After reaading board type response. # of Bytes: 82
+1648627463 960 - checkAllPortsForArduino - After reaading board type response. # of Bytes: 0
+1648627463 960 - checkAllPortsForArduino - After reaading board type response. # of Bytes: 0
+1648627463 960 - checkAllPortsForArduino - After reaading board type response. # of Bytes: 0
+1648627463 960 - checkAllPortsForArduino - After reaading board type response. # of Bytes: 0
+1648627463 960 - checkAllPortsForArduino - After reaading board type response. # of Bytes: 0
+1648627463 960 - checkAllPortsForArduino - After reaading board type response. # of Bytes: 0
+1648627463 960 - checkAllPortsForArduino - After reaading board type response. # of Bytes: 0
+1648627463 960 - checkAllPortsForArduino - After reaading board type response. # of Bytes: 0
+1648627463 960 - askForBoardType - Ask for Board type
+1648627464 61 - checkAllPortsForArduino - Read board type response.
+1648627464 61 - checkAllPortsForArduino - After reaading board type response. # of Bytes: 1977
+1648627464 61 - Message: Type: HWT Value: MUSCLESS
+1648627464 62 - checkAllPortsForArduino - After reaading board type response. # of Bytes: 0
+1648627464 62 - checkAllPortsForArduino - After reaading board type response. # of Bytes: 0
+1648627464 62 - checkAllPortsForArduino - After reaading board type response. # of Bytes: 0
+1648627464 62 - checkAllPortsForArduino - After reaading board type response. # of Bytes: 0
+1648627464 62 - checkAllPortsForArduino - After reaading board type response. # of Bytes: 0
+1648627464 62 - checkAllPortsForArduino - After reaading board type response. # of Bytes: 0
+1648627464 62 - checkAllPortsForArduino - After reaading board type response. # of Bytes: 0
+1648627464 62 - checkAllPortsForArduino - After reaading board type response. # of Bytes: 0
+1648627464 62 - checkAllPortsForArduino - After reaading board type response. # of Bytes: 0
+1648627464 62 - checkAllPortsForArduino - Board responded! (with hardware type)
+1648627464 62 - checkAllPortsForArduino close port: COM4:
+1648627464 62 - Close serial port: COM4:
+1648627464 62 - closeSerial - Set Number of channels and sample rate before closing
+1648627464 64 - checkAllPortsForArduino refresh working instance list
+1648627464 64 - checkAllPortsForArduino relaese lock
+1648627464 68 - musclePressed function
+1648627464 68 - initSerial - Open serial device COM4: |||||||||||||||||||||||||||||||||||||||||
+1648627464 68 - openSerialDevice before lock: COM4:
+1648627464 68 - openSerialDevice after lock COM4: - User driven
+1648627464 68 - openSerialDeviceWithoutLock - Try to open port: COM4:
+1648627464 71 - openSerialDeviceWithoutLock - Set Number of channels and sample rate at COM4:
+1648627464 71 - setNumberOfChannelsAndSamplingRate
+1648627464 71 - RecordingManager::Device - BASS disable 0 device
+1648627464 144 - Player::setSampleRate - Sample rate set OK
+1648627464 559 - RecordingManager::Device - BASS enable 0 device
+1648627464 764 - 
+New cycle in serial scanning thread ---------------------------------
+1648627464 764 - checkAllPortsForArduino - Check for Arduino boards
+1648627464 766 - checkAllPortsForArduino Before lock
+1648627464 766 - checkAllPortsForArduino After lock
+1648627464 766 - checkAllPortsForArduino Try port: COM4:
+1648627464 766 - checkAllPortsForArduino Port: COM4: Already opened by another thread.
+1648627464 766 - checkAllPortsForArduino relaese lock
+1648627465 466 - 
+New cycle in serial scanning thread ---------------------------------
+1648627465 466 - checkAllPortsForArduino - Check for Arduino boards
+1648627465 468 - checkAllPortsForArduino Before lock
+1648627465 468 - checkAllPortsForArduino After lock
+1648627465 468 - checkAllPortsForArduino Try port: COM4:
+1648627465 468 - checkAllPortsForArduino Port: COM4: Already opened by another thread.
+1648627465 468 - checkAllPortsForArduino relaese lock
+1648627466 168 - 
+New cycle in serial scanning thread ---------------------------------
+1648627466 168 - checkAllPortsForArduino - Check for Arduino boards
+1648627466 170 - checkAllPortsForArduino Before lock
+1648627466 170 - checkAllPortsForArduino After lock
+1648627466 170 - checkAllPortsForArduino Try port: COM4:
+1648627466 170 - checkAllPortsForArduino Port: COM4: Already opened by another thread.
+1648627466 170 - checkAllPortsForArduino relaese lock
+1648627466 870 - 
+New cycle in serial scanning thread ---------------------------------
+1648627466 870 - checkAllPortsForArduino - Check for Arduino boards
+1648627466 872 - checkAllPortsForArduino Before lock
+1648627466 872 - checkAllPortsForArduino After lock
+1648627466 872 - checkAllPortsForArduino Try port: COM4:
+1648627466 872 - checkAllPortsForArduino Port: COM4: Already opened by another thread.
+1648627466 872 - checkAllPortsForArduino relaese lock
+1648627467 572 - 
+New cycle in serial scanning thread ---------------------------------
+1648627467 572 - checkAllPortsForArduino - Check for Arduino boards
+1648627467 573 - checkAllPortsForArduino Before lock
+1648627467 573 - checkAllPortsForArduino After lock
+1648627467 573 - checkAllPortsForArduino Try port: COM4:
+1648627467 573 - checkAllPortsForArduino Port: COM4: Already opened by another thread.
+1648627467 573 - checkAllPortsForArduino relaese lock
+1648627467 841 - musclePressed function
+1648627467 841 - setNumberOfChannelsAndSamplingRate
+1648627467 842 - RecordingManager::Device - BASS disable 0 device
+1648627467 847 - Player::setSampleRate - Sample rate set OK
+1648627468 222 - RecordingManager::Device - BASS enable 0 device
+1648627468 222 - Close main port: COM4:
+1648627468 222 - RecordingManager::Device - BASS disable 0 device
+1648627468 222 - Close serial port: COM4:
+1648627468 222 - closeSerial - Set Number of channels and sample rate before closing
+1648627468 229 - Player::setSampleRate - Sample rate set OK
+1648627468 273 - 
+New cycle in serial scanning thread ---------------------------------
+1648627468 273 - checkAllPortsForArduino - Check for Arduino boards
+1648627468 275 - checkAllPortsForArduino Before lock
+1648627468 275 - checkAllPortsForArduino After lock
+1648627468 275 - checkAllPortsForArduino Try port: COM4:
+1648627468 275 - checkAllPortsForArduino Port: COM4: Already checked.
+1648627468 275 - checkAllPortsForArduino relaese lock
+1648627468 976 - 
+New cycle in serial scanning thread ---------------------------------
+1648627468 976 - checkAllPortsForArduino - Check for Arduino boards
+1648627468 977 - checkAllPortsForArduino Before lock
+1648627468 977 - checkAllPortsForArduino After lock
+1648627468 977 - checkAllPortsForArduino Try port: COM4:
+1648627468 977 - checkAllPortsForArduino Port: COM4: Already checked.
+1648627468 977 - checkAllPortsForArduino relaese lock
+1648627469 6 - RecordingManager::Device - BASS enable 0 device
+1648627469 99 - Player::setSampleRate - Sample rate set OK
+1648627469 99 - Found 2 recording devices.
+1648627469 678 - 
+New cycle in serial scanning thread ---------------------------------
+1648627469 678 - checkAllPortsForArduino - Check for Arduino boards
+1648627469 680 - checkAllPortsForArduino Before lock
+1648627469 680 - checkAllPortsForArduino After lock
+1648627469 680 - checkAllPortsForArduino Try port: COM4:
+1648627469 680 - checkAllPortsForArduino Port: COM4: Already checked.
+1648627469 681 - checkAllPortsForArduino relaese lock
+1648627470 381 - 
+New cycle in serial scanning thread ---------------------------------
+1648627470 381 - checkAllPortsForArduino - Check for Arduino boards
+1648627470 383 - checkAllPortsForArduino Before lock
+1648627470 383 - checkAllPortsForArduino After lock
+1648627470 383 - checkAllPortsForArduino relaese lock
+1648627471 84 - 
+New cycle in serial scanning thread ---------------------------------
+1648627471 84 - checkAllPortsForArduino - Check for Arduino boards
+1648627471 85 - checkAllPortsForArduino Before lock
+1648627471 85 - checkAllPortsForArduino After lock
+1648627471 85 - checkAllPortsForArduino relaese lock
+1648627471 785 - 
+New cycle in serial scanning thread ---------------------------------
+1648627471 785 - checkAllPortsForArduino - Check for Arduino boards
+1648627471 786 - checkAllPortsForArduino Before lock
+1648627471 786 - checkAllPortsForArduino After lock
+1648627471 786 - checkAllPortsForArduino relaese lock
+1648627472 487 - 
+New cycle in serial scanning thread ---------------------------------
+1648627472 487 - checkAllPortsForArduino - Check for Arduino boards
+1648627472 488 - checkAllPortsForArduino Before lock
+1648627472 488 - checkAllPortsForArduino After lock
+1648627472 488 - checkAllPortsForArduino relaese lock
+1648627473 189 - 
+New cycle in serial scanning thread ---------------------------------
+1648627473 189 - checkAllPortsForArduino - Check for Arduino boards
+1648627473 190 - checkAllPortsForArduino Before lock
+1648627473 190 - checkAllPortsForArduino After lock
+1648627473 190 - checkAllPortsForArduino relaese lock
+1648627473 890 - 
+New cycle in serial scanning thread ---------------------------------
+1648627473 890 - checkAllPortsForArduino - Check for Arduino boards
+1648627473 891 - checkAllPortsForArduino Before lock
+1648627473 891 - checkAllPortsForArduino After lock
+1648627473 891 - checkAllPortsForArduino relaese lock
+1648627474 591 - 
+New cycle in serial scanning thread ---------------------------------
+1648627474 591 - checkAllPortsForArduino - Check for Arduino boards
+1648627474 592 - checkAllPortsForArduino Before lock
+1648627474 592 - checkAllPortsForArduino After lock
+1648627474 592 - checkAllPortsForArduino relaese lock
+1648627475 293 - 
+New cycle in serial scanning thread ---------------------------------
+1648627475 293 - checkAllPortsForArduino - Check for Arduino boards
+1648627475 294 - checkAllPortsForArduino Before lock
+1648627475 294 - checkAllPortsForArduino After lock
+1648627475 294 - checkAllPortsForArduino relaese lock
+1648627475 994 - 
+New cycle in serial scanning thread ---------------------------------
+1648627475 994 - checkAllPortsForArduino - Check for Arduino boards
+1648627475 995 - checkAllPortsForArduino Before lock
+1648627475 995 - checkAllPortsForArduino After lock
+1648627475 995 - checkAllPortsForArduino relaese lock
+1648627476 696 - 
+New cycle in serial scanning thread ---------------------------------
+1648627476 696 - checkAllPortsForArduino - Check for Arduino boards
+1648627476 696 - checkAllPortsForArduino Before lock
+1648627476 696 - checkAllPortsForArduino After lock
+1648627476 696 - checkAllPortsForArduino relaese lock
+1648627477 397 - 
+New cycle in serial scanning thread ---------------------------------
+1648627477 397 - checkAllPortsForArduino - Check for Arduino boards
+1648627477 398 - checkAllPortsForArduino Before lock
+1648627477 398 - checkAllPortsForArduino After lock
+1648627477 398 - checkAllPortsForArduino relaese lock
+1648627478 99 - 
+New cycle in serial scanning thread ---------------------------------
+1648627478 99 - checkAllPortsForArduino - Check for Arduino boards
+1648627478 100 - checkAllPortsForArduino Before lock
+1648627478 100 - checkAllPortsForArduino After lock
+1648627478 100 - checkAllPortsForArduino relaese lock
+1648627478 148 - HID - Found our HID push it
+1648627478 153 - Init HID
+1648627478 158 - Message ?
+1648627478 158 - Message :
+1648627478 158 - Message ;
+1648627478 158 - Message 
+
+1648627478 158 - Before HID write with handle 257708616
+1648627478 158 - HID Write waiting to get access
+1648627478 158 - HID Write waiting to get access
+1648627478 158 - HID Write waiting to get access
+1648627478 158 - HID Write waiting to get access
+1648627478 158 - HID Write waiting to get access
+1648627478 158 - HID Write waiting to get access
+1648627478 158 - HID Write waiting to get access
+1648627478 158 - HID Write waiting to get access
+1648627478 158 - HID Write waiting to get access
+1648627478 158 - HID Write waiting to get access
+1648627478 158 - HID Write waiting to get access
+1648627478 158 - HID Write waiting to get access
+1648627478 158 - HID Write waiting to get access
+1648627478 158 - HID Write waiting to get access
+1648627478 158 - HID Write waiting to get access
+1648627478 158 - HID Write waiting to get access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 158 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Read waiting Write to request release of access
+1648627478 159 - HID Write waiting to release access
+1648627478 159 - After HID write with res: 64
+1648627478 159 - Message m
+1648627478 159 - Message a
+1648627478 159 - Message x
+1648627478 159 - Message :
+1648627478 159 - Message ;
+1648627478 159 - Message 
+
+1648627478 159 - Before HID write with handle 257708616
+1648627478 159 - HID Write waiting to get access
+1648627478 159 - HID Write waiting to get access
+1648627478 159 - HID Write waiting to get access
+1648627478 159 - HID Write waiting to get access
+1648627478 159 - HID Write waiting to get access
+1648627478 159 - HID Write waiting to get access
+1648627478 159 - HID Write waiting to get access
+1648627478 159 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID - MESSAGE: FWV - 1.11
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID - MESSAGE: HWT - MUSCLESB
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID - MESSAGE: HWV - 1.0
+1648627478 160 - HID Write waiting to get access
+1648627478 160 - HID Read waiting Write to request release of access
+1648627478 160 - HID Read waiting Write to request release of access
+1648627478 160 - HID Read waiting Write to request release of access
+1648627478 160 - HID Read waiting Write to request release of access
+1648627478 160 - HID Read waiting Write to request release of access
+1648627478 160 - HID Read waiting Write to request release of access
+1648627478 160 - HID Read waiting Write to request release of access
+1648627478 160 - HID Read waiting Write to request release of access
+1648627478 160 - HID Read waiting Write to request release of access
+1648627478 160 - HID Read waiting Write to request release of access
+1648627478 160 - HID Read waiting Write to request release of access
+1648627478 160 - HID Read waiting Write to request release of access
+1648627478 160 - HID Read waiting Write to request release of access
+1648627478 160 - HID Read waiting Write to request release of access
+1648627478 160 - HID Read waiting Write to request release of access
+1648627478 160 - HID Read waiting Write to request release of access
+1648627478 160 - HID Read waiting Write to request release of access
+1648627478 160 - HID Read waiting Write to request release of access
+1648627478 160 - HID Read waiting Write to request release of access
+1648627478 160 - HID Read waiting Write to request release of access
+1648627478 160 - HID Read waiting Write to request release of access
+1648627478 160 - HID Read waiting Write to request release of access
+1648627478 160 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Read waiting Write to request release of access
+1648627478 161 - HID Write waiting to release access
+1648627478 161 - After HID write with res: 64
+1648627478 161 - Message s
+1648627478 161 - Message t
+1648627478 161 - Message a
+1648627478 161 - Message r
+1648627478 161 - Message t
+1648627478 161 - Message :
+1648627478 161 - Message ;
+1648627478 161 - Message 
+
+1648627478 161 - Before HID write with handle 257708616
+1648627478 161 - HID Write waiting to get access
+1648627478 161 - HID Write waiting to get access
+1648627478 161 - HID Write waiting to get access
+1648627478 161 - HID Write waiting to get access
+1648627478 161 - HID Write waiting to get access
+1648627478 161 - HID Write waiting to get access
+1648627478 161 - HID Write waiting to get access
+1648627478 161 - HID Write waiting to get access
+1648627478 161 - HID Write waiting to get access
+1648627478 161 - HID Write waiting to get access
+1648627478 161 - HID Write waiting to get access
+1648627478 161 - HID Write waiting to get access
+1648627478 161 - HID Write waiting to get access
+1648627478 161 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID - MESSAGE: MSF - 10000
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID - MESSAGE: MNC - 2
+1648627478 162 - HID Write waiting to get access
+1648627478 162 - HID Read waiting Write to request release of access
+1648627478 162 - HID Read waiting Write to request release of access
+1648627478 162 - HID Read waiting Write to request release of access
+1648627478 162 - HID Read waiting Write to request release of access
+1648627478 162 - HID Read waiting Write to request release of access
+1648627478 162 - HID Read waiting Write to request release of access
+1648627478 162 - HID Read waiting Write to request release of access
+1648627478 162 - HID Read waiting Write to request release of access
+1648627478 162 - HID Read waiting Write to request release of access
+1648627478 162 - HID Read waiting Write to request release of access
+1648627478 162 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Read waiting Write to request release of access
+1648627478 163 - HID Write waiting to release access
+1648627478 163 - After HID write with res: 64
+1648627478 163 - Message b
+1648627478 163 - Message o
+1648627478 163 - Message a
+1648627478 163 - Message r
+1648627478 163 - Message d
+1648627478 163 - Message :
+1648627478 163 - Message ;
+1648627478 163 - Message 
+
+1648627478 163 - Before HID write with handle 257708616
+1648627478 163 - HID Write waiting to get access
+1648627478 163 - HID Write waiting to get access
+1648627478 163 - HID Write waiting to get access
+1648627478 163 - HID Write waiting to get access
+1648627478 163 - HID Write waiting to get access
+1648627478 163 - HID Write waiting to get access
+1648627478 163 - HID Write waiting to get access
+1648627478 163 - HID Write waiting to get access
+1648627478 163 - HID Write waiting to get access
+1648627478 163 - HID Write waiting to get access
+1648627478 163 - HID Write waiting to get access
+1648627478 163 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 164 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Write waiting to get access
+1648627478 165 - HID Read waiting Write to request release of access
+1648627478 165 - HID Read waiting Write to request release of access
+1648627478 165 - HID Read waiting Write to request release of access
+1648627478 165 - HID Read waiting Write to request release of access
+1648627478 165 - HID Read waiting Write to request release of access
+1648627478 165 - HID Read waiting Write to request release of access
+1648627478 165 - HID Read waiting Write to request release of access
+1648627478 165 - HID Read waiting Write to request release of access
+1648627478 165 - HID Read waiting Write to request release of access
+1648627478 165 - HID Read waiting Write to request release of access
+1648627478 165 - HID Read waiting Write to request release of access
+1648627478 165 - HID Read waiting Write to request release of access
+1648627478 165 - HID Read waiting Write to request release of access
+1648627478 165 - HID Read waiting Write to request release of access
+1648627478 165 - HID Read waiting Write to request release of access
+1648627478 165 - HID Read waiting Write to request release of access
+1648627478 165 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Read waiting Write to request release of access
+1648627478 166 - HID Write waiting to release access
+1648627478 166 - After HID write with res: 64
+1648627478 166 - RecordingManager::Device - BASS disable 0 device
+1648627478 168 - HID - MESSAGE: BRD - 0
+1648627478 168 - Change board type
+1648627478 204 - HID Frequency: 10000 Chan: 2 Samp: 10000
+1648627478 206 - Player::setSampleRate - Sample rate set OK
+1648627478 801 - 
+New cycle in serial scanning thread ---------------------------------
+1648627478 801 - checkAllPortsForArduino - Check for Arduino boards
+1648627478 802 - checkAllPortsForArduino Before lock
+1648627478 802 - checkAllPortsForArduino After lock
+1648627478 802 - checkAllPortsForArduino relaese lock
+1648627479 295 - RecordingManager::Device - BASS enable 0 device
+1648627479 502 - 
+New cycle in serial scanning thread ---------------------------------
+1648627479 502 - checkAllPortsForArduino - Check for Arduino boards
+1648627479 504 - checkAllPortsForArduino Before lock
+1648627479 504 - checkAllPortsForArduino After lock
+1648627479 504 - checkAllPortsForArduino relaese lock
+1648627480 204 - 
+New cycle in serial scanning thread ---------------------------------
+1648627480 204 - checkAllPortsForArduino - Check for Arduino boards
+1648627480 206 - checkAllPortsForArduino Before lock
+1648627480 206 - checkAllPortsForArduino After lock
+1648627480 206 - checkAllPortsForArduino relaese lock
+1648627480 906 - 
+New cycle in serial scanning thread ---------------------------------
+1648627480 906 - checkAllPortsForArduino - Check for Arduino boards
+1648627480 908 - checkAllPortsForArduino Before lock
+1648627480 908 - checkAllPortsForArduino After lock
+1648627480 908 - checkAllPortsForArduino relaese lock
+1648627481 608 - 
+New cycle in serial scanning thread ---------------------------------
+1648627481 608 - checkAllPortsForArduino - Check for Arduino boards
+1648627481 610 - checkAllPortsForArduino Before lock
+1648627481 610 - checkAllPortsForArduino After lock
+1648627481 610 - checkAllPortsForArduino relaese lock
+1648627482 311 - 
+New cycle in serial scanning thread ---------------------------------
+1648627482 311 - checkAllPortsForArduino - Check for Arduino boards
+1648627482 312 - checkAllPortsForArduino Before lock
+1648627482 312 - checkAllPortsForArduino After lock
+1648627482 312 - checkAllPortsForArduino relaese lock
+1648627483 13 - 
+New cycle in serial scanning thread ---------------------------------
+1648627483 13 - checkAllPortsForArduino - Check for Arduino boards
+1648627483 14 - checkAllPortsForArduino Before lock
+1648627483 14 - checkAllPortsForArduino After lock
+1648627483 14 - checkAllPortsForArduino relaese lock
+1648627483 576 - Disconnect from HID ----------------------------------!!!!!!
+1648627483 576 - RecordingManager::Device - BASS disable 0 device
+1648627483 587 - Player::setSampleRate - Sample rate set OK
+1648627483 714 - 
+New cycle in serial scanning thread ---------------------------------
+1648627483 714 - checkAllPortsForArduino - Check for Arduino boards
+1648627483 716 - checkAllPortsForArduino Before lock
+1648627483 716 - checkAllPortsForArduino After lock
+1648627483 716 - checkAllPortsForArduino relaese lock
+1648627484 364 - RecordingManager::Device - BASS enable 0 device
+1648627484 417 - 
+New cycle in serial scanning thread ---------------------------------
+1648627484 417 - checkAllPortsForArduino - Check for Arduino boards
+1648627484 418 - checkAllPortsForArduino Before lock
+1648627484 418 - checkAllPortsForArduino After lock
+1648627484 418 - checkAllPortsForArduino relaese lock
+1648627484 466 - Player::setSampleRate - Sample rate set OK
+1648627484 466 - Found 2 recording devices.
+1648627484 467 - Message h
+1648627484 467 - Message :
+1648627484 467 - Message ;
+1648627484 467 - Message 
+
+1648627484 467 - Before HID write with handle 257708616
+1648627484 468 - After HID write with res: 64
+1648627484 471 - HID - Found our HID push it
+1648627485 118 - 
+New cycle in serial scanning thread ---------------------------------
+1648627485 119 - checkAllPortsForArduino - Check for Arduino boards
+1648627485 120 - checkAllPortsForArduino Before lock
+1648627485 120 - checkAllPortsForArduino After lock
+1648627485 120 - checkAllPortsForArduino relaese lock
+1648627485 473 - HID - Found our HID push it
+1648627485 821 - 
+New cycle in serial scanning thread ---------------------------------
+1648627485 821 - checkAllPortsForArduino - Check for Arduino boards
+1648627485 822 - checkAllPortsForArduino Before lock
+1648627485 822 - checkAllPortsForArduino After lock
+1648627485 822 - checkAllPortsForArduino relaese lock
+1648627486 523 - 
+New cycle in serial scanning thread ---------------------------------
+1648627486 523 - checkAllPortsForArduino - Check for Arduino boards
+1648627486 524 - checkAllPortsForArduino Before lock
+1648627486 524 - checkAllPortsForArduino After lock
+1648627486 524 - checkAllPortsForArduino relaese lock
+1648627487 225 - 
+New cycle in serial scanning thread ---------------------------------
+1648627487 225 - checkAllPortsForArduino - Check for Arduino boards
+1648627487 227 - checkAllPortsForArduino Before lock
+1648627487 227 - checkAllPortsForArduino After lock
+1648627487 227 - checkAllPortsForArduino relaese lock
+1648627487 927 - 
+New cycle in serial scanning thread ---------------------------------
+1648627487 928 - checkAllPortsForArduino - Check for Arduino boards
+1648627487 929 - checkAllPortsForArduino Before lock
+1648627487 929 - checkAllPortsForArduino After lock
+1648627487 929 - checkAllPortsForArduino relaese lock
+1648627488 630 - 
+New cycle in serial scanning thread ---------------------------------
+1648627488 630 - checkAllPortsForArduino - Check for Arduino boards
+1648627488 631 - checkAllPortsForArduino Before lock
+1648627488 631 - checkAllPortsForArduino After lock
+1648627488 631 - checkAllPortsForArduino relaese lock
+1648627489 331 - 
+New cycle in serial scanning thread ---------------------------------
+1648627489 331 - checkAllPortsForArduino - Check for Arduino boards
+1648627489 333 - checkAllPortsForArduino Before lock
+1648627489 333 - checkAllPortsForArduino After lock
+1648627489 333 - checkAllPortsForArduino relaese lock
+1648627490 34 - 
+New cycle in serial scanning thread ---------------------------------
+1648627490 34 - checkAllPortsForArduino - Check for Arduino boards
+1648627490 35 - checkAllPortsForArduino Before lock
+1648627490 35 - checkAllPortsForArduino After lock
+1648627490 35 - checkAllPortsForArduino relaese lock
+1648627490 736 - 
+New cycle in serial scanning thread ---------------------------------
+1648627490 736 - checkAllPortsForArduino - Check for Arduino boards
+1648627490 737 - checkAllPortsForArduino Before lock
+1648627490 737 - checkAllPortsForArduino After lock
+1648627490 737 - checkAllPortsForArduino relaese lock
+1648627491 438 - 
+New cycle in serial scanning thread ---------------------------------
+1648627491 438 - checkAllPortsForArduino - Check for Arduino boards
+1648627491 439 - checkAllPortsForArduino Before lock
+1648627491 439 - checkAllPortsForArduino After lock
+1648627491 439 - checkAllPortsForArduino relaese lock
+1648627492 139 - 
+New cycle in serial scanning thread ---------------------------------
+1648627492 139 - checkAllPortsForArduino - Check for Arduino boards
+1648627492 141 - checkAllPortsForArduino Before lock
+1648627492 141 - checkAllPortsForArduino After lock
+1648627492 141 - checkAllPortsForArduino relaese lock
+1648627492 841 - 
+New cycle in serial scanning thread ---------------------------------
+1648627492 841 - checkAllPortsForArduino - Check for Arduino boards
+1648627492 842 - checkAllPortsForArduino Before lock
+1648627492 842 - checkAllPortsForArduino After lock
+1648627492 842 - checkAllPortsForArduino relaese lock
+1648627493 536 - BYB SpikeRecorder exited normally.
+1648627493 536 - RecordingManager::Device - BASS disable 0 device
+1648627493 543 - 
+New cycle in serial scanning thread ---------------------------------
+1648627493 543 - checkAllPortsForArduino - Check for Arduino boards
+1648627493 544 - checkAllPortsForArduino Before lock
+1648627493 544 - checkAllPortsForArduino After lock
+1648627493 544 - checkAllPortsForArduino relaese lock
+1648627493 590 - libbass deinitialized.
+1648627493 666 - GUI closed.
