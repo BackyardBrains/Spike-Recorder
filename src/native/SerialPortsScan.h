@@ -21,7 +21,7 @@
 
 namespace BackyardBrains
 {
-    int getListOfSerialPorts( std::list<std::string>& listOfPorts);
+    int getListOfSerialPorts( std::list<std::string>& listOfPorts, std::string& portForBootloader);
 }
 
 

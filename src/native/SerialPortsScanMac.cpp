@@ -392,7 +392,7 @@ namespace BackyardBrains {
     
     
     
-    int getListOfSerialPorts( std::list<std::string>& listOfPorts)
+    int getListOfSerialPorts( std::list<std::string>& listOfPorts, std::string& portForBootloader)
     {
         
         
@@ -427,6 +427,7 @@ namespace BackyardBrains {
             
             /***Display the device names ***/
             io_name_t	deviceName;
+            bool foundBootloader = false;
             kr = IORegistryEntryGetName(device, deviceName);
             if (KERN_SUCCESS != kr)
             {
@@ -441,6 +442,13 @@ namespace BackyardBrains {
                  #ifdef LOG_USB
                 Log::msg("Interesting device IOUSBHostDevice");
                 #endif
+            }
+            if (strcmp(deviceName, "STM32L4_Boot") == 0)
+            {
+                 #ifdef LOG_USB
+                Log::msg("Found our bootloader for STM32");
+                #endif
+                foundBootloader = true;
             }
             else if(strcmp(deviceName, "Arduino Leonardo") == 0)
             {
@@ -617,7 +625,14 @@ namespace BackyardBrains {
                          #ifdef LOG_USB
                          Log::msg("Path: %s", s);
                          #endif
-                         listOfPorts.push_back(s);
+                        if(foundBootloader)
+                        {
+                            portForBootloader = portForBootloader+s;
+                        }
+                        else
+                        {
+                            listOfPorts.push_back(s);
+                        }
                     }
                     else
                     {
@@ -638,7 +653,15 @@ namespace BackyardBrains {
                             #ifdef LOG_USB
                             Log::msg("Path: %s", s);
                             #endif
-                            listOfPorts.push_back(s);
+                           
+                            if(foundBootloader)
+                            {
+                                portForBootloader = portForBootloader+s;
+                            }
+                            else
+                            {
+                                listOfPorts.push_back(s);
+                            }
                         }
                     }
               

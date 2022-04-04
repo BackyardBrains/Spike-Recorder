@@ -13,6 +13,7 @@
 #include <sstream>
 #include <stdint.h>
 #include "RecordingManager.h"
+#include "BYBBootloaderController.h"
 
 #define NUMBER_OF_TIMES_TO_SCAN_UNKNOWN_PORT 10
 
@@ -382,8 +383,29 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         closedir(dir);
 #elif defined(__APPLE__)
 
-        getListOfSerialPorts(list);
+        std::string bootloaderPort = "";
+        getListOfSerialPorts(list, bootloaderPort);
 
+        if(bootloaderPort.length()>0)
+        {
+            int serialPortHandle = openPort(bootloaderPort.c_str());
+            if(serialPortHandle!=-1)
+            {
+                _manager->startBootloaderProcess(bootloaderPort, serialPortHandle);
+                while(_manager->bootloaderState()!=BOOTLOADER_STAGE_OFF)
+                {
+                    //whait for bootloader to finish
+                    #if defined(__APPLE__) || defined(__linux__)
+                            usleep(500000);
+                    #else
+                            Sleep(700);
+                    #endif
+                }
+            }
+            
+            
+            
+        }
         // adapted from SerialPortSample.c, by Apple
         // http://developer.apple.com/samplecode/SerialPortSample/listing2.html
         // and also testserial.c, by Keyspan

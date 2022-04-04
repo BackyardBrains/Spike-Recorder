@@ -16,6 +16,7 @@
 #include "HighPassFilter.h"
 #include "AudioInputConfig.h"
 #include "defaults/DefaultConfig.h"
+#include "BYBBootloaderController.h"
 
 #if defined(_WIN32)
     #include "FirmwareUpdater.h"
@@ -220,6 +221,9 @@ public:
     //check if buffer has loaded data at "pos" position
     bool isBufferLoadedAtPosition(long pos);
 
+
+    void startBootloaderProcess(std::string nameOfThePort, int portHandle);
+    int bootloaderState();
     #if defined(_WIN32)
         int prepareForHIDFirmwareUpdate(BYBFirmwareVO * firmwareToUpdate);
         int getUSBFirmwareUpdateStage();
@@ -365,7 +369,8 @@ private:
     int64_t _timersForKeyRelease[NUMBER_OF_AVAILABLE_CHANNELS_FOR_JOYSTICK];
 
 	int _firmwareUpdateStage;//this needs to be outside exclusive win block
-
+    BYBBootloaderController _bootloaderController;
+    
     #if defined(_WIN32)
         FirmwareUpdater _xmlFirmwareUpdater;
         BSLFirmwareUpdater _bslFirmwareUpdater;

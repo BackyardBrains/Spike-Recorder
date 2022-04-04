@@ -58,7 +58,8 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
     waitToDisconnectFromSerial = false;
     systemIsCalibrated = false;
     calibrationCoeficient = 1.0f;
-
+    
+    _portScanningArduinoSerial.setRecordingManager(this);
     _arduinoSerial.getAllPortsList();
 
     std::list<std::string>::iterator list_it;
@@ -73,6 +74,7 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
 	initRecordingDevices();
 
     _arduinoSerial.setRecordingManager(this);
+
 
     _portScanningArduinoSerial.startScanningForArduinos(&_arduinoSerial);
 
@@ -2614,6 +2616,22 @@ SampleBuffer *RecordingManager::sampleBuffer(int virtualDeviceIndex) {
 	assert((unsigned int)device < _devices.size() && (unsigned int)channel < _devices[device].sampleBuffers.size());
 	SampleBuffer *result = &_devices[device].sampleBuffers[channel];
 	return result;
+}
+
+#pragma mark - Bootloader
+
+void RecordingManager::startBootloaderProcess(std::string nameOfThePort, int portHandle)
+{
+    _bootloaderController.portName = nameOfThePort;
+    _bootloaderController.portHandle = portHandle;
+    _bootloaderController.firmwarePath = getRecordingPath()+"/stm32firmware.hex";
+    _bootloaderController.startUpdateProcess();
+}
+
+int RecordingManager::bootloaderState()
+{
+    
+    return _bootloaderController.stage;
 }
 
 #pragma mark - Joystick related
