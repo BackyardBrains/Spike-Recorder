@@ -388,6 +388,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
         if(bootloaderPort.length()>0)
         {
+            setBaudRate(115200);
             int serialPortHandle = openPort(bootloaderPort.c_str());
             if(serialPortHandle!=-1)
             {
@@ -402,6 +403,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                     #endif
                 }
             }
+            setBaudRate(LOW_BAUD_RATE);
             
             
             

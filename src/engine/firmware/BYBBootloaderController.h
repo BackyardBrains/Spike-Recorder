@@ -42,7 +42,7 @@ class BYBBootloaderController
     void getDataRecord(char * lineFromFile, int lengthOfData);
     void initTransferOfFirmware();
     int writeDataToSerialPort(const void *ptr, int len);
-    
+    int readDataFromSerialPort(char * buffer);
     private:
     
     FILE *_file;

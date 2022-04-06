@@ -45,7 +45,8 @@ namespace BackyardBrains {
     void BYBBootloaderController::startUpdateProcess()
     {
         stage = BOOTLOADER_STAGE_INITIALIZED;
-        
+        dataFromFile.clear();
+        currentAddress = 0;
         //load HEX file into memory
         _file = fopen(firmwarePath.c_str(), "r");
         if(_file == 0) {
@@ -66,11 +67,136 @@ namespace BackyardBrains {
 
     void BYBBootloaderController::initTransferOfFirmware()
     {
+        char tempBuffer[256];
+        int readLength = 0;
+        while((readLength = readDataFromSerialPort(tempBuffer))<=0)
+        {}
+        if(tempBuffer[0]=='g')
+        {
+            printf("Received g\n");
+        }
+        else
+        {
+            printf("Bootloader error. Received %c instead of g\n", tempBuffer[0]);
+        }
+        tempBuffer[0] = 'n';
+        writeDataToSerialPort(tempBuffer, 1);
         
+        while((readLength = readDataFromSerialPort(tempBuffer))<=0)
+        {}
+        if(tempBuffer[0]=='n')
+        {
+            printf("Received n\n");
+        }
+        else
+        {
+            printf("Bootloader error. Received %c instead of n\n", tempBuffer[0]);
+        }
         
+        uint32_t programSize = (uint32_t)dataFromFile.size();
+        tempBuffer[0] = programSize & 0x000000FF;
+        tempBuffer[1] = ((programSize & 0x0000FF00) >> 8);
+        tempBuffer[2] = ((programSize & 0x00FF0000) >> 16);
+        tempBuffer[3] = ((programSize & 0xFF000000) >> 24);
+        writeDataToSerialPort(tempBuffer, 4);
         
+        //upload firmware
+        int progress = 0;
+        std::list<HexRecord>::iterator it;
+        it = dataFromFile.begin();
+        while(1)//it != dataFromFile.end()
+        {
+            while((readLength = readDataFromSerialPort(tempBuffer))<=0)
+            {}
+            if(tempBuffer[0]=='e')
+            {
+                printf("Programming finished");
+                break;
+            }
+            else if(tempBuffer[0]=='x')
+            {
+                printf("Pages %d out of %d\n", progress, programSize);
+                writeDataToSerialPort(it->dataPage, 8);
+            }
+            tempBuffer[0]=' ';
+            it++;
+            progress++;
+        }
+        stage = BOOTLOADER_STAGE_OFF;
     }
 
+
+    int BYBBootloaderController::readDataFromSerialPort(char * buffer)
+    {
+        ssize_t size = -1;
+        #if defined(__APPLE__) || defined(__linux__)
+            // Initialize file descriptor sets
+            fd_set read_fds, write_fds, except_fds;
+            FD_ZERO(&read_fds);
+            FD_ZERO(&write_fds);
+            FD_ZERO(&except_fds);
+            FD_SET(portHandle, &read_fds);
+            // Set timeout to 60 ms
+            struct timeval timeout;
+            timeout.tv_sec = 0;
+            timeout.tv_usec = 60000;
+            if (select(portHandle + 1, &read_fds, &write_fds, &except_fds, &timeout) == 1)
+            {
+                size = read(portHandle, buffer, 32768 );
+            }
+            if (size < 0)
+            {
+                if(errno == EAGAIN)
+                {
+                    return -1;
+                }
+                if(errno == EINTR)
+                {
+                    return -1;
+                }
+            }
+        #endif // defined
+        #if defined(__linux__)
+            int bits;
+            if (size == 0 && ioctl(fd, TIOCMGET, &bits) < 0)
+            {
+                //error
+            }
+        #endif
+        #if defined(_WIN32)
+            COMSTAT st;
+            DWORD errmask=0, num_read, num_request;
+            OVERLAPPED ov;
+            int count = batchSizeForSerial;//32768;
+            if (!ClearCommError(port_handle, &errmask, &st))
+            {
+                return -1;
+            }
+            unsigned long numInCueue = st.cbInQue;
+            num_request = 10000;
+            ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+            if (ov.hEvent == NULL) return -1;
+            ov.Internal = ov.InternalHigh = 0;
+            ov.Offset = ov.OffsetHigh = 0;
+            if (ReadFile(port_handle, buffer, num_request, &num_read, &ov)) {
+                batchSizeForSerial +=1;
+                size = num_read;
+            } else {
+                if (GetLastError() == ERROR_IO_PENDING) {
+                    if (GetOverlappedResult(port_handle, &ov, &num_read, TRUE)) {
+                        size = num_read;
+                    } else {
+                        size = -1;
+                    }
+                } else {
+                    size = -1;
+                }
+            }
+            CloseHandle(ov.hEvent);
+        #endif // defined
+
+        return (int)size;
+    }
 
     int BYBBootloaderController::writeDataToSerialPort(const void *ptr, int len)
     {
@@ -101,7 +227,7 @@ namespace BackyardBrains {
                         if (n <= 0) return -1;
                     }
                 }
-                printf("bootloader write to port: %d bytes", (int)written);
+                printf("bootloader write to port: %d bytes\n", (int)written);
                 return (int)written;
         #elif defined(_WIN32)
             DWORD num_written;
@@ -141,8 +267,47 @@ namespace BackyardBrains {
         checkChecksum(lineFromFile);
         int lengthOfData;
         sscanf(&lineFromFile[1],"%2x",&lengthOfData);
+        int tempCurrentAddress;
+        sscanf(&lineFromFile[3],"%4x",&tempCurrentAddress);
         
-        sscanf(&lineFromFile[3],"%4x",&currentAddress);
+        //fill the void in memory (if hex jums over some memory)
+        if(currentAddress!=0 && tempCurrentAddress!=currentAddress && tempCurrentAddress>currentAddress)
+        {
+           
+                int difference =tempCurrentAddress-currentAddress;
+                
+                for (int i=0;i<difference;i++)
+                {
+                    
+                    if(currentIndexInsidePage==0)
+                    {
+                        newHexRecord = new HexRecord();
+                        //clear memory
+                        for(int i=0;i<SIZE_OF_PAGE;i++)
+                        {
+                            newHexRecord->dataPage[i] = 0;
+                        }
+                        //address where data should be put in memory on microcontroller
+                        newHexRecord->address =currentAddress;
+                    }
+                    newHexRecord->dataPage[currentIndexInsidePage]=255;
+                    currentAddress++;
+                    currentIndexInsidePage++;
+                    if(currentIndexInsidePage==SIZE_OF_PAGE)
+                    {
+                        currentIndexInsidePage = 0;
+                        //add one page to memory list
+                        dataFromFile.push_back(*newHexRecord);
+                        
+                    }
+                }
+            
+        }
+        else
+        {
+            currentAddress =tempCurrentAddress;
+        }
+        
         int typeOfRecord;
         sscanf(&lineFromFile[7],"%2x",&typeOfRecord);
         switch (typeOfRecord) {
