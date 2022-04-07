@@ -16,7 +16,7 @@
     #include <windows.h>
 #endif
 #define BOARD_WITH_JOYSTICK 5
-
+#define FIRMWARE_PATH_FOR_STM32 "/firmwareUpdate.hex"
 namespace BackyardBrains {
 
 const int RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX = -2;
@@ -59,6 +59,8 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
     systemIsCalibrated = false;
     calibrationCoeficient = 1.0f;
     
+    _firmwareForBootloaderAvailable = false;
+    _bootloaderController.firmwarePath = getRecordingPath()+FIRMWARE_PATH_FOR_STM32;
     _portScanningArduinoSerial.setRecordingManager(this);
     _arduinoSerial.getAllPortsList();
 
@@ -2620,12 +2622,29 @@ SampleBuffer *RecordingManager::sampleBuffer(int virtualDeviceIndex) {
 
 #pragma mark - Bootloader
 
+void RecordingManager::checkIfFirmwareIsAvailableForBootloader()
+{
+    _firmwareForBootloaderAvailable = _bootloaderController.isFirmwareAvailable();
+}
+
+void RecordingManager::putBoardInBootloaderMode()
+{
+    if(serialMode())
+    {
+        _arduinoSerial.sendMessageToPutBoardIntoBootloaderMode();
+    }
+}
+
 void RecordingManager::startBootloaderProcess(std::string nameOfThePort, int portHandle)
 {
     _bootloaderController.portName = nameOfThePort;
     _bootloaderController.portHandle = portHandle;
-    _bootloaderController.firmwarePath = getRecordingPath()+"/stm32firmware.hex";
     _bootloaderController.startUpdateProcess();
+}
+
+bool RecordingManager::firmwareUpdateShouldBeActive()
+{
+    return serialMode() && _firmwareForBootloaderAvailable && _arduinoSerial.currentPort.deviceType==ArduinoSerial::humansb;
 }
 
 int RecordingManager::bootloaderState()

@@ -33,6 +33,7 @@ class BYBBootloaderController
     std::string portName;
     int portHandle;
     void startUpdateProcess();
+    bool isFirmwareAvailable();
     std::list<HexRecord> dataFromFile;
 
     protected:

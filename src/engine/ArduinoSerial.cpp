@@ -2410,6 +2410,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                         if (found!=std::string::npos)
                                         {
                                             setDeviceTypeToCurrentPort(ArduinoSerial::humansb);
+                                            _manager->checkIfFirmwareIsAvailableForBootloader();
                                         }
                                         else
                                         {
@@ -2668,6 +2669,14 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
              writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
         }
 
+    }
+
+    void ArduinoSerial::sendMessageToPutBoardIntoBootloaderMode()
+    {
+        std::stringstream sstm;
+        sstm << ">BL<";
+        Log::msg("Put board into bootloader mode.");
+        writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
     }
 
     int ArduinoSerial::writeToPort(const void *ptr, int len)

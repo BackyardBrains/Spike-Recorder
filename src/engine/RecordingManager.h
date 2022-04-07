@@ -224,6 +224,10 @@ public:
 
     void startBootloaderProcess(std::string nameOfThePort, int portHandle);
     int bootloaderState();
+    bool firmwareUpdateShouldBeActive();
+    void putBoardInBootloaderMode();
+    void checkIfFirmwareIsAvailableForBootloader();
+
     #if defined(_WIN32)
         int prepareForHIDFirmwareUpdate(BYBFirmwareVO * firmwareToUpdate);
         int getUSBFirmwareUpdateStage();
@@ -370,7 +374,7 @@ private:
 
 	int _firmwareUpdateStage;//this needs to be outside exclusive win block
     BYBBootloaderController _bootloaderController;
-    
+    bool _firmwareForBootloaderAvailable;
     #if defined(_WIN32)
         FirmwareUpdater _xmlFirmwareUpdater;
         BSLFirmwareUpdater _bslFirmwareUpdater;

@@ -88,7 +88,8 @@ private:
     std::vector<DropDownList *> joystickKeyDropdowns;
 
 
-
+    Widgets::PushButton *_updateBootloaderButton;
+    void firmwareBootloaderUpdatePressed();
     //HID usb connection and firmware update
     //Works only on Windows
     #if defined(_WIN32)

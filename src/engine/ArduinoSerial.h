@@ -111,6 +111,7 @@ namespace BackyardBrains {
         void checkAllPortsForArduino(ArduinoSerial * workingArduinoRef);
         void askForBoardType();
         void askForExpansionBoardType();
+        void sendMessageToPutBoardIntoBootloaderMode();
         void setBaudRate(int baudRate);
         int getBaudRate(){return currentTestingBaudRate;}
 

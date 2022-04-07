@@ -42,6 +42,19 @@ namespace BackyardBrains {
   
     }
 
+    bool BYBBootloaderController::isFirmwareAvailable()
+    {
+        if (FILE *file = fopen(firmwarePath.c_str(), "r"))
+        {
+            fclose(file);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     void BYBBootloaderController::startUpdateProcess()
     {
         stage = BOOTLOADER_STAGE_INITIALIZED;
@@ -63,6 +76,7 @@ namespace BackyardBrains {
         }
 
         initTransferOfFirmware();
+        stage = BOOTLOADER_STAGE_OFF;
     }
 
     void BYBBootloaderController::initTransferOfFirmware()
@@ -122,7 +136,7 @@ namespace BackyardBrains {
             it++;
             progress++;
         }
-        stage = BOOTLOADER_STAGE_OFF;
+        
     }
 
 
