@@ -28,10 +28,8 @@
 #include <cstring>
 #include "CalibrationWindow.h"
 #include <sstream>
-
-#if defined(_WIN32)
 #include "FirmwareUpdateView.h"
-#endif // defined
+
 
 namespace BackyardBrains {
 
@@ -933,16 +931,21 @@ void MainView::drawTimeLabelsForFile()
 void MainView::paintEvent()
 {
 
-    #if defined(_WIN32)
+
     if(_manager.shouldStartFirmwareUpdatePresentation)
     {
-        FirmwareUpdateView *c = new FirmwareUpdateView(_manager, *_audioView);
+        int typeOfFirmwareUpgradeProcesss = TYPE_MSP430_UPDATER;
+        if(_manager.bootloaderState()!=BOOTLOADER_STAGE_OFF)
+        {
+            typeOfFirmwareUpgradeProcesss = TYPE_STM32_BOOTLOADER;
+        }
+        FirmwareUpdateView *c = new FirmwareUpdateView(_manager, *_audioView, typeOfFirmwareUpgradeProcesss);
         c->setDeleteOnClose(true);
         c->setGeometry(rect());
         Widgets::Application::getInstance()->addWindow(c);
         _manager.shouldStartFirmwareUpdatePresentation = false;
     }
-    #endif
+
     if(_manager.isHIDBoardTypeAvailable(HID_BOARD_TYPE_MUSCLE))
     {
         _muscleHIDButton->setSizeHint(Widgets::Size(53,48));

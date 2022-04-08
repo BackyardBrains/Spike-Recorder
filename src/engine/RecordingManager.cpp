@@ -2631,6 +2631,8 @@ void RecordingManager::putBoardInBootloaderMode()
 {
     if(serialMode())
     {
+        _bootloaderController.stage  = BOOTLOADER_STAGE_INITIALIZED;
+        shouldStartFirmwareUpdatePresentation = true;
         _arduinoSerial.sendMessageToPutBoardIntoBootloaderMode();
     }
 }

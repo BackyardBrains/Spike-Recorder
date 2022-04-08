@@ -221,17 +221,18 @@ public:
     //check if buffer has loaded data at "pos" position
     bool isBufferLoadedAtPosition(long pos);
 
-
+    int progressOfBootloader(){return _bootloaderController.percentOfUpdateProgress();};
     void startBootloaderProcess(std::string nameOfThePort, int portHandle);
     int bootloaderState();
     bool firmwareUpdateShouldBeActive();
     void putBoardInBootloaderMode();
     void checkIfFirmwareIsAvailableForBootloader();
-
+   
+    
+    bool shouldStartFirmwareUpdatePresentation;
     #if defined(_WIN32)
         int prepareForHIDFirmwareUpdate(BYBFirmwareVO * firmwareToUpdate);
         int getUSBFirmwareUpdateStage();
-        bool shouldStartFirmwareUpdatePresentation;
         bool firmwareAvailable();
         int finishAndCleanFirmwareUpdate();
         std::list<BYBFirmwareVO> firmwareList();

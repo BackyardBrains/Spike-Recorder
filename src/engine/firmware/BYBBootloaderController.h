@@ -35,7 +35,7 @@ class BYBBootloaderController
     void startUpdateProcess();
     bool isFirmwareAvailable();
     std::list<HexRecord> dataFromFile;
-
+    int percentOfUpdateProgress(){return progress;};
     protected:
     
     void parseLineOfHex(char * lineFromFile);
@@ -50,6 +50,7 @@ class BYBBootloaderController
     int currentIndexInsidePage;
     int currentAddress;
     HexRecord * newHexRecord;
+    int progress = 0;
     
 
 };

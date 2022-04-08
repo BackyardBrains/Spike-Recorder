@@ -60,6 +60,7 @@ namespace BackyardBrains {
         stage = BOOTLOADER_STAGE_INITIALIZED;
         dataFromFile.clear();
         currentAddress = 0;
+        progress = 1;
         //load HEX file into memory
         _file = fopen(firmwarePath.c_str(), "r");
         if(_file == 0) {
@@ -115,7 +116,7 @@ namespace BackyardBrains {
         writeDataToSerialPort(tempBuffer, 4);
         
         //upload firmware
-        int progress = 0;
+        int localProgress = 0;
         std::list<HexRecord>::iterator it;
         it = dataFromFile.begin();
         while(1)//it != dataFromFile.end()
@@ -125,18 +126,27 @@ namespace BackyardBrains {
             if(tempBuffer[0]=='e')
             {
                 printf("Programming finished");
+                progress = 100;
                 break;
             }
             else if(tempBuffer[0]=='x')
             {
-                printf("Pages %d out of %d\n", progress, programSize);
+                printf("Pages %d out of %d\n", localProgress, programSize);
+                
+                int tempProgress = (int)100.0f*((float)localProgress/(float)programSize);
+                if(tempProgress>99)
+                {
+                    tempProgress =99;
+                }
+                progress = tempProgress;
+
                 writeDataToSerialPort(it->dataPage, 8);
             }
             tempBuffer[0]=' ';
             it++;
-            progress++;
+            localProgress++;
         }
-        
+        progress = 100;
     }
 
 
