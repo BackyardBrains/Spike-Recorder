@@ -55,6 +55,40 @@ namespace BackyardBrains {
         }
     }
 
+
+    int getline2(char ** lineptr, size_t * n, FILE * stream)
+    {
+
+            size_t count;
+            const int maxLineSize  = 256;
+            *lineptr = (char *)malloc(sizeof(char) *maxLineSize);
+            int c = 0;
+            for (count = 0; count <maxLineSize-1; count++) 
+            {
+                c = getc(stream);
+
+                if (c == EOF ) 
+                {
+                    if (count == 0)
+                    {
+                        return -1;
+                    }
+                    
+                    break;
+                }
+                
+                *lineptr[count] = (char) c;
+                if( c=='\n' || c=='\r')
+                {
+                    break;
+                }
+            }
+
+            *lineptr[count] = '\0';
+            *n = count;
+            return (ssize_t) count;
+    }
+
     void BYBBootloaderController::startUpdateProcess()
     {
         stage = BOOTLOADER_STAGE_INITIALIZED;
@@ -72,12 +106,16 @@ namespace BackyardBrains {
         char *contents = NULL;
         size_t len = 0;
         #if defined(__APPLE__)
-            while (getline(&contents, &len, _file) != -1){
+            while (getline(&contents, &len, _file) != -1)
+        {
         #elif _WIN32
-         while (std::getline(&contents, &len, _file) != -1){
+         while (getline2(&contents, &len, _file) != -1)
+        {
         #endif
             printf("%s", contents);
             parseLineOfHex(contents);
+            free(contents);
+
         }
 
 
