@@ -23,13 +23,13 @@
     #include <sys/time.h>
     #include <time.h>
 #elif _WIN32
-    #include <initguid.h>
+   /* #include <initguid.h>
     #include <devguid.h>
     #include <setupapi.h>
     #include <string>
     #include <locale>
     #include <algorithm>
-    #include <windows.h>
+    #include <windows.h>*/
     typedef unsigned int uint;
     #include <cstdio>
 #endif
@@ -71,10 +71,15 @@ namespace BackyardBrains {
         currentIndexInsidePage = 0;
         char *contents = NULL;
         size_t len = 0;
-        while (getline(&contents, &len, _file) != -1){
+        #if defined(__APPLE__)
+            while (getline(&contents, &len, _file) != -1){
+        #elif _WIN32
+         while (std::getline(&contents, &len, _file) != -1){
+        #endif
             printf("%s", contents);
             parseLineOfHex(contents);
         }
+
 
         initTransferOfFirmware();
         stage = BOOTLOADER_STAGE_OFF;
@@ -188,7 +193,7 @@ namespace BackyardBrains {
             }
         #endif
         #if defined(_WIN32)
-            COMSTAT st;
+     /*       COMSTAT st;
             DWORD errmask=0, num_read, num_request;
             OVERLAPPED ov;
             int count = batchSizeForSerial;//32768;
@@ -217,6 +222,7 @@ namespace BackyardBrains {
                 }
             }
             CloseHandle(ov.hEvent);
+            */
         #endif // defined
 
         return (int)size;
@@ -254,9 +260,10 @@ namespace BackyardBrains {
                 printf("bootloader write to port: %d bytes\n", (int)written);
                 return (int)written;
         #elif defined(_WIN32)
-            DWORD num_written;
-            OVERLAPPED ov;
             int r;
+           /* DWORD num_written;
+            OVERLAPPED ov;
+
             ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
             if (ov.hEvent == NULL) return -1;
             ov.Internal = ov.InternalHigh = 0;
@@ -278,7 +285,7 @@ namespace BackyardBrains {
                     r = -1;
                 }
             };
-            CloseHandle(ov.hEvent);
+            CloseHandle(ov.hEvent);*/
             return r;
         #endif
     }

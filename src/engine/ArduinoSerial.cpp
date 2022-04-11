@@ -615,6 +615,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                         std::string nameOfDeviceForTest((char *)friendlyName, reqSize);
                         std::string nameOfDevice = "";
                         nameOfDevice = nameOfDevice+nameOfDeviceForTest;
+                        std::cout << "Found port:" << nameOfDevice << '\n';
                         std::transform(nameOfDeviceForTest.begin(), nameOfDeviceForTest.end(), nameOfDeviceForTest.begin(), ::tolower);
                         if (nameOfDeviceForTest.find("bluetooth") != std::string::npos)
                         {
