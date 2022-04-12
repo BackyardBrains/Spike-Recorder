@@ -601,6 +601,9 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                     // now store it in a buffer
                     if (SetupDiGetDeviceRegistryProperty(hDeviceInfo, &devInfoData, SPDRP_HARDWAREID, &regDataType, hardwareId, sizeof(hardwareId) * reqSize, nullptr))
                     {
+                        std::string* DeviceIDFromRegistry = new std::string((char *)hardwareId);
+                        std::cout <<"ID of the device: "<<DeviceIDFromRegistry[0]<<"\n";
+
                         // find the size required to hold the friendly name
                         reqSize = 0;
                         SetupDiGetDeviceRegistryProperty(hDeviceInfo, &devInfoData, SPDRP_FRIENDLYNAME, nullptr, nullptr, 0, &reqSize);
@@ -611,6 +614,9 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                             // device does not have this property set
                             memset(friendlyName, 0, reqSize > 1 ? reqSize : 1);
                         }
+
+
+
                         // use friendlyName here
                         std::string nameOfDeviceForTest((char *)friendlyName, reqSize);
                         std::string nameOfDevice = "";
