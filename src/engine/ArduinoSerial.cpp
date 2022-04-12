@@ -601,14 +601,16 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                     // now store it in a buffer
                     if (SetupDiGetDeviceRegistryProperty(hDeviceInfo, &devInfoData, SPDRP_HARDWAREID, &regDataType, hardwareId, sizeof(hardwareId) * reqSize, nullptr))
                     {
-                        std::string* DeviceIDFromRegistry = new std::string((char *)hardwareId);
-                        std::cout <<"ID of the device: "<<DeviceIDFromRegistry[0]<<"\n";
-                        std::cout <<"ID of the device2: "<<(char *)hardwareId<<"\n";
+                        std::cout <<"ID of the device: "<<(char *)hardwareId<<"\n";
 
 
-                        std::string vid = "VID_0483";
-                        std::string pid = "PID_5740";
-                        if (strstr((char *)hardwareId, (char *)&pid) && strstr((char *)hardwareId, (char *)&vid)) 
+                        std::string vid = "VID_2E73";
+                        std::string pid = "PID_0005";
+                        char * isThereVid = strstr((char *)hardwareId, (char *)vid.c_str());
+                        char * isTherePid = strstr((char *)hardwareId, (char *)pid.c_str());
+
+
+                        if (isThereVid && isTherePid) 
                         {
                             printf("Found vid and pid \n");
                         }
