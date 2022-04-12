@@ -603,6 +603,21 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                     {
                         std::string* DeviceIDFromRegistry = new std::string((char *)hardwareId);
                         std::cout <<"ID of the device: "<<DeviceIDFromRegistry[0]<<"\n";
+                        std::cout <<"ID of the device2: "<<(char *)hardwareId<<"\n";
+
+
+                        std::string vid = "VID_0483";
+                        std::string pid = "PID_5740";
+                        if (strstr((char *)hardwareId, (char *)&pid) && strstr((char *)hardwareId, (char *)&vid)) 
+                        {
+                            printf("Found vid and pid \n");
+                        }
+                        else
+                        {
+                            printf("Not Found vid and pid \n");
+
+                        }
+
 
                         // find the size required to hold the friendly name
                         reqSize = 0;
