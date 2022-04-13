@@ -83,7 +83,7 @@ namespace BackyardBrains {
                     break;
                 }
             }
-
+            count++;
             (*lineptr)[count] = '\0';
             *n = count;
             return (ssize_t) count;
