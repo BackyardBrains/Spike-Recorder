@@ -77,14 +77,14 @@ namespace BackyardBrains {
                     break;
                 }
                 
-                *lineptr[count] = (char) c;
+                (*lineptr)[count] = (char) c;
                 if( c=='\n' || c=='\r')
                 {
                     break;
                 }
             }
 
-            *lineptr[count] = '\0';
+            (*lineptr)[count] = '\0';
             *n = count;
             return (ssize_t) count;
     }

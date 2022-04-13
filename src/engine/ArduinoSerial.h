@@ -183,7 +183,7 @@ namespace BackyardBrains {
             HANDLE port_handle;
             COMMCONFIG port_cfg_orig;
             COMMCONFIG port_cfg;
-            void enumerateSerialPortsFriendlyNames();
+            void enumerateSerialPortsFriendlyNames( std::string& portForBootloader);
         #endif
         bool _justScanning;
         int currentAddOnBoard;
