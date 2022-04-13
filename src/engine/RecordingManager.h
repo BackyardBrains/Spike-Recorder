@@ -222,7 +222,14 @@ public:
     bool isBufferLoadedAtPosition(long pos);
 
     int progressOfBootloader(){return _bootloaderController.percentOfUpdateProgress();};
-    void startBootloaderProcess(std::string nameOfThePort, int portHandle);
+
+    
+    #ifdef _WIN32
+        void startBootloaderProcess(std::string nameOfThePort, void * portHandle);
+    #else
+        void startBootloaderProcess(std::string nameOfThePort, int portHandle);
+    #endif
+    
     int bootloaderState();
     bool firmwareUpdateShouldBeActive();
     void putBoardInBootloaderMode();

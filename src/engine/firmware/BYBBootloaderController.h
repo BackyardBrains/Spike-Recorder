@@ -14,7 +14,17 @@
 #include <fstream>
 #include <string>
 #include <stdio.h>
+#include <iostream>
+#include <fcntl.h>
 #include <list>
+#include <string>
+#include "constants.h"
+
+//just MAC classes
+#ifdef _WIN32
+    #include <windows.h>
+#endif
+
 #define SIZE_OF_PAGE 8
 namespace BackyardBrains {
 struct HexRecord
@@ -31,7 +41,12 @@ class BYBBootloaderController
     int stage;
     std::string firmwarePath;
     std::string portName;
-    int portHandle;
+    #ifdef _WIN32
+        HANDLE portHandle;
+    #else
+        int portHandle;
+    #endif
+    
     void startUpdateProcess();
     bool isFirmwareAvailable();
     std::list<HexRecord> dataFromFile;
@@ -51,6 +66,7 @@ class BYBBootloaderController
     int currentAddress;
     HexRecord * newHexRecord;
     int progress = 0;
+    
     
 
 };

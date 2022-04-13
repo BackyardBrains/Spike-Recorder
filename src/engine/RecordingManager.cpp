@@ -2637,12 +2637,23 @@ void RecordingManager::putBoardInBootloaderMode()
     }
 }
 
-void RecordingManager::startBootloaderProcess(std::string nameOfThePort, int portHandle)
-{
-    _bootloaderController.portName = nameOfThePort;
-    _bootloaderController.portHandle = portHandle;
-    _bootloaderController.startUpdateProcess();
-}
+
+ #ifdef _WIN32
+    void RecordingManager::startBootloaderProcess(std::string nameOfThePort, void * portHandle)
+    {
+        _bootloaderController.portName = nameOfThePort;
+        _bootloaderController.portHandle = portHandle;
+        _bootloaderController.startUpdateProcess();
+    }
+#else
+    void RecordingManager::startBootloaderProcess(std::string nameOfThePort, int portHandle)
+    {
+        _bootloaderController.portName = nameOfThePort;
+        _bootloaderController.portHandle = portHandle;
+        _bootloaderController.startUpdateProcess();
+    }
+#endif
+
 
 bool RecordingManager::firmwareUpdateShouldBeActive()
 {

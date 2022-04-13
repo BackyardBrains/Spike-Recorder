@@ -7,7 +7,10 @@
 //
 
 #include "BYBBootloaderController.h"
-
+#include <sys/types.h>
+#include <unistd.h>
+#include <sstream>
+#include <stdint.h>
 #if defined(__APPLE__)
 //added for port scan
     #include <sys/uio.h>
@@ -23,13 +26,13 @@
     #include <sys/time.h>
     #include <time.h>
 #elif _WIN32
-   /* #include <initguid.h>
+    #include <initguid.h>
     #include <devguid.h>
     #include <setupapi.h>
     #include <string>
     #include <locale>
     #include <algorithm>
-    #include <windows.h>*/
+    #include <windows.h>
     typedef unsigned int uint;
     #include <cstdio>
 #endif
@@ -112,7 +115,7 @@ namespace BackyardBrains {
          while (getline2(&contents, &len, _file) != -1)
         {
         #endif
-            printf("%s", contents);
+            //printf("%s", contents);
             parseLineOfHex(contents);
             free(contents);
 
@@ -127,6 +130,7 @@ namespace BackyardBrains {
     {
         char tempBuffer[256];
         int readLength = 0;
+        printf("Waiting for serial to send g\n");
         while((readLength = readDataFromSerialPort(tempBuffer))<=0)
         {}
         if(tempBuffer[0]=='g')
@@ -231,11 +235,10 @@ namespace BackyardBrains {
             }
         #endif
         #if defined(_WIN32)
-     /*       COMSTAT st;
+            COMSTAT st;
             DWORD errmask=0, num_read, num_request;
             OVERLAPPED ov;
-            int count = batchSizeForSerial;//32768;
-            if (!ClearCommError(port_handle, &errmask, &st))
+            if (!ClearCommError(portHandle, &errmask, &st))
             {
                 return -1;
             }
@@ -245,12 +248,11 @@ namespace BackyardBrains {
             if (ov.hEvent == NULL) return -1;
             ov.Internal = ov.InternalHigh = 0;
             ov.Offset = ov.OffsetHigh = 0;
-            if (ReadFile(port_handle, buffer, num_request, &num_read, &ov)) {
-                batchSizeForSerial +=1;
+            if (ReadFile(portHandle, buffer, num_request, &num_read, &ov)) {
                 size = num_read;
             } else {
                 if (GetLastError() == ERROR_IO_PENDING) {
-                    if (GetOverlappedResult(port_handle, &ov, &num_read, TRUE)) {
+                    if (GetOverlappedResult(portHandle, &ov, &num_read, TRUE)) {
                         size = num_read;
                     } else {
                         size = -1;
@@ -260,7 +262,7 @@ namespace BackyardBrains {
                 }
             }
             CloseHandle(ov.hEvent);
-            */
+            
         #endif // defined
 
         return (int)size;
@@ -299,7 +301,7 @@ namespace BackyardBrains {
                 return (int)written;
         #elif defined(_WIN32)
             int r;
-           /* DWORD num_written;
+            DWORD num_written;
             OVERLAPPED ov;
 
             ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -307,14 +309,14 @@ namespace BackyardBrains {
             ov.Internal = ov.InternalHigh = 0;
             ov.Offset = ov.OffsetHigh = 0;
 
-            if (WriteFile(port_handle, ptr, len, &num_written, &ov))
+            if (WriteFile(portHandle, ptr, len, &num_written, &ov))
             {
                 r = num_written;
             }
             else
             {
                 if (GetLastError() == ERROR_IO_PENDING) {
-                    if (GetOverlappedResult(port_handle, &ov, &num_written, TRUE)) {
+                    if (GetOverlappedResult(portHandle, &ov, &num_written, TRUE)) {
                         r = num_written;
                     } else {
                         r = -1;
@@ -323,7 +325,7 @@ namespace BackyardBrains {
                     r = -1;
                 }
             };
-            CloseHandle(ov.hEvent);*/
+            CloseHandle(ov.hEvent);
             return r;
         #endif
     }
@@ -465,15 +467,6 @@ namespace BackyardBrains {
             printf("Bootloader Error: checksum error\n" );
             return 1;
         }
-        /*
-        for (int i = 0; i < n; i++)
-        {
-            checksum += byte.Parse(new string(data.ToCharArray(1 + i * 2, 2)), System.Globalization.NumberStyles.HexNumber);
-        }
-        if (checksum != 0)
-        {
-            throw new Exception("Checksum error.");
-        }*/
         return 0;
     }
 }

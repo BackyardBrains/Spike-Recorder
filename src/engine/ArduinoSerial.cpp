@@ -491,7 +491,11 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             int serialPortHandle = openPort(bootloaderPort.c_str());
             if(serialPortHandle!=-1)
             {
-                _manager->startBootloaderProcess(bootloaderPort, serialPortHandle);
+                #ifdef _WIN32
+                    _manager->startBootloaderProcess(bootloaderPort, port_handle);
+                #else
+                    _manager->startBootloaderProcess(bootloaderPort, serialPortHandle);
+                #endif
                 while(_manager->bootloaderState()!=BOOTLOADER_STAGE_OFF)
                 {
                     //whait for bootloader to finish
