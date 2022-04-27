@@ -20,8 +20,11 @@
 
 namespace BackyardBrains {
 
-    FirmwareUpdateView::FirmwareUpdateView(RecordingManager &mngr, AudioView &audioView, Widget *parent) : Widget(parent), _manager(mngr), _audioView(audioView) {
+    FirmwareUpdateView::FirmwareUpdateView(RecordingManager &mngr, AudioView &audioView,int typeOfUpdater, Widget *parent) : Widget(parent), _manager(mngr), _audioView(audioView) {
 
+        typeOfFirmwareUpdater = typeOfUpdater;
+        
+        
         //create close button
         timerUSB = clock();
 
@@ -91,39 +94,61 @@ namespace BackyardBrains {
         Widgets::Painter::drawRect(rect());
 
 
-
-       /* if(_manager.powerStateOnHID()!=0)//if power rail on SB pro is not turned off notify user to turn it off
+        if(typeOfFirmwareUpdater==TYPE_MSP430_UPDATER)
         {
-            if(_manager.powerStateOnHID()==1)//power ON
-            {
-                 infoLabel->setText("Please turn OFF SpikerBox Pro to proceed with firmware update. \n               Keep the device plugged in USB.");
-            }
-
-            if(_manager.powerStateOnHID()==-1)//power state unknown
-            {
-                 infoLabel->setText("Initializing ....");
-            }
-            testPowerOfDevice();
+            #if defined(_WIN32)
+                if(!firmwareUpdateStarted)
+                {
+                    //SB Pro is turned OFF we can start firmware update
+                    //start actual firmware update
+                    
+                    _manager.startActualFirmwareUpdateOnDevice();
+                    
+                    firmwareUpdateStarted = true;
+                }
+                 infoLabel->setText("Firmware updating. Do not unplug device during updating.");
+                
+                    int stage = _manager.getUSBFirmwareUpdateStage();
+              
+                int yoffset = 300;
+                int widthofBar = 500;
+                Widgets::Painter::setColor(Widgets::Color(200,200,200,255));
+                Widgets::Painter::drawRect(Widgets::Rect(this->width()/2-(widthofBar/2)-5, yoffset-5, widthofBar+10, 50));
+                if(stage>=0)
+                {
+                    Widgets::Painter::setColor(Widgets::Color(0,250,0,255));
+                    Widgets::Painter::drawRect(Widgets::Rect(this->width()/2-(widthofBar/2), yoffset, (int)(((float)widthofBar)*(((float)stage)/20.0f)), 40));
+                    
+                }
+                else
+                {
+                    Widgets::Painter::setColor(Widgets::Color(255,0,0,255));
+                    Widgets::Painter::drawRect(Widgets::Rect(this->width()/2-(widthofBar/2), yoffset, widthofBar, 40));
+                    closeButton->setVisible(true);
+                    infoLabel->setText("Error while updating firmware. \n Unplug device, plug in again and try again.");
+                }
+                if(stage == 20)
+                {
+                    closeButton->setVisible(true);
+                     infoLabel->setText("Firmware updated successfully!");
+                }
+            #endif
         }
-        else
-        {*/
-            if(!firmwareUpdateStarted)
-            {
-                //SB Pro is turned OFF we can start firmware update
-                //start actual firmware update
-                _manager.startActualFirmwareUpdateOnDevice();
-                firmwareUpdateStarted = true;
-            }
-             infoLabel->setText("Firmware updating. Do not unplug device during updating.");
-            int stage = _manager.getUSBFirmwareUpdateStage();
+        else if (typeOfFirmwareUpdater==TYPE_STM32_BOOTLOADER)
+        {
+            //_manager.progressOfBootloader
             int yoffset = 300;
             int widthofBar = 500;
             Widgets::Painter::setColor(Widgets::Color(200,200,200,255));
             Widgets::Painter::drawRect(Widgets::Rect(this->width()/2-(widthofBar/2)-5, yoffset-5, widthofBar+10, 50));
-            if(stage>=0)
+            
+            
+            if(_manager.progressOfBootloader()>=0)
             {
+                infoLabel->setText("Firmware updating. Do not unplug device during updating.");
                 Widgets::Painter::setColor(Widgets::Color(0,250,0,255));
-                Widgets::Painter::drawRect(Widgets::Rect(this->width()/2-(widthofBar/2), yoffset, (int)(((float)widthofBar)*(((float)stage)/20.0f)), 40));
+                Widgets::Painter::drawRect(Widgets::Rect(this->width()/2-(widthofBar/2), yoffset, (int)(((float)widthofBar)*(((float)_manager.progressOfBootloader())/100.0f)), 40));
+                closeButton->setVisible(false);
             }
             else
             {
@@ -132,17 +157,23 @@ namespace BackyardBrains {
                 closeButton->setVisible(true);
                 infoLabel->setText("Error while updating firmware. \n Unplug device, plug in again and try again.");
             }
-            if(stage == 20)
+            if(_manager.progressOfBootloader() == 100)
             {
                 closeButton->setVisible(true);
                  infoLabel->setText("Firmware updated successfully!");
             }
-       // }
+            
+        }
     }
 
     //Close view
     void FirmwareUpdateView::closePressed() {
-        _manager.finishAndCleanFirmwareUpdate();
+        if(typeOfFirmwareUpdater==TYPE_MSP430_UPDATER)
+        {
+            #if defined(_WIN32)
+                _manager.finishAndCleanFirmwareUpdate();
+            #endif
+        }
         close();
     }
 
@@ -153,8 +184,12 @@ namespace BackyardBrains {
         if(elapsed_secs>0.5)
         {
             timerUSB = end;
-            _manager.askForPowerStateHIDDevice();//ask HID device if power is OFF
-
+            if(typeOfFirmwareUpdater==TYPE_MSP430_UPDATER)
+            {
+                #if defined(_WIN32)
+                    _manager.askForPowerStateHIDDevice();//ask HID device if power is OFF
+                #endif
+            }
         }
 
 

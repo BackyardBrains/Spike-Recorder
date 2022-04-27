@@ -13,6 +13,7 @@
 #include <sstream>
 #include <stdint.h>
 #include "RecordingManager.h"
+#include "BYBBootloaderController.h"
 
 #define NUMBER_OF_TIMES_TO_SCAN_UNKNOWN_PORT 10
 
@@ -309,7 +310,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
 
         list.clear();
-
+        std::string bootloaderPort = "";
 
 #if defined(__linux__)
         // This is ugly guessing, but Linux doesn't seem to provide anything else.
@@ -382,8 +383,10 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         closedir(dir);
 #elif defined(__APPLE__)
 
-        getListOfSerialPorts(list);
 
+        getListOfSerialPorts(list, bootloaderPort);
+
+        
         // adapted from SerialPortSample.c, by Apple
         // http://developer.apple.com/samplecode/SerialPortSample/listing2.html
         // and also testserial.c, by Keyspan
@@ -476,12 +479,39 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
         list.sort();
 
-
-
-
         #ifdef _WIN32
-        enumerateSerialPortsFriendlyNames();
+            
+            enumerateSerialPortsFriendlyNames(bootloaderPort);
+            
         #endif
+        if(bootloaderPort.length()>0)
+        {
+            _portName = bootloaderPort;
+            setBaudRate(115200);
+            int serialPortHandle = openPort(bootloaderPort.c_str());
+            if(serialPortHandle!=-1)
+            {
+                #ifdef _WIN32
+                    _manager->startBootloaderProcess(bootloaderPort, port_handle);
+                #else
+                    _manager->startBootloaderProcess(bootloaderPort, serialPortHandle);
+                #endif
+                while(_manager->bootloaderState()!=BOOTLOADER_STAGE_OFF)
+                {
+                    //whait for bootloader to finish
+                    #if defined(__APPLE__) || defined(__linux__)
+                        usleep(500000);
+                    #else
+                        Sleep(700);
+                    #endif
+                }
+            }
+            setBaudRate(LOW_BAUD_RATE);
+        }
+
+
+
+
         refreshPortsDataList();
 
         return;
@@ -546,7 +576,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
 
 #ifdef _WIN32
-            void  ArduinoSerial::enumerateSerialPortsFriendlyNames()
+            void  ArduinoSerial::enumerateSerialPortsFriendlyNames( std::string& portForBootloader)
             {
                 SP_DEVINFO_DATA devInfoData = {};
                 devInfoData.cbSize = sizeof(devInfoData);
@@ -577,6 +607,23 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                     // now store it in a buffer
                     if (SetupDiGetDeviceRegistryProperty(hDeviceInfo, &devInfoData, SPDRP_HARDWAREID, &regDataType, hardwareId, sizeof(hardwareId) * reqSize, nullptr))
                     {
+                        std::cout <<"ID of the device: "<<(char *)hardwareId<<"\n";
+
+
+                        std::string vid = "VID_2E73";
+                        std::string pid = "PID_0005";
+                        char * isThereVid = strstr((char *)hardwareId, (char *)vid.c_str());
+                        char * isTherePid = strstr((char *)hardwareId, (char *)pid.c_str());
+
+                        bool foundBootloader = false;
+                        if (isThereVid && isTherePid) 
+                        {
+                            printf("Found vid and pid for bootloader\n");
+                            foundBootloader = true;
+                        }
+                       
+
+
                         // find the size required to hold the friendly name
                         reqSize = 0;
                         SetupDiGetDeviceRegistryProperty(hDeviceInfo, &devInfoData, SPDRP_FRIENDLYNAME, nullptr, nullptr, 0, &reqSize);
@@ -587,15 +634,22 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                             // device does not have this property set
                             memset(friendlyName, 0, reqSize > 1 ? reqSize : 1);
                         }
+
+
+
                         // use friendlyName here
                         std::string nameOfDeviceForTest((char *)friendlyName, reqSize);
                         std::string nameOfDevice = "";
                         nameOfDevice = nameOfDevice+nameOfDeviceForTest;
+                        std::cout << "Found port:" << nameOfDevice << '\n';
                         std::transform(nameOfDeviceForTest.begin(), nameOfDeviceForTest.end(), nameOfDeviceForTest.begin(), ::tolower);
-                        if (nameOfDeviceForTest.find("bluetooth") != std::string::npos)
+                        if ((nameOfDeviceForTest.find("bluetooth") != std::string::npos) || foundBootloader)
                         {
-                            std::cout << "Found Bluetooth device in: "<< nameOfDevice <<" skip it." << '\n';
-                            Log::msg("Found Bluetooth device in: %s ",nameOfDevice);
+                            if(!foundBootloader)
+                            {
+                                std::cout << "Found Bluetooth device in: "<< nameOfDevice <<" skip it." << '\n';
+                                Log::msg("Found Bluetooth device in: %s ",nameOfDevice);
+                            }
                             //eliminate bluetooth device
                             std::list<std::string>::iterator list_it;
                             for(list_it = list.begin(); list_it!= list.end(); list_it++)
@@ -614,6 +668,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                     {
                                         std::cout<<"Eliminate port: "<<nameOfDevice<<" \n";
                                         Log::msg("Skip it: %s skip it",nameOfDevice);
+                                        portForBootloader = nameOfPortToCheck;
                                         list_it = list.erase(list_it);
                                         list_it--;
                                     }
@@ -2386,6 +2441,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                         if (found!=std::string::npos)
                                         {
                                             setDeviceTypeToCurrentPort(ArduinoSerial::humansb);
+                                            _manager->checkIfFirmwareIsAvailableForBootloader();
                                         }
                                         else
                                         {
@@ -2644,6 +2700,14 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
              writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
         }
 
+    }
+
+    void ArduinoSerial::sendMessageToPutBoardIntoBootloaderMode()
+    {
+        std::stringstream sstm;
+        sstm << ">BL<";
+        Log::msg("Put board into bootloader mode.");
+        writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
     }
 
     int ArduinoSerial::writeToPort(const void *ptr, int len)

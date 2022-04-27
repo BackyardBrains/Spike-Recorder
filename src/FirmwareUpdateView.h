@@ -7,16 +7,19 @@
 #include "widgets/Label.h"
 #include <time.h>
 
+#define TYPE_MSP430_UPDATER 0
+#define TYPE_STM32_BOOTLOADER 1
+
 namespace BackyardBrains {
     class RecordingManager;
     class AudioView;
     class FirmwareUpdateView : public Widgets::Widget
     {
         public:
-            FirmwareUpdateView(RecordingManager &mngr, AudioView &audioView, Widget *parent = NULL);
+            FirmwareUpdateView(RecordingManager &mngr, AudioView &audioView, int typeOfUpdater, Widget *parent = NULL);
         protected:
         private:
-
+        int typeOfFirmwareUpdater = TYPE_MSP430_UPDATER;
         Widgets::PushButton *closeButton;
         RecordingManager &_manager;
         AudioView &_audioView;

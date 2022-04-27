@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <compatibility>
-	<software>  <!-- SOFTWARE Version -->
+	<software>  <!-- SOFTWARE Version test-->
 		<build>
 			<version>1.4.0</version>
 			<firmwares>

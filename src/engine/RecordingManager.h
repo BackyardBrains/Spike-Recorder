@@ -16,6 +16,7 @@
 #include "HighPassFilter.h"
 #include "AudioInputConfig.h"
 #include "defaults/DefaultConfig.h"
+#include "BYBBootloaderController.h"
 
 #if defined(_WIN32)
     #include "FirmwareUpdater.h"
@@ -220,10 +221,25 @@ public:
     //check if buffer has loaded data at "pos" position
     bool isBufferLoadedAtPosition(long pos);
 
+    int progressOfBootloader(){return _bootloaderController.percentOfUpdateProgress();};
+
+    
+    #ifdef _WIN32
+        void startBootloaderProcess(std::string nameOfThePort, void * portHandle);
+    #else
+        void startBootloaderProcess(std::string nameOfThePort, int portHandle);
+    #endif
+    
+    int bootloaderState();
+    bool firmwareUpdateShouldBeActive();
+    void putBoardInBootloaderMode();
+    void checkIfFirmwareIsAvailableForBootloader();
+   
+    
+    bool shouldStartFirmwareUpdatePresentation;
     #if defined(_WIN32)
         int prepareForHIDFirmwareUpdate(BYBFirmwareVO * firmwareToUpdate);
         int getUSBFirmwareUpdateStage();
-        bool shouldStartFirmwareUpdatePresentation;
         bool firmwareAvailable();
         int finishAndCleanFirmwareUpdate();
         std::list<BYBFirmwareVO> firmwareList();
@@ -365,7 +381,8 @@ private:
     int64_t _timersForKeyRelease[NUMBER_OF_AVAILABLE_CHANNELS_FOR_JOYSTICK];
 
 	int _firmwareUpdateStage;//this needs to be outside exclusive win block
-
+    BYBBootloaderController _bootloaderController;
+    bool _firmwareForBootloaderAvailable;
     #if defined(_WIN32)
         FirmwareUpdater _xmlFirmwareUpdater;
         BSLFirmwareUpdater _bslFirmwareUpdater;

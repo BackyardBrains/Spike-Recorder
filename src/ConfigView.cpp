@@ -774,10 +774,52 @@ void ConfigView::SetupScreen()
                 gvbox->addSpacing(10);
                 gvbox->addLayout(numberOfChannelsHbox);
         }
+        
+        //firmware update for STM32
+        if(_manager.firmwareUpdateShouldBeActive())
+        {
+             Widgets::BoxLayout *updateBootloaderHbox = new Widgets::BoxLayout(Widgets::Horizontal);
+            //Add label
+            Widgets::Label *updateBootloaderLabel = new Widgets::Label(group);
 
+            Widgets::BoxLayout *updateBootloaderVbox = new Widgets::BoxLayout(Widgets::Vertical);
+
+            
+            updateBootloaderLabel->setText("Update firmware for SpikerBox?");
+            updateBootloaderLabel->updateSize();
+            updateBootloaderHbox->addSpacing(0);
+            updateBootloaderVbox->addSpacing(7);
+            updateBootloaderVbox->addWidget(updateBootloaderLabel);
+            updateBootloaderHbox->addLayout(updateBootloaderVbox);
+            updateBootloaderHbox->addSpacing(156);
+            
+            _updateBootloaderButton = new Widgets::PushButton(group);
+            
+            _updateBootloaderButton->clicked.connect(this, &ConfigView::firmwareBootloaderUpdatePressed);
+
+            if(weAreOnTouchScreen)
+            {
+                _updateBootloaderButton->setNormalTex(Widgets::TextureGL::get("data/bupdate.bmp"));
+                _updateBootloaderButton->setHoverTex(Widgets::TextureGL::get("data/bupdate-high.bmp"));
+                _updateBootloaderButton->setSizeHint(Widgets::Size(100,40));
+            }
+            else
+            {
+                _updateBootloaderButton->setNormalTex(Widgets::TextureGL::get("data/update.bmp"));
+                _updateBootloaderButton->setHoverTex(Widgets::TextureGL::get("data/update-high.bmp"));
+                _updateBootloaderButton->setSizeHint(Widgets::Size(100,32));
+            }
+
+            updateBootloaderHbox->addSpacing(5);
+            updateBootloaderHbox->addWidget(_updateBootloaderButton, Widgets::AlignVCenter);
+            updateBootloaderHbox->update();
+
+            gvbox->addSpacing(25);
+            gvbox->addLayout(updateBootloaderHbox);
+  
+        }
 
         // -------------------- HID device connect (works only under windows)---------------------------------------
-
 
         #if defined(_WIN32)
 
@@ -969,6 +1011,12 @@ void ConfigView::paintEvent() {
 
 }
 
+void ConfigView::firmwareBootloaderUpdatePressed()
+{
+    _manager.putBoardInBootloaderMode();
+    close();
+}
+
 
 #if defined(_WIN32)
 
@@ -1029,6 +1077,7 @@ void ConfigView::paintEvent() {
                 i++;
             }
         }
+
 
 
         //

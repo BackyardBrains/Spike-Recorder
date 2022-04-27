@@ -103,6 +103,8 @@
 				"${workspaceFolder}/src/engine/firmware/BYBFirmwareVO.h",
 				"${workspaceFolder}/src/engine/firmware/FirmwareUpdater.cpp",
 				"${workspaceFolder}/src/engine/firmware/FirmwareUpdater.h",
+				"${workspaceFolder}/src/engine/firmware/BYBBootloaderController.h",
+				"${workspaceFolder}/src/engine/firmware/BYBBootloaderController.cpp",
 				"${workspaceFolder}/src/libraries/tinyxml2.cpp",
 				"${workspaceFolder}/src/libraries/tinyxml2.h",
 				"${workspaceFolder}/src/native/PathsWin.cpp",

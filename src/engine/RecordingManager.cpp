@@ -16,7 +16,7 @@
     #include <windows.h>
 #endif
 #define BOARD_WITH_JOYSTICK 5
-
+#define FIRMWARE_PATH_FOR_STM32 "/firmwareUpdate.hex"
 namespace BackyardBrains {
 
 const int RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX = -2;
@@ -58,7 +58,10 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
     waitToDisconnectFromSerial = false;
     systemIsCalibrated = false;
     calibrationCoeficient = 1.0f;
-
+    
+    _firmwareForBootloaderAvailable = false;
+    _bootloaderController.firmwarePath = getRecordingPath()+FIRMWARE_PATH_FOR_STM32;
+    _portScanningArduinoSerial.setRecordingManager(this);
     _arduinoSerial.getAllPortsList();
 
     std::list<std::string>::iterator list_it;
@@ -73,6 +76,7 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
 	initRecordingDevices();
 
     _arduinoSerial.setRecordingManager(this);
+
 
     _portScanningArduinoSerial.startScanningForArduinos(&_arduinoSerial);
 
@@ -2614,6 +2618,52 @@ SampleBuffer *RecordingManager::sampleBuffer(int virtualDeviceIndex) {
 	assert((unsigned int)device < _devices.size() && (unsigned int)channel < _devices[device].sampleBuffers.size());
 	SampleBuffer *result = &_devices[device].sampleBuffers[channel];
 	return result;
+}
+
+#pragma mark - Bootloader
+
+void RecordingManager::checkIfFirmwareIsAvailableForBootloader()
+{
+    _firmwareForBootloaderAvailable = _bootloaderController.isFirmwareAvailable();
+}
+
+void RecordingManager::putBoardInBootloaderMode()
+{
+    if(serialMode())
+    {
+        _bootloaderController.stage  = BOOTLOADER_STAGE_INITIALIZED;
+        shouldStartFirmwareUpdatePresentation = true;
+        _arduinoSerial.sendMessageToPutBoardIntoBootloaderMode();
+    }
+}
+
+
+ #ifdef _WIN32
+    void RecordingManager::startBootloaderProcess(std::string nameOfThePort, void * portHandle)
+    {
+        _bootloaderController.portName = nameOfThePort;
+        _bootloaderController.portHandle = portHandle;
+        _bootloaderController.startUpdateProcess();
+    }
+#else
+    void RecordingManager::startBootloaderProcess(std::string nameOfThePort, int portHandle)
+    {
+        _bootloaderController.portName = nameOfThePort;
+        _bootloaderController.portHandle = portHandle;
+        _bootloaderController.startUpdateProcess();
+    }
+#endif
+
+
+bool RecordingManager::firmwareUpdateShouldBeActive()
+{
+    return serialMode() && _firmwareForBootloaderAvailable && _arduinoSerial.currentPort.deviceType==ArduinoSerial::humansb;
+}
+
+int RecordingManager::bootloaderState()
+{
+    
+    return _bootloaderController.stage;
 }
 
 #pragma mark - Joystick related

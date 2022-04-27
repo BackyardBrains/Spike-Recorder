@@ -111,6 +111,7 @@ namespace BackyardBrains {
         void checkAllPortsForArduino(ArduinoSerial * workingArduinoRef);
         void askForBoardType();
         void askForExpansionBoardType();
+        void sendMessageToPutBoardIntoBootloaderMode();
         void setBaudRate(int baudRate);
         int getBaudRate(){return currentTestingBaudRate;}
 
@@ -182,7 +183,7 @@ namespace BackyardBrains {
             HANDLE port_handle;
             COMMCONFIG port_cfg_orig;
             COMMCONFIG port_cfg;
-            void enumerateSerialPortsFriendlyNames();
+            void enumerateSerialPortsFriendlyNames( std::string& portForBootloader);
         #endif
         bool _justScanning;
         int currentAddOnBoard;
