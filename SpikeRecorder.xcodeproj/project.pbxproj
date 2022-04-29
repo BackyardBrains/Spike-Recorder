@@ -97,6 +97,9 @@
 		85AB394727F7176400213B9F /* BYBBootloaderVO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85AB394227F7176400213B9F /* BYBBootloaderVO.cpp */; };
 		85AB394B27F71B9300213B9F /* BYBBootloaderController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85AB394927F71B9300213B9F /* BYBBootloaderController.cpp */; };
 		85AB395128004AA800213B9F /* FirmwareUpdateView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85AB394F28004AA800213B9F /* FirmwareUpdateView.cpp */; };
+		85DAEEA1281949F70091BD08 /* WavTxtRecorder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85DAEE9F281949F70091BD08 /* WavTxtRecorder.cpp */; };
+		85DAEEA428195DFA0091BD08 /* edflib.c in Sources */ = {isa = PBXBuildFile; fileRef = 85DAEEA328195DFA0091BD08 /* edflib.c */; };
+		85DAEEA7281986FA0091BD08 /* EdfRecorder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85DAEEA5281986FA0091BD08 /* EdfRecorder.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -354,6 +357,12 @@
 		85AB394A27F71B9300213B9F /* BYBBootloaderController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BYBBootloaderController.h; sourceTree = "<group>"; };
 		85AB394F28004AA800213B9F /* FirmwareUpdateView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FirmwareUpdateView.cpp; path = src/FirmwareUpdateView.cpp; sourceTree = SOURCE_ROOT; };
 		85AB395028004AA800213B9F /* FirmwareUpdateView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FirmwareUpdateView.h; path = src/FirmwareUpdateView.h; sourceTree = SOURCE_ROOT; };
+		85DAEE9F281949F70091BD08 /* WavTxtRecorder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WavTxtRecorder.cpp; sourceTree = "<group>"; };
+		85DAEEA0281949F70091BD08 /* WavTxtRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WavTxtRecorder.h; sourceTree = "<group>"; };
+		85DAEEA228195DFA0091BD08 /* edflib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = edflib.h; sourceTree = "<group>"; };
+		85DAEEA328195DFA0091BD08 /* edflib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = edflib.c; sourceTree = "<group>"; };
+		85DAEEA5281986FA0091BD08 /* EdfRecorder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EdfRecorder.cpp; sourceTree = "<group>"; };
+		85DAEEA6281986FA0091BD08 /* EdfRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EdfRecorder.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -577,6 +586,10 @@
 				248E58A51AAE19570011707F /* SpikeSorter.h */,
 				1C11473D1D8EE07500BDA6DA /* AudioInputConfig.cpp */,
 				1C11473E1D8EE07500BDA6DA /* AudioInputConfig.h */,
+				85DAEE9F281949F70091BD08 /* WavTxtRecorder.cpp */,
+				85DAEEA0281949F70091BD08 /* WavTxtRecorder.h */,
+				85DAEEA5281986FA0091BD08 /* EdfRecorder.cpp */,
+				85DAEEA6281986FA0091BD08 /* EdfRecorder.h */,
 			);
 			name = engine;
 			path = src/engine;
@@ -698,6 +711,8 @@
 		24E8E6E81BD95DD9003386A6 /* libraries */ = {
 			isa = PBXGroup;
 			children = (
+				85DAEEA328195DFA0091BD08 /* edflib.c */,
+				85DAEEA228195DFA0091BD08 /* edflib.h */,
 				24E8E6E91BD95DD9003386A6 /* tinyxml2.cpp */,
 				24E8E6EA1BD95DD9003386A6 /* tinyxml2.h */,
 			);
@@ -808,10 +823,12 @@
 				24079FA71AB1C73600820291 /* ArduinoSerial.cpp in Sources */,
 				248BA1F81B3E42D500EEB5E4 /* SwitchLayout.cpp in Sources */,
 				248E58FA1AAE19570011707F /* Label.cpp in Sources */,
+				85DAEEA7281986FA0091BD08 /* EdfRecorder.cpp in Sources */,
 				24F40AB31ACEA94700B3CCE1 /* HIDUsbManager.cpp in Sources */,
 				248E58E31AAE19570011707F /* AnalysisView.cpp in Sources */,
 				248E59021AAE19570011707F /* PushButton.cpp in Sources */,
 				248E58E81AAE19570011707F /* FileRecorder.cpp in Sources */,
+				85DAEEA428195DFA0091BD08 /* edflib.c in Sources */,
 				1CC7E1FE1DF7089500841669 /* HorizontalNumberPicker.cpp in Sources */,
 				248E58FB1AAE19570011707F /* LayoutItem.cpp in Sources */,
 				248E58F61AAE19570011707F /* BoxLayout.cpp in Sources */,
@@ -833,6 +850,7 @@
 				1CC7E1F81DF1C1E100841669 /* HorizontalColorPicker.cpp in Sources */,
 				248E58E61AAE19570011707F /* ConfigView.cpp in Sources */,
 				1C11473F1D8EE07500BDA6DA /* AudioInputConfig.cpp in Sources */,
+				85DAEEA1281949F70091BD08 /* WavTxtRecorder.cpp in Sources */,
 				2421F09C1ACFDF5100927F19 /* Plot.cpp in Sources */,
 				245BF6FB1CAAA024004BEA8C /* HighPassFilter.cpp in Sources */,
 				248BA1F51B3E42AD00EEB5E4 /* ThresholdPanel.cpp in Sources */,
