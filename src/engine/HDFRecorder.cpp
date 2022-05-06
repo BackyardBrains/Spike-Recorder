@@ -21,6 +21,13 @@ const H5std_string DATASET_NAME_EVENTS("events");
 
 namespace BackyardBrains {
 
+    struct EventStructure
+    {
+        float time;
+        const char* name;
+    };
+
+
     HDFRecorder::HDFRecorder(RecordingManager &manager): _manager(manager) {
        
         fileHandle = 0; 
@@ -86,8 +93,41 @@ namespace BackyardBrains {
         audioDataset = new DataSet(fileHandle->createDataSet(DATASET_NAME_AUDIO, PredType::NATIVE_SHORT, dataSpaceDefinition, cparms));
         
         
-        //eventDataset = new DataSet(fileHandle->createDataSet(DATASET_NAME_EVENTS, PredType::NATIVE_SHORT, dataSpaceDefinition, cparms));
         
+        // compound description
+        CompType eventType(sizeof(EventStructure));
+        eventType.insertMember("time", HOFFSET(EventStructure, time), PredType::NATIVE_FLOAT);
+        
+        H5::StrType stype(H5::PredType::C_S1, H5T_VARIABLE);
+        
+        eventType.insertMember("name", HOFFSET(EventStructure, name), stype);
+        // value to be stored
+        std::string stdString = "First event";
+        // place holder
+        EventStructure eventToSave;
+        // not working: ctest.value= test.c_str()
+        eventToSave.time = 3.14f;
+        eventToSave.name = strdup(stdString.c_str());
+        // data set creation
+        //hsize_t dim[] = {1};
+        //const auto d = r.createDataSet("test",c,DataSpace(1,dim));
+        //d.write(&ctest,c);
+        
+        //Create the data space for eventss
+        RANK = 2;
+        hsize_t   dime[2]    = {1, 1}; // dataset dimensions at creation
+        hsize_t   maxdime[2] = {1, H5S_UNLIMITED};
+        DataSpace dataSpaceDefinitionForEvent(RANK, dime, maxdime);
+        
+        
+        //Modify dataset creation properties, i.e. enable chunking.
+        DSetCreatPropList cparme;
+        hsize_t chunk_dime[2]={1,1};
+        cparme.setChunk(RANK, chunk_dime);
+
+        
+        eventDataset = new DataSet(fileHandle->createDataSet(DATASET_NAME_EVENTS, eventType, dataSpaceDefinitionForEvent, cparme));
+        eventDataset->write( &eventToSave, eventType );
         
         return true;
     }
@@ -98,7 +138,7 @@ namespace BackyardBrains {
         
         delete audioDataset;
         delete fileHandle;
-        //delete eventDataset;
+        delete eventDataset;
         audioDataset = 0;
         fileHandle = 0;
         delete[] mainBuffer;
