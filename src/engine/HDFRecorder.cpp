@@ -97,16 +97,14 @@ namespace BackyardBrains {
         // compound description
         CompType eventType(sizeof(EventStructure));
         eventType.insertMember("time", HOFFSET(EventStructure, time), PredType::NATIVE_FLOAT);
-        
         H5::StrType stype(H5::PredType::C_S1, H5T_VARIABLE);
-        
         eventType.insertMember("name", HOFFSET(EventStructure, name), stype);
         // value to be stored
-        std::string stdString = "First event";
+        std::string stdString = "Start recording";
         // place holder
         EventStructure eventToSave;
         // not working: ctest.value= test.c_str()
-        eventToSave.time = 3.14f;
+        eventToSave.time = 0.00f;
         eventToSave.name = strdup(stdString.c_str());
         // data set creation
         //hsize_t dim[] = {1};
@@ -116,7 +114,7 @@ namespace BackyardBrains {
         //Create the data space for eventss
         RANK = 2;
         hsize_t   dime[2]    = {1, 1}; // dataset dimensions at creation
-        hsize_t   maxdime[2] = {1, H5S_UNLIMITED};
+        hsize_t   maxdime[2] = {H5S_UNLIMITED,1};
         DataSpace dataSpaceDefinitionForEvent(RANK, dime, maxdime);
         
         
@@ -134,7 +132,63 @@ namespace BackyardBrains {
 
     void HDFRecorder::stop(const MetadataChunk *meta) {
         
+        
+        
+        CompType eventType(sizeof(EventStructure));
+        eventType.insertMember("time", HOFFSET(EventStructure, time), PredType::NATIVE_FLOAT);
+        H5::StrType stype(H5::PredType::C_S1, H5T_VARIABLE);
+        eventType.insertMember("name", HOFFSET(EventStructure, name), stype);
+        // value to be stored
+        std::string stdString = "Start recording";
+        // place holder
+        EventStructure eventToSave;
+        // not working: ctest.value= test.c_str()
+        
+        
+        //meta->markers
+        std::list<std::pair<std::string, int64_t> >::const_iterator it;
+        for(it = meta->markers.begin(); it != meta->markers.end(); it++)
+        {
+            if(it->second - _startPos >= 0)
+            {
+                // it->first.c_str()
+                //(it->second-_startPos)/(float)_manager.sampleRate());
+               // edfwrite_annotation_latin1(currentHandle, (int)(((it->second-_startPos)/(float)_manager.sampleRate())*10000), -1, it->first.c_str());
+                
+                
+                DataSpace currentSpace = eventDataset->getSpace();
+                int RANK = 2;
+                hsize_t currentSize[RANK];
 
+                currentSpace.getSimpleExtentDims(currentSize);
+                hsize_t lenghtOfExistingData = currentSize[0];
+                hsize_t size[RANK];
+                size[0] = lenghtOfExistingData+ 1;
+                size[1] = 1;
+                
+                eventDataset->extend(size);
+                
+                
+                
+                
+                hsize_t dims1[2]; // data1 dimensions
+                dims1[0] = 1;
+                dims1[1] = 1;
+                DataSpace memDataSpace(2, dims1);
+                // Select a hyperslab.
+                hsize_t offset[2];
+                offset[0]=lenghtOfExistingData;
+                offset[1]= 0;
+                DataSpace fileDataSpace = eventDataset->getSpace();
+                fileDataSpace.selectHyperslab(H5S_SELECT_SET, dims1, offset);
+
+                 // Write the data to the hyperslab.
+                eventToSave.time = ((float)(it->second-_startPos))/((float)_manager.sampleRate());
+                eventToSave.name = strdup(it->first.c_str());
+               
+                eventDataset->write(&eventToSave, eventType, memDataSpace, fileDataSpace);
+            }
+        }
         
         delete audioDataset;
         delete fileHandle;
@@ -142,20 +196,7 @@ namespace BackyardBrains {
         audioDataset = 0;
         fileHandle = 0;
         delete[] mainBuffer;
-        //meta->markers
-   /*     std::list<std::pair<std::string, int64_t> >::const_iterator it;
-        for(it = meta->markers.begin(); it != meta->markers.end(); it++)
-        {
-            if(it->second - _startPos >= 0)
-            {
-                // it->first.c_str()
-                //(it->second-_startPos)/(float)_manager.sampleRate());
-                edfwrite_annotation_latin1(currentHandle, (int)(((it->second-_startPos)/(float)_manager.sampleRate())*10000), -1, it->first.c_str());
-            }
-        }
-        edfclose_file(currentHandle);
-        currentHandle=-1;
-        delete[] mainBuffer;*/
+        
     }
 
 
@@ -241,26 +282,6 @@ namespace BackyardBrains {
         }
 
         _oldPos = _oldPos+_manager.sampleRate();
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-
-        
-        
-        
-        
-        
-        
-        
     }
 
 }//namespace BYB
