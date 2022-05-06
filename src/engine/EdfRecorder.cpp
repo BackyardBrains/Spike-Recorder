@@ -10,6 +10,9 @@
 #include "edflib.h"
 #include "WavTxtRecorder.h"
 
+#include <iostream>
+#include <string>
+
 namespace BackyardBrains {
 
     EdfRecorder::EdfRecorder(RecordingManager &manager): _manager(manager) {
@@ -115,10 +118,8 @@ namespace BackyardBrains {
         return true;
     }
 
-    void EdfRecorder::stop(const MetadataChunk *meta) {
-        
-        
-        
+    void EdfRecorder::stop(const MetadataChunk *meta)
+    {
         
         //meta->markers
         std::list<std::pair<std::string, int64_t> >::const_iterator it;

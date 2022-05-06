@@ -15,8 +15,8 @@ namespace BackyardBrains {
 
 
 FileRecorder::FileRecorder(RecordingManager &manager) {
-#ifdef USE_EDF
-    recorder = new EdfRecorder(manager);
+#ifdef USE_HDF
+    recorder = new HDFRecorder(manager);
 #else
     recorder = new WavTxtRecorder(manager);
 #endif

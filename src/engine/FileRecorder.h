@@ -4,9 +4,9 @@
 #include "RecordingManager.h"
 #include <fstream>
 #include "WavTxtRecorder.h"
-#include "EdfRecorder.h"
+#include "HDFRecorder.h"
 
-#define USE_EDF 1
+#define USE_HDF 1
 
 namespace BackyardBrains {
 
@@ -33,8 +33,8 @@ public:
 private:
 	
  
-#ifdef USE_EDF
-    EdfRecorder * recorder;
+#ifdef USE_HDF
+    HDFRecorder * recorder;
 #else
     WavTxtRecorder *recorder;
 #endif
