@@ -175,6 +175,7 @@
 		85E7C8EB2825164600025C72 /* libhdf5_tools.300.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 85E7C8E92825163F00025C72 /* libhdf5_tools.300.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		85E7C8EC2825164F00025C72 /* libhdf5_tools.300.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 85E7C8E92825163F00025C72 /* libhdf5_tools.300.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		85E7C8EF2825175400025C72 /* HDFRecorder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85E7C8ED2825175400025C72 /* HDFRecorder.cpp */; };
+		85E7C8F2282D04D700025C72 /* HDFReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85E7C8F0282D04D700025C72 /* HDFReader.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -514,6 +515,8 @@
 		85E7C8E92825163F00025C72 /* libhdf5_tools.300.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libhdf5_tools.300.dylib; path = support/HDF5/1.13.1/lib/libhdf5_tools.300.dylib; sourceTree = "<group>"; };
 		85E7C8ED2825175400025C72 /* HDFRecorder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = HDFRecorder.cpp; sourceTree = "<group>"; };
 		85E7C8EE2825175400025C72 /* HDFRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HDFRecorder.h; sourceTree = "<group>"; };
+		85E7C8F0282D04D700025C72 /* HDFReader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = HDFReader.cpp; sourceTree = "<group>"; };
+		85E7C8F1282D04D700025C72 /* HDFReader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HDFReader.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -773,6 +776,8 @@
 				85DAEEA6281986FA0091BD08 /* EdfRecorder.h */,
 				85E7C8ED2825175400025C72 /* HDFRecorder.cpp */,
 				85E7C8EE2825175400025C72 /* HDFRecorder.h */,
+				85E7C8F0282D04D700025C72 /* HDFReader.cpp */,
+				85E7C8F1282D04D700025C72 /* HDFReader.h */,
 			);
 			name = engine;
 			path = src/engine;
@@ -1092,6 +1097,7 @@
 				85E7C8EF2825175400025C72 /* HDFRecorder.cpp in Sources */,
 				248E58EB1AAE19570011707F /* SpikeSorter.cpp in Sources */,
 				24F40AB81ACEAD1600B3CCE1 /* hid.c in Sources */,
+				85E7C8F2282D04D700025C72 /* HDFReader.cpp in Sources */,
 				2421F08F1ACFDDBD00927F19 /* FileReadUtil.cpp in Sources */,
 				248E58ED1AAE19570011707F /* Game.cpp in Sources */,
 				2421F0931ACFDDDA00927F19 /* BASSErrors.cpp in Sources */,

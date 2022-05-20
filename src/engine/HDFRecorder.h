@@ -17,10 +17,30 @@
 #include "RecordingManager.h"
 #include <fstream>
 #include "H5Cpp.h"
+
+const H5std_string DATASET_NAME_AUDIO("signal");
+const H5std_string DATASET_NAME_EVENTS("events");
+const H5std_string DATASET_NAME_INFO("info");
+#define HDF_METADATA_SAMPLERATE "Sample rate [Hz]"
+#define HDF_METADATA_FILE_VERSION "File Version"
+#define HDF_METADATA_FILE_VERSION_VALUE 100.0f
+
 using namespace H5;
 namespace BackyardBrains {
 
 class RecordingManager;
+struct EventStructure
+{
+    float time;
+    const char* name;
+};
+
+struct MetaParameterStructure
+{
+    const char* name;
+    float value;
+};
+
 
 class HDFRecorder {
 public:
@@ -44,9 +64,11 @@ private:
     RecordingManager &_manager;
     short * mainBuffer;
     void initBuffer(int sampleRate, int numberOfChannels);
-
+    void addMetaParameter(const char* name, float value);
+    
     DataSet* audioDataset;
     DataSet* eventDataset;
+    DataSet* metaParDataset;
     std::string _filename;
     H5File* fileHandle;
     int64_t _startPos;

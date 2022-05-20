@@ -5,8 +5,41 @@
 #include <cassert>
 #include <cstring>
 #include <iostream>
-
+#include "HDFReader.h"
 namespace BackyardBrains {
+
+HDFReader hdfReader;
+
+bool openAnyFile(const char *file, HSTREAM &handle, int &nchan, int &samplerate, int &bytespersample)
+{
+    std::string filenameAndPath(file);
+    std::string lowerCasePath;
+
+      // Allocate the destination space
+    lowerCasePath.resize(filenameAndPath.size());
+
+      // Convert the source string to lower case
+      // storing the result in destination string
+    std::transform(filenameAndPath.begin(),
+                     filenameAndPath.end(),
+                     lowerCasePath.begin(),
+                     ::tolower);
+    if(lowerCasePath.find(".wav") != std::string::npos)
+    {
+        return OpenWAVFile(file, handle, nchan, samplerate, bytespersample);
+    }
+    else
+    {
+        return openHDF5File(file, handle, nchan, samplerate, bytespersample);
+    }
+
+    return true;
+}
+bool openHDF5File(const char *file, HSTREAM &handle, int &nchan, int &samplerate, int &bytespersample)
+{
+    handle = 0;
+    return hdfReader.openHDF5(file, nchan, samplerate, bytespersample);;
+}
 
 bool OpenWAVFile(const char *file, HSTREAM &handle, int &nchan, int &samplerate, int &bytespersample) {
 	handle = BASS_StreamCreateFile(false, file, 0, 0, BASS_STREAM_DECODE);
@@ -24,13 +57,67 @@ bool OpenWAVFile(const char *file, HSTREAM &handle, int &nchan, int &samplerate,
         bytespersample = 2;
 		//return false;
 	}
-	if(bytespersample >= 3)
+    
+    if(bytespersample >= 3)//probably float sample
+    {
+       
+        handle = BASS_StreamCreateFile(false, file, 0, 0, BASS_SAMPLE_FLOAT | BASS_STREAM_DECODE);
+        if(handle == 0) {
+            Log::error("Bass Error: Failed to load float file '%s': %s", file, GetBassStrError());
+            return false;
+        }
+
+        BASS_ChannelGetInfo(handle, &info);
 		bytespersample = 4; // bass converts everything it doesn’t support.
+    }
 
 	nchan = info.chans;
 	samplerate = info.freq;
 
 	return true;
+}
+
+const char * readEventsAndSpikesForAnyFile(HSTREAM handle)
+{
+    if(handle)
+    {
+        return readEventsAndSpikesForWav(handle);
+    }
+    else
+    {
+        readEventsAndSpikesForHDF5File();
+        return nil;
+    }
+}
+
+void readEventsAndSpikesForHDF5File()
+{
+    hdfReader.readEvents();
+    hdfReader.readSpikes();
+}
+
+
+const char * readEventsAndSpikesForWav(HSTREAM handle)
+{
+    return BASS_ChannelGetTags(handle, BASS_TAG_RIFF_INFO);
+}
+
+bool readAnyFile(std::vector<std::vector<int16_t> > &channels, int len, HSTREAM handle, int nchan, int bytespersample)
+{
+    if(handle)
+    {
+        return ReadWAVFile(channels, len, handle, nchan, bytespersample);
+    }
+    else
+    {
+        return readHDF5File(channels, len/bytespersample/nchan);
+    }
+}
+
+
+bool readHDF5File(std::vector<std::vector<int16_t> > &channels, int len)
+{
+    return hdfReader.readFile(channels, len);
 }
 
 bool ReadWAVFile(std::vector<std::vector<int16_t> > &channels, int len, HSTREAM handle, int nchan, int bytespersample) {
@@ -74,5 +161,19 @@ bool ReadWAVFile(std::vector<std::vector<int16_t> > &channels, int len, HSTREAM 
 	return true;
 }
 	
+
+int64_t anyFilesLength(HSTREAM handle, int bytespersample, int channels)
+{
+    if(handle)
+    {
+        return  BASS_ChannelGetLength(handle, BASS_POS_BYTE)/bytespersample/channels;
+    }
+    else
+    {
+        return hdfReader.lengthOfFileInSamples();
+    }
 }
+
+
+}//namespace BYB
 

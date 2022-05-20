@@ -15,17 +15,9 @@
 
 
 
-const H5std_string FILE_NAME("h5tutr_dset.h5");
-const H5std_string DATASET_NAME_AUDIO("signal");
-const H5std_string DATASET_NAME_EVENTS("events");
 
 namespace BackyardBrains {
 
-    struct EventStructure
-    {
-        float time;
-        const char* name;
-    };
 
 
     HDFRecorder::HDFRecorder(RecordingManager &manager): _manager(manager) {
@@ -85,6 +77,9 @@ namespace BackyardBrains {
         chunk_dims[1] = _manager.sampleRate();
         cparms.setChunk(RANK, chunk_dims);
 
+        
+        cparms.setDeflate(6);
+        
         // Set fill value
         short fill_val = 0;
         cparms.setFillValue(PredType::NATIVE_SHORT, &fill_val);
@@ -106,10 +101,7 @@ namespace BackyardBrains {
         // not working: ctest.value= test.c_str()
         eventToSave.time = 0.00f;
         eventToSave.name = strdup(stdString.c_str());
-        // data set creation
-        //hsize_t dim[] = {1};
-        //const auto d = r.createDataSet("test",c,DataSpace(1,dim));
-        //d.write(&ctest,c);
+
         
         //Create the data space for eventss
         RANK = 2;
@@ -132,6 +124,12 @@ namespace BackyardBrains {
 
     void HDFRecorder::stop(const MetadataChunk *meta) {
         
+        
+        IntType int_type(PredType::STD_I32LE);
+        DataSpace att_space(H5S_SCALAR);
+        Attribute att = audioDataset->createAttribute(HDF_METADATA_SAMPLERATE, int_type, att_space );
+        int data = _manager.sampleRate();
+        att.write( int_type, &data );
         
         
         CompType eventType(sizeof(EventStructure));
@@ -196,6 +194,112 @@ namespace BackyardBrains {
         audioDataset = 0;
         fileHandle = 0;
         delete[] mainBuffer;
+        
+        
+        
+        
+        
+        
+        //-------------- reopen and update file ------
+        
+    
+        // Open an existing file and dataset.
+       
+        H5File* tempFileHandle = new H5File(_filename.c_str(), H5F_ACC_RDWR);
+       //test just if we can load audio
+        DataSet dataset = tempFileHandle->openDataSet(DATASET_NAME_AUDIO);
+
+        
+        // compound description
+        CompType metaParamType(sizeof(MetaParameterStructure));
+        H5::StrType stringtype(H5::PredType::C_S1, H5T_VARIABLE);
+        metaParamType.insertMember("name", HOFFSET(MetaParameterStructure, name), stringtype);
+        metaParamType.insertMember("value", HOFFSET(MetaParameterStructure, value), PredType::NATIVE_FLOAT);
+        
+
+        
+        //Create the data space for eventss
+        int RANK = 2;
+        hsize_t   dime[2]    = {1, 1}; // dataset dimensions at creation
+        hsize_t   maxdime[2] = {H5S_UNLIMITED,1};
+        DataSpace dataSpaceDefinitionForMetaPar(RANK, dime, maxdime);
+        
+        
+        //Modify dataset creation properties, i.e. enable chunking.
+        DSetCreatPropList cparme;
+        hsize_t chunk_dime[2]={1,1};
+        cparme.setChunk(RANK, chunk_dime);
+
+        
+        metaParDataset = new DataSet(tempFileHandle->createDataSet(DATASET_NAME_INFO, metaParamType, dataSpaceDefinitionForMetaPar, cparme));
+        
+       
+        // value to be stored
+        std::string gainString = "Gain";
+        // place holder
+        MetaParameterStructure metaParToSave;
+        metaParToSave.value = 1.23f;
+        metaParToSave.name = strdup(gainString.c_str());
+        
+        metaParDataset->write( &metaParToSave, metaParamType );
+        addMetaParameter(HDF_METADATA_SAMPLERATE, _manager.sampleRate());
+        addMetaParameter(HDF_METADATA_FILE_VERSION, HDF_METADATA_FILE_VERSION_VALUE);
+        addMetaParameter("LPF [Hz]", _manager.highCornerFrequency());
+        addMetaParameter("HPF [Hz]", _manager.lowCornerFrequency());
+        float notchf = 0.0;
+        if(_manager.fiftyHzFilterEnabled())
+        {
+            notchf= 50;
+        }
+        if(_manager.sixtyHzFilterEnabled())
+        {
+            notchf= 60;
+        }
+        addMetaParameter("Notch [Hz]", notchf);
+        
+        delete metaParDataset;
+        delete tempFileHandle;
+    }
+
+    void HDFRecorder::addMetaParameter(const char* name, float value)
+    {
+        
+        CompType metaParamType(sizeof(MetaParameterStructure));
+        H5::StrType stringtype(H5::PredType::C_S1, H5T_VARIABLE);
+        metaParamType.insertMember("name", HOFFSET(MetaParameterStructure, name), stringtype);
+        metaParamType.insertMember("value", HOFFSET(MetaParameterStructure, value), PredType::NATIVE_FLOAT);
+        
+        
+        DataSpace currentSpace = metaParDataset->getSpace();
+        int RANK = 2;
+        hsize_t currentSize[RANK];
+
+        currentSpace.getSimpleExtentDims(currentSize);
+        hsize_t lenghtOfExistingData = currentSize[0];
+        hsize_t size[RANK];
+        size[0] = lenghtOfExistingData+ 1;
+        size[1] = 1;
+        
+        metaParDataset->extend(size);
+        
+        
+        hsize_t dims1[2]; // data1 dimensions
+        dims1[0] = 1;
+        dims1[1] = 1;
+        DataSpace memDataSpace(2, dims1);
+        // Select a hyperslab.
+        hsize_t offset[2];
+        offset[0]=lenghtOfExistingData;
+        offset[1]= 0;
+        DataSpace fileDataSpace = metaParDataset->getSpace();
+        fileDataSpace.selectHyperslab(H5S_SELECT_SET, dims1, offset);
+        
+        // place holder
+        MetaParameterStructure metaParToSave;
+        metaParToSave.value = value;
+        metaParToSave.name = strdup(name);
+
+        metaParDataset->write(&metaParToSave, metaParamType, memDataSpace, fileDataSpace);
         
     }
 
