@@ -6,7 +6,7 @@
 #include "WavTxtRecorder.h"
 #include "HDFRecorder.h"
 
-#define USE_HDF 1
+//#define USE_HDF 1
 
 namespace BackyardBrains {
 

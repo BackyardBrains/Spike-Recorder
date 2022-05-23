@@ -176,6 +176,7 @@
 		85E7C8EC2825164F00025C72 /* libhdf5_tools.300.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 85E7C8E92825163F00025C72 /* libhdf5_tools.300.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		85E7C8EF2825175400025C72 /* HDFRecorder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85E7C8ED2825175400025C72 /* HDFRecorder.cpp */; };
 		85E7C8F2282D04D700025C72 /* HDFReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85E7C8F0282D04D700025C72 /* HDFReader.cpp */; };
+		85E7C8F52837B1EC00025C72 /* miniz.c in Sources */ = {isa = PBXBuildFile; fileRef = 85E7C8F32837B1EC00025C72 /* miniz.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -517,6 +518,8 @@
 		85E7C8EE2825175400025C72 /* HDFRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HDFRecorder.h; sourceTree = "<group>"; };
 		85E7C8F0282D04D700025C72 /* HDFReader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = HDFReader.cpp; sourceTree = "<group>"; };
 		85E7C8F1282D04D700025C72 /* HDFReader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HDFReader.h; sourceTree = "<group>"; };
+		85E7C8F32837B1EC00025C72 /* miniz.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = miniz.c; sourceTree = "<group>"; };
+		85E7C8F42837B1EC00025C72 /* miniz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = miniz.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -929,6 +932,8 @@
 		24E8E6E81BD95DD9003386A6 /* libraries */ = {
 			isa = PBXGroup;
 			children = (
+				85E7C8F32837B1EC00025C72 /* miniz.c */,
+				85E7C8F42837B1EC00025C72 /* miniz.h */,
 				85DAEEA328195DFA0091BD08 /* edflib.c */,
 				85DAEEA228195DFA0091BD08 /* edflib.h */,
 				24E8E6E91BD95DD9003386A6 /* tinyxml2.cpp */,
@@ -1077,6 +1082,7 @@
 				248E58E71AAE19570011707F /* FFTBackend.cpp in Sources */,
 				2421F0991ACFDE0300927F19 /* AnalysisTrainList.cpp in Sources */,
 				24D572A11C8772BD007F4DEB /* AnalysisManager.cpp in Sources */,
+				85E7C8F52837B1EC00025C72 /* miniz.c in Sources */,
 				248E58F51AAE19570011707F /* BitmapFontGL.cpp in Sources */,
 				248E59101AAE1A180011707F /* GLee.c in Sources */,
 				2421F0961ACFDDEF00927F19 /* AnalysisPlots.cpp in Sources */,

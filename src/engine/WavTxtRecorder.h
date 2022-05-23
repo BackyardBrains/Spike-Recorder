@@ -13,6 +13,12 @@
 #include "RecordingManager.h"
 #include <fstream>
 
+typedef unsigned char uint8;
+typedef unsigned short uint16;
+typedef unsigned int uint;
+#define BUF_SIZE (1024 * 1024)
+static uint8 s_inbuf[BUF_SIZE];
+static uint8 s_outbuf[BUF_SIZE];
 /* Metadata Format
  *
  * Spike Recorder saves metadata to the files it exports. This is done to keep
@@ -131,13 +137,16 @@ private:
     RecordingManager &_manager;
     FILE *_file;
     std::string _filename;
-
+    bool ensure_file_exists_and_is_readable(const char *pFilename);
     int64_t _startPos;
     int64_t _oldPos;
     int _nchan;
 
     int16_t *_buf;
     int _bufsize;
+
+    
+
 
     void writeMetadata(const MetadataChunk *meta);
 };
