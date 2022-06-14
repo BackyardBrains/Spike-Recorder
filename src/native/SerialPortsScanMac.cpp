@@ -443,7 +443,7 @@ namespace BackyardBrains {
                 Log::msg("Interesting device IOUSBHostDevice");
                 #endif
             }
-            if (strcmp(deviceName, "STM32L4_Boot") == 0)
+            else if (strcmp(deviceName, "STM32L4_Boot") == 0)
             {
                  #ifdef LOG_USB
                 Log::msg("Found our bootloader for STM32");

@@ -1241,14 +1241,26 @@ void ConfigView::highFilterValueChanged(int hvalue)
     }
 }
 
-
+#define THRESHOLD_FOR_HPF 20
 //
 // Band pass filtering value changed
 //
 void ConfigView::lowFilterValueChanged(int lvalue)
 {
     Log::msg("Low filter value changed");
+    if(lowValueTI->getInt()<THRESHOLD_FOR_HPF && lvalue>=THRESHOLD_FOR_HPF)
+    {
+        _manager.setSerialHardwareHPF(true);
+        //_manager.setSerialHardwareGain(false);
+    }
+    if(lowValueTI->getInt()>=THRESHOLD_FOR_HPF && lvalue<THRESHOLD_FOR_HPF)
+    {
+        
+        _manager.setSerialHardwareHPF(false);
+        //_manager.setSerialHardwareGain(true);
+    }
     lowValueTI->setInt(lvalue);
+    
      if(lvalue<=0)
     {
         Log::msg("First if");

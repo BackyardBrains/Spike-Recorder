@@ -132,6 +132,9 @@ namespace BackyardBrains {
         void releaseKey(int keyIndex);
 
         void closeCurrentMainSerial(void);
+        
+        void setGain(bool active);
+        void setHPF(bool active);
     private:
         RecordingManager *_manager;
         bool _shouldRestartDevice;

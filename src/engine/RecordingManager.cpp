@@ -723,6 +723,23 @@ void RecordingManager::closeSerial()
 	//_arduinoSerial.closeSerial();
 	_serialMode = false;
 }
+    
+void  RecordingManager::setSerialHardwareGain(bool active)
+{
+    if(_serialMode)
+    {
+        _arduinoSerial.setGain(active);
+    }
+}
+    
+    
+void RecordingManager::setSerialHardwareHPF(bool active)
+{
+    if(_serialMode)
+    {
+        _arduinoSerial.setHPF(active);
+    }
+}
 
 #pragma mark - File device
 

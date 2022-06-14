@@ -153,6 +153,8 @@ public:
     std::string serialError;
     void refreshSerialPorts();
     void resetCurrentSerial();
+    void setSerialHardwareGain(bool active);
+    void setSerialHardwareHPF(bool active);
 
     //HID functions
     bool hidMode() const {return _hidMode;}
