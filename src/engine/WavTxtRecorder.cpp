@@ -162,7 +162,7 @@ void WavTxtRecorder::stop(const MetadataChunk *meta) {
 
 
       // Open input file.
-
+/*
     size_t dotpos = _filename.find_last_of('.');
     std::string zipfilename = _filename.substr(0,dotpos) + ".byb";
 
@@ -207,7 +207,7 @@ void WavTxtRecorder::stop(const MetadataChunk *meta) {
     mz_bool test = mz_zip_add_mem_to_archive_file_in_place(zipfilename.c_str(), fileInsideZipName.c_str(), testsstring.c_str(), testsstring.length(),"no comment", (uint16)strlen("no comment"), MZ_BEST_COMPRESSION);
     
     //------------ END OF ZIP ------------------
-
+*/
 }
 
 static void write_subchunk(const char *id, const std::string &content, FILE *f) {
