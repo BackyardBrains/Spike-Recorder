@@ -5,10 +5,10 @@
 #include <cassert>
 #include <cstring>
 #include <iostream>
-#include "HDFReader.h"
+#include <algorithm>
 namespace BackyardBrains {
 
-HDFReader hdfReader;
+
 
 bool openAnyFile(const char *file, HSTREAM &handle, int &nchan, int &samplerate, int &bytespersample)
 {
@@ -28,18 +28,10 @@ bool openAnyFile(const char *file, HSTREAM &handle, int &nchan, int &samplerate,
     {
         return OpenWAVFile(file, handle, nchan, samplerate, bytespersample);
     }
-    else
-    {
-        return openHDF5File(file, handle, nchan, samplerate, bytespersample);
-    }
 
     return true;
 }
-bool openHDF5File(const char *file, HSTREAM &handle, int &nchan, int &samplerate, int &bytespersample)
-{
-    handle = 0;
-    return hdfReader.openHDF5(file, nchan, samplerate, bytespersample);;
-}
+
 
 bool OpenWAVFile(const char *file, HSTREAM &handle, int &nchan, int &samplerate, int &bytespersample) {
 	handle = BASS_StreamCreateFile(false, file, 0, 0, BASS_STREAM_DECODE);
@@ -83,18 +75,9 @@ const char * readEventsAndSpikesForAnyFile(HSTREAM handle)
     {
         return readEventsAndSpikesForWav(handle);
     }
-    else
-    {
-        readEventsAndSpikesForHDF5File();
-        return nil;
-    }
+    return 0;
 }
 
-void readEventsAndSpikesForHDF5File()
-{
-    hdfReader.readEvents();
-    hdfReader.readSpikes();
-}
 
 
 const char * readEventsAndSpikesForWav(HSTREAM handle)
@@ -108,17 +91,10 @@ bool readAnyFile(std::vector<std::vector<int16_t> > &channels, int len, HSTREAM 
     {
         return ReadWAVFile(channels, len, handle, nchan, bytespersample);
     }
-    else
-    {
-        return readHDF5File(channels, len/bytespersample/nchan);
-    }
+    return 0;
 }
 
 
-bool readHDF5File(std::vector<std::vector<int16_t> > &channels, int len)
-{
-    return hdfReader.readFile(channels, len);
-}
 
 bool ReadWAVFile(std::vector<std::vector<int16_t> > &channels, int len, HSTREAM handle, int nchan, int bytespersample) {
 	channels.resize(nchan);
@@ -168,10 +144,7 @@ int64_t anyFilesLength(HSTREAM handle, int bytespersample, int channels)
     {
         return  BASS_ChannelGetLength(handle, BASS_POS_BYTE)/bytespersample/channels;
     }
-    else
-    {
-        return hdfReader.lengthOfFileInSamples();
-    }
+    return 0;
 }
 
 

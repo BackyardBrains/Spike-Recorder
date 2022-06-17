@@ -4,9 +4,11 @@
 #include "RecordingManager.h"
 #include <fstream>
 #include "WavTxtRecorder.h"
-#include "HDFRecorder.h"
-
 //#define USE_HDF 1
+#ifdef USE_HDF
+#include "HDFRecorder.h"
+#endif
+
 
 namespace BackyardBrains {
 
