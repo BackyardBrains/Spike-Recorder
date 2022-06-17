@@ -17,6 +17,8 @@
 #endif
 #define BOARD_WITH_JOYSTICK 5
 #define FIRMWARE_PATH_FOR_STM32 "/firmwareUpdate.hex"
+#define HPF_HUMAN_SP_THRESHOLD 20
+#define LPF_HUMAN_SP_THRESHOLD 70
 namespace BackyardBrains {
 
 const int RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX = -2;
@@ -2230,7 +2232,8 @@ int RecordingManager::lowCornerFrequency()
 void RecordingManager::enableLowPassFilterWithCornerFreq(float cornerFreq)
 {
 
-
+    float oldLPFCornerFreq =_lowCornerFreq;
+    
     if(cornerFreq<0)
     {
         cornerFreq = 0.0f;
@@ -2258,11 +2261,33 @@ void RecordingManager::enableLowPassFilterWithCornerFreq(float cornerFreq)
     {
         _lowPassFilterEnabled = true;
     }
+    
+
+    if(oldLPFCornerFreq>=LPF_HUMAN_SP_THRESHOLD)
+    {
+        if(_lowCornerFreq<LPF_HUMAN_SP_THRESHOLD)
+        {
+            //turn ON gain
+            setSerialHardwareGain(true);
+        }
+        
+    }
+    else
+    {
+        if(_lowCornerFreq>=LPF_HUMAN_SP_THRESHOLD)
+        {
+            //turn OFF gain
+            setSerialHardwareGain(false);
+            
+        }
+    }
+    
 }
 
 void RecordingManager::enableHighPassFilterWithCornerFreq(float cornerFreq)
 {
 
+    float oldHPFCornerFreq =_highCornerFreq;
     _highCornerFreq = cornerFreq;
     if(cornerFreq<0)
     {
@@ -2290,6 +2315,25 @@ void RecordingManager::enableHighPassFilterWithCornerFreq(float cornerFreq)
     {
         _highPassFilterEnabled = true;
        // startRemovingMeanValue();
+    }
+    
+
+    if(oldHPFCornerFreq>=HPF_HUMAN_SP_THRESHOLD)
+    {
+        if(_highCornerFreq<HPF_HUMAN_SP_THRESHOLD)
+        {
+            //turn OFF filter
+            setSerialHardwareHPF(false);
+        }
+        
+    }
+    else
+    {
+        if(_highCornerFreq>=20)
+        {
+            //turn ON filter
+             setSerialHardwareHPF(true);
+        }
     }
 }
 
@@ -3101,6 +3145,26 @@ void RecordingManager::loadFilterSettings()
         enableHighPassFilterWithCornerFreq(iteratorPointerToCurrentSerialAudioConfig->filterHighPass);
         enableLowPassFilterWithCornerFreq(iteratorPointerToCurrentSerialAudioConfig->filterLowPass);
 
+        if(_lowCornerFreq<LPF_HUMAN_SP_THRESHOLD)
+        {
+            //turn ON gain
+            setSerialHardwareGain(true);
+        }
+        else
+        {
+            setSerialHardwareGain(false);
+        }
+        
+        if(_highCornerFreq<HPF_HUMAN_SP_THRESHOLD)
+        {
+            //turn OFF filter
+            setSerialHardwareHPF(false);
+        }
+        else
+        {
+            setSerialHardwareHPF(true);
+        }
+        
         if(iteratorPointerToCurrentSerialAudioConfig->filter60Hz)
         {
             enable60HzFilter();

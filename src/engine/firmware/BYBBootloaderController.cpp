@@ -117,7 +117,7 @@ namespace BackyardBrains {
         #endif
             //printf("%s", contents);
             parseLineOfHex(contents);
-            free(contents);
+            //free(contents);
 
         }
 
@@ -141,20 +141,24 @@ namespace BackyardBrains {
         {
             printf("Bootloader error. Received %c instead of g\n", tempBuffer[0]);
         }
-        tempBuffer[0] = 'n';
-        writeDataToSerialPort(tempBuffer, 1);
-        
-        while((readLength = readDataFromSerialPort(tempBuffer))<=0)
-        {}
-        if(tempBuffer[0]=='n')
+       
+       
+        while(1)
         {
-            printf("Received n\n");
+            tempBuffer[0] = 'n';
+            writeDataToSerialPort(tempBuffer, 1);
+            while((readLength = readDataFromSerialPort(tempBuffer))<=0)
+            {}
+            if(tempBuffer[0]=='n')
+            {
+                printf("Received n\n");
+                break;
+            }
+            else
+            {
+                printf("Bootloader error. Received %c instead of n\n", tempBuffer[0]);
+            }
         }
-        else
-        {
-            printf("Bootloader error. Received %c instead of n\n", tempBuffer[0]);
-        }
-        
         uint32_t programSize = (uint32_t)dataFromFile.size();
         tempBuffer[0] = programSize & 0x000000FF;
         tempBuffer[1] = ((programSize & 0x0000FF00) >> 8);

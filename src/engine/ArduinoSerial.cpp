@@ -2684,15 +2684,14 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
     void ArduinoSerial::setGain(bool active)
     {
         std::stringstream sstm;
-        int channelIndex = 1;
         if(active)
         {
-            sstm << "gainon:"<<channelIndex<<";\n";
+            sstm << "gainon:1;gainon:2;\n";
             
         }
         else
         {
-            sstm << "gainoff:"<<channelIndex<<";\n";
+            sstm << "gainoff:1;gainoff:2;\n";
         }
         writeToPort((sstm.str().c_str()),sstm.str().length());
     }
@@ -2700,16 +2699,15 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
     void ArduinoSerial::setHPF(bool active)
     {
         std::stringstream sstm;
-        int channelIndex = 1;
         if(active)
         {
-            sstm << "hpfon:2;gainon:2;hpfon:1;gainon:1;\n";
+            sstm << "hpfon:2;hpfon:1;\n";
             //sstm << "hpfon:"<<channelIndex<<";\n";
             
         }
         else
         {
-            sstm << "hpfoff:2;gainon:2;hpfoff:1;gainon:1;\n";
+            sstm << "hpfoff:2;hpfoff:1;\n";
             //sstm << "hpfoff:"<<channelIndex<<";\n";
         }
         writeToPort((sstm.str().c_str()),sstm.str().length());

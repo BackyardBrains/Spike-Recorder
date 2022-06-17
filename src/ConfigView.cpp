@@ -1248,17 +1248,7 @@ void ConfigView::highFilterValueChanged(int hvalue)
 void ConfigView::lowFilterValueChanged(int lvalue)
 {
     Log::msg("Low filter value changed");
-    if(lowValueTI->getInt()<THRESHOLD_FOR_HPF && lvalue>=THRESHOLD_FOR_HPF)
-    {
-        _manager.setSerialHardwareHPF(true);
-        //_manager.setSerialHardwareGain(false);
-    }
-    if(lowValueTI->getInt()>=THRESHOLD_FOR_HPF && lvalue<THRESHOLD_FOR_HPF)
-    {
-        
-        _manager.setSerialHardwareHPF(false);
-        //_manager.setSerialHardwareGain(true);
-    }
+
     lowValueTI->setInt(lvalue);
     
      if(lvalue<=0)
@@ -1274,7 +1264,6 @@ void ConfigView::lowFilterValueChanged(int lvalue)
 
     }
 }
-
 
 void ConfigView::lowFilterTIValueChanged(std::string newString)
 {
