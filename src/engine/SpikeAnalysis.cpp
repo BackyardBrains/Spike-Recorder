@@ -94,7 +94,8 @@ void SpikeAnalysis::averageWaveform(std::vector<float> &average, std::vector<flo
 	int chans, samplerate, bytespersample;
 	bool rc;
 
-	rc = OpenWAVFile(filename, handle, chans, samplerate, bytespersample); 
+	//rc = OpenWAVFile(filename, handle, chans, samplerate, bytespersample);
+    rc  = openAnyFile(filename, handle, chans, samplerate, bytespersample);
 	assert(chan < chans);
 	if(rc == false) {
 		Log::error("Calculating average waveform cancelled.");
@@ -122,7 +123,8 @@ void SpikeAnalysis::averageWaveform(std::vector<float> &average, std::vector<flo
 		int len = BUFSIZE;
 		if(pos + len >= filelen)
 			len = filelen-pos;
-		rc = ReadWAVFile(channels, len, handle, chans, bytespersample);
+		//rc = ReadWAVFile(channels, len, handle, chans, bytespersample);
+        rc = readAnyFile(channels, len, handle, chans, bytespersample);
 		if(rc == false) {
 			Log::error("Calculating average waveform cancelled due to reading error.");
 			return;

@@ -125,7 +125,7 @@ private:
     void calibratePressed();
 
     void changeKeysForJoystick(int channelIndex, int keyIndex);
-
+    void testFilterValuesAndConfigHardwareFilter();
 };
 
 }

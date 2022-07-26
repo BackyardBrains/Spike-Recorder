@@ -1241,14 +1241,16 @@ void ConfigView::highFilterValueChanged(int hvalue)
     }
 }
 
-
+#define THRESHOLD_FOR_HPF 20
 //
 // Band pass filtering value changed
 //
 void ConfigView::lowFilterValueChanged(int lvalue)
 {
     Log::msg("Low filter value changed");
+
     lowValueTI->setInt(lvalue);
+    
      if(lvalue<=0)
     {
         Log::msg("First if");
@@ -1262,7 +1264,6 @@ void ConfigView::lowFilterValueChanged(int lvalue)
 
     }
 }
-
 
 void ConfigView::lowFilterTIValueChanged(std::string newString)
 {

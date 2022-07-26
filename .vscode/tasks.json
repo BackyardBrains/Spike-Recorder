@@ -78,6 +78,8 @@
 				"${workspaceFolder}/src/engine/FileReadUtil.h",
 				"${workspaceFolder}/src/engine/FileRecorder.cpp",
 				"${workspaceFolder}/src/engine/FileRecorder.h",
+				"${workspaceFolder}/src/engine/WavTxtRecorder.cpp",
+				"${workspaceFolder}/src/engine/WavTxtRecorder.h",				
 				"${workspaceFolder}/src/engine/FilterBase.cpp",
 				"${workspaceFolder}/src/engine/FilterBase.h",
 				"${workspaceFolder}/src/engine/HIDUsbManager.cpp",

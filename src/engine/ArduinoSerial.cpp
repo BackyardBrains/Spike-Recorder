@@ -2681,6 +2681,38 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         writeToPort((sstm.str().c_str()),sstm.str().length());
     }
 
+    void ArduinoSerial::setGain(bool active)
+    {
+        std::stringstream sstm;
+        if(active)
+        {
+            sstm << "gainon:1;gainon:2;\n";
+            
+        }
+        else
+        {
+            sstm << "gainoff:1;gainoff:2;\n";
+        }
+        writeToPort((sstm.str().c_str()),sstm.str().length());
+    }
+    
+    void ArduinoSerial::setHPF(bool active)
+    {
+        std::stringstream sstm;
+        if(active)
+        {
+            sstm << "hpfon:2;hpfon:1;\n";
+            //sstm << "hpfon:"<<channelIndex<<";\n";
+            
+        }
+        else
+        {
+            sstm << "hpfoff:2;hpfoff:1;\n";
+            //sstm << "hpfoff:"<<channelIndex<<";\n";
+        }
+        writeToPort((sstm.str().c_str()),sstm.str().length());
+    }
+    
     void ArduinoSerial::askForBoardType()
     {
         std::stringstream sstm;

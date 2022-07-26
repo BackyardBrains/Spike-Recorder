@@ -17,6 +17,8 @@
 #endif
 #define BOARD_WITH_JOYSTICK 5
 #define FIRMWARE_PATH_FOR_STM32 "/firmwareUpdate.hex"
+#define HPF_HUMAN_SP_THRESHOLD 20
+#define LPF_HUMAN_SP_THRESHOLD 70
 namespace BackyardBrains {
 
 const int RecordingManager::INVALID_VIRTUAL_DEVICE_INDEX = -2;
@@ -723,6 +725,23 @@ void RecordingManager::closeSerial()
 	//_arduinoSerial.closeSerial();
 	_serialMode = false;
 }
+    
+void  RecordingManager::setSerialHardwareGain(bool active)
+{
+    if(_serialMode)
+    {
+        _arduinoSerial.setGain(active);
+    }
+}
+    
+    
+void RecordingManager::setSerialHardwareHPF(bool active)
+{
+    if(_serialMode)
+    {
+        _arduinoSerial.setHPF(active);
+    }
+}
 
 #pragma mark - File device
 
@@ -737,46 +756,29 @@ bool RecordingManager::loadFile(const char *filename) {
     _lowPassFilterEnabled = false;
 	_highPassFilterEnabled = false;
 
-	HSTREAM stream = BASS_StreamCreateFile(false, filename, 0, 0, BASS_STREAM_DECODE);
-	if(stream == 0) {
-		Log::error("Bass Error: Failed to load file '%s': %s", filename, GetBassStrError());
-		return false;
-	}
-
+    int nchan;
+    int samplerate;
+    int bytespersample;
+    HSTREAM stream;
+    
+    bool success =  openAnyFile(filename, stream, nchan, samplerate, bytespersample);
+    
+    if(!success)
+    {
+        return false;
+    }
+	
 	currentPositionOfWaveform = 0;//set position of waveform to begining
 
 	clear();
-	BASS_CHANNELINFO info;
-	BASS_ChannelGetInfo(stream, &info);
-
-
-	int bytespersample = LOWORD(info.origres)/8;
-	if(bytespersample == 0)
-	{
-		bytespersample = 2;
-		//return false;
-	}
-
-	if(bytespersample >= 3)
-    {
-        stream = BASS_StreamCreateFile(false, filename, 0, 0, BASS_SAMPLE_FLOAT | BASS_STREAM_DECODE);
-        if(stream == 0) {
-            Log::error("Bass Error: Failed to load float file '%s': %s", filename, GetBassStrError());
-            return false;
-        }
-
-        BASS_ChannelGetInfo(stream, &info);
-        bytespersample = 4; // bass converts everything it doesn't support.
-    }
-
-
-	setSampleRate(info.freq);
-	_devices.push_back(Device(0,info.chans,_sampleRate));
+	
+	setSampleRate(samplerate);
+	_devices.push_back(Device(0,nchan,_sampleRate));
 	_devices[0].bytespersample = bytespersample;
 	_devices[0].type = Device::File;
 
-	_virtualDevices.resize(info.chans);
-	for(unsigned int i = 0; i < info.chans; i++) {
+	_virtualDevices.resize(nchan);
+	for(unsigned int i = 0; i < nchan; i++) {
 		VirtualDevice &virtualDevice = _virtualDevices[i];
 
 		virtualDevice.device = 0;
@@ -788,7 +790,7 @@ bool RecordingManager::loadFile(const char *filename) {
 		virtualDevice.bound = false;
 	}
 
-	for(unsigned int i = 0; i < info.chans; i++) {
+	for(unsigned int i = 0; i < nchan; i++) {
 		bindVirtualDevice(i);
 	}
 
@@ -1145,7 +1147,8 @@ void RecordingManager::setVDeviceThreshold(int virtualDevice, int threshold) {
 int64_t RecordingManager::fileLength() {
 	assert(_fileMode && !_devices.empty());
 
-	int64_t len = BASS_ChannelGetLength(_devices[0].handle, BASS_POS_BYTE)/_devices[0].bytespersample/_devices[0].channels;
+	//int64_t len = BASS_ChannelGetLength(_devices[0].handle, BASS_POS_BYTE)/_devices[0].bytespersample/_devices[0].channels;
+    int64_t len =  anyFilesLength(_devices[0].handle, _devices[0].bytespersample, _devices[0].channels);
 	assert(len != -1);
 
 	return len;
@@ -1170,7 +1173,8 @@ void RecordingManager::addMarker(const std::string &id, int64_t offset) {
 
 const char *RecordingManager::fileMetadataString() {
 	assert(_fileMode);
-	return BASS_ChannelGetTags(_devices[0].handle, BASS_TAG_RIFF_INFO);
+    return readEventsAndSpikesForAnyFile(_devices[0].handle);//
+	//return BASS_ChannelGetTags(_devices[0].handle, BASS_TAG_RIFF_INFO);
 }
 
 void RecordingManager::getData(int virtualDevice, int64_t offset, int64_t len, int16_t *dst) {
@@ -1306,15 +1310,16 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 
 
         //-------- Read data ------------
-		bool rc = ReadWAVFile(channels, channum*bufsize*bytespersample, _devices[idx].handle,
-				channum, bytespersample);
+		//bool rc = ReadWAVFile(channels, channum*bufsize*bytespersample, _devices[idx].handle, channum, bytespersample);
+        bool rc = readAnyFile(channels, channum*bufsize*bytespersample, _devices[idx].handle, channum, bytespersample);
+        
 
 		if(!rc)
 			continue;
 
 
 		// TODO make this more sane
-		for(int chan = 0; chan < channum; chan++) {
+		/*for(int chan = 0; chan < channum; chan++) {
 			if(_devices[idx].dcBiasNum < _sampleRate*10) {
 				for(unsigned int i = 0; i < channels[chan].size(); i++) {
 					_devices[idx].dcBiasSum[chan] += channels[chan][i];
@@ -1327,7 +1332,7 @@ void RecordingManager::advanceFileMode(uint32_t samples) {
 			for(unsigned int i = 0; i < channels[chan].size(); i++) {
 				//channels[chan][i] -= dcBias;
 			}
-		}
+		}*/
 
 		for(int chan = 0; chan < channum; chan++) {
 			_devices[idx].sampleBuffers[chan].addData(channels[chan].data(), channels[chan].size());
@@ -2227,7 +2232,8 @@ int RecordingManager::lowCornerFrequency()
 void RecordingManager::enableLowPassFilterWithCornerFreq(float cornerFreq)
 {
 
-
+    float oldLPFCornerFreq =_lowCornerFreq;
+    
     if(cornerFreq<0)
     {
         cornerFreq = 0.0f;
@@ -2255,11 +2261,33 @@ void RecordingManager::enableLowPassFilterWithCornerFreq(float cornerFreq)
     {
         _lowPassFilterEnabled = true;
     }
+    
+
+    if(oldLPFCornerFreq>=LPF_HUMAN_SP_THRESHOLD)
+    {
+        if(_lowCornerFreq<LPF_HUMAN_SP_THRESHOLD)
+        {
+            //turn ON gain
+            setSerialHardwareGain(true);
+        }
+        
+    }
+    else
+    {
+        if(_lowCornerFreq>=LPF_HUMAN_SP_THRESHOLD)
+        {
+            //turn OFF gain
+            setSerialHardwareGain(false);
+            
+        }
+    }
+    
 }
 
 void RecordingManager::enableHighPassFilterWithCornerFreq(float cornerFreq)
 {
 
+    float oldHPFCornerFreq =_highCornerFreq;
     _highCornerFreq = cornerFreq;
     if(cornerFreq<0)
     {
@@ -2287,6 +2315,25 @@ void RecordingManager::enableHighPassFilterWithCornerFreq(float cornerFreq)
     {
         _highPassFilterEnabled = true;
        // startRemovingMeanValue();
+    }
+    
+
+    if(oldHPFCornerFreq>=HPF_HUMAN_SP_THRESHOLD)
+    {
+        if(_highCornerFreq<HPF_HUMAN_SP_THRESHOLD)
+        {
+            //turn OFF filter
+            setSerialHardwareHPF(false);
+        }
+        
+    }
+    else
+    {
+        if(_highCornerFreq>=20)
+        {
+            //turn ON filter
+             setSerialHardwareHPF(true);
+        }
     }
 }
 
@@ -3098,6 +3145,26 @@ void RecordingManager::loadFilterSettings()
         enableHighPassFilterWithCornerFreq(iteratorPointerToCurrentSerialAudioConfig->filterHighPass);
         enableLowPassFilterWithCornerFreq(iteratorPointerToCurrentSerialAudioConfig->filterLowPass);
 
+        if(_lowCornerFreq<LPF_HUMAN_SP_THRESHOLD)
+        {
+            //turn ON gain
+            setSerialHardwareGain(true);
+        }
+        else
+        {
+            setSerialHardwareGain(false);
+        }
+        
+        if(_highCornerFreq<HPF_HUMAN_SP_THRESHOLD)
+        {
+            //turn OFF filter
+            setSerialHardwareHPF(false);
+        }
+        else
+        {
+            setSerialHardwareHPF(true);
+        }
+        
         if(iteratorPointerToCurrentSerialAudioConfig->filter60Hz)
         {
             enable60HzFilter();

@@ -411,6 +411,7 @@ void MainView::filePressed() {
 	Log::msg("Loading metadata, if present...");
 	MetadataChunk m;
 	const char *mdatastr = _manager.fileMetadataString();
+    
 	if(mdatastr)
     {
 		FileRecorder::parseMetadataStr(&m, mdatastr, _manager);
