@@ -10,6 +10,7 @@ namespace BackyardBrains {
 
 bool OpenWAVFile(const char *file, HSTREAM &handle, int &nchan, int &samplerate, int &bytespersample);
 bool openAnyFile(const char *file, HSTREAM &handle, int &nchan, int &samplerate, int &bytespersample);
+bool OpenBYBFile(const char *file, HSTREAM &handle, int &nchan, int &samplerate, int &bytespersample);
 bool openHDF5File(const char *file, HSTREAM &handle, int &nchan, int &samplerate, int &bytespersample);
 bool readAnyFile(std::vector<std::vector<int16_t> > &channels, int len, HSTREAM handle, int nchan, int bytespersample);
 bool ReadWAVFile(std::vector<std::vector<int16_t> > &buffers, int len, HSTREAM handle, int nchan, int bytespersample);

@@ -416,7 +416,21 @@ void MainView::filePressed() {
     {
 		FileRecorder::parseMetadataStr(&m, mdatastr, _manager);
     }
-    FileRecorder::parseMarkerTextFile(m.markers, FileRecorder::eventTxtFilename(d.getResultFilename().c_str()), _manager.sampleRate());
+    
+    std::string mainFileName = d.getResultFilename();
+    size_t dotpos = mainFileName.find_last_of(".byb");
+
+    if(std::string::npos==dotpos)
+    {
+        //not .byb
+        mainFileName = FileRecorder::eventTxtFilename(d.getResultFilename().c_str());
+    }
+    else
+    {
+        mainFileName = std::string(getRecordingPath())+std::string("/signal-events.txt");
+    }
+   
+    FileRecorder::parseMarkerTextFile(m.markers, mainFileName, _manager.sampleRate());
     _manager.applyMetadata(m);
     _audioView->applyMetadata(m);
 

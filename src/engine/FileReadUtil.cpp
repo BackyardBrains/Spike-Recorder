@@ -6,6 +6,8 @@
 #include <cstring>
 #include <iostream>
 #include <algorithm>
+#include "miniz.h"
+#include "Paths.h"
 namespace BackyardBrains {
 
 
@@ -28,7 +30,78 @@ bool openAnyFile(const char *file, HSTREAM &handle, int &nchan, int &samplerate,
     {
         return OpenWAVFile(file, handle, nchan, samplerate, bytespersample);
     }
+    if(lowerCasePath.find(".byb") != std::string::npos)
+    {
+        return OpenBYBFile(file, handle, nchan, samplerate, bytespersample);
+       
+    }
+    return true;
+}
 
+bool OpenBYBFile(const char *file, HSTREAM &handle, int &nchan, int &samplerate, int &bytespersample)
+{
+    mz_zip_archive zip_archive;
+    mz_bool status;
+    size_t uncomp_size;
+    void *p;
+
+    //open byb/zip file
+    memset(&zip_archive, 0, sizeof(zip_archive));
+    status = mz_zip_reader_init_file(&zip_archive, file, 0);
+    if (!status)
+    {
+        printf("mz_zip_reader_init_file() failed!\n");
+        return EXIT_FAILURE;
+    }
+
+    std::string appWorkingDir = getRecordingPath();
+    
+    
+    //Extract .wav file
+    p = mz_zip_reader_extract_file_to_heap(&zip_archive, "signal.wav", &uncomp_size, 0);
+    if (!p)
+    {
+      printf("mz_zip_reader_extract_file_to_heap() failed!\n");
+      mz_zip_reader_end(&zip_archive);
+      return EXIT_FAILURE;
+    }
+
+    FILE *wavfile;
+    //std::string zipFileName = std::string(file);
+    //size_t dotpos = zipFileName.find_last_of('.');
+    std::string wavfilename = appWorkingDir + "/signal.wav";
+    wavfile = fopen(wavfilename.c_str(), "wb");
+    if(wavfile == 0) {
+        return false;
+    }
+    fwrite(p, uncomp_size, 1, wavfile);
+    fclose(wavfile);
+    mz_free(p);
+    
+    
+    
+    
+    //Extract .wav file
+    p = mz_zip_reader_extract_file_to_heap(&zip_archive, "signal-events.txt", &uncomp_size, 0);
+    if (p)
+    {
+        FILE *eventsfile;
+        std::string eventsfilename = appWorkingDir+ "/signal-events.txt";
+        eventsfile = fopen(eventsfilename.c_str(), "wb");
+        if(eventsfile == 0) {
+            return false;
+        }
+        fwrite(p, uncomp_size, 1, eventsfile);
+        fclose(eventsfile);
+        mz_free(p);
+    }
+
+
+    // Close the archive, freeing any resources it was using
+    mz_zip_reader_end(&zip_archive);
+    file = wavfilename.c_str();
+    OpenWAVFile(file, handle, nchan, samplerate, bytespersample);
+    
     return true;
 }
 

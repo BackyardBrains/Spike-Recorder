@@ -15,12 +15,8 @@ namespace BackyardBrains {
 
 
 FileRecorder::FileRecorder(RecordingManager &manager) {
-#ifdef USE_HDF
-    recorder = new HDFRecorder(manager);
-#else
-    recorder = new WavTxtRecorder(manager);
-#endif
-    
+
+    recorder = new BYBFileRecorder(manager);
 }
 
 FileRecorder::~FileRecorder() {
@@ -46,7 +42,7 @@ const std::string &FileRecorder::filename() const {
 
 std::string FileRecorder::eventTxtFilename(const std::string &filename) {
 
-    return WavTxtRecorder::eventTxtFilename(filename);
+    return BYBFileRecorder::eventTxtFilename(filename);
 }
 
 int FileRecorder::writeMarkerTextFile(const std::string &filename, const std::list<std::pair<std::string, int64_t> > &markers) const {
@@ -55,11 +51,11 @@ int FileRecorder::writeMarkerTextFile(const std::string &filename, const std::li
 
 void FileRecorder::parseMarkerTextFile(std::list<std::pair<std::string, int64_t> > &markers, const std::string &filename, int sampleRate)
 {
-    WavTxtRecorder::parseMarkerTextFile(markers, filename, sampleRate);
+    BYBFileRecorder::parseMarkerTextFile(markers, filename, sampleRate);
 }
 
 int FileRecorder::parseMetadataStr(MetadataChunk *meta, const char *str, RecordingManager &manager) {
-    return WavTxtRecorder::parseMetadataStr(meta, str, manager);
+    return BYBFileRecorder::parseMetadataStr(meta, str, manager);
 }
 
 bool FileRecorder::recording() const {

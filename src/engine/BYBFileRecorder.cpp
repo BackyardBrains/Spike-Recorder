@@ -1,12 +1,12 @@
 //
-//  WavTxtRecorder.cpp
+//  BYBFileRecorder.cpp
 //  SpikeRecorder
 //
-//  Created by Stanislav on 27/04/2022.
+//  Created by Stanislav on 26.7.22..
 //  Copyright © 2022 BackyardBrains. All rights reserved.
 //
 
-#include "WavTxtRecorder.h"
+#include "BYBFileRecorder.h"
 #include "RecordingManager.h"
 #include "Log.h"
 #include <bass.h>
@@ -19,6 +19,7 @@
 #include <cassert>
 #include <cerrno>
 #include "miniz.h"
+
 
 #define my_max(a,b) (((a) > (b)) ? (a) : (b))
 #define my_min(a,b) (((a) < (b)) ? (a) : (b))
@@ -36,7 +37,7 @@ static uint16_t le_16(uint16_t v) {
 #define le_32(v) (v)
 #define le_16(v) (v)
 #endif
-/*
+
 void MetadataChunk::print() {
     for(unsigned int i = 0; i < channels.size(); i++)    {
         std::cout << "Channel " << i << "\n";
@@ -52,12 +53,12 @@ void MetadataChunk::print() {
         std::cout << "Marker " << it->first << ": " << it->second << "\n";
     }
 
-}*/
-
-WavTxtRecorder::WavTxtRecorder(RecordingManager &manager) : _manager(manager), _file(0), _startPos(0), _buf(0), _bufsize(0) {
 }
 
-WavTxtRecorder::~WavTxtRecorder() {
+BYBFileRecorder::BYBFileRecorder(RecordingManager &manager) : _manager(manager), _file(0), _startPos(0), _buf(0), _bufsize(0) {
+}
+
+BYBFileRecorder::~BYBFileRecorder() {
     if(_file)
         stop(NULL);
     delete[] _buf;
@@ -80,7 +81,7 @@ static void padbyte(FILE *f) {
         fputc(0, f);
 }
 
-bool WavTxtRecorder::start(const std::string &filename) {
+bool BYBFileRecorder::start(const std::string &filename) {
     _oldPos = _manager.pos();
     _startPos = _oldPos;
     _file = fopen(filename.c_str(), "wb");
@@ -112,7 +113,7 @@ bool WavTxtRecorder::start(const std::string &filename) {
     return true;
 }
 
-bool WavTxtRecorder::ensure_file_exists_and_is_readable(const char *pFilename)
+bool BYBFileRecorder::ensure_file_exists_and_is_readable(const char *pFilename)
 {
   FILE *p = fopen(pFilename, "rb");
   if (!p)
@@ -136,7 +137,7 @@ bool WavTxtRecorder::ensure_file_exists_and_is_readable(const char *pFilename)
 }
 
 
-void WavTxtRecorder::stop(const MetadataChunk *meta) {
+void BYBFileRecorder::stop(const MetadataChunk *meta) {
     //get number of bytes
     uint32_t size = ftell(_file);
 
@@ -162,7 +163,7 @@ void WavTxtRecorder::stop(const MetadataChunk *meta) {
 
 
       // Open input file.
-/*
+
     size_t dotpos = _filename.find_last_of('.');
     std::string zipfilename = _filename.substr(0,dotpos) + ".byb";
 
@@ -200,14 +201,14 @@ void WavTxtRecorder::stop(const MetadataChunk *meta) {
     
     
     std::ostringstream sstream;
-    sstream << "<fileheader><headerversion>1.0.0</headerversion><samplerate>" << _manager.sampleRate()<<"</samplerate><numchannels>"<<_manager.numberOfChannels()<<"</numchannels>"<<"</fileheader>";
+    sstream << "<fileheader><headerversion>0</headerversion><samplerate>" << _manager.sampleRate()<<"</samplerate><numchannels>"<<_manager.numberOfChannels()<<"</numchannels>"<<"</fileheader>";
     std::string testsstring  = sstream.str();
     
     std::string fileInsideZipName = "header.xml";
     mz_bool test = mz_zip_add_mem_to_archive_file_in_place(zipfilename.c_str(), fileInsideZipName.c_str(), testsstring.c_str(), testsstring.length(),"no comment", (uint16)strlen("no comment"), MZ_BEST_COMPRESSION);
     
     //------------ END OF ZIP ------------------
-*/
+
 }
 
 static void write_subchunk(const char *id, const std::string &content, FILE *f) {
@@ -217,7 +218,7 @@ static void write_subchunk(const char *id, const std::string &content, FILE *f) 
     padbyte(f);
 }
 
-void WavTxtRecorder::writeMetadata(const MetadataChunk *meta) {
+void BYBFileRecorder::writeMetadata(const MetadataChunk *meta) {
     std::stringstream poss, threshs, gains, colors, names, markernums, markertimes;
 
     for(unsigned int i = 0; i < meta->channels.size(); i++) {
@@ -270,16 +271,18 @@ void WavTxtRecorder::writeMetadata(const MetadataChunk *meta) {
     fseek(_file, 0, SEEK_END);
 }
 
-const std::string &WavTxtRecorder::filename() const {
+const std::string &BYBFileRecorder::filename() const {
     return _filename;
 }
 
-std::string WavTxtRecorder::eventTxtFilename(const std::string &filename) {
+std::string BYBFileRecorder::eventTxtFilename(const std::string &filename)
+{
+    
     size_t dotpos = filename.find_last_of('.');
     return filename.substr(0,dotpos) + "-events.txt";
 }
 
-int WavTxtRecorder::writeMarkerTextFile(const std::string &filename, const std::list<std::pair<std::string, int64_t> > &markers) const {
+int BYBFileRecorder::writeMarkerTextFile(const std::string &filename, const std::list<std::pair<std::string, int64_t> > &markers) const {
 #ifdef __APPLE__
     size_t lastSlash =  filename.find_last_of("/");
     if(lastSlash == std::string::npos || lastSlash==0 )
@@ -323,7 +326,7 @@ int WavTxtRecorder::writeMarkerTextFile(const std::string &filename, const std::
     return 0;
 }
 
-void WavTxtRecorder::parseMarkerTextFile(std::list<std::pair<std::string, int64_t> > &markers, const std::string &filename, int sampleRate) {
+void BYBFileRecorder::parseMarkerTextFile(std::list<std::pair<std::string, int64_t> > &markers, const std::string &filename, int sampleRate) {
     FILE *f = fopen(filename.c_str(), "r");
     if(f == NULL) // Loading markers is optional and only takes place if an event file is present.
         return;
@@ -402,7 +405,7 @@ void WavTxtRecorder::parseMarkerTextFile(std::list<std::pair<std::string, int64_
     fclose(f);
 }
 
-int WavTxtRecorder::parseMetadataStr(MetadataChunk *meta, const char *str, RecordingManager &manager) {
+int BYBFileRecorder::parseMetadataStr(MetadataChunk *meta, const char *str, RecordingManager &manager) {
     const char *p = str;
 
     while(*p != 0) {
@@ -514,18 +517,18 @@ int WavTxtRecorder::parseMetadataStr(MetadataChunk *meta, const char *str, Recor
     return 0;
 }
 
-bool WavTxtRecorder::recording() const {
+bool BYBFileRecorder::recording() const {
     return _file != NULL;
 }
 
-float WavTxtRecorder::recordTime() const {
+float BYBFileRecorder::recordTime() const {
     if(_file == NULL || _nchan == 0)
         return 0.f;
 
     return (ftell(_file)-44)/(float)_nchan/sizeof(int16_t)/_manager.sampleRate();
 }
 
-void WavTxtRecorder::advance() {
+void BYBFileRecorder::advance() {
     if(!recording())
         return;
 

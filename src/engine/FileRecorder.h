@@ -3,11 +3,7 @@
 
 #include "RecordingManager.h"
 #include <fstream>
-#include "WavTxtRecorder.h"
-//#define USE_HDF 1
-#ifdef USE_HDF
-#include "HDFRecorder.h"
-#endif
+#include "BYBFileRecorder.h"
 
 
 namespace BackyardBrains {
@@ -33,13 +29,9 @@ public:
 	static void parseMarkerTextFile(std::list<std::pair<std::string, int64_t> > &markers, const std::string &filename, int sampleRate);
 	int writeMarkerTextFile(const std::string &filename, const std::list<std::pair<std::string, int64_t> > &markers) const;
 private:
-	
- 
-#ifdef USE_HDF
-    HDFRecorder * recorder;
-#else
-    WavTxtRecorder *recorder;
-#endif
+
+    BYBFileRecorder * recorder;
+
 };
 
 }

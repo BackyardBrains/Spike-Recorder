@@ -94,6 +94,7 @@
 		8526E78623707D6B0089E8AF /* SDL2.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8526E78423707D570089E8AF /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8526E78723707D710089E8AF /* SDL2.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8526E78423707D570089E8AF /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		85760FFA2180A1A100F197FB /* KeyboardGeneratorMac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85760FF92180A1A100F197FB /* KeyboardGeneratorMac.cpp */; };
+		85AA67D9288FF89F00E541A3 /* BYBFileRecorder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85AA67D7288FF89F00E541A3 /* BYBFileRecorder.cpp */; };
 		85AB394727F7176400213B9F /* BYBBootloaderVO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85AB394227F7176400213B9F /* BYBBootloaderVO.cpp */; };
 		85AB394B27F71B9300213B9F /* BYBBootloaderController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85AB394927F71B9300213B9F /* BYBBootloaderController.cpp */; };
 		85AB395128004AA800213B9F /* FirmwareUpdateView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85AB394F28004AA800213B9F /* FirmwareUpdateView.cpp */; };
@@ -472,6 +473,8 @@
 		8526E78423707D570089E8AF /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2.framework; sourceTree = "<group>"; };
 		85760FF82180A13500F197FB /* KeyboardGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KeyboardGenerator.h; sourceTree = "<group>"; };
 		85760FF92180A1A100F197FB /* KeyboardGeneratorMac.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = KeyboardGeneratorMac.cpp; sourceTree = "<group>"; };
+		85AA67D7288FF89F00E541A3 /* BYBFileRecorder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BYBFileRecorder.cpp; sourceTree = "<group>"; };
+		85AA67D8288FF89F00E541A3 /* BYBFileRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BYBFileRecorder.h; sourceTree = "<group>"; };
 		85AB394127F7176400213B9F /* BYBBootloaderVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BYBBootloaderVO.h; sourceTree = "<group>"; };
 		85AB394227F7176400213B9F /* BYBBootloaderVO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BYBBootloaderVO.cpp; sourceTree = "<group>"; };
 		85AB394927F71B9300213B9F /* BYBBootloaderController.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BYBBootloaderController.cpp; sourceTree = "<group>"; };
@@ -781,6 +784,8 @@
 				85E7C8EE2825175400025C72 /* HDFRecorder.h */,
 				85E7C8F0282D04D700025C72 /* HDFReader.cpp */,
 				85E7C8F1282D04D700025C72 /* HDFReader.h */,
+				85AA67D7288FF89F00E541A3 /* BYBFileRecorder.cpp */,
+				85AA67D8288FF89F00E541A3 /* BYBFileRecorder.h */,
 			);
 			name = engine;
 			path = src/engine;
@@ -1070,6 +1075,7 @@
 				248E58EE1AAE19570011707F /* main.cpp in Sources */,
 				24E8E6EB1BD95DD9003386A6 /* tinyxml2.cpp in Sources */,
 				248E58FC1AAE19570011707F /* LoadTexture.cpp in Sources */,
+				85AA67D9288FF89F00E541A3 /* BYBFileRecorder.cpp in Sources */,
 				1CC7E1F81DF1C1E100841669 /* HorizontalColorPicker.cpp in Sources */,
 				248E58E61AAE19570011707F /* ConfigView.cpp in Sources */,
 				1C11473F1D8EE07500BDA6DA /* AudioInputConfig.cpp in Sources */,

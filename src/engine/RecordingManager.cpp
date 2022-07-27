@@ -813,6 +813,11 @@ bool RecordingManager::loadFile(const char *filename) {
 
 	Log::msg("loaded file '%s'.", filename);
     fileIsLoadedAndFirstActionDidNotYetOccurred = true;
+    
+    
+
+    
+    
 	return true;
 }
 
