@@ -211,6 +211,114 @@ void BYBFileRecorder::stop(const MetadataChunk *meta) {
 
 }
 
+bool BYBFileRecorder::updateCurrentFile(std::string fileName)
+{
+    std::string appWorkingDir = getRecordingPath();
+    size_t bybextposition = fileName.find_last_of(".byb");
+    
+    //if this is not .byb file at all return
+    if(std::string::npos==bybextposition)
+    {
+        return false;
+    }
+    
+    
+#ifdef __APPLE__
+    //size_t lastSlash =  fileName.find_last_of("/");
+    
+    //if we are somewhere inside of our alowed directory or subdirectory
+    //use that directory for .BYB file
+    if (fileName.find(std::string("/Spike Recorder")) == std::string::npos)
+    {
+        size_t lastSlash =  fileName.find_last_of("/");
+        std::string strictFileName = fileName.substr(lastSlash, fileName.length());
+        fileName = appWorkingDir+strictFileName;
+        /*if(lastSlash == std::string::npos || lastSlash==0 )
+        {
+            Log::warn("Could not create spikes file: %s", strerror(errno));
+            return false;
+        }
+        std::string fullDirPath = fileName.substr(0, lastSlash);
+        size_t secondToLastSlash =  fullDirPath.find_last_of("/");
+        
+        if(lastSlash == std::string::npos )
+        {
+            Log::warn("Could not create spikes file: %s", strerror(errno));
+            return 1;
+        }
+        std::string parrentDir = fileName.substr(secondToLastSlash, lastSlash-secondToLastSlash);
+        int resultOfComparison = strcmp("/Spike Recorder", parrentDir.c_str());
+        if(resultOfComparison !=0)
+        {//not found /Spike Recorder if resultOfComparison greater than zero
+            Log::warn("Could not create marker file: %s", strerror(errno));
+            return 1;
+        }*/
+    }
+    else
+    {
+        
+    }
+    //FILE *f = fopen(filename.c_str(),"w+");
+#else
+    //FILE *f = fopen(filename.c_str(),"w+");
+#endif
+    
+    
+    
+    
+    
+    
+    
+    
+    // Open input file.
+  
+    std::string wavfileInsideZipName = "signal.wav";
+    std::string wavFileInWorkingDir = appWorkingDir + "/signal.wav";
+    mz_zip_archive zip;
+    
+    //size_t dotpos = fileName.find_last_of('.');
+    //fileName = fileName.substr(0,dotpos) + "-new.byb";
+    
+    memset(&zip, 0, sizeof(zip));
+   
+    if (!mz_zip_writer_init_file(&zip, fileName.c_str(), 0))
+    {
+        printf("Failed creating zip archive ");
+      
+    }
+    if (ensure_file_exists_and_is_readable(wavFileInWorkingDir.c_str()))
+    {
+        mz_zip_writer_add_file(&zip,wavfileInsideZipName.c_str(), wavFileInWorkingDir.c_str(), "no comment", (uint16)strlen("no comment"), MZ_BEST_COMPRESSION);
+    }
+  
+    std::string eventsFileNameInWorkingDir = appWorkingDir + "/signal-events.txt";
+  
+    std::string eventsfileInsideZipName = "signal-events.txt";
+    if (ensure_file_exists_and_is_readable(eventsFileNameInWorkingDir.c_str()))
+    {
+        mz_zip_writer_add_file(&zip,eventsfileInsideZipName.c_str(), eventsFileNameInWorkingDir.c_str(), "no comment", (uint16)strlen("no comment"), MZ_BEST_COMPRESSION);
+    }
+  
+  
+    mz_zip_writer_finalize_archive(&zip);
+
+    mz_zip_writer_end(&zip);
+
+    //std::string testsstring = "<fileheader><headerversion>1.0.0</headerversion></fileheader>";
+  
+  
+    std::ostringstream sstream;
+    sstream << "<fileheader><headerversion>0</headerversion><samplerate>" << _manager.sampleRate()<<"</samplerate><numchannels>"<<_manager.numberOfChannels()<<"</numchannels>"<<"  </fileheader>";
+    std::string testsstring  = sstream.str();
+  
+    std::string fileInsideZipName = "header.xml";
+    mz_bool test = mz_zip_add_mem_to_archive_file_in_place(fileName.c_str(), fileInsideZipName.c_str(), testsstring.c_str(), testsstring.length(),"no comment", (uint16)strlen("no comment"), MZ_BEST_COMPRESSION);
+  
+    //------------ END OF ZIP ------------------
+
+    return true;
+}
+
 static void write_subchunk(const char *id, const std::string &content, FILE *f) {
     fwrite(id, 4, 1, f);
     put32(content.size()+1, f);

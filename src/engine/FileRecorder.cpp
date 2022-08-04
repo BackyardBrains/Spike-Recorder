@@ -45,6 +45,11 @@ std::string FileRecorder::eventTxtFilename(const std::string &filename) {
     return BYBFileRecorder::eventTxtFilename(filename);
 }
 
+bool FileRecorder::updateCurrentFile(std::string fileName)
+{
+    return recorder->updateCurrentFile(fileName);
+}
+
 int FileRecorder::writeMarkerTextFile(const std::string &filename, const std::list<std::pair<std::string, int64_t> > &markers) const {
     return recorder->writeMarkerTextFile(filename, markers);
 }

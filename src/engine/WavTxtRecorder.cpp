@@ -158,57 +158,13 @@ void WavTxtRecorder::stop(const MetadataChunk *meta) {
     fclose(_file);
     _file = NULL;
     
-    //----------- ZIP --------------------------
-
-
-      // Open input file.
-/*
-    size_t dotpos = _filename.find_last_of('.');
-    std::string zipfilename = _filename.substr(0,dotpos) + ".byb";
-
-   
-    
-    std::string wavfileInsideZipName = "signal.wav";
-    mz_zip_archive zip;
-    memset(&zip, 0, sizeof(zip));
-     
-      if (!mz_zip_writer_init_file(&zip, zipfilename.c_str(), 0))
-      {
-        printf("Failed creating zip archive ");
-        
-      }
-    if (ensure_file_exists_and_is_readable(_filename.c_str()))
-        mz_zip_writer_add_file(&zip,wavfileInsideZipName.c_str(), _filename.c_str(), "no comment", (uint16)strlen("no comment"), MZ_BEST_COMPRESSION);
-    
-    std::string eventsfilename = _filename.substr(0,dotpos) + "-events.txt";
-    
-    std::string eventsfileInsideZipName = "signal-events.txt";
-    if (ensure_file_exists_and_is_readable(eventsfilename.c_str()))
-        mz_zip_writer_add_file(&zip,eventsfileInsideZipName.c_str(), eventsfilename.c_str(), "no comment", (uint16)strlen("no comment"), MZ_BEST_COMPRESSION);
-    
-    
-    
-     
-    
-    
-    
-    mz_zip_writer_finalize_archive(&zip);
-
-    mz_zip_writer_end(&zip);
-
-    //std::string testsstring = "<fileheader><headerversion>1.0.0</headerversion></fileheader>";
-    
-    
-    std::ostringstream sstream;
-    sstream << "<fileheader><headerversion>1.0.0</headerversion><samplerate>" << _manager.sampleRate()<<"</samplerate><numchannels>"<<_manager.numberOfChannels()<<"</numchannels>"<<"</fileheader>";
-    std::string testsstring  = sstream.str();
-    
-    std::string fileInsideZipName = "header.xml";
-    mz_bool test = mz_zip_add_mem_to_archive_file_in_place(zipfilename.c_str(), fileInsideZipName.c_str(), testsstring.c_str(), testsstring.length(),"no comment", (uint16)strlen("no comment"), MZ_BEST_COMPRESSION);
-    
-    //------------ END OF ZIP ------------------
-*/
 }
+
+bool WavTxtRecorder::updateCurrentFile(std::string fileName)
+{
+    return false;
+}
+
 
 static void write_subchunk(const char *id, const std::string &content, FILE *f) {
     fwrite(id, 4, 1, f);

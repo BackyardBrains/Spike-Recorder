@@ -68,7 +68,7 @@ public:
 	RecordingManager();
 	~RecordingManager();
 
-	bool loadFile(const char *filename);
+    bool loadFile(const char *filename , MetadataChunk& m);
 	void initRecordingDevices();
 
 	Player &player();
@@ -111,7 +111,8 @@ public:
     std::list<std::string> serailPortsList() const {return _arduinoSerial.list;}
     std::list<ArduinoSerial::SerialPort> serailPorts() const {return _portScanningArduinoSerial.ports;}
     ArduinoSerial::SerialPort getCurrentPort() const {return _arduinoSerial.currentPort;}
-	const std::string &fileName() const { return _filename; }
+    const std::string fileName();
+    std::string originalFileName()  { return _filename; }
 	int64_t fileLength(); // file mode only
 	const char *fileMetadataString(); // file mode only
 	int threshAvgCount() const {return _threshAvgCount;}
@@ -336,6 +337,7 @@ private:
 	bool _serialMode;
 	bool _hidMode;
 	std::string _filename;
+    std::string _originalFilename;
     int debugNumberOfSamplesThatWeNeed;
     int debugNumberOfSamplesThatWeGet;
 

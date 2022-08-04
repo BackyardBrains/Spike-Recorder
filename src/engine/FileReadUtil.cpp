@@ -99,6 +99,8 @@ bool OpenBYBFile(const char *file, HSTREAM &handle, int &nchan, int &samplerate,
 
     // Close the archive, freeing any resources it was using
     mz_zip_reader_end(&zip_archive);
+    
+    
     file = wavfilename.c_str();
     OpenWAVFile(file, handle, nchan, samplerate, bytespersample);
     

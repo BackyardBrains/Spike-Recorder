@@ -155,7 +155,6 @@ void AudioView::constructMetadata(MetadataChunk *m) const {
 void AudioView::applyMetadata(const MetadataChunk &m) {
 	_timeScale = m.timeScale;
 
-
     //positionseek bar to begining so that we see half of the screen filled with signal
     //when user click play we will reset file to begining
 
@@ -164,13 +163,11 @@ void AudioView::applyMetadata(const MetadataChunk &m) {
 
     _manager.setPos(sampleCount(screenWidth(), scaleWidth())/2);
 
-	//assert(m.channels.size() == _channels.size()); // i do not know if this works yet with the new channel stuff
 	for(unsigned int i = 0; i < m.channels.size(); i++) {
 		_channels[i].gain = m.channels[i].gain;
 		_channels[i].colorIdx = m.channels[i].colorIdx;
 		_channels[i].pos = m.channels[i].pos;
 	}
-
 }
 
 

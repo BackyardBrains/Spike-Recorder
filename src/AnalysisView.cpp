@@ -216,6 +216,8 @@ void AnalysisView::savePressed() {
 
 	int rc = f.writeMarkerTextFile(filename, markers);
 	std::stringstream s;
+    std::string fileNameToSave = _manager.originalFileName();
+    bool savingToBYBFile = f.updateCurrentFile(fileNameToSave);
 	if(rc == 0) {
 		s << markers.size() << " spikes were written to '" << filename << "'";
 	} else {
@@ -228,6 +230,7 @@ void AnalysisView::savePressed() {
 	Widgets::ErrorBox *box = new Widgets::ErrorBox(s.str().c_str());
 	box->setGeometry(Widgets::Rect(this->width()/2-200, this->height()/2-40, 400, 80));
 	Widgets::Application::getInstance()->addPopup(box);
+    
 }
 
 void AnalysisView::plotsPressed() {

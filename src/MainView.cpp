@@ -397,7 +397,8 @@ void MainView::filePressed() {
 
 	//delete _anaView;
 	_anaView = NULL;
-	bool rc = _manager.loadFile(d.getResultFilename().c_str());
+    MetadataChunk m;
+	bool rc = _manager.loadFile(d.getResultFilename().c_str(), m);
 
 	if(rc == false) {
 		std::stringstream s;
@@ -408,30 +409,7 @@ void MainView::filePressed() {
 		Log::msg("\n\n%s\n\n",s.str().c_str());
 		return;
 	}
-	Log::msg("Loading metadata, if present...");
-	MetadataChunk m;
-	const char *mdatastr = _manager.fileMetadataString();
-    
-	if(mdatastr)
-    {
-		FileRecorder::parseMetadataStr(&m, mdatastr, _manager);
-    }
-    
-    std::string mainFileName = d.getResultFilename();
-    size_t dotpos = mainFileName.find_last_of(".byb");
-
-    if(std::string::npos==dotpos)
-    {
-        //not .byb
-        mainFileName = FileRecorder::eventTxtFilename(d.getResultFilename().c_str());
-    }
-    else
-    {
-        mainFileName = std::string(getRecordingPath())+std::string("/signal-events.txt");
-    }
-   
-    FileRecorder::parseMarkerTextFile(m.markers, mainFileName, _manager.sampleRate());
-    _manager.applyMetadata(m);
+	
     _audioView->applyMetadata(m);
 
 

@@ -130,7 +130,8 @@ public:
     static std::string eventTxtFilename(const std::string &filename);
     float recordTime() const;
     void advance();
-
+    bool updateCurrentFile(std::string fileName);
+    
     static void parseMarkerTextFile(std::list<std::pair<std::string, int64_t> > &markers, const std::string &filename, int sampleRate);
     int writeMarkerTextFile(const std::string &filename, const std::list<std::pair<std::string, int64_t> > &markers) const;
 private:

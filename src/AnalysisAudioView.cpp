@@ -88,8 +88,13 @@ void AnalysisAudioView::paintEvent() {
  
    // std::cout<<"Spike gain: "<<_channels[0].gain<<" scale:"<<height()*ampScale<<"\n";
 	Widgets::Painter::setColor(Widgets::Colors::white);
+    int selectedDevice = _manager.selectedVDevice();
 	if(!_channels.empty()) {
-		for(unsigned int i = 0; i < _spikes.spikes(_manager.selectedVDevice()).size(); i++) {
+       
+        
+        const std::vector<std::pair<int64_t, int16_t> > & spikesVector = _spikes.spikes(selectedDevice);
+        int sizeOfSpikes = spikesVector.size();
+		for(unsigned int i = 0; i < sizeOfSpikes; i++) {
 			int samplepos = _manager.pos()-_spikes.spikes(_manager.selectedVDevice())[i].first;
 			if(samplepos < -samples/2 || samplepos > samples/2)
 				continue;

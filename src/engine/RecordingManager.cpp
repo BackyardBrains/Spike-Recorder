@@ -745,8 +745,10 @@ void RecordingManager::setSerialHardwareHPF(bool active)
 
 #pragma mark - File device
 
-bool RecordingManager::loadFile(const char *filename) {
+bool RecordingManager::loadFile(const char *filename, MetadataChunk& m)
+{
 
+   
     resetCalibrationCoeficient();
     saveInputConfigSettings();
     resetCalibrationCoeficient();
@@ -815,7 +817,33 @@ bool RecordingManager::loadFile(const char *filename) {
     fileIsLoadedAndFirstActionDidNotYetOccurred = true;
     
     
+    
+    
+    // ------ metadata application ---------------
+    Log::msg("Loading metadata, if present...");
+   
+    const char *mdatastr = fileMetadataString();
+    
+    if(mdatastr)
+    {
+        FileRecorder::parseMetadataStr(&m, mdatastr, *this);
+    }
+    
+    std::string mainFileName = std::string(filename);
+    size_t dotpos = mainFileName.find_last_of(".byb");
 
+    if(std::string::npos==dotpos)
+    {
+        //not .byb
+        mainFileName = FileRecorder::eventTxtFilename(filename);
+    }
+    else
+    {
+        mainFileName = std::string(getRecordingPath())+std::string("/signal-events.txt");
+    }
+   
+    FileRecorder::parseMarkerTextFile(m.markers, mainFileName, sampleRate());
+    applyMetadata(m);
     
     
 	return true;
@@ -919,7 +947,18 @@ void RecordingManager::initRecordingDevices() {
         m->markers = _markers;
     }
 
+const std::string RecordingManager::fileName()
+{
 
+    size_t dotpos = _filename.find_last_of(".byb");
+
+    if(std::string::npos==dotpos)
+    {
+        return _filename;
+    }
+   
+    return std::string(getRecordingPath())+std::string("/signal.wav");
+}
 
 void RecordingManager::applyMetadata(const MetadataChunk &m) {
     //assert(_virtualDevices.size() == m.channels.size());
