@@ -27,6 +27,10 @@ OBJECTS = \
 		src/engine/HighPassFilter.o \
 		src/engine/LowPassFilter.o \
 		src/engine/NotchFilter.o \
+		src/engine/WavTxtRecorder.o \
+		src/engine/firmware/FirmwareUpdater.o \
+		src/engine/firmware/BYBFirmwareVO.o \
+		src/engine/firmware/BYBBootloaderController.o \
 		src/widgets/LayoutItem.o \
 		src/widgets/BoxLayout.o \
 		src/widgets/Widget.o \
@@ -60,7 +64,8 @@ OBJECTS = \
 		src/RecordingBar.o \
 		src/ColorDropDownList.o \
 		src/FFTView.o \
-		src/ThresholdPanel.o
+		src/ThresholdPanel.o \
+		src/FirmwareUpdateView.cpp
 
 OBJECTS_LINUX = \
 	src/widgets/native/FileDialogLinux.o \
@@ -68,8 +73,8 @@ OBJECTS_LINUX = \
 
 OBJECTS += $(OBJECTS_LINUX)
 
-CFLAGS = -g -O2 -Isrc -Isupport -Isrc/libraries -I. -Lsrc/support -Wall -DSIGSLOT_PURE_ISO --std=c++11 `sdl2-config --cflags`
-LIBS = `sdl2-config --libs` -lSDL2_image -lGL -lGLU -lbass -lpthread -lhidapi-libusb
+CFLAGS = -g -O2 -Isrc -Isupport -Isrc/engine/firmware -Isrc/libraries -I. -Lsrc/support -Wall -DSIGSLOT_PURE_ISO --std=c++11 `sdl2-config --cflags`
+LIBS = `sdl2-config --libs` -lSDL2_image -lGL -lGLU -lbass -lpthread -lhidapi-libusb -lcurl
 
 %.o: %.c
 	$(CC) -o $@ -c $< $(CFLAGS)

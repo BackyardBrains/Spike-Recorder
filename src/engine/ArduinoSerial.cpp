@@ -31,6 +31,8 @@
     #include <linux/serial.h>
     #include <cstring>
     #include <cstdio>
+    #define IOSSIOSPEED _IOW('T', 2, speed_t)
+
 
 #elif defined(__APPLE__)
 //added for port scan
@@ -386,7 +388,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
         getListOfSerialPorts(list, bootloaderPort);
 
-        
+
         // adapted from SerialPortSample.c, by Apple
         // http://developer.apple.com/samplecode/SerialPortSample/listing2.html
         // and also testserial.c, by Keyspan
@@ -480,9 +482,9 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         list.sort();
 
         #ifdef _WIN32
-            
+
             enumerateSerialPortsFriendlyNames(bootloaderPort);
-            
+
         #endif
         if(bootloaderPort.length()>0)
         {
@@ -616,12 +618,12 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                         char * isTherePid = strstr((char *)hardwareId, (char *)pid.c_str());
 
                         bool foundBootloader = false;
-                        if (isThereVid && isTherePid) 
+                        if (isThereVid && isTherePid)
                         {
                             printf("Found vid and pid for bootloader\n");
                             foundBootloader = true;
                         }
-                       
+
 
 
                         // find the size required to hold the friendly name
@@ -1085,7 +1087,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 #endif
             //headHardwareCircular = 0;
             //tailHardwareCircular = 0;
-            
+
             _portOpened = false;
             currentAddOnBoard = BOARD_WITH_EVENT_INPUTS;
         }
@@ -1672,7 +1674,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                 Log::msg("Serial read error: 2");
                 return -1;
             }
-            
+
         }
 #endif // defined
 #if defined(__linux__)
@@ -2687,7 +2689,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         if(active)
         {
             sstm << "gainon:1;gainon:2;\n";
-            
+
         }
         else
         {
@@ -2695,7 +2697,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         }
         writeToPort((sstm.str().c_str()),sstm.str().length());
     }
-    
+
     void ArduinoSerial::setHPF(bool active)
     {
         std::stringstream sstm;
@@ -2703,7 +2705,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         {
             sstm << "hpfon:2;hpfon:1;\n";
             //sstm << "hpfon:"<<channelIndex<<";\n";
-            
+
         }
         else
         {
@@ -2712,7 +2714,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         }
         writeToPort((sstm.str().c_str()),sstm.str().length());
     }
-    
+
     void ArduinoSerial::askForBoardType()
     {
         std::stringstream sstm;

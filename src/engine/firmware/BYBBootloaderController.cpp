@@ -11,7 +11,9 @@
 #include <unistd.h>
 #include <sstream>
 #include <stdint.h>
-#if defined(__APPLE__)
+#if defined(__linux__)
+
+#elif defined(__APPLE__)
 //added for port scan
     #include <sys/uio.h>
     #include <stdio.h>
@@ -42,7 +44,7 @@ namespace BackyardBrains {
     BYBBootloaderController::BYBBootloaderController()
     {
         stage = BOOTLOADER_STAGE_OFF;
-  
+
     }
 
     bool BYBBootloaderController::isFirmwareAvailable()
@@ -66,20 +68,20 @@ namespace BackyardBrains {
             const int maxLineSize  = 256;
             *lineptr = (char *)malloc(sizeof(char) *maxLineSize);
             int c = 0;
-            for (count = 0; count <maxLineSize-1; count++) 
+            for (count = 0; count <maxLineSize-1; count++)
             {
                 c = getc(stream);
 
-                if (c == EOF ) 
+                if (c == EOF )
                 {
                     if (count == 0)
                     {
                         return -1;
                     }
-                    
+
                     break;
                 }
-                
+
                 (*lineptr)[count] = (char) c;
                 if( c=='\n' || c=='\r')
                 {
@@ -104,11 +106,11 @@ namespace BackyardBrains {
             stage = BOOTLOADER_STAGE_OFF;
             return;
         }
-        
+
         currentIndexInsidePage = 0;
         char *contents = NULL;
         size_t len = 0;
-        #if defined(__APPLE__)
+        #if defined(__APPLE__) || defined(__linux__)
             while (getline(&contents, &len, _file) != -1)
         {
         #elif _WIN32
@@ -141,8 +143,8 @@ namespace BackyardBrains {
         {
             printf("Bootloader error. Received %c instead of g\n", tempBuffer[0]);
         }
-       
-       
+
+
         while(1)
         {
             tempBuffer[0] = 'n';
@@ -165,7 +167,7 @@ namespace BackyardBrains {
         tempBuffer[2] = ((programSize & 0x00FF0000) >> 16);
         tempBuffer[3] = ((programSize & 0xFF000000) >> 24);
         writeDataToSerialPort(tempBuffer, 4);
-        
+
         //upload firmware
         int localProgress = 0;
         std::list<HexRecord>::iterator it;
@@ -183,7 +185,7 @@ namespace BackyardBrains {
             else if(tempBuffer[0]=='x')
             {
                 printf("Pages %d out of %d\n", localProgress, programSize);
-                
+
                 int tempProgress = (int)100.0f*((float)localProgress/(float)programSize);
                 if(tempProgress>99)
                 {
@@ -231,13 +233,13 @@ namespace BackyardBrains {
                 }
             }
         #endif // defined
-        #if defined(__linux__)
-            int bits;
-            if (size == 0 && ioctl(fd, TIOCMGET, &bits) < 0)
-            {
-                //error
-            }
-        #endif
+//        #if defined(__linux__)
+//            int bits;
+//            if (size == 0 && ioctl(fd, TIOCMGET, &bits) < 0)
+//            {
+//                //error
+//            }
+//        #endif
         #if defined(_WIN32)
             COMSTAT st;
             DWORD errmask=0, num_read, num_request;
@@ -266,7 +268,7 @@ namespace BackyardBrains {
                 }
             }
             CloseHandle(ov.hEvent);
-            
+
         #endif // defined
 
         return (int)size;
@@ -344,16 +346,16 @@ namespace BackyardBrains {
         sscanf(&lineFromFile[1],"%2x",&lengthOfData);
         int tempCurrentAddress;
         sscanf(&lineFromFile[3],"%4x",&tempCurrentAddress);
-        
+
         //fill the void in memory (if hex jums over some memory)
         if(currentAddress!=0 && tempCurrentAddress!=currentAddress && tempCurrentAddress>currentAddress)
         {
-           
+
                 int difference =tempCurrentAddress-currentAddress;
-                
+
                 for (int i=0;i<difference;i++)
                 {
-                    
+
                     if(currentIndexInsidePage==0)
                     {
                         newHexRecord = new HexRecord();
@@ -373,16 +375,16 @@ namespace BackyardBrains {
                         currentIndexInsidePage = 0;
                         //add one page to memory list
                         dataFromFile.push_back(*newHexRecord);
-                        
+
                     }
                 }
-            
+
         }
         else
         {
             currentAddress =tempCurrentAddress;
         }
-        
+
         int typeOfRecord;
         sscanf(&lineFromFile[7],"%2x",&typeOfRecord);
         switch (typeOfRecord) {
@@ -435,7 +437,7 @@ namespace BackyardBrains {
             sscanf(&lineFromFile[indexInHexText],"%2x",&tempByte);
             newHexRecord->dataPage[currentIndexInsidePage]=tempByte;
             currentAddress++;
-            
+
             currentIndexInsidePage++;
             if(currentIndexInsidePage==SIZE_OF_PAGE)
             {
@@ -453,7 +455,7 @@ namespace BackyardBrains {
         {
             printf("Bootloader Error: line does not start with :\n" );
         }
-        
+
 
         //get length of data
         int tempIntData;
