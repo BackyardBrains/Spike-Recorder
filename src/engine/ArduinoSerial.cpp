@@ -2471,7 +2471,25 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                 _manager->addMarker(std::string(1, mnum+'0'), offset+offsetin);
 
             }//EVNT
+            
+            if(typeOfMessage == "p300" && portOpened())
+            {
+                Log::msg("P300 response received");
+                bool p300Active = (int)((unsigned int)valueOfMessage[0]-48)>0;
+                askForP300AudioState();
+                _manager->setP300ActiveStateLocaly(p300Active);
+                //_manager->setP300OnHardware(p300Active);
 
+            }//EVNT
+
+            if(typeOfMessage == "sound" && portOpened())
+            {
+                Log::msg("P300 sound response received");
+                bool p300SoundActive = (int)((unsigned int)valueOfMessage[0]-48)>0;
+                _manager->setP300AudioActiveStateLocaly(p300SoundActive);
+                //_manager->setP300SoundStimmulationOnHardware(p300SoundActive);
+
+            }
             if(typeOfMessage == "BRD")
             {
                 Log::msg("Change board type on serial");
@@ -2713,6 +2731,36 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         writeToPort((sstm.str().c_str()),sstm.str().length());
     }
     
+
+    void ArduinoSerial::setP300(bool active)
+    {
+        std::stringstream sstm;
+        if(active)
+        {
+            sstm << "stimon:;\n";
+        }
+        else
+        {
+            sstm << "stimoff:;\n";
+        }
+        writeToPort((sstm.str().c_str()),sstm.str().length());
+    }
+
+    void ArduinoSerial::setP300AudioStimulation(bool active)
+    {
+        std::stringstream sstm;
+        if(active)
+        {
+            sstm << "sounon:;\n";
+        }
+        else
+        {
+            sstm << "sounoff:;\n";
+        }
+        writeToPort((sstm.str().c_str()),sstm.str().length());
+    }
+
+
     void ArduinoSerial::askForBoardType()
     {
         std::stringstream sstm;
@@ -2720,6 +2768,21 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         Log::msg("askForBoardType - Ask for Board type");
          writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
 
+    }
+
+    void ArduinoSerial::askForP300AudioState()
+    {
+        std::stringstream sstm;
+        sstm << "sound?:;\n";
+        Log::msg("askForP300AudioState - Ask for p300 audio state");
+         writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
+    }
+    void ArduinoSerial::askForImportantStates()
+    {
+        std::stringstream sstm;
+        sstm << "board:;p300?:;\n";
+        Log::msg("askForImportantStates - Ask for important states");
+         writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
     }
 
     void ArduinoSerial::askForExpansionBoardType()
