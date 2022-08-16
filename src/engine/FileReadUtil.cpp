@@ -8,6 +8,8 @@
 #include <algorithm>
 #include "miniz.h"
 #include "Paths.h"
+#include "BYBFileRecorder.h"
+
 namespace BackyardBrains {
 
 
@@ -30,7 +32,7 @@ bool openAnyFile(const char *file, HSTREAM &handle, int &nchan, int &samplerate,
     {
         return OpenWAVFile(file, handle, nchan, samplerate, bytespersample);
     }
-    if(lowerCasePath.find(".byb") != std::string::npos)
+    if(lowerCasePath.find(BYB_FILENAME_EXTENSION) != std::string::npos)
     {
         return OpenBYBFile(file, handle, nchan, samplerate, bytespersample);
        
@@ -58,7 +60,7 @@ bool OpenBYBFile(const char *file, HSTREAM &handle, int &nchan, int &samplerate,
     
     
     //Extract .wav file
-    p = mz_zip_reader_extract_file_to_heap(&zip_archive, "signal.wav", &uncomp_size, 0);
+    p = mz_zip_reader_extract_file_to_heap(&zip_archive, BYB_FILENAME_SIGNAL, &uncomp_size, 0);
     if (!p)
     {
       printf("mz_zip_reader_extract_file_to_heap() failed!\n");
@@ -69,7 +71,7 @@ bool OpenBYBFile(const char *file, HSTREAM &handle, int &nchan, int &samplerate,
     FILE *wavfile;
     //std::string zipFileName = std::string(file);
     //size_t dotpos = zipFileName.find_last_of('.');
-    std::string wavfilename = appWorkingDir + "/signal.wav";
+    std::string wavfilename = appWorkingDir + "/"+BYB_FILENAME_SIGNAL;
     wavfile = fopen(wavfilename.c_str(), "wb");
     if(wavfile == 0) {
         return false;
@@ -82,11 +84,11 @@ bool OpenBYBFile(const char *file, HSTREAM &handle, int &nchan, int &samplerate,
     
     
     //Extract .wav file
-    p = mz_zip_reader_extract_file_to_heap(&zip_archive, "signal-events.txt", &uncomp_size, 0);
+    p = mz_zip_reader_extract_file_to_heap(&zip_archive, BYB_FILENAME_EVENTS, &uncomp_size, 0);
     if (p)
     {
         FILE *eventsfile;
-        std::string eventsfilename = appWorkingDir+ "/signal-events.txt";
+        std::string eventsfilename = appWorkingDir+ "/"+BYB_FILENAME_EVENTS;
         eventsfile = fopen(eventsfilename.c_str(), "wb");
         if(eventsfile == 0) {
             return false;

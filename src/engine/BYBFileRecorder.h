@@ -21,6 +21,11 @@ typedef unsigned int uint;
 static uint8 s_inbuf[BUF_SIZE];
 static uint8 s_outbuf[BUF_SIZE];
 
+#define BYB_FILENAME_EXTENSION ".byb"
+#define BYB_FILENAME_SIGNAL "signal.wav"
+#define BYB_FILENAME_EVENTS "signal-events.txt"
+#define BYB_FILENAME_HEADER "header.xml"
+#define BYB_EVENTS_FILENAME_EXTENSION "-events.txt"
 
 namespace BackyardBrains {
 

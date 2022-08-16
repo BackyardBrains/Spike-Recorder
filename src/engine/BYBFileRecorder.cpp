@@ -165,11 +165,11 @@ void BYBFileRecorder::stop(const MetadataChunk *meta) {
       // Open input file.
 
     size_t dotpos = _filename.find_last_of('.');
-    std::string zipfilename = _filename.substr(0,dotpos) + ".byb";
+    std::string zipfilename = _filename.substr(0,dotpos) + BYB_FILENAME_EXTENSION;
 
    
     
-    std::string wavfileInsideZipName = "signal.wav";
+    std::string wavfileInsideZipName = BYB_FILENAME_SIGNAL;
     mz_zip_archive zip;
     memset(&zip, 0, sizeof(zip));
      
@@ -181,40 +181,36 @@ void BYBFileRecorder::stop(const MetadataChunk *meta) {
     if (ensure_file_exists_and_is_readable(_filename.c_str()))
         mz_zip_writer_add_file(&zip,wavfileInsideZipName.c_str(), _filename.c_str(), "no comment", (uint16)strlen("no comment"), MZ_BEST_COMPRESSION);
     
-    std::string eventsfilename = _filename.substr(0,dotpos) + "-events.txt";
+    std::string eventsfilename = _filename.substr(0,dotpos) + BYB_EVENTS_FILENAME_EXTENSION;
     
-    std::string eventsfileInsideZipName = "signal-events.txt";
+    std::string eventsfileInsideZipName = BYB_FILENAME_EVENTS;
     if (ensure_file_exists_and_is_readable(eventsfilename.c_str()))
+    {
         mz_zip_writer_add_file(&zip,eventsfileInsideZipName.c_str(), eventsfilename.c_str(), "no comment", (uint16)strlen("no comment"), MZ_BEST_COMPRESSION);
-    
-    
-    
-     
-    
-    
-    
+        remove(eventsfilename.c_str());
+    }
     mz_zip_writer_finalize_archive(&zip);
-
     mz_zip_writer_end(&zip);
-
-    //std::string testsstring = "<fileheader><headerversion>1.0.0</headerversion></fileheader>";
-    
     
     std::ostringstream sstream;
     sstream << "<fileheader><headerversion>0</headerversion><samplerate>" << _manager.sampleRate()<<"</samplerate><numchannels>"<<_manager.numberOfChannels()<<"</numchannels>"<<"</fileheader>";
     std::string testsstring  = sstream.str();
     
-    std::string fileInsideZipName = "header.xml";
+    std::string fileInsideZipName = BYB_FILENAME_HEADER;
     mz_bool test = mz_zip_add_mem_to_archive_file_in_place(zipfilename.c_str(), fileInsideZipName.c_str(), testsstring.c_str(), testsstring.length(),"no comment", (uint16)strlen("no comment"), MZ_BEST_COMPRESSION);
     
     //------------ END OF ZIP ------------------
+    
+    //remove .wav and events file
+    remove(_filename.c_str());
+    _filename = zipfilename;
 
 }
 
 bool BYBFileRecorder::updateCurrentFile(std::string fileName)
 {
     std::string appWorkingDir = getRecordingPath();
-    size_t bybextposition = fileName.find_last_of(".byb");
+    size_t bybextposition = fileName.find_last_of(BYB_FILENAME_EXTENSION);
     
     //if this is not .byb file at all return
     if(std::string::npos==bybextposition)
@@ -272,12 +268,9 @@ bool BYBFileRecorder::updateCurrentFile(std::string fileName)
     
     // Open input file.
   
-    std::string wavfileInsideZipName = "signal.wav";
-    std::string wavFileInWorkingDir = appWorkingDir + "/signal.wav";
+    std::string wavfileInsideZipName = BYB_FILENAME_SIGNAL;
+    std::string wavFileInWorkingDir = appWorkingDir + "/"+BYB_FILENAME_SIGNAL;
     mz_zip_archive zip;
-    
-    //size_t dotpos = fileName.find_last_of('.');
-    //fileName = fileName.substr(0,dotpos) + "-new.byb";
     
     memset(&zip, 0, sizeof(zip));
    
@@ -291,9 +284,9 @@ bool BYBFileRecorder::updateCurrentFile(std::string fileName)
         mz_zip_writer_add_file(&zip,wavfileInsideZipName.c_str(), wavFileInWorkingDir.c_str(), "no comment", (uint16)strlen("no comment"), MZ_BEST_COMPRESSION);
     }
   
-    std::string eventsFileNameInWorkingDir = appWorkingDir + "/signal-events.txt";
+    std::string eventsFileNameInWorkingDir = appWorkingDir + "/"+BYB_FILENAME_EVENTS;
   
-    std::string eventsfileInsideZipName = "signal-events.txt";
+    std::string eventsfileInsideZipName = BYB_FILENAME_EVENTS;
     if (ensure_file_exists_and_is_readable(eventsFileNameInWorkingDir.c_str()))
     {
         mz_zip_writer_add_file(&zip,eventsfileInsideZipName.c_str(), eventsFileNameInWorkingDir.c_str(), "no comment", (uint16)strlen("no comment"), MZ_BEST_COMPRESSION);
@@ -311,10 +304,13 @@ bool BYBFileRecorder::updateCurrentFile(std::string fileName)
     sstream << "<fileheader><headerversion>0</headerversion><samplerate>" << _manager.sampleRate()<<"</samplerate><numchannels>"<<_manager.numberOfChannels()<<"</numchannels>"<<"  </fileheader>";
     std::string testsstring  = sstream.str();
   
-    std::string fileInsideZipName = "header.xml";
+    std::string fileInsideZipName = BYB_FILENAME_HEADER;
     mz_bool test = mz_zip_add_mem_to_archive_file_in_place(fileName.c_str(), fileInsideZipName.c_str(), testsstring.c_str(), testsstring.length(),"no comment", (uint16)strlen("no comment"), MZ_BEST_COMPRESSION);
   
     //------------ END OF ZIP ------------------
+    
+    
+    
 
     return true;
 }
@@ -387,7 +383,7 @@ std::string BYBFileRecorder::eventTxtFilename(const std::string &filename)
 {
     
     size_t dotpos = filename.find_last_of('.');
-    return filename.substr(0,dotpos) + "-events.txt";
+    return filename.substr(0,dotpos) + BYB_EVENTS_FILENAME_EXTENSION;
 }
 
 int BYBFileRecorder::writeMarkerTextFile(const std::string &filename, const std::list<std::pair<std::string, int64_t> > &markers) const {
