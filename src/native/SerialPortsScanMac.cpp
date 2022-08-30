@@ -443,12 +443,19 @@ namespace BackyardBrains {
                 Log::msg("Interesting device IOUSBHostDevice");
                 #endif
             }
+            
             else if (strcmp(deviceName, "STM32L4_Boot") == 0)
             {
                  #ifdef LOG_USB
                 Log::msg("Found our bootloader for STM32");
                 #endif
                 foundBootloader = true;
+            }
+            else if (strcmp(deviceName, "Muscle SpikerBox Pro") == 0)
+            {
+                 #ifdef LOG_USB
+                Log::msg("Interesting device Muscle SpikerBox Pro");
+                #endif
             }
             else if(strcmp(deviceName, "Arduino Leonardo") == 0)
             {
