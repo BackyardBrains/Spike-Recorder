@@ -515,6 +515,15 @@ void ConfigView::SetupScreen()
                                                         touchSerialPortWidget->addItem("Human-Human Interface");
                                                         Log::msg("Serial dropdown item: Human-Human Interface");
                                                     }
+                                                    else
+                                                    {
+                                                        if(it->deviceType == ArduinoSerial::sbpromusclecdc)
+                                                        {
+                                                            touchSerialPortWidget->addItem("Muscle SpikerBox Pro");
+                                                            Log::msg("Serial dropdown item: Muscle SpikerBox Pro");
+                                                        }
+                                                        
+                                                    }
                                                 }
                                             }
                                         }
@@ -618,7 +627,14 @@ void ConfigView::SetupScreen()
                                                         serialPortWidget->addItem("Human-Human Interface");
                                                         Log::msg("Serial dropdown item: Human-Human Interface");
                                                     }
-
+                                                    else
+                                                    {
+                                                        if(it->deviceType == ArduinoSerial::sbpromusclecdc)
+                                                        {
+                                                            serialPortWidget->addItem("Muscle SpikerBox Pro");
+                                                            Log::msg("Serial dropdown item: Muscle SpikerBox Pro");
+                                                        }
+                                                    }
                                                 }
 
                                             }
@@ -709,6 +725,7 @@ void ConfigView::SetupScreen()
              || _manager.getCurrentPort().deviceType == ArduinoSerial::hhibox
              || _manager.getCurrentPort().deviceType == ArduinoSerial::plant
              || _manager.getCurrentPort().deviceType == ArduinoSerial::muscleusb
+             || _manager.getCurrentPort().deviceType == ArduinoSerial::sbpromusclecdc
              || _manager.getCurrentPort().deviceType == ArduinoSerial::heartPro
              || _manager.getCurrentPort().deviceType == ArduinoSerial::neuronOneChannel))
         {
