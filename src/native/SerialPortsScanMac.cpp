@@ -75,6 +75,7 @@ namespace BackyardBrains {
     static bool searchNowForPath = false;
     static bool foundThePath = false;
     static char actualPathThatWeFound[MAXPATHLEN];
+    static io_name_t nameOfDeviceToInspectGlobal;
     enum {
         kDoPropsOption = 1,
         kDoRootOption  = 2
@@ -92,26 +93,12 @@ namespace BackyardBrains {
         
        
         options = kDoPropsOption;
-       /* for(arg = 1; arg < argc; arg++)
+      
+        
+        for( int i=0;i<128;i++)
         {
-            if ('-' == argv[arg][0]) switch(argv[arg][1])
-            {
-                case 'h':
-                    printf("%s [-p] [-r] [-h] [plane]\n", argv[0]);
-                    exit(0);
-                    break;
-                case 'p':
-                    options &= ~kDoPropsOption;
-                    break;
-                case 'r':
-                    options |= kDoRootOption;
-                    break;
-            }
-            else
-            {
-                plane = argv[arg];
-            }
-        }*/
+            nameOfDeviceToInspectGlobal[i] = nameOfDeviceToInspect[i];
+        }
         
         // Obtain the I/O Kit communication handle.
         
@@ -191,7 +178,7 @@ namespace BackyardBrains {
             assert(status == KERN_SUCCESS);
             
             
-            //printf("%s", name);
+            printf("%s depth: %d", name, depth);
             bool searchingForPath = false;
             if (strcmp(nameOfDeviceToInspect, name)== 0)
             {
@@ -208,15 +195,15 @@ namespace BackyardBrains {
             
             status = IOObjectGetClass(service, name);
             assert(status == KERN_SUCCESS);
-            //printf("  <class %s", name);
+            printf("  <class %s\n", name);
             
             /*status = IOServiceGetBusyState(service, &busy);
             if(status == KERN_SUCCESS)
-                printf(", busy %d", busy);*/
+                printf(", busy %d", busy);
             // Print out the retain count of the service.
             
-            //printf(", retain count %d>\n", IOObjectGetRetainCount(service));
-            
+            printf(", retain count %d>\n", IOObjectGetRetainCount(service));
+            */
             // Print out the properties of the service.
             
             if (doProps)
@@ -229,7 +216,7 @@ namespace BackyardBrains {
             {
                 searchingForPath = false;
                 searchNowForPath = false;
-                //printf("----------- END OF SEACH-------");
+                printf("\n----------- END OF SEACH------- depth: %d\n", depth);
             }
             // Release resources.
             
@@ -267,8 +254,8 @@ namespace BackyardBrains {
         // IOKit pretty
         CFDataRef    data;
         bool foundTheCallout = false;
-        //indent(false, ctxt->depth, ctxt->stackOfBits);
-        //printf("  ");
+        indent(false, ctxt->depth, ctxt->stackOfBits);
+        printf("  ");
         if(searchNowForPath)
         {
             if(CFStringCompare((CFStringRef)key,CFSTR("IOCalloutDevice"),0)==kCFCompareEqualTo)
@@ -276,8 +263,32 @@ namespace BackyardBrains {
                 foundTheCallout = true;
             }
         }
-        //printCFString( (CFStringRef)key );
-        //printf(" = ");
+        printCFString( (CFStringRef)key );
+        printf(" = ");
+        bool debugPrintEnable = true;
+        if(debugPrintEnable)
+        {
+            data = IOCFSerialize((CFStringRef)value, kNilOptions);
+                if( data) {
+                    if( 10000 > CFDataGetLength(data))
+                    {
+                        printf((char*)CFDataGetBytePtr(data));
+                        char * tempTextPointer = (char*)CFDataGetBytePtr(data);
+                        char* tempResult = strstr(tempTextPointer, (char *) nameOfDeviceToInspectGlobal );
+                        if(tempResult!=nullptr)
+                        {
+                            searchNowForPath = true;
+                        }
+                    }
+                    else
+                    {
+                        printf("<is BIG>");
+                    }
+                    CFRelease(data);
+                } else
+                    printf("<IOCFSerialize failed>");
+                printf("\n");
+        }
         if(foundTheCallout)
         {
                 data = IOCFSerialize((CFStringRef)value, kNilOptions);
@@ -290,6 +301,8 @@ namespace BackyardBrains {
                         int i=0;
                         bool inside = false;
                         int pathi = 0;
+                        
+                        //parse something like this path: <string>/dev/cu.usbmodem143101</string>
                         while(((char*)CFDataGetBytePtr(data))[i]!=0  && i<MAXPATHLEN)
                         {
                             if(((char*)CFDataGetBytePtr(data))[i]=='<')
@@ -316,16 +329,16 @@ namespace BackyardBrains {
                     }
                     else
                     {
-                        //printf("<is BIG>");
+                        printf("<is BIG>");
                     }
                     
                     CFRelease(data);
                 } else
                 {
-                    //printf("<IOCFSerialize failed>");
+                    printf("<IOCFSerialize failed>");
                 }
         }
-        //printf("\n");
+        printf("\n");
         
 
     }
@@ -342,8 +355,8 @@ namespace BackyardBrains {
         context.stackOfBits = stackOfBits;
         
         // Prepare to print out the service's properties.
-        //indent(false, context.depth, context.stackOfBits);
-        //printf("{\n");
+        indent(false, context.depth, context.stackOfBits);
+        printf("{\n");
         
         // Obtain the service's properties.
         
@@ -358,10 +371,10 @@ namespace BackyardBrains {
         
         CFRelease(dictionary);
         
-        //indent(false, context.depth, context.stackOfBits);
-        //printf("}\n");
-        //indent(false, context.depth, context.stackOfBits);
-        //printf("\n");
+        indent(false, context.depth, context.stackOfBits);
+        printf("}\n");
+        indent(false, context.depth, context.stackOfBits);
+        printf("\n");
         
     }
     
@@ -443,7 +456,6 @@ namespace BackyardBrains {
                 Log::msg("Interesting device IOUSBHostDevice");
                 #endif
             }
-            
             else if (strcmp(deviceName, "STM32L4_Boot") == 0)
             {
                  #ifdef LOG_USB
@@ -453,6 +465,10 @@ namespace BackyardBrains {
             }
             else if (strcmp(deviceName, "Muscle SpikerBox Pro") == 0)
             {
+                //usbmodem
+                ////swap Musscle SpikerBox Pro with IOSerialBSDClient
+                //sprintf(deviceName, "IOSerialBSDClient");
+
                  #ifdef LOG_USB
                 Log::msg("Interesting device Muscle SpikerBox Pro");
                 #endif
