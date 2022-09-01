@@ -76,6 +76,7 @@ namespace BackyardBrains {
     static bool foundThePath = false;
     static char actualPathThatWeFound[MAXPATHLEN];
     static io_name_t nameOfDeviceToInspectGlobal;
+    static bool searchNowForPathInOnlyOneDevice = false;
     enum {
         kDoPropsOption = 1,
         kDoRootOption  = 2
@@ -178,13 +179,13 @@ namespace BackyardBrains {
             assert(status == KERN_SUCCESS);
             
             
-            printf("%s depth: %d", name, depth);
+            //printf("%s depth: %d", name, depth);
             bool searchingForPath = false;
             if (strcmp(nameOfDeviceToInspect, name)== 0)
             {
                 searchingForPath = true;
                 searchNowForPath = true;
-                printf("Found name of the device in reg");
+                printf("Found name of the device in reg\n");
             }
             if (strcmp("Root", name))
                 doProps = (options & kDoPropsOption) != 0;
@@ -195,7 +196,7 @@ namespace BackyardBrains {
             
             status = IOObjectGetClass(service, name);
             assert(status == KERN_SUCCESS);
-            printf("  <class %s\n", name);
+            //printf("  <class %s\n", name);
             
             /*status = IOServiceGetBusyState(service, &busy);
             if(status == KERN_SUCCESS)
@@ -212,11 +213,12 @@ namespace BackyardBrains {
             // Recurse down.
             
             traverse(options, plane, children, child, depth + 1, stackOfBits, nameOfDeviceToInspect);
+            searchNowForPathInOnlyOneDevice = false;
             if(searchingForPath)
             {
                 searchingForPath = false;
                 searchNowForPath = false;
-                printf("\n----------- END OF SEACH------- depth: %d\n", depth);
+                //printf("\n----------- END OF SEACH------- depth: %d\n", depth);
             }
             // Release resources.
             
@@ -254,41 +256,46 @@ namespace BackyardBrains {
         // IOKit pretty
         CFDataRef    data;
         bool foundTheCallout = false;
-        indent(false, ctxt->depth, ctxt->stackOfBits);
-        printf("  ");
-        if(searchNowForPath)
+        //indent(false, ctxt->depth, ctxt->stackOfBits);
+        //printf("  ");
+        if(searchNowForPath || searchNowForPathInOnlyOneDevice)
         {
             if(CFStringCompare((CFStringRef)key,CFSTR("IOCalloutDevice"),0)==kCFCompareEqualTo)
             {
                 foundTheCallout = true;
             }
         }
-        printCFString( (CFStringRef)key );
-        printf(" = ");
-        bool debugPrintEnable = true;
-        if(debugPrintEnable)
+        //printCFString( (CFStringRef)key );
+        //printf(" = ");
+        
+        //print value
+        data = IOCFSerialize((CFStringRef)value, kNilOptions);
+        if( data)
         {
-            data = IOCFSerialize((CFStringRef)value, kNilOptions);
-                if( data) {
-                    if( 10000 > CFDataGetLength(data))
-                    {
-                        printf((char*)CFDataGetBytePtr(data));
-                        char * tempTextPointer = (char*)CFDataGetBytePtr(data);
-                        char* tempResult = strstr(tempTextPointer, (char *) nameOfDeviceToInspectGlobal );
-                        if(tempResult!=nullptr)
-                        {
-                            searchNowForPath = true;
-                        }
-                    }
-                    else
-                    {
-                        printf("<is BIG>");
-                    }
-                    CFRelease(data);
-                } else
-                    printf("<IOCFSerialize failed>");
-                printf("\n");
+            if( 10000 > CFDataGetLength(data))
+            {
+                //printf((char*)CFDataGetBytePtr(data));
+                char * tempTextPointer = (char*)CFDataGetBytePtr(data);
+                char* tempResult = strstr(tempTextPointer, (char *) nameOfDeviceToInspectGlobal );
+                if(tempResult!=nullptr)
+                {
+                    searchNowForPathInOnlyOneDevice = true;
+                    //searchNowForPath = true;
+                }
+            }
+            else
+            {
+                //printf("<is BIG>");
+            }
+            CFRelease(data);
         }
+        else
+        {
+            //printf("<IOCFSerialize failed>");
+        }
+        //printf("\n");
+        
+        //if we found IOCalloutDevice key extract path from value
         if(foundTheCallout)
         {
                 data = IOCFSerialize((CFStringRef)value, kNilOptions);
@@ -325,20 +332,20 @@ namespace BackyardBrains {
                             i++;
                         }
                         actualPathThatWeFound[pathi] = 0;
-                        printf((char*)CFDataGetBytePtr(data));
+                        //printf((char*)CFDataGetBytePtr(data));
                     }
                     else
                     {
-                        printf("<is BIG>");
+                        //printf("<is BIG>");
                     }
                     
                     CFRelease(data);
                 } else
                 {
-                    printf("<IOCFSerialize failed>");
+                    //printf("<IOCFSerialize failed>");
                 }
         }
-        printf("\n");
+        //printf("\n");
         
 
     }
@@ -355,8 +362,8 @@ namespace BackyardBrains {
         context.stackOfBits = stackOfBits;
         
         // Prepare to print out the service's properties.
-        indent(false, context.depth, context.stackOfBits);
-        printf("{\n");
+        //indent(false, context.depth, context.stackOfBits);
+        //printf("{\n");
         
         // Obtain the service's properties.
         
@@ -371,10 +378,10 @@ namespace BackyardBrains {
         
         CFRelease(dictionary);
         
-        indent(false, context.depth, context.stackOfBits);
-        printf("}\n");
-        indent(false, context.depth, context.stackOfBits);
-        printf("\n");
+        //indent(false, context.depth, context.stackOfBits);
+        //printf("}\n");
+        //indent(false, context.depth, context.stackOfBits);
+        //printf("\n");
         
     }
     
