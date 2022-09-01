@@ -2450,9 +2450,16 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                             {
                                                 setDeviceTypeToCurrentPort(ArduinoSerial::hhibox);
                                             }
+                                            else
+                                            {
+                                                std::size_t found=hardwareType.find("MSBPCDC");
+                                                if (found!=std::string::npos)
+                                                {
+                                                    setDeviceTypeToCurrentPort(ArduinoSerial::hhibox);
+                                                }
+                                            }
 
                                         }
-
                                     }
                                 }
                             }
