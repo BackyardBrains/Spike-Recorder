@@ -472,12 +472,14 @@ namespace BackyardBrains {
             }
             else if (strcmp(deviceName, "Muscle SpikerBox Pro") == 0)
             {
-                //usbmodem
-                ////swap Musscle SpikerBox Pro with IOSerialBSDClient
-                //sprintf(deviceName, "IOSerialBSDClient");
-
                  #ifdef LOG_USB
                 Log::msg("Interesting device Muscle SpikerBox Pro");
+                #endif
+            }
+            else if (strcmp(deviceName, "Neuron SpikerBox Pro") == 0)
+            {
+                 #ifdef LOG_USB
+                Log::msg("Interesting device Neuron SpikerBox Pro");
                 #endif
             }
             else if(strcmp(deviceName, "Arduino Leonardo") == 0)
