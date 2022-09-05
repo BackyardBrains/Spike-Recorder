@@ -86,6 +86,8 @@ RecordingManager::RecordingManager() : _pos(0), _paused(false), _threshMode(fals
     configValues.loadDefaults();
     #endif
     initDefaultJoystickKeys();
+    _p300Active = false;
+    _p300AudioStimulationActive = false;
 
 }
 
@@ -591,7 +593,6 @@ bool RecordingManager::initSerial(const char *portName, int baudRate)
     BASS_ChannelGetInfo(stream, &info);
 
 
-
 	_lowPassFilterEnabled = false;
 	_highPassFilterEnabled = false;
 	_lowCornerFreq = frequency/2;
@@ -622,12 +623,16 @@ bool RecordingManager::initSerial(const char *portName, int baudRate)
         _virtualDevices.push_back(virtualDevice);
 
     }
-
+    
+    
 
     _devices[0].handle = stream;
     _fileMode = false;
     _hidMode = false;
     _serialMode = true;
+    
+    _p300Active = false;
+    _p300AudioStimulationActive = false;
    // devicesChanged.emit();
 
     for(unsigned int i = 0; i < (unsigned int)_numOfSerialChannels;i++)
@@ -640,7 +645,7 @@ bool RecordingManager::initSerial(const char *portName, int baudRate)
   //  _player.start(_arduinoSerial.maxSamplingRate()/_numOfSerialChannels);
     _player.setVolume(0);
     loadFilterSettings();
-    _arduinoSerial.askForExpansionBoardType();
+    _arduinoSerial.askForImportantStates();
 	return true;
 }
 
@@ -740,6 +745,34 @@ void RecordingManager::setSerialHardwareHPF(bool active)
     if(_serialMode)
     {
         _arduinoSerial.setHPF(active);
+    }
+}
+
+void RecordingManager::setP300OnHardware(bool active)
+{
+    if(_serialMode)
+    {
+        _arduinoSerial.setP300(active);
+        _p300Active = active;
+    }
+}
+
+void RecordingManager::setP300ActiveStateLocaly(bool active)
+{
+    _p300Active = active;
+}
+
+void RecordingManager::setP300AudioActiveStateLocaly(bool active)
+{
+    _p300AudioStimulationActive = active;
+}
+
+void RecordingManager::setP300SoundStimmulationOnHardware(bool active)
+{
+    if(_serialMode)
+    {
+        _arduinoSerial.setP300AudioStimulation(active);
+        _p300AudioStimulationActive = active;
     }
 }
 
@@ -2938,6 +2971,12 @@ int RecordingManager::getCurrentInputType()
                 break;
             case ArduinoSerial::hhibox:
                 return INPUT_TYPE_HHIBOX;
+                break;
+            case ArduinoSerial::sbpromusclecdc:
+                return INPUT_TYPE_SB_PRO;
+                break;
+            case ArduinoSerial::sbproneuroncdc:
+                return INPUT_TYPE_SB_PRO;
                 break;
             default:
                 return INPUT_TYPE_ARDUINO_UNKOWN;

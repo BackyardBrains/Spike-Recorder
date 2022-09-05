@@ -1603,6 +1603,32 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                 _numberOfChannels  =3;
             }
         }
+        else if(currentPort.deviceType == SerialDevice::sbpromusclecdc || currentPort.deviceType == SerialDevice::sbproneuroncdc)
+        {
+            _samplingRate = 10000;
+            _numberOfChannels = 2;
+
+            if(currentAddOnBoard == BOARD_WITH_ADDITIONAL_INPUTS)
+            {
+                    _numberOfChannels  =4;
+            }
+            else if(currentAddOnBoard == BOARD_WITH_HAMMER)
+            {
+                    _numberOfChannels  =3;
+            }
+            else if(currentAddOnBoard == BOARD_WITH_JOYSTICK)
+            {
+                    _numberOfChannels  =3;
+            }
+            else if(currentAddOnBoard == BOARD_WITH_EVENT_INPUTS)
+            {
+                    _numberOfChannels  =2;
+            }
+            else if(currentAddOnBoard == BOARD_ERG)
+            {
+                _numberOfChannels  =3;
+            }
+        }
         else if(currentPort.deviceType == SerialDevice::hhibox)
         {
             _samplingRate = 10000;
@@ -2450,9 +2476,24 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                             {
                                                 setDeviceTypeToCurrentPort(ArduinoSerial::hhibox);
                                             }
+                                            else
+                                            {
+                                                std::size_t found=hardwareType.find("MSBPCDC");
+                                                if (found!=std::string::npos)
+                                                {
+                                                    setDeviceTypeToCurrentPort(ArduinoSerial::sbpromusclecdc);
+                                                }
+                                                else
+                                                {
+                                                    std::size_t found=hardwareType.find("NSBPCDC");
+                                                    if (found!=std::string::npos)
+                                                    {
+                                                        setDeviceTypeToCurrentPort(ArduinoSerial::sbproneuroncdc);
+                                                    }
+                                                }
+                                            }
 
                                         }
-
                                     }
                                 }
                             }
@@ -2471,7 +2512,25 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                 _manager->addMarker(std::string(1, mnum+'0'), offset+offsetin);
 
             }//EVNT
+            
+            if(typeOfMessage == "p300" && portOpened())
+            {
+                Log::msg("P300 response received");
+                bool p300Active = (int)((unsigned int)valueOfMessage[0]-48)>0;
+                askForP300AudioState();
+                _manager->setP300ActiveStateLocaly(p300Active);
+                //_manager->setP300OnHardware(p300Active);
 
+            }//EVNT
+
+            if(typeOfMessage == "sound" && portOpened())
+            {
+                Log::msg("P300 sound response received");
+                bool p300SoundActive = (int)((unsigned int)valueOfMessage[0]-48)>0;
+                _manager->setP300AudioActiveStateLocaly(p300SoundActive);
+                //_manager->setP300SoundStimmulationOnHardware(p300SoundActive);
+
+            }
             if(typeOfMessage == "BRD")
             {
                 Log::msg("Change board type on serial");
@@ -2713,6 +2772,36 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         writeToPort((sstm.str().c_str()),sstm.str().length());
     }
     
+
+    void ArduinoSerial::setP300(bool active)
+    {
+        std::stringstream sstm;
+        if(active)
+        {
+            sstm << "stimon:;\n";
+        }
+        else
+        {
+            sstm << "stimoff:;\n";
+        }
+        writeToPort((sstm.str().c_str()),sstm.str().length());
+    }
+
+    void ArduinoSerial::setP300AudioStimulation(bool active)
+    {
+        std::stringstream sstm;
+        if(active)
+        {
+            sstm << "sounon:;\n";
+        }
+        else
+        {
+            sstm << "sounoff:;\n";
+        }
+        writeToPort((sstm.str().c_str()),sstm.str().length());
+    }
+
+
     void ArduinoSerial::askForBoardType()
     {
         std::stringstream sstm;
@@ -2722,9 +2811,24 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
     }
 
+    void ArduinoSerial::askForP300AudioState()
+    {
+        std::stringstream sstm;
+        sstm << "sound?:;\n";
+        Log::msg("askForP300AudioState - Ask for p300 audio state");
+         writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
+    }
+    void ArduinoSerial::askForImportantStates()
+    {
+        std::stringstream sstm;
+        sstm << "board:;p300?:;\n";
+        Log::msg("askForImportantStates - Ask for important states");
+         writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
+    }
+
     void ArduinoSerial::askForExpansionBoardType()
     {
-        if(currentPort.deviceType == SerialDevice::heartPro || currentPort.deviceType == SerialDevice::hhibox)
+        if(currentPort.deviceType == SerialDevice::heartPro || currentPort.deviceType == SerialDevice::hhibox || currentPort.deviceType == SerialDevice::humansb || currentPort.deviceType == SerialDevice::sbpromusclecdc || currentPort.deviceType == SerialDevice::sbproneuroncdc)
         {
             std::stringstream sstm;
             sstm << "board:;\n";

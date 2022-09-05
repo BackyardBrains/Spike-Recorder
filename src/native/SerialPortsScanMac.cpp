@@ -75,6 +75,8 @@ namespace BackyardBrains {
     static bool searchNowForPath = false;
     static bool foundThePath = false;
     static char actualPathThatWeFound[MAXPATHLEN];
+    static io_name_t nameOfDeviceToInspectGlobal;
+    static bool searchNowForPathInOnlyOneDevice = false;
     enum {
         kDoPropsOption = 1,
         kDoRootOption  = 2
@@ -92,26 +94,12 @@ namespace BackyardBrains {
         
        
         options = kDoPropsOption;
-       /* for(arg = 1; arg < argc; arg++)
+      
+        
+        for( int i=0;i<128;i++)
         {
-            if ('-' == argv[arg][0]) switch(argv[arg][1])
-            {
-                case 'h':
-                    printf("%s [-p] [-r] [-h] [plane]\n", argv[0]);
-                    exit(0);
-                    break;
-                case 'p':
-                    options &= ~kDoPropsOption;
-                    break;
-                case 'r':
-                    options |= kDoRootOption;
-                    break;
-            }
-            else
-            {
-                plane = argv[arg];
-            }
-        }*/
+            nameOfDeviceToInspectGlobal[i] = nameOfDeviceToInspect[i];
+        }
         
         // Obtain the I/O Kit communication handle.
         
@@ -191,13 +179,13 @@ namespace BackyardBrains {
             assert(status == KERN_SUCCESS);
             
             
-            //printf("%s", name);
+            //printf("%s depth: %d", name, depth);
             bool searchingForPath = false;
             if (strcmp(nameOfDeviceToInspect, name)== 0)
             {
                 searchingForPath = true;
                 searchNowForPath = true;
-                printf("Found name of the device in reg");
+                printf("Found name of the device in reg\n");
             }
             if (strcmp("Root", name))
                 doProps = (options & kDoPropsOption) != 0;
@@ -208,15 +196,15 @@ namespace BackyardBrains {
             
             status = IOObjectGetClass(service, name);
             assert(status == KERN_SUCCESS);
-            //printf("  <class %s", name);
+            //printf("  <class %s\n", name);
             
             /*status = IOServiceGetBusyState(service, &busy);
             if(status == KERN_SUCCESS)
-                printf(", busy %d", busy);*/
+                printf(", busy %d", busy);
             // Print out the retain count of the service.
             
-            //printf(", retain count %d>\n", IOObjectGetRetainCount(service));
-            
+            printf(", retain count %d>\n", IOObjectGetRetainCount(service));
+            */
             // Print out the properties of the service.
             
             if (doProps)
@@ -225,11 +213,12 @@ namespace BackyardBrains {
             // Recurse down.
             
             traverse(options, plane, children, child, depth + 1, stackOfBits, nameOfDeviceToInspect);
+            searchNowForPathInOnlyOneDevice = false;
             if(searchingForPath)
             {
                 searchingForPath = false;
                 searchNowForPath = false;
-                //printf("----------- END OF SEACH-------");
+                //printf("\n----------- END OF SEACH------- depth: %d\n", depth);
             }
             // Release resources.
             
@@ -269,7 +258,7 @@ namespace BackyardBrains {
         bool foundTheCallout = false;
         //indent(false, ctxt->depth, ctxt->stackOfBits);
         //printf("  ");
-        if(searchNowForPath)
+        if(searchNowForPath || searchNowForPathInOnlyOneDevice)
         {
             if(CFStringCompare((CFStringRef)key,CFSTR("IOCalloutDevice"),0)==kCFCompareEqualTo)
             {
@@ -278,6 +267,35 @@ namespace BackyardBrains {
         }
         //printCFString( (CFStringRef)key );
         //printf(" = ");
+        
+        //print value
+        data = IOCFSerialize((CFStringRef)value, kNilOptions);
+        if( data)
+        {
+            if( 10000 > CFDataGetLength(data))
+            {
+                //printf((char*)CFDataGetBytePtr(data));
+                char * tempTextPointer = (char*)CFDataGetBytePtr(data);
+                char* tempResult = strstr(tempTextPointer, (char *) nameOfDeviceToInspectGlobal );
+                if(tempResult!=nullptr)
+                {
+                    searchNowForPathInOnlyOneDevice = true;
+                    //searchNowForPath = true;
+                }
+            }
+            else
+            {
+                //printf("<is BIG>");
+            }
+            CFRelease(data);
+        }
+        else
+        {
+            //printf("<IOCFSerialize failed>");
+        }
+        //printf("\n");
+        
+        //if we found IOCalloutDevice key extract path from value
         if(foundTheCallout)
         {
                 data = IOCFSerialize((CFStringRef)value, kNilOptions);
@@ -290,6 +308,8 @@ namespace BackyardBrains {
                         int i=0;
                         bool inside = false;
                         int pathi = 0;
+                        
+                        //parse something like this path: <string>/dev/cu.usbmodem143101</string>
                         while(((char*)CFDataGetBytePtr(data))[i]!=0  && i<MAXPATHLEN)
                         {
                             if(((char*)CFDataGetBytePtr(data))[i]=='<')
@@ -312,7 +332,7 @@ namespace BackyardBrains {
                             i++;
                         }
                         actualPathThatWeFound[pathi] = 0;
-                        printf((char*)CFDataGetBytePtr(data));
+                        //printf((char*)CFDataGetBytePtr(data));
                     }
                     else
                     {
@@ -449,6 +469,18 @@ namespace BackyardBrains {
                 Log::msg("Found our bootloader for STM32");
                 #endif
                 foundBootloader = true;
+            }
+            else if (strcmp(deviceName, "Muscle SpikerBox Pro") == 0)
+            {
+                 #ifdef LOG_USB
+                Log::msg("Interesting device Muscle SpikerBox Pro");
+                #endif
+            }
+            else if (strcmp(deviceName, "Neuron SpikerBox Pro") == 0)
+            {
+                 #ifdef LOG_USB
+                Log::msg("Interesting device Neuron SpikerBox Pro");
+                #endif
             }
             else if(strcmp(deviceName, "Arduino Leonardo") == 0)
             {
