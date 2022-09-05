@@ -50,6 +50,22 @@ MainView::MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder
 	_configButton->setNormalTex(Widgets::TextureGL::get("data/config.bmp"));
 	_configButton->setHoverTex(Widgets::TextureGL::get("data/confighigh.bmp"));
 	_configButton->clicked.connect(this, &MainView::configPressed);
+    
+    _p300Button = new Widgets::PushButton(this);
+    _p300Button->setNormalTex(Widgets::TextureGL::get("data/p300normal.bmp"));
+    _p300Button->setHoverTex(Widgets::TextureGL::get("data/p300high.bmp"));
+    _p300Button->clicked.connect(this, &MainView::p300Pressed);
+    _p300Button->setRightPadding(5);
+    _p300Button->setSizeHint(Widgets::Size(53,48));
+    
+    _p300AudioButton = new Widgets::PushButton(this);
+    _p300AudioButton->setNormalTex(Widgets::TextureGL::get("data/p300audio-normal.bmp"));
+    _p300AudioButton->setHoverTex(Widgets::TextureGL::get("data/p300audio-high.bmp"));
+    _p300AudioButton->clicked.connect(this, &MainView::p300AudioStimulationPressed);
+    _p300AudioButton->setRightPadding(5);
+    _p300AudioButton->setSizeHint(Widgets::Size(53,48));
+    
+    
 	threshButton = new Widgets::PushButton(this);
 	threshButton->setNormalTex(Widgets::TextureGL::get("data/thresh.bmp"));
 	threshButton->setHoverTex(Widgets::TextureGL::get("data/threshhigh.bmp"));
@@ -151,6 +167,7 @@ MainView::MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder
 	topBar->addSpacing(10);
 	topBar->addWidget(_configButton);
 	topBar->addSpacing(5);
+
 	topBar->addWidget(threshButton);
 	//topBar->addSpacing(5);
 	topBar->addWidget(_fftButton);
@@ -159,12 +176,15 @@ MainView::MainView(RecordingManager &mngr, AnalysisManager &anaman, FileRecorder
     topBar->addWidget(_neuronHIDButton);
 
 
+
     shieldsButtonBoxLayout = new Widgets::BoxLayout(Widgets::Horizontal);
     //shieldsButtonBoxLayout->addWidget(_plantSSButton);
     //shieldsButtonBoxLayout->addWidget(_muscleSSButton);
     //shieldsButtonBoxLayout->addWidget(_heartSSButton);
     topBar->addLayout(shieldsButtonBoxLayout);
-
+    topBar->addWidget(_p300Button);
+    topBar->addWidget(_p300AudioButton);
+    
     //topBar->addSpacing(5);
 	topBar->addWidget(_analysisButton);
     topBar->addSpacing(30);
@@ -449,9 +469,39 @@ void MainView::configPressed() {
 	c->setGeometry(rect());
 	Log::msg("Add Config Window...");
 	Widgets::Application::getInstance()->addWindow(c);
+}
 
+void MainView::p300Pressed()
+{
+    if(_manager.getP300HardwareStatus())
+    {
+        _manager.setP300OnHardware(false);
+        _p300Button->setNormalTex(Widgets::TextureGL::get("data/p300normal.bmp"));
+        _p300Button->setHoverTex(Widgets::TextureGL::get("data/p300high.bmp"));
+    }
+    else
+    {
+        _manager.setP300OnHardware(true);
+        _p300Button->setNormalTex(Widgets::TextureGL::get("data/p300selected.bmp"));
+        _p300Button->setHoverTex(Widgets::TextureGL::get("data/p300selected.bmp"));
+    }
+    
+}
 
-
+void MainView::p300AudioStimulationPressed()
+{
+    if(_manager.getP300AudioStimulationHardwareStatus())
+    {
+        _manager.setP300SoundStimmulationOnHardware(false);
+        _p300AudioButton->setNormalTex(Widgets::TextureGL::get("data/p300audio-normal.bmp"));
+        _p300AudioButton->setHoverTex(Widgets::TextureGL::get("data/p300audio-high.bmp"));
+    }
+    else
+    {
+        _manager.setP300SoundStimmulationOnHardware(true);
+        _p300AudioButton->setNormalTex(Widgets::TextureGL::get("data/p300audio-selected.bmp"));
+        _p300AudioButton->setHoverTex(Widgets::TextureGL::get("data/p300audio-selected.bmp"));
+    }
 }
 
 void MainView::analysisPressed() {
@@ -563,6 +613,10 @@ void MainView::analysisPressed() {
                 std::size_t found;
                 found  = _manager.getCurrentPort().portName.find(selectedPort.portName);
 
+                //_manager.setP300OnHardware(false);
+                //_manager.setP300SoundStimmulationOnHardware(false);
+        
+            
                 _manager.setSerialNumberOfChannels(1);
                 _manager.disconnectFromSerial();
 
@@ -1593,10 +1647,42 @@ void MainView::paintEvent()
         }
     }
 
+    //------ P300 on Human SB control buttons -----
+    if(_manager.serialMode())//&& _manager.getCurrentPort().deviceType == ArduinoSerial::humansb)
+    {
+        _p300Button->setVisible(true);
+        if(_manager.getP300HardwareStatus())
+        {
+            _p300Button->setNormalTex(Widgets::TextureGL::get("data/p300selected.bmp"));
+            _p300Button->setHoverTex(Widgets::TextureGL::get("data/p300selected.bmp"));
+            _p300AudioButton->setVisible(true);
+            if(_manager.getP300AudioStimulationHardwareStatus())
+            {
+                _p300AudioButton->setNormalTex(Widgets::TextureGL::get("data/p300audio-selected.bmp"));
+                _p300AudioButton->setHoverTex(Widgets::TextureGL::get("data/p300audio-selected.bmp"));
+            }
+            else
+            {
+                _p300AudioButton->setNormalTex(Widgets::TextureGL::get("data/p300audio-normal.bmp"));
+                _p300AudioButton->setHoverTex(Widgets::TextureGL::get("data/p300audio-high.bmp"));
+            }
+        }
+        else
+        {
+            _p300Button->setNormalTex(Widgets::TextureGL::get("data/p300normal.bmp"));
+            _p300Button->setHoverTex(Widgets::TextureGL::get("data/p300high.bmp"));
+            _p300AudioButton->setVisible(false);
+        }
+    }
+    else
+    {
+        _p300Button->setVisible(false);
+        _p300AudioButton->setVisible(false);
+    }
 
-
-
-
+    
+    //------- alpha wave feedback -----------------
+    
     if(_fftView->active() && _manager.serialMode())
     {
         _alphaFeedbackButton->setVisible(true);
@@ -1627,6 +1713,10 @@ void MainView::paintEvent()
         _alphaFeedbackButton->setVisible(false);
     }
 
+    
+    //-------------- HID buttons connect/disconnect------------
+    
+    
     if(_manager.hidMode())
     {
 

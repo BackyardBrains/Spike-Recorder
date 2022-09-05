@@ -52,7 +52,7 @@ void Game::loadResources() {
 
 	Widgets::TextureGL::load("data/save.bmp");
 	Widgets::TextureGL::load("data/savehigh.bmp");
-
+    
 	Widgets::TextureGL::load("data/pin.bmp");
 	Widgets::TextureGL::load("data/threshpin.bmp");
 	Widgets::TextureGL::load("data/dropdown.bmp");
@@ -200,6 +200,13 @@ void Game::loadResources() {
     Widgets::TextureGL::load("data/cancel-normal.bmp");
     Widgets::TextureGL::load("data/okbtn-normal.bmp");
     Widgets::TextureGL::load("data/okbtn-high.bmp");
+    
+    Widgets::TextureGL::load("data/p300normal.bmp");
+    Widgets::TextureGL::load("data/p300high.bmp");
+    Widgets::TextureGL::load("data/p300selected.bmp");
+    Widgets::TextureGL::load("data/p300audio-normal.bmp");
+    Widgets::TextureGL::load("data/p300audio-high.bmp");
+    Widgets::TextureGL::load("data/p300audio-selected.bmp");
 
 }
 

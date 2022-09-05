@@ -112,6 +112,8 @@ namespace BackyardBrains {
         void sendPotentiometerMessage(uint8_t value);
         void checkAllPortsForArduino(ArduinoSerial * workingArduinoRef);
         void askForBoardType();
+        void askForImportantStates();
+        void askForP300AudioState();
         void askForExpansionBoardType();
         void sendMessageToPutBoardIntoBootloaderMode();
         void setBaudRate(int baudRate);
@@ -137,6 +139,9 @@ namespace BackyardBrains {
         
         void setGain(bool active);
         void setHPF(bool active);
+        
+        void setP300(bool active);
+        void setP300AudioStimulation(bool active);
     private:
         RecordingManager *_manager;
         bool _shouldRestartDevice;
