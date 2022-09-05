@@ -1648,7 +1648,7 @@ void MainView::paintEvent()
     }
 
     //------ P300 on Human SB control buttons -----
-    if(_manager.serialMode())//&& _manager.getCurrentPort().deviceType == ArduinoSerial::humansb)
+    if(_manager.serialMode() && _manager.getCurrentPort().deviceType == ArduinoSerial::humansb)
     {
         _p300Button->setVisible(true);
         if(_manager.getP300HardwareStatus())
