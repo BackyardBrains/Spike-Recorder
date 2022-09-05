@@ -2942,6 +2942,9 @@ int RecordingManager::getCurrentInputType()
             case ArduinoSerial::sbpromusclecdc:
                 return INPUT_TYPE_SB_PRO;
                 break;
+            case ArduinoSerial::sbproneuroncdc:
+                return INPUT_TYPE_SB_PRO;
+                break;
             default:
                 return INPUT_TYPE_ARDUINO_UNKOWN;
                 break;

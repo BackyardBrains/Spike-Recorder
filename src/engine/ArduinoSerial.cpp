@@ -1603,7 +1603,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                 _numberOfChannels  =3;
             }
         }
-        else if(currentPort.deviceType == SerialDevice::sbpromusclecdc)
+        else if(currentPort.deviceType == SerialDevice::sbpromusclecdc || currentPort.deviceType == SerialDevice::sbproneuroncdc)
         {
             _samplingRate = 10000;
             _numberOfChannels = 2;
@@ -2483,6 +2483,14 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                                 {
                                                     setDeviceTypeToCurrentPort(ArduinoSerial::sbpromusclecdc);
                                                 }
+                                                else
+                                                {
+                                                    std::size_t found=hardwareType.find("NSBPCDC");
+                                                    if (found!=std::string::npos)
+                                                    {
+                                                        setDeviceTypeToCurrentPort(ArduinoSerial::sbproneuroncdc);
+                                                    }
+                                                }
                                             }
 
                                         }
@@ -2757,7 +2765,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
     void ArduinoSerial::askForExpansionBoardType()
     {
-        if(currentPort.deviceType == SerialDevice::heartPro || currentPort.deviceType == SerialDevice::hhibox || currentPort.deviceType == SerialDevice::humansb || currentPort.deviceType == SerialDevice::sbpromusclecdc)
+        if(currentPort.deviceType == SerialDevice::heartPro || currentPort.deviceType == SerialDevice::hhibox || currentPort.deviceType == SerialDevice::humansb || currentPort.deviceType == SerialDevice::sbpromusclecdc || currentPort.deviceType == SerialDevice::sbproneuroncdc)
         {
             std::stringstream sstm;
             sstm << "board:;\n";
