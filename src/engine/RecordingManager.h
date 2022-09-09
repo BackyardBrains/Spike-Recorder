@@ -155,6 +155,13 @@ public:
     void resetCurrentSerial();
     void setSerialHardwareGain(bool active);
     void setSerialHardwareHPF(bool active);
+    bool getP300HardwareStatus(){return _p300Active;}
+    bool getP300AudioStimulationHardwareStatus(){return _p300AudioStimulationActive;}
+    
+    void setP300OnHardware(bool active);
+    void setP300SoundStimmulationOnHardware(bool active);
+    void setP300ActiveStateLocaly(bool active);
+    void setP300AudioActiveStateLocaly(bool active);
 
     //HID functions
     bool hidMode() const {return _hidMode;}
@@ -338,7 +345,8 @@ private:
 	std::string _filename;
     int debugNumberOfSamplesThatWeNeed;
     int debugNumberOfSamplesThatWeGet;
-
+    bool _p300Active;
+    bool _p300AudioStimulationActive;
     //it keeps last zoom, gain and filter configs for each type of inputs
     AudioInputConfig audioInputConfigArray[11];//standard audio, file, HID, 3  shields, and unknown shield
     std::list<AudioInputConfig> arduinoShieldsConfigs;

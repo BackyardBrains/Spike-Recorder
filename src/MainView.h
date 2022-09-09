@@ -55,7 +55,8 @@ private:
 	Widgets::PushButton *_muscleHIDButton;
     Widgets::PushButton *_neuronHIDButton;
 	Widgets::PushButton *threshButton;
-
+    Widgets::PushButton *_p300Button;
+    Widgets::PushButton *_p300AudioButton;
     Widgets::BoxLayout * shieldsButtonBoxLayout;
    // Widgets::PushButton *_plantSSButton;
    // Widgets::PushButton *_muscleSSButton;
@@ -89,6 +90,8 @@ private:
 	void threshPressed();
 	void filePressed();
 	void configPressed();
+    void p300Pressed();
+    void p300AudioStimulationPressed();
 	void recordPressed();
 	void analysisPressed();
 

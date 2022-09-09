@@ -71,7 +71,9 @@ namespace BackyardBrains {
             erg=7,
             muscleusb=8,
             humansb=9,
-            hhibox=10
+            hhibox=10,
+            sbpromusclecdc=11,
+            sbproneuroncdc=12
         };
         struct SerialPort
         {
@@ -110,6 +112,8 @@ namespace BackyardBrains {
         void sendPotentiometerMessage(uint8_t value);
         void checkAllPortsForArduino(ArduinoSerial * workingArduinoRef);
         void askForBoardType();
+        void askForImportantStates();
+        void askForP300AudioState();
         void askForExpansionBoardType();
         void sendMessageToPutBoardIntoBootloaderMode();
         void setBaudRate(int baudRate);
@@ -135,6 +139,9 @@ namespace BackyardBrains {
         
         void setGain(bool active);
         void setHPF(bool active);
+        
+        void setP300(bool active);
+        void setP300AudioStimulation(bool active);
     private:
         RecordingManager *_manager;
         bool _shouldRestartDevice;
