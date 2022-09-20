@@ -219,7 +219,14 @@ void AnalysisView::savePressed() {
     std::string fileNameToSave = _manager.originalFileName();
     bool savingToBYBFile = f.updateCurrentFile(fileNameToSave);
 	if(rc == 0) {
-		s << markers.size() << " spikes were written to '" << filename << "'";
+        if(savingToBYBFile)
+        {
+            s << markers.size() << " spikes were written to '" << fileNameToSave << "'";
+        }
+        else
+        {
+            s << markers.size() << " spikes were written to '" << filename << "'";
+        }
 	} else {
         #ifdef __APPLE__
 		s << "Could not write markers. Please use /Users/username/Music/Spike Recorder/ directory.";
