@@ -28,7 +28,7 @@ bool openAnyFile(const char *file, HSTREAM &handle, int &nchan, int &samplerate,
                      filenameAndPath.end(),
                      lowerCasePath.begin(),
                      ::tolower);
-    if(lowerCasePath.find(".wav") != std::string::npos)
+    if(lowerCasePath.find(".wav") != std::string::npos || lowerCasePath.find(".m4a") != std::string::npos)
     {
         return OpenWAVFile(file, handle, nchan, samplerate, bytespersample);
     }
@@ -58,32 +58,42 @@ bool OpenBYBFile(const char *file, HSTREAM &handle, int &nchan, int &samplerate,
 
     std::string appWorkingDir = getRecordingPath();
     
-    
+    std::string finalSignalFileName = "";
     //Extract .wav file
     p = mz_zip_reader_extract_file_to_heap(&zip_archive, BYB_FILENAME_SIGNAL, &uncomp_size, 0);
     if (!p)
     {
-      printf("mz_zip_reader_extract_file_to_heap() failed!\n");
-      mz_zip_reader_end(&zip_archive);
-      return EXIT_FAILURE;
+      //test m4a (iOS filetype) if wav is not working
+      p = mz_zip_reader_extract_file_to_heap(&zip_archive, "signal.m4a", &uncomp_size, 0);
+      if (!p)
+      {
+          printf("mz_zip_reader_extract_file_to_heap() failed!\n");
+          mz_zip_reader_end(&zip_archive);
+          return EXIT_FAILURE;
+      }
+      else
+      {
+          finalSignalFileName = appWorkingDir + "/signal.m4a";
+      }
+    }
+    else
+    {
+        finalSignalFileName = appWorkingDir + "/"+BYB_FILENAME_SIGNAL;
     }
 
-    FILE *wavfile;
-    //std::string zipFileName = std::string(file);
-    //size_t dotpos = zipFileName.find_last_of('.');
-    std::string wavfilename = appWorkingDir + "/"+BYB_FILENAME_SIGNAL;
-    wavfile = fopen(wavfilename.c_str(), "wb");
-    if(wavfile == 0) {
+    FILE *signalfile;
+    signalfile = fopen(finalSignalFileName.c_str(), "wb");
+    if(signalfile == 0) {
         return false;
     }
-    fwrite(p, uncomp_size, 1, wavfile);
-    fclose(wavfile);
+    fwrite(p, uncomp_size, 1, signalfile);
+    fclose(signalfile);
     mz_free(p);
     
     
     
     
-    //Extract .wav file
+    //Extract -events.txt file
     p = mz_zip_reader_extract_file_to_heap(&zip_archive, BYB_FILENAME_EVENTS, &uncomp_size, 0);
     if (p)
     {
@@ -103,7 +113,7 @@ bool OpenBYBFile(const char *file, HSTREAM &handle, int &nchan, int &samplerate,
     mz_zip_reader_end(&zip_archive);
     
     
-    file = wavfilename.c_str();
+    file = finalSignalFileName.c_str();
     OpenWAVFile(file, handle, nchan, samplerate, bytespersample);
     
     return true;

@@ -830,8 +830,9 @@ bool RecordingManager::loadFile(const char *filename, MetadataChunk& m)
     }
     
     std::string mainFileName = std::string(filename);
-    size_t dotpos = mainFileName.find_last_of(BYB_FILENAME_EXTENSION);
-
+    //size_t dotpos = mainFileName.find_last_of(BYB_FILENAME_EXTENSION);
+    
+    size_t dotpos = mainFileName.rfind(BYB_FILENAME_EXTENSION);
     if(std::string::npos==dotpos)
     {
         //not .byb
@@ -950,7 +951,7 @@ void RecordingManager::initRecordingDevices() {
 const std::string RecordingManager::fileName()
 {
 
-    size_t dotpos = _filename.find_last_of(BYB_FILENAME_EXTENSION);
+    size_t dotpos = _filename.rfind(BYB_FILENAME_EXTENSION);
 
     if(std::string::npos==dotpos)
     {

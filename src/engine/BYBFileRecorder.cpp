@@ -210,7 +210,7 @@ void BYBFileRecorder::stop(const MetadataChunk *meta) {
 bool BYBFileRecorder::updateCurrentFile(std::string fileName)
 {
     std::string appWorkingDir = getRecordingPath();
-    size_t bybextposition = fileName.find_last_of(BYB_FILENAME_EXTENSION);
+    size_t bybextposition = fileName.rfind(BYB_FILENAME_EXTENSION);
     
     //if this is not .byb file at all return
     if(std::string::npos==bybextposition)
