@@ -23,7 +23,8 @@ Log::Log() {
 		_out = stdout;
 	} else {
 	    fprintf(stderr,getLoggingPath().c_str());
-		_out = fopen(getLoggingPath().c_str(), "w");
+		std::string fileLocation = getLoggingPath();
+		_out = fopen(fileLocation.c_str(), "w");
 		if(_out == 0) {
 			fprintf(stderr, "Error opening logging destination:%s\nRedirecting log to stdout.\n", strerror(errno));
 			_out = stdout;
@@ -39,9 +40,9 @@ void Log::init() {
 void Log::msg(const char *fmt, ...) {
 	init();
 
-struct timeval tp;
-gettimeofday(&tp, NULL);
-long ms = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+	struct timeval tp;
+	gettimeofday(&tp, NULL);
+	long ms = tp.tv_sec * 1000 + tp.tv_usec / 1000;
     std::stringstream mystream;
 
     mystream <<  tp.tv_sec <<" "<<tp.tv_usec / 1000;
@@ -61,9 +62,6 @@ long ms = tp.tv_sec * 1000 + tp.tv_usec / 1000;
 #else
 	vfprintf(_log->_out, format.c_str(), args);
 #endif
-
-
-
 	va_end(args);
 }
 

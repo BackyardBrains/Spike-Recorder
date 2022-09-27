@@ -441,11 +441,12 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         memset(buffer, 0, QUERYDOSDEVICE_BUFFER_SIZE);
         ret = QueryDosDeviceA(NULL, buffer, QUERYDOSDEVICE_BUFFER_SIZE);
         if (ret) {
-            printf("Detect Serial using QueryDosDeviceA: ");
+            //printf("Detect Serial using QueryDosDeviceA: ");
             for (p = buffer; *p; p += strlen(p) + 1) {
                 //printf(":  %s\n", p);
                 if (strncmp(p, "COM", 3)) continue;
-                printf("\nFound port  %s\n", p);
+                if(strncmp(p, "COM1", 4)==0) continue;
+                //printf("\nFound port  %s\n", p);
                 std::stringstream sstm;
                 sstm << p << ":";
                 list.push_back(sstm.str().c_str());
@@ -453,10 +454,10 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         } else {
             char buf[1024];
             win32_err(buf);
-            printf("QueryDosDeviceA failed, error \"%s\"\n", buf);
-            printf("Detect Serial using brute force GetDefaultCommConfig probing: ");
+            //printf("QueryDosDeviceA failed, error \"%s\"\n", buf);
+            //printf("Detect Serial using brute force GetDefaultCommConfig probing: ");
             for (int i=1; i<=32; i++) {
-                printf("try  %s", buf);
+                //printf("try  %s", buf);
                 COMMCONFIG cfg;
                 DWORD len;
                 snprintf(buf, sizeof(buf), "COM%d", i);
@@ -468,7 +469,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                     list.push_back(sstm.str().c_str());
 
                     //list.Add(name);
-                    printf(":  %s", buf);
+                    //printf(":  %s", buf);
                 }
             }
         }
@@ -933,7 +934,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         snprintf(buf, sizeof(buf), "%s", _portName.c_str());
         p = strstr(buf, "COM");
         if (p && sscanf(p + 3, "%d", &port_num) == 1) {
-            printf("port_num = %d\n", port_num);
+            //printf("port_num = %d\n", port_num);
             snprintf(name_createfile, sizeof(name_createfile), "\\\\.\\COM%d", port_num);
             snprintf(name_commconfig, sizeof(name_commconfig), "COM%d", port_num);
         } else {
@@ -1724,16 +1725,16 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         } else {
             if (GetLastError() == ERROR_IO_PENDING) {
                 if (GetOverlappedResult(port_handle, &ov, &num_read, TRUE)) {
-                    printf("Read, delayed, num_read=%lu\n", num_read);
+                    //printf("Read, delayed, num_read=%lu\n", num_read);
                     //std::cout<<" -----------------" <<num_request<<" -- " <<num_request-num_read<<"\n";
                     size = num_read;
                 } else {
-                    printf("Read, delayed error\n");
+                    //printf("Read, delayed error\n");
                     //std::cout<<" Read, delayed error------------------\n";
                     size = -1;
                 }
             } else {
-                printf("Read, error\n");
+                //printf("Read, error\n");
                 //std::cout<<"Read, error~~~~~~~~~~~~~~~~~~~~\n";
                 size = -1;
             }

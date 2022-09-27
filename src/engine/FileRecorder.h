@@ -5,7 +5,6 @@
 #include <fstream>
 #include "BYBFileRecorder.h"
 
-
 namespace BackyardBrains {
 
 class RecordingManager;
