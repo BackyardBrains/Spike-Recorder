@@ -1573,67 +1573,67 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 	    for(int chan = 0; chan < channum; chan++) {
 	        //calculate DC offset in fist 10 sec for channel
 	        int dcBias = _devices.begin()->dcBiasSum[chan]/_devices.begin()->dcBiasNum;
+            if(_thresholdSource == 0)//if we trigger on signal
+            {
+                //Log::msg("HSR: %d", samplesRead);
+                for(DWORD i = 0; i < (unsigned int)samplesRead; i++) {
 
+                    channels[chan][i] -= dcBias;//substract DC offset from channels data
+                    const int thresh = _virtualDevices[_selectedVDevice].threshold;
+                    const int64_t ntrigger = _pos + i;
+                    //--------------- joystick related code --------------------------
 
-            for(int i = 0; i < samplesRead; i++) {
+                    const int currentthresh = _virtualDevices[chan].threshold;
+                    if(_timersForKeyRelease[chan]>0)
+                    {
+                        _timersForKeyRelease[chan] --;
+                        if(_timersForKeyRelease[chan]==0)
+                        {
+                            Log::msg("Release %d", _keyIndexSetForJoystick[chan]-1);
+                            _arduinoSerial.releaseKey( _keyIndexSetForJoystick[chan]-1);
+                        }
+                    }
+                    if(((ntrigger - _timeOfLastTriggerJoystick[chan])> samplerateDiv10) && (currentAddOnBoard() == BOARD_WITH_JOYSTICK))
+                    {
+                        if((currentthresh > 0 && channels[chan][i] > currentthresh && _lastValueOfSignalJoystick[chan] < currentthresh) || (currentthresh <= 0 && channels[chan][i] < currentthresh && _lastValueOfSignalJoystick[chan]>currentthresh))
+                        {
+                            //we thresholded on signal for one channel
+                            _timeOfLastTriggerJoystick[chan] = ntrigger;
+                            if(_keyIndexSetForJoystick[chan]>0)//zero is "none of the keys selected"
+                            {
+                                if(_timersForKeyRelease[chan]==0)
+                                {
+                                    Log::msg("Press %d",_keyIndexSetForJoystick[chan]-1);
+                                    _arduinoSerial.pressKey(_keyIndexSetForJoystick[chan]-1);
+                                }
+                                _timersForKeyRelease[chan] = MAX_TIMER_FOR_KEY_RELEASE;
+                                //keyReleaseList.push_back(_keyIndexSetForJoystick[chan]-1);
 
-                //channels[chan][i] -= dcBias;//substract DC offset from channels data
-                if(_thresholdSource == 0)//if we trigger on signal
-                {
+                            }
+                        }
+                    }
+                    _lastValueOfSignalJoystick[chan] = channels[chan][i];
+                    //-------------------- end of joystick related code --------------
+
                     //add position of data samples that are greater than threshold to FIFO list _triggers
                     if(_threshMode && _devices.begin()->index*channum+chan == _selectedVDevice) {
-                        const int64_t ntrigger = _pos + i;
-                        const int thresh = _virtualDevices[_selectedVDevice].threshold;
 
 
 
-                        //--------------- joystick related code --------------------------
-
-                        const int currentthresh = _virtualDevices[chan].threshold;
-                        if(_timersForKeyRelease[chan]>0)
-                        {
-                            _timersForKeyRelease[chan] --;
-                            if(_timersForKeyRelease[chan]==0)
-                            {
-                                Log::msg("Release %d", _keyIndexSetForJoystick[chan]-1);
-                                _arduinoSerial.releaseKey( _keyIndexSetForJoystick[chan]-1);
-                            }
-                        }
-                        if(((ntrigger - _timeOfLastTriggerJoystick[chan])> samplerateDiv10) && (currentAddOnBoard() == BOARD_WITH_JOYSTICK))
-                        {
-                            if((currentthresh > 0 && channels[chan][i] > currentthresh && _lastValueOfSignalJoystick[chan] < currentthresh) || (currentthresh <= 0 && channels[chan][i] < currentthresh && _lastValueOfSignalJoystick[chan]>currentthresh))
-                            {
-                                //we thresholded on signal for one channel
-                                _timeOfLastTriggerJoystick[chan] = ntrigger;
-                                if(_keyIndexSetForJoystick[chan]>0)//zero is "none of the keys selected"
-                                {
-                                    if(_timersForKeyRelease[chan]==0)
-                                    {
-                                        Log::msg("Press %d",_keyIndexSetForJoystick[chan]-1);
-                                        _arduinoSerial.pressKey(_keyIndexSetForJoystick[chan]-1);
-                                    }
-                                    _timersForKeyRelease[chan] = MAX_TIMER_FOR_KEY_RELEASE;
-                                    //keyReleaseList.push_back(_keyIndexSetForJoystick[chan]-1);
-
-                                }
-                            }
-                        }
-                        _lastValueOfSignalJoystick[chan] = channels[chan][i];
-                        //-------------------- end of joystick related code --------------
-
-
-                        if(_triggers.empty() || ntrigger - _triggers.front() > samplerateDiv10) {
-                            if((thresh > 0 && channels[chan][i] >= thresh && lastSampleForThreshold< thresh) || (thresh <= 0 && channels[chan][i] < thresh && lastSampleForThreshold>= thresh)) {
+                        if(_triggers.empty() || ntrigger - _triggers.front() >samplerateDiv10) {
+                            if((thresh > 0 && channels[chan][i] > thresh && lastSampleForThreshold < thresh) || (thresh <= 0 && channels[chan][i] < thresh && lastSampleForThreshold>thresh)) {
                                 _triggers.push_front(_pos + i);
                                 triggerd = true;
                                 if(_triggers.size() > (unsigned int)_threshAvgCount)//_threshAvgCount == 1
                                     _triggers.pop_back();
                             }
-                            lastSampleForThreshold = channels[chan][i];//keep last sample
                         }
+                         lastSampleForThreshold = channels[chan][i];//keep last sample
                     }
                 }
             }
+
+
 
 	        if(_devices.begin()->sampleBuffers[0].empty()) {
                    // std::cout<<"set pos??"<<"\n";
@@ -1809,16 +1809,7 @@ void RecordingManager::advanceHidMode(uint32_t samples)
 	        }
 	    }
 
-       /* if(keyReleaseList.size()>0)
-        {
-            for(int i=keyReleaseList.size();i>0;i--)
-            {
-                    _hidUsbManager.releaseKey(keyReleaseList.back());
-                    keyReleaseList.pop_back();
-            }
-
-        }
-*/
+     
         bool triggerd = false;
         int samplerateDiv10 = _sampleRate/10;
         for(int chan = 0; chan < channum; chan++) {

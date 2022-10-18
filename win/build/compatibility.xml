@@ -49,6 +49,8 @@
 			<firmwares>
 				<firmwareid>26</firmwareid>
 				<firmwareid>25</firmwareid>
+				<firmwareid>27</firmwareid>
+				<firmwareid>28</firmwareid>
 			</firmwares>
 		</build>
 	</software>
@@ -208,7 +210,7 @@
 		<firmware>
 			<id>25</id>
 			<version>1.11</version>
-			<desc>Muscle SpikerBox Pro</desc>
+			<desc>Muscle SpikerBox Pro Update</desc>
 			<type>MUSCLESB</type>
 			<hardware>1.0</hardware>
 			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f1_11muscle1_0.txt</url>
@@ -216,10 +218,26 @@
 		<firmware>
 			<id>26</id>
 			<version>1.11</version>
-			<desc>Neuron SpikerBox Pro</desc>
+			<desc>Neuron SpikerBox Pro Update</desc>
 			<type>NEURONSB</type>
 			<hardware>1.0</hardware>
 			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/f1_11neuron1_0.txt</url>
+		</firmware>
+		<firmware>
+			<id>27</id>
+			<version>2.0</version>
+			<desc>Neuron SpikerBox Pro Serial</desc>
+			<type>NEURONSB</type>
+			<hardware>1.0</hardware>
+			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/NeuronSpikerBoxProCDC05sept2022.txt</url>
+		</firmware>
+		<firmware>
+			<id>28</id>
+			<version>2.0</version>
+			<desc>Muscle SpikerBox Pro Serial</desc>
+			<type>MUSCLESB</type>
+			<hardware>1.0</hardware>
+			<url>https://backyardbrains.com/products/firmwares/sbpro/firmware/MuscleSpikerBoxProCDC05sept2022.txt</url>
 		</firmware>
 	</firmwares>
 </compatibility>
