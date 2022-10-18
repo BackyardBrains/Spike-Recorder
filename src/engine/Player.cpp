@@ -83,7 +83,7 @@ void Player::setSampleRate(int sampleRate) {
 
 void Player::push(void *data, uint32_t size) {
     int buffered = BASS_ChannelGetData(_output, NULL, BASS_DATA_AVAILABLE);
-    Log::msg("In buffer: %d - New: %d", buffered, size);
+    //Log::msg("In buffer: %d - New: %d", buffered, size);
     
 	if(BASS_StreamPutData(_output, data, size) == (DWORD)-1)
 		Log::error("Bass Error: putting stream data failed: %s", GetBassStrError());
