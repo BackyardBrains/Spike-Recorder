@@ -1208,9 +1208,9 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             }
 
             #if defined(__APPLE__) || defined(__linux__)
-                        usleep(7000);
+                        usleep(1000);
             #else
-                        Sleep(7);
+                        Sleep(1);
             #endif
         }//end of while
         ref->closeSerial();
@@ -1781,6 +1781,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         checkIfWeHavetoAskBoardSomething();
 
         int availableData = 0;
+        batchSizeForSerial = 1000000;//ignore smooting algorithm by defining max batch size directly
         int bytesRead = getNewDataFromHardwareBuffer(buffer, batchSizeForSerial, &availableData);
         //printf("Av %lu  - %lu\n",availableData,batchSizeForSerial);
         if(batchSizeForSerial>5000)
