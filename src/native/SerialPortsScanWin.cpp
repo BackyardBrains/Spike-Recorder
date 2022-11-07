@@ -55,7 +55,7 @@ namespace BackyardBrains {
 
                   dwIndex++;
 
-                        printf("Code: 0x%08X\n", data);
+                      //  printf("Code: 0x%08X\n", data);
                  }
         }
 
@@ -102,12 +102,12 @@ namespace BackyardBrains {
 
                             if(retCode==ERROR_SUCCESS)
                    {
-                                for (int i = 0; i < tabs; i++)
-                                    printf("\t");
-                                printf("(%d) %s\n", i+1, currentSubkey);
+                                for (int i = 0; i < tabs; i++){}
+                               //     printf("\t");
+                              //  printf("(%d) %s\n", i+1, currentSubkey);
 
                                 char* subKeyPath = new char[currentSubLen + strlen(subKey)];
-                                sprintf(subKeyPath, "%s\\%s", subKey, currentSubkey);
+                             //   sprintf(subKeyPath, "%s\\%s", subKey, currentSubkey);
                     EnumerateSubKeys(RootKey, subKeyPath, (tabs + 1));
                    }
                   }
