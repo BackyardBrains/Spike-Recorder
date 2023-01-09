@@ -476,10 +476,52 @@ namespace BackyardBrains {
                 Log::msg("Interesting device Muscle SpikerBox Pro");
                 #endif
             }
+            else if (strcmp(deviceName, "USB Serial") == 0)
+            {
+                 #ifdef LOG_USB
+                Log::msg("Interesting Arduino device (USB Serial)");
+                #endif
+            }
+            else if (strcmp(deviceName, "Muscle SpikerBox") == 0)
+            {
+                 #ifdef LOG_USB
+                Log::msg("Interesting device Muscle SpikerBox");
+                #endif
+            }
+            else if (strcmp(deviceName, "Human Human Interface") == 0)
+            {
+                 #ifdef LOG_USB
+                Log::msg("Interesting device Human Human Interface");
+                #endif
+            }
             else if (strcmp(deviceName, "Neuron SpikerBox Pro") == 0)
             {
                  #ifdef LOG_USB
                 Log::msg("Interesting device Neuron SpikerBox Pro");
+                #endif
+            }
+            else if (strcmp(deviceName, "Neuron SpikerBox") == 0)
+            {
+                 #ifdef LOG_USB
+                Log::msg("Interesting device Neuron SpikerBox Pro");
+                #endif
+            }
+            else if (strcmp(deviceName, "Plant SpikerBox") == 0)
+            {
+                 #ifdef LOG_USB
+                Log::msg("Interesting device Plant SpikerBox");
+                #endif
+            }
+            else if (strcmp(deviceName, "Heart and Brain SpikerBox") == 0)
+            {
+                 #ifdef LOG_USB
+                Log::msg("Interesting device Heart and Brain SpikerBox");
+                #endif
+            }
+            else if (strcmp(deviceName, "Human SpikerBox") == 0)
+            {
+                 #ifdef LOG_USB
+                Log::msg("Interesting device Human SpikerBox");
                 #endif
             }
             else if(strcmp(deviceName, "Arduino Leonardo") == 0)
