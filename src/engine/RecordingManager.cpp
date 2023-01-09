@@ -635,9 +635,20 @@ bool RecordingManager::initSerial(const char *portName, int baudRate)
     _p300AudioStimulationActive = false;
    // devicesChanged.emit();
 
-    for(unsigned int i = 0; i < (unsigned int)_numOfSerialChannels;i++)
+    if(_arduinoSerial.currentPort.deviceType==ArduinoSerial::humansb)
     {
-        bindVirtualDevice(i);
+        bindVirtualDevice(0);
+        if(_numOfSerialChannels>2)
+        {
+            bindVirtualDevice(2);
+        }
+    }
+    else
+    {
+        for(unsigned int i = 0; i < (unsigned int)_numOfSerialChannels;i++)
+        {
+            bindVirtualDevice(i);
+        }
     }
 
 
