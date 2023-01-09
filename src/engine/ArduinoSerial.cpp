@@ -441,11 +441,12 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         memset(buffer, 0, QUERYDOSDEVICE_BUFFER_SIZE);
         ret = QueryDosDeviceA(NULL, buffer, QUERYDOSDEVICE_BUFFER_SIZE);
         if (ret) {
-            printf("Detect Serial using QueryDosDeviceA: ");
+            //printf("Detect Serial using QueryDosDeviceA: ");
             for (p = buffer; *p; p += strlen(p) + 1) {
                 //printf(":  %s\n", p);
                 if (strncmp(p, "COM", 3)) continue;
-                printf("\nFound port  %s\n", p);
+                //printf("\nFound port  %s\n", p);
+                Log::msg("\nFound port  %s\n", p);
                 std::stringstream sstm;
                 sstm << p << ":";
                 list.push_back(sstm.str().c_str());
@@ -453,10 +454,10 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         } else {
             char buf[1024];
             win32_err(buf);
-            printf("QueryDosDeviceA failed, error \"%s\"\n", buf);
-            printf("Detect Serial using brute force GetDefaultCommConfig probing: ");
+           // printf("QueryDosDeviceA failed, error \"%s\"\n", buf);
+           // printf("Detect Serial using brute force GetDefaultCommConfig probing: ");
             for (int i=1; i<=32; i++) {
-                printf("try  %s", buf);
+                //printf("try  %s", buf);
                 COMMCONFIG cfg;
                 DWORD len;
                 snprintf(buf, sizeof(buf), "COM%d", i);
@@ -468,7 +469,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                     list.push_back(sstm.str().c_str());
 
                     //list.Add(name);
-                    printf(":  %s", buf);
+                    //printf(":  %s", buf);
                 }
             }
         }
@@ -618,7 +619,8 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                         bool foundBootloader = false;
                         if (isThereVid && isTherePid) 
                         {
-                            printf("Found vid and pid for bootloader\n");
+                            //printf("Found vid and pid for bootloader\n");
+                            Log::msg("Found vid and pid for bootloader\n");
                             foundBootloader = true;
                         }
                        
@@ -933,7 +935,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         snprintf(buf, sizeof(buf), "%s", _portName.c_str());
         p = strstr(buf, "COM");
         if (p && sscanf(p + 3, "%d", &port_num) == 1) {
-            printf("port_num = %d\n", port_num);
+            //printf("port_num = %d\n", port_num);
             snprintf(name_createfile, sizeof(name_createfile), "\\\\.\\COM%d", port_num);
             snprintf(name_commconfig, sizeof(name_commconfig), "COM%d", port_num);
         } else {
@@ -1208,9 +1210,9 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             }
 
             #if defined(__APPLE__) || defined(__linux__)
-                        usleep(7000);
+                        usleep(1000);
             #else
-                        Sleep(7);
+                        Sleep(1);
             #endif
         }//end of while
         ref->closeSerial();
@@ -1781,6 +1783,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         checkIfWeHavetoAskBoardSomething();
 
         int availableData = 0;
+        batchSizeForSerial = 1000000;//ignore smooting algorithm by defining max batch size directly
         int bytesRead = getNewDataFromHardwareBuffer(buffer, batchSizeForSerial, &availableData);
         //printf("Av %lu  - %lu\n",availableData,batchSizeForSerial);
         if(batchSizeForSerial>5000)
