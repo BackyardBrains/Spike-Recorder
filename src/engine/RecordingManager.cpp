@@ -1583,13 +1583,13 @@ void RecordingManager::advanceSerialMode(uint32_t samples)
 	    bool triggerd = false;
 	    for(int chan = 0; chan < channum; chan++) {
 	        //calculate DC offset in fist 10 sec for channel
-	        int dcBias = _devices.begin()->dcBiasSum[chan]/_devices.begin()->dcBiasNum;
+	        //int dcBias = _devices.begin()->dcBiasSum[chan]/_devices.begin()->dcBiasNum;
             if(_thresholdSource == 0)//if we trigger on signal
             {
                 //Log::msg("HSR: %d", samplesRead);
                 for(DWORD i = 0; i < (unsigned int)samplesRead; i++) {
 
-                    channels[chan][i] -= dcBias;//substract DC offset from channels data
+                    //channels[chan][i] -= dcBias;//substract DC offset from channels data
                     const int thresh = _virtualDevices[_selectedVDevice].threshold;
                     const int64_t ntrigger = _pos + i;
                     //--------------- joystick related code --------------------------
