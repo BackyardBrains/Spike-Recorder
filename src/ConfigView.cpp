@@ -530,8 +530,17 @@ void ConfigView::SetupScreen()
                                                                 touchSerialPortWidget->addItem("Neuron SpikerBox Pro");
                                                                 Log::msg("Serial dropdown item: Neuron SpikerBox Pro");
                                                             }
+                                                            else
+                                                            {
+                                                                
+                                                                if(it->deviceType == ArduinoSerial::sbproneuronmfi)
+                                                                {
+                                                                    touchSerialPortWidget->addItem("Neuron SpikerBox Pro");
+                                                                    Log::msg("Serial dropdown item: Neuron SpikerBox Pro Mfi");
+                                                                }
+
+                                                            }
                                                         }
-                                                        
                                                     }
                                                 }
                                             }
@@ -650,17 +659,23 @@ void ConfigView::SetupScreen()
                                                                 serialPortWidget->addItem("Neuron SpikerBox Pro");
                                                                 Log::msg("Serial dropdown item: Neuron SpikerBox Pro");
                                                             }
+                                                            else
+                                                            {
+                                                                if(it->deviceType == ArduinoSerial::sbproneuronmfi)
+                                                                {
+                                                                    serialPortWidget->addItem("Neuron SpikerBox Pro");
+                                                                    Log::msg("Serial dropdown item: Neuron SpikerBox Pro Mfi");
+                                                                }
+                                                            }
                                                         }
                                                     }
                                                 }
-
                                             }
                                         }
-                                    }
+                                    }//
                                 }
                             }
                         }
-
                     }
                 }
             }
@@ -744,6 +759,7 @@ void ConfigView::SetupScreen()
              || _manager.getCurrentPort().deviceType == ArduinoSerial::muscleusb
              || _manager.getCurrentPort().deviceType == ArduinoSerial::sbpromusclecdc
              || _manager.getCurrentPort().deviceType == ArduinoSerial::sbproneuroncdc
+             || _manager.getCurrentPort().deviceType == ArduinoSerial::sbproneuronmfi
              || _manager.getCurrentPort().deviceType == ArduinoSerial::heartPro
              || _manager.getCurrentPort().deviceType == ArduinoSerial::neuronOneChannel))
         {
