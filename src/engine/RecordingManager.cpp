@@ -2980,6 +2980,9 @@ int RecordingManager::getCurrentInputType()
             case ArduinoSerial::sbproneuroncdc:
                 return INPUT_TYPE_SB_PRO;
                 break;
+            case ArduinoSerial::sbproneuronmfi:
+                return INPUT_TYPE_SB_PRO;
+                break;
             default:
                 return INPUT_TYPE_ARDUINO_UNKOWN;
                 break;

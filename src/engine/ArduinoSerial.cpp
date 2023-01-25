@@ -1605,7 +1605,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                 _numberOfChannels  =3;
             }
         }
-        else if(currentPort.deviceType == SerialDevice::sbpromusclecdc || currentPort.deviceType == SerialDevice::sbproneuroncdc)
+        else if(currentPort.deviceType == SerialDevice::sbpromusclecdc || currentPort.deviceType == SerialDevice::sbproneuroncdc  || currentPort.deviceType == SerialDevice::sbproneuronmfi)
         {
             _samplingRate = 10000;
             _numberOfChannels = 2;
@@ -1953,7 +1953,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                             break;//continue as if we have new frame
                         }
 
-                        if(currentPort.deviceType == ArduinoSerial::humansb)
+                        if(currentPort.deviceType == ArduinoSerial::humansb || currentPort.deviceType == ArduinoSerial::sbproneuronmfi)
                         {
                             obuffer[obufferIndex++] =  (writeInteger-8192);
                         }
@@ -2493,9 +2493,17 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                                     {
                                                         setDeviceTypeToCurrentPort(ArduinoSerial::sbproneuroncdc);
                                                     }
+                                                    else
+                                                    {
+                                                        //NRNSBPRO
+                                                        std::size_t found=hardwareType.find("NRNSBPRO");
+                                                        if (found!=std::string::npos)
+                                                        {
+                                                            setDeviceTypeToCurrentPort(ArduinoSerial::sbproneuronmfi);
+                                                        }
+                                                    }
                                                 }
                                             }
-
                                         }
                                     }
                                 }
@@ -2831,7 +2839,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
     void ArduinoSerial::askForExpansionBoardType()
     {
-        if(currentPort.deviceType == SerialDevice::heartPro || currentPort.deviceType == SerialDevice::hhibox || currentPort.deviceType == SerialDevice::humansb || currentPort.deviceType == SerialDevice::sbpromusclecdc || currentPort.deviceType == SerialDevice::sbproneuroncdc)
+        if(currentPort.deviceType == SerialDevice::heartPro || currentPort.deviceType == SerialDevice::hhibox || currentPort.deviceType == SerialDevice::humansb || currentPort.deviceType == SerialDevice::sbpromusclecdc || currentPort.deviceType == SerialDevice::sbproneuroncdc || currentPort.deviceType == SerialDevice::sbproneuronmfi)
         {
             std::stringstream sstm;
             sstm << "board:;\n";

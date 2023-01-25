@@ -73,7 +73,8 @@ namespace BackyardBrains {
             humansb=9,
             hhibox=10,
             sbpromusclecdc=11,
-            sbproneuroncdc=12
+            sbproneuroncdc=12,
+            sbproneuronmfi=13
         };
         struct SerialPort
         {
