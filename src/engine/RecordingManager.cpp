@@ -633,9 +633,8 @@ bool RecordingManager::initSerial(const char *portName, int baudRate)
     
     _p300Active = false;
     _p300AudioStimulationActive = false;
-   // devicesChanged.emit();
 
-    if(_arduinoSerial.currentPort.deviceType==ArduinoSerial::humansb)
+    if(_arduinoSerial.currentPort.deviceType==ArduinoSerial::humansb || _arduinoSerial.currentPort.deviceType==ArduinoSerial::sbpromusclecdc || _arduinoSerial.currentPort.deviceType==ArduinoSerial::sbproneuroncdc || _arduinoSerial.currentPort.deviceType==ArduinoSerial::sbproneuronmfi)
     {
         bindVirtualDevice(0);
         if(_numOfSerialChannels>2)
