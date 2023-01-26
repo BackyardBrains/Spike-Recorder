@@ -2980,7 +2980,7 @@ int RecordingManager::getCurrentInputType()
                 return INPUT_TYPE_SB_PRO;
                 break;
             case ArduinoSerial::sbproneuronmfi:
-                return INPUT_TYPE_SB_PRO;
+                return INPUT_TYPE_NEURONSS;
                 break;
             default:
                 return INPUT_TYPE_ARDUINO_UNKOWN;
@@ -3099,6 +3099,9 @@ void RecordingManager::makeNewSerialAudioConfig(std::string nameOfThePort)
                 break;
             case ArduinoSerial::hhibox:
                 audioInputType =  INPUT_TYPE_HHIBOX;
+                break;
+            case ArduinoSerial::sbproneuronmfi:
+                audioInputType =  INPUT_TYPE_NEURONSS;
                 break;
             default:
                 audioInputType = INPUT_TYPE_ARDUINO_UNKOWN;
