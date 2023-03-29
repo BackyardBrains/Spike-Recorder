@@ -16,6 +16,9 @@ OBJECTS = \
 		src/engine/FileRecorder.o \
 		src/engine/Player.o \
 		src/engine/ArduinoSerial.o \
+		src/engine/firmware/BYBBootloaderController.o \
+		src/engine/WavTxtRecorder.o \
+		src/FirmwareUpdateView.o \
 		src/engine/SpikeSorter.o \
 		src/engine/SpikeAnalysis.o \
 		src/engine/BASSErrors.o \
@@ -68,7 +71,7 @@ OBJECTS_LINUX = \
 
 OBJECTS += $(OBJECTS_LINUX)
 
-CFLAGS = -g -O2 -Isrc -Isupport -Isrc/libraries -I. -Lsrc/support -Wall -DSIGSLOT_PURE_ISO --std=c++11 `sdl2-config --cflags`
+CFLAGS = -g -O2 -Isrc -Isupport -Isrc/libraries -I. -Isrc/engine/firmware -Lsrc/support -Wall -DSIGSLOT_PURE_ISO --std=c++11 `sdl2-config --cflags`
 LIBS = `sdl2-config --libs` -lSDL2_image -lGL -lGLU -lbass -lpthread -lhidapi-libusb
 
 %.o: %.c
