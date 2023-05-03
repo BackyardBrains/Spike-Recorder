@@ -1441,7 +1441,8 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                             Log::msg("checkAllPortsForArduino - Read board type response.");
                             std::cout<<"checkAllPortsForArduino - Read board type response.\n";
                         #endif
-                        std::cout<<"Baud rate: "<<currentTestingBaudRate<<"\n";
+                        Log::msg("Baud rate:  %d", currentTestingBaudRate);
+                        //std::cout<<"Baud rate: "<<currentTestingBaudRate<<"\n";
                         for(int r=0;r<10;r++)
                         {
                                 int bytesRead = readPort(buffer);
@@ -1664,7 +1665,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         // Set timeout to 60 ms
         struct timeval timeout;
         timeout.tv_sec = 0;
-        timeout.tv_usec = 60000;
+        timeout.tv_usec = 600000;
 
 
 
@@ -1953,9 +1954,13 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                             break;//continue as if we have new frame
                         }
 
-                        if(currentPort.deviceType == ArduinoSerial::humansb || currentPort.deviceType == ArduinoSerial::sbproneuronmfi)
+                        if(currentPort.deviceType == ArduinoSerial::humansb)
                         {
                             obuffer[obufferIndex++] =  (writeInteger-8192);
+                        }
+                        else if (currentPort.deviceType == ArduinoSerial::sbproneuronmfi)
+                        {
+                            obuffer[obufferIndex++] =  2.8*(writeInteger-8192);
                         }
                         else
                         {
@@ -2500,6 +2505,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                                         if (found!=std::string::npos)
                                                         {
                                                             setDeviceTypeToCurrentPort(ArduinoSerial::sbproneuronmfi);
+                                                            _manager->checkIfFirmwareIsAvailableForBootloader();
                                                         }
                                                     }
                                                 }
