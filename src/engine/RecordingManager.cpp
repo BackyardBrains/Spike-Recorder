@@ -2907,14 +2907,24 @@ void RecordingManager::initInputConfigPersistance()
     audioInputConfigArray[INPUT_TYPE_HHIBOX].timeScale = 0.1f;
     audioInputConfigArray[INPUT_TYPE_HHIBOX].initialized = true;
 
-    audioInputConfigArray[INPUT_TYPE_HHIBOX].inputType = INPUT_TYPE_HUMANSB;
-    audioInputConfigArray[INPUT_TYPE_HHIBOX].filter50Hz = false;
-    audioInputConfigArray[INPUT_TYPE_HHIBOX].filter60Hz = true;
-    audioInputConfigArray[INPUT_TYPE_HHIBOX].filterLowPass = 2500;
-    audioInputConfigArray[INPUT_TYPE_HHIBOX].filterHighPass = 1.0f;
-    audioInputConfigArray[INPUT_TYPE_HHIBOX].gain = 0.5f;
-    audioInputConfigArray[INPUT_TYPE_HHIBOX].timeScale = 0.1f;
-    audioInputConfigArray[INPUT_TYPE_HHIBOX].initialized = true;
+    audioInputConfigArray[INPUT_TYPE_HUMANSB].inputType = INPUT_TYPE_HUMANSB;
+    audioInputConfigArray[INPUT_TYPE_HUMANSB].filter50Hz = false;
+    audioInputConfigArray[INPUT_TYPE_HUMANSB].filter60Hz = true;
+    audioInputConfigArray[INPUT_TYPE_HUMANSB].filterLowPass = 2500;
+    audioInputConfigArray[INPUT_TYPE_HUMANSB].filterHighPass = 1.0f;
+    audioInputConfigArray[INPUT_TYPE_HUMANSB].gain = 0.5f;
+    audioInputConfigArray[INPUT_TYPE_HUMANSB].timeScale = 0.1f;
+    audioInputConfigArray[INPUT_TYPE_HUMANSB].initialized = true;
+    
+    //standard line in/microphone input
+    audioInputConfigArray[INPUT_TYPE_UNIBOX].inputType = INPUT_TYPE_UNIBOX;
+    audioInputConfigArray[INPUT_TYPE_UNIBOX].filter50Hz = false;
+    audioInputConfigArray[INPUT_TYPE_UNIBOX].filter60Hz = false;
+    audioInputConfigArray[INPUT_TYPE_UNIBOX].filterLowPass = 20000;
+    audioInputConfigArray[INPUT_TYPE_UNIBOX].filterHighPass = 0.0f;
+    audioInputConfigArray[INPUT_TYPE_UNIBOX].gain = 0.5f;
+    audioInputConfigArray[INPUT_TYPE_UNIBOX].timeScale = 0.1f;
+    audioInputConfigArray[INPUT_TYPE_UNIBOX].initialized = true;
 }
 
 //
@@ -2982,6 +2992,8 @@ int RecordingManager::getCurrentInputType()
             case ArduinoSerial::sbproneuronmfi:
                 return INPUT_TYPE_NEURONSS;
                 break;
+            case ArduinoSerial::unibox:
+                return INPUT_TYPE_UNIBOX;
             default:
                 return INPUT_TYPE_ARDUINO_UNKOWN;
                 break;
@@ -3102,6 +3114,9 @@ void RecordingManager::makeNewSerialAudioConfig(std::string nameOfThePort)
                 break;
             case ArduinoSerial::sbproneuronmfi:
                 audioInputType =  INPUT_TYPE_NEURONSS;
+                break;
+            case ArduinoSerial::unibox:
+                audioInputType =  INPUT_TYPE_UNIBOX;
                 break;
             default:
                 audioInputType = INPUT_TYPE_ARDUINO_UNKOWN;

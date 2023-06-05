@@ -596,6 +596,12 @@ namespace BackyardBrains {
                 Log::msg("Interesting board MFi board SpikerBox");
                 #endif
             }
+            else if (strcmp(deviceName,"UniBox")==0)
+            {
+                #ifdef LOG_USB
+                Log::msg("Interesting board UniBox");
+                #endif
+            }
             else if(strcmp(deviceName,"SpikerBox")==0)
             {
                 #ifdef LOG_USB

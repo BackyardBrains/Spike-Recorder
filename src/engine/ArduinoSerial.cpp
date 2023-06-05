@@ -1637,6 +1637,32 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             _samplingRate = 10000;
             _numberOfChannels = 1;
         }
+        else if(currentPort.deviceType == SerialDevice::unibox)
+        {
+            _samplingRate = 42661;
+            _numberOfChannels = 2;
+            
+            if(currentAddOnBoard == BOARD_WITH_ADDITIONAL_INPUTS)
+            {
+                    _numberOfChannels  =4;
+            }
+            else if(currentAddOnBoard == BOARD_WITH_HAMMER)
+            {
+                    _numberOfChannels  =3;
+            }
+            else if(currentAddOnBoard == BOARD_WITH_JOYSTICK)
+            {
+                    _numberOfChannels  =3;
+            }
+            else if(currentAddOnBoard == BOARD_WITH_EVENT_INPUTS)
+            {
+                    _numberOfChannels  =2;
+            }
+            else if(currentAddOnBoard == BOARD_ERG)
+            {
+                _numberOfChannels  =3;
+            }
+        }
         else
         {
             _numberOfChannels = numberOfChannels();
@@ -1954,7 +1980,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                             break;//continue as if we have new frame
                         }
 
-                        if(currentPort.deviceType == ArduinoSerial::humansb)
+                        if((currentPort.deviceType == ArduinoSerial::humansb) || (currentPort.deviceType == ArduinoSerial::unibox))
                         {
                             obuffer[obufferIndex++] =  (writeInteger-8192);
                         }
@@ -2507,6 +2533,16 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                                             setDeviceTypeToCurrentPort(ArduinoSerial::sbproneuronmfi);
                                                             _manager->checkIfFirmwareIsAvailableForBootloader();
                                                         }
+                                                        else
+                                                        {
+                                                            //UNIBOX
+                                                            std::size_t found=hardwareType.find("UNIBOX");
+                                                            if (found!=std::string::npos)
+                                                            {
+                                                                setDeviceTypeToCurrentPort(ArduinoSerial::unibox);
+                                                                _manager->checkIfFirmwareIsAvailableForBootloader();
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             }
@@ -2845,7 +2881,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
     void ArduinoSerial::askForExpansionBoardType()
     {
-        if(currentPort.deviceType == SerialDevice::heartPro || currentPort.deviceType == SerialDevice::hhibox || currentPort.deviceType == SerialDevice::humansb || currentPort.deviceType == SerialDevice::sbpromusclecdc || currentPort.deviceType == SerialDevice::sbproneuroncdc || currentPort.deviceType == SerialDevice::sbproneuronmfi)
+        if(currentPort.deviceType == SerialDevice::heartPro || currentPort.deviceType == SerialDevice::hhibox || currentPort.deviceType == SerialDevice::humansb || currentPort.deviceType == SerialDevice::sbpromusclecdc || currentPort.deviceType == SerialDevice::sbproneuroncdc || currentPort.deviceType == SerialDevice::sbproneuronmfi || currentPort.deviceType == SerialDevice::unibox)
         {
             std::stringstream sstm;
             sstm << "board:;\n";
