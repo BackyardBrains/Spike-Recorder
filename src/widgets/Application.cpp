@@ -31,9 +31,14 @@ Application::Application() : _running(false), _mouseGrabber(0), _keyboardGrabber
     _widgetInFocus = NULL;
 #if defined(_WIN32) && (_WIN32_WINNT >= 0x0501)
 	// FILE *ctt = fopen("CON", "w" );
-	AttachConsole(ATTACH_PARENT_PROCESS);
-	freopen("CON", "w", stdout);
-	freopen("CON", "w", stderr);
+
+	//Stanislav commented out because it was messing up wav recordings
+	//keywords: debug log stanislav bug stdout
+	//AttachConsole(ATTACH_PARENT_PROCESS);
+	//freopen("CON", "w", stdout);
+	//freopen("CON", "w", stderr);
+
+
 	printf("\r\n");
 #endif
 
