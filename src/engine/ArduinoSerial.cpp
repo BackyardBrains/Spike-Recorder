@@ -1637,6 +1637,11 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             _samplingRate = 10000;
             _numberOfChannels = 1;
         }
+        else if(currentPort.deviceType == SerialDevice::extclaw)
+        {
+            _samplingRate = 896;
+            _numberOfChannels = 3;
+        }
         else if(currentPort.deviceType == SerialDevice::unibox)
         {
             _samplingRate = 42661;
@@ -2541,6 +2546,15 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                                             {
                                                                 setDeviceTypeToCurrentPort(ArduinoSerial::unibox);
                                                                 _manager->checkIfFirmwareIsAvailableForBootloader();
+                                                            }
+                                                            else
+                                                            {
+                                                                //extended claw
+                                                                std::size_t found=hardwareType.find("EXTCLAW");
+                                                                if (found!=std::string::npos)
+                                                                {
+                                                                    setDeviceTypeToCurrentPort(ArduinoSerial::extclaw);
+                                                                }
                                                             }
                                                         }
                                                     }

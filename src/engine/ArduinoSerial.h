@@ -75,7 +75,8 @@ namespace BackyardBrains {
             sbpromusclecdc=11,
             sbproneuroncdc=12,
             sbproneuronmfi=13,
-            unibox=14
+            unibox=14,
+            extclaw=15
         };
         struct SerialPort
         {
