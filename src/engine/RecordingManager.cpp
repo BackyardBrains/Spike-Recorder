@@ -2925,6 +2925,15 @@ void RecordingManager::initInputConfigPersistance()
     audioInputConfigArray[INPUT_TYPE_UNIBOX].gain = 0.5f;
     audioInputConfigArray[INPUT_TYPE_UNIBOX].timeScale = 0.1f;
     audioInputConfigArray[INPUT_TYPE_UNIBOX].initialized = true;
+    
+    audioInputConfigArray[INPUT_TYPE_EXTCLAW].inputType = INPUT_TYPE_EXTCLAW;
+    audioInputConfigArray[INPUT_TYPE_EXTCLAW].filter50Hz = false;
+    audioInputConfigArray[INPUT_TYPE_EXTCLAW].filter60Hz = false;
+    audioInputConfigArray[INPUT_TYPE_EXTCLAW].filterLowPass = 440;
+    audioInputConfigArray[INPUT_TYPE_EXTCLAW].filterHighPass = 0;
+    audioInputConfigArray[INPUT_TYPE_EXTCLAW].gain = 0.5f;
+    audioInputConfigArray[INPUT_TYPE_EXTCLAW].timeScale = 1.0f;
+    audioInputConfigArray[INPUT_TYPE_EXTCLAW].initialized = true;
 }
 
 //
@@ -2994,6 +3003,8 @@ int RecordingManager::getCurrentInputType()
                 break;
             case ArduinoSerial::unibox:
                 return INPUT_TYPE_UNIBOX;
+            case ArduinoSerial::extclaw:
+                return INPUT_TYPE_EXTCLAW;
             default:
                 return INPUT_TYPE_ARDUINO_UNKOWN;
                 break;
@@ -3117,6 +3128,9 @@ void RecordingManager::makeNewSerialAudioConfig(std::string nameOfThePort)
                 break;
             case ArduinoSerial::unibox:
                 audioInputType =  INPUT_TYPE_UNIBOX;
+                break;
+            case ArduinoSerial::extclaw:
+                audioInputType =  INPUT_TYPE_EXTCLAW;
                 break;
             default:
                 audioInputType = INPUT_TYPE_ARDUINO_UNKOWN;

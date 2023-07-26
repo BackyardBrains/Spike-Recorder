@@ -348,7 +348,7 @@ private:
     bool _p300Active;
     bool _p300AudioStimulationActive;
     //it keeps last zoom, gain and filter configs for each type of inputs
-    AudioInputConfig audioInputConfigArray[13];//standard audio, file, HID, 3  shields, and unknown shield
+    AudioInputConfig audioInputConfigArray[14];//standard audio, file, HID, 3  shields, and unknown shield
     std::list<AudioInputConfig> arduinoShieldsConfigs;
     void initInputConfigPersistance();
     void saveInputConfigSettings();
