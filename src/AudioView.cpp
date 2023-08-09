@@ -1066,7 +1066,8 @@ void AudioView::twoFingersPinchEvent(const  SDL_Event &event, int pinchDirection
         }
         else//if coeficient is >1.0f
         {
-            if(!_manager.threshMode() || x < width()-DATA_XOFF) {
+            if(!_manager.threshMode() || x < width()-DATA_XOFF)
+            {
                 const int centeroff = (-sampleCount(screenWidth(), scaleWidth())+sampleCount(screenWidth(), scaleWidth()/coeficient))/2;
                 _timeScale = std::min(2.f, _timeScale*coeficient);
                 _manager.saveTimeScaleForAudioInput(_timeScale);
@@ -1082,22 +1083,11 @@ void AudioView::twoFingersPinchEvent(const  SDL_Event &event, int pinchDirection
                         {
                             setOffset(_manager.pos() + centeroff);
                         }
-
-
                     }
                 }
             }
-        }
-
-
-
-
-
-       /* Log::msg("Audio view horizontal");
-        _timeScale = std::max(1.f/_manager.sampleRate(), _timeScale*(1.0f-event.mgesture.dDist*4.0f));
-        _manager.saveTimeScaleForAudioInput(_timeScale);*/
+        }//else
     }
-
 }
 
 
@@ -1150,9 +1140,12 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
 				event->accept();
 		}
 
-	} else if(event->button() == Widgets::WheelUpButton) {
+	}
+    else if(event->button() == Widgets::WheelUpButton)
+    {
 		int s = -1;
-		if(x < DATA_XOFF) {
+		if(x < DATA_XOFF)
+        {
 			if((s = determineSliderHover(x,y,NULL)) != -1)
             {
                 float newGain = _channels[s].gain*1.2f;
@@ -1208,7 +1201,9 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
             }
 		}
 		event->accept();
-	} else if(event->button() == Widgets::WheelDownButton) {
+	}
+    else if(event->button() == Widgets::WheelDownButton)
+    {
 		int s = -1;
 		if(x < DATA_XOFF) {
 			if((s = determineSliderHover(x,y,NULL)) != -1)
@@ -1219,7 +1214,17 @@ void AudioView::mousePressEvent(Widgets::MouseEvent *event) {
             }
 		} else if(!_manager.threshMode() || x < width()-DATA_XOFF) {
 			const int centeroff = (-sampleCount(screenWidth(), scaleWidth())+sampleCount(screenWidth(), scaleWidth()/1.2f))/2;
-			_timeScale = std::min(2.f, _timeScale*1.2f);
+			
+            //make maximal number of seconds on the screen close to 10s when
+            //unibox is connected
+            if(_manager.getCurrentPort().deviceType == ArduinoSerial::unibox)
+            {
+                _timeScale = std::min(0.5f, _timeScale*1.2f);
+            }
+            else
+            {
+                _timeScale = std::min(2.f, _timeScale*1.2f);
+            }
             _manager.saveTimeScaleForAudioInput(_timeScale);
 			if(!_manager.fileMode())
             {
