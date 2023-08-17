@@ -31,6 +31,7 @@
     #include <linux/serial.h>
     #include <cstring>
     #include <cstdio>
+    #define IOSSIOSPEED _IOW('T', 2, speed_t)
 
 #elif defined(__APPLE__)
 //added for port scan
