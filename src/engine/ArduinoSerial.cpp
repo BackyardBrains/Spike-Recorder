@@ -1632,7 +1632,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                 _numberOfChannels  =3;
             }
         }
-        else if(currentPort.deviceType == SerialDevice::sbpromusclecdc || currentPort.deviceType == SerialDevice::sbproneuroncdc  || )
+        else if(currentPort.deviceType == SerialDevice::sbpromusclecdc || currentPort.deviceType == SerialDevice::sbproneuroncdc)
         {
             _samplingRate = 10000;
             _numberOfChannels = 2;
