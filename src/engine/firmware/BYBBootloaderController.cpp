@@ -119,7 +119,7 @@ namespace BackyardBrains {
             parseLineOfHex(contents);
             //free(contents);
 
-        
+        }
 
 
         initTransferOfFirmware();
@@ -233,7 +233,10 @@ namespace BackyardBrains {
         #endif // defined
         #if defined(__linux__)
             int bits;
-            
+            if (size == 0 && ioctl(fd, TIOCMGET, &bits) < 0)
+            {
+                //error
+            }
         #endif
         #if defined(_WIN32)
             COMSTAT st;
