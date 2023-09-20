@@ -25,7 +25,7 @@
     <ROW Property="ProductCode" Value="1033:{CDAC9870-61CD-4639-943F-2A848598BC53} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="Spike Recorder"/>
-    <ROW Property="ProductVersion" Value="1.9.24"/>
+    <ROW Property="ProductVersion" Value="1.9.28"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND;AI_SETUPEXEPATH;SETUPEXEDIR"/>
     <ROW Property="UpgradeCode" Value="{28EA391C-48E9-4B2A-901E-2CCF5B8E7556}"/>
     <ROW Property="WindowsType9X" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
@@ -69,7 +69,7 @@
     <ROW Component="ProductInformation" ComponentId="{3B60805D-EB29-432D-A91A-F2E887F9402E}" Directory_="APPDIR" Attributes="4" KeyPath="Version"/>
     <ROW Component="SDL2.dll" ComponentId="{EC2E4730-7A69-4415-B1EB-80DFF44244AC}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="SDL2.dll"/>
     <ROW Component="SDL2_image.dll" ComponentId="{764B61A1-F982-42DE-963B-9EE13977590F}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="SDL2_image.dll"/>
-    <ROW Component="SpikeRecorder.exe" ComponentId="{30CA7C0B-ECF9-47DD-A644-CCBC50C66510}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="SpikeRecorder.exe"/>
+    <ROW Component="SpikeRecorder.exe" ComponentId="{D289F842-470B-4FF3-B103-CCED8F466A7C}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="SpikeRecorder.exe"/>
     <ROW Component="analysis.bmp" ComponentId="{E8583EBF-26EA-4D5C-8EFF-DDA03EEF9D93}" Directory_="data_Dir" Attributes="0" KeyPath="analysis.bmp" Type="0"/>
     <ROW Component="arduinoorg.cat" ComponentId="{BA0D36C7-3A2E-4859-A8B8-6E51FAEB6038}" Directory_="drivers_Dir" Attributes="0" KeyPath="arduinoorg.cat" Type="0"/>
     <ROW Component="bass.dll" ComponentId="{79CD145D-27FE-4C73-81E4-B962FE6853A8}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="bass.dll"/>
