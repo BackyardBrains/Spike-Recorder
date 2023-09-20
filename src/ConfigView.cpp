@@ -546,6 +546,14 @@ void ConfigView::SetupScreen()
                                                                         touchSerialPortWidget->addItem("UniBox");
                                                                         Log::msg("Serial dropdown item: UniBox");
                                                                     }
+                                                                    else
+                                                                    {
+                                                                        if(it->deviceType == ArduinoSerial::extclaw)
+                                                                        {
+                                                                            touchSerialPortWidget->addItem("Claw");
+                                                                            Log::msg("Serial dropdown item: Claw");
+                                                                        }
+                                                                    }
 
                                                                 }
                                                             }
@@ -682,6 +690,14 @@ void ConfigView::SetupScreen()
                                                                         serialPortWidget->addItem("UniBox");
                                                                         Log::msg("Serial dropdown item: UniBox");
                                                                     }
+                                                                    else
+                                                                    {
+                                                                        if(it->deviceType == ArduinoSerial::extclaw)
+                                                                        {
+                                                                            serialPortWidget->addItem("Claw");
+                                                                            Log::msg("Serial dropdown item: Claw");
+                                                                        }
+                                                                    }
                                                                 }
                                                             }
                                                         }
@@ -774,6 +790,7 @@ void ConfigView::SetupScreen()
              || _manager.getCurrentPort().deviceType == ArduinoSerial::hhibox
              || _manager.getCurrentPort().deviceType == ArduinoSerial::plant
              || _manager.getCurrentPort().deviceType == ArduinoSerial::muscleusb
+             || _manager.getCurrentPort().deviceType == ArduinoSerial::extclaw
              || _manager.getCurrentPort().deviceType == ArduinoSerial::sbpromusclecdc
              || _manager.getCurrentPort().deviceType == ArduinoSerial::sbproneuroncdc
              || _manager.getCurrentPort().deviceType == ArduinoSerial::sbproneuronmfi

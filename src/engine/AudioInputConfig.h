@@ -22,6 +22,7 @@
 #define INPUT_TYPE_HUMANSB 9
 #define INPUT_TYPE_HHIBOX 10
 #define INPUT_TYPE_UNIBOX 11
+#define INPUT_TYPE_EXTCLAW 12
 
 #include <stdio.h>
 #include <string>
