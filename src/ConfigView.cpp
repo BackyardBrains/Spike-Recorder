@@ -1086,6 +1086,20 @@ void ConfigView::paintEvent() {
         changeScreenType = true;
         weAreOnTouchScreenOld = Widgets::Application::getInstance()->areWeOnTouchscreen();
     }
+    
+    //change filter values if they are changed externaly
+    if(((int)_manager.highCornerFrequency())!= lowValueTI->getInt())
+    {
+        lowFilterValueChanged(_manager.highCornerFrequency());
+        lowFilterTIValueChanged("");
+    }
+    
+    //change filter values if they are changed externaly
+    if(((int)_manager.lowCornerFrequency())!= highValueTI->getInt())
+    {
+        highFilterValueChanged(_manager.lowCornerFrequency());
+        highFilterTIValueChanged("");
+    }
     if(changeScreenType)
     {
         cleanWholeScreenAndResetup();
@@ -1347,7 +1361,7 @@ void ConfigView::lowFilterValueChanged(int lvalue)
     {
         Log::msg("else");
         _manager.enableHighPassFilterWithCornerFreq(lvalue);
-
+        // _manager.setHPFOnSerial(0, 22.467);
     }
 }
 
@@ -1356,6 +1370,7 @@ void ConfigView::lowFilterTIValueChanged(std::string newString)
     Log::msg("lowFilterTIValueChanged");
     rangeSelector->setLowValue(lowValueTI->getInt());
     lowValueTI->setInt(rangeSelector->getLowValue());
+    
 }
 
 void ConfigView::highFilterTIValueChanged(std::string newString)

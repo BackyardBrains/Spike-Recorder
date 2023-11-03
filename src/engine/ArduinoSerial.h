@@ -22,6 +22,7 @@
 #include <string>
 #include "constants.h"
 
+
 //just MAC classes
 #ifdef __APPLE__
     #include <termios.h>
@@ -140,11 +141,13 @@ namespace BackyardBrains {
 
         void closeCurrentMainSerial(void);
         
+        void setHPF(int channel, float hpfFreq);
         void setGain(bool active);
         void setHPF(bool active);
         
         void setP300(bool active);
         void setP300AudioStimulation(bool active);
+
     private:
         RecordingManager *_manager;
         bool _shouldRestartDevice;

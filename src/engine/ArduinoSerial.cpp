@@ -2469,12 +2469,76 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                         0 );
             #endif // definedvvv
                         }
-
-
-
-
-
             previousButtonState = currentButtonState;
+        }
+        if(typeOfMessage == "preset")
+        {
+            // Find the position of the underscore
+            size_t underscorePos = valueOfMessage.find('_');
+
+            if (underscorePos != std::string::npos)
+            {
+                // Extract the channel and value substrings
+                std::string channelStr = valueOfMessage.substr(0, underscorePos);
+                std::string valueStr = valueOfMessage.substr(underscorePos + 1);
+
+                // Convert channel and value substrings to integer and float
+                try {
+                    int channel = std::stoi(channelStr);
+                    _manager->setPresetFilters(channel, valueStr);
+                   
+                } catch (const std::invalid_argument& e) {
+                    std::cerr << "Failed to parse the input string: " << e.what() << std::endl;
+                }
+            }
+        }
+        if(typeOfMessage == "hpfilter" || typeOfMessage == "lpfilter")
+        {
+            
+            // Find the position of the underscore
+            size_t underscorePos = valueOfMessage.find('_');
+
+            if (underscorePos != std::string::npos)
+            {
+                // Extract the channel and value substrings
+                std::string channelStr = valueOfMessage.substr(0, underscorePos);
+                std::string valueStr = valueOfMessage.substr(underscorePos + 1);
+
+                // Convert channel and value substrings to integer and float
+                try {
+                    int channel = std::stoi(channelStr);
+                    float cornerFreq = std::stof(valueStr);
+                    if(cornerFreq<0)
+                    {
+                        if(typeOfMessage == "hpfilter")
+                        {
+                            _manager->enableHighPassFilterWithCornerFreq(0);
+                            _manager->disableHighPassFilter();
+                        }
+                        else
+                        {
+                            _manager->enableLowPassFilterWithCornerFreq((int)(_samplingRate/2));
+                            _manager->disableLowPassFilter();
+                        }
+                    }
+                    else
+                    {
+                        if(typeOfMessage == "hpfilter")
+                        {
+                            _manager->enableHighPassFilterWithCornerFreq(cornerFreq);
+                        }
+                        else
+                        {
+                            _manager->enableLowPassFilterWithCornerFreq(cornerFreq);
+                        }
+                    }
+                    // Parsing successful, channel and value are now set
+                    //std::cout << "Channel: " << channel << std::endl;
+                    //std::cout << "Value: " << value << std::endl;
+                } catch (const std::invalid_argument& e) {
+                    std::cerr << "Failed to parse the input string: " << e.what() << std::endl;
+                }
+            }
         }
         if(typeOfMessage == "HWT")
         {
@@ -2832,6 +2896,16 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
     {
         std::stringstream sstm;
         sstm << "ledoff:"<<ledIndex<<";\n";
+        writeToPort((sstm.str().c_str()),sstm.str().length());
+    }
+
+    //        _manager.setHPFOnSerial(0, 22.467);
+    void ArduinoSerial::setHPF(int channel, float hpfFreq)
+    {
+        std::stringstream sstm;
+
+        sstm << "sethpf:"<<channel<<"_"<<hpfFreq<<";\n";
+
         writeToPort((sstm.str().c_str()),sstm.str().length());
     }
 

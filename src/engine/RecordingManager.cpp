@@ -786,6 +786,51 @@ void RecordingManager::setP300SoundStimmulationOnHardware(bool active)
     }
 }
 
+// Channel index starts from 1
+// If channel index is zero tht means that we have to set all channels
+// to the same preset.
+
+
+// _manager.setHPFOnSerial(0, 22.467);
+void RecordingManager::setPresetFilters(int channel, std::string presetName)
+{
+     if(presetName==PRESET_MESSAGE_VALUE_EEG)
+     {
+         enableHighPassFilterWithCornerFreq(0);
+         enableLowPassFilterWithCornerFreq(50.0);
+     }
+    if(presetName==PRESET_MESSAGE_VALUE_EMG)
+    {
+        enableHighPassFilterWithCornerFreq(70.0);
+        enableLowPassFilterWithCornerFreq(_sampleRate/2);
+    }
+    if(presetName==PRESET_MESSAGE_VALUE_PLANT)
+    {
+        enableHighPassFilterWithCornerFreq(0);
+        enableLowPassFilterWithCornerFreq(5);
+    }
+    if(presetName==PRESET_MESSAGE_VALUE_ECG)
+    {
+        enableHighPassFilterWithCornerFreq(1);
+        enableLowPassFilterWithCornerFreq(100.0);
+    }
+    if(presetName==PRESET_MESSAGE_VALUE_INTNEUR)
+    {
+        enableHighPassFilterWithCornerFreq(70);
+        enableLowPassFilterWithCornerFreq(_sampleRate/2);
+    }
+    if(presetName==PRESET_MESSAGE_VALUE_EXTNEUR)
+    {
+        enableHighPassFilterWithCornerFreq(70);
+        enableLowPassFilterWithCornerFreq(_sampleRate/2);
+    }
+    if(presetName==PRESET_MESSAGE_VALUE_CUSTOM)
+    {
+        //do nothing
+    }
+}
+
+
 #pragma mark - File device
 
 bool RecordingManager::loadFile(const char *filename) {
