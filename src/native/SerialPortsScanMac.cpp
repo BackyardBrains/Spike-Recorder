@@ -470,6 +470,13 @@ namespace BackyardBrains {
                 #endif
                 foundBootloader = true;
             }
+            else if (strcmp(deviceName, "Neuron SB Bootloader") == 0)
+            {
+                 #ifdef LOG_USB
+                Log::msg("Found our bootloader for STM32 - Neuron SB");
+                #endif
+                foundBootloader = true;
+            }
             else if (strcmp(deviceName, "Muscle SpikerBox Pro") == 0)
             {
                  #ifdef LOG_USB

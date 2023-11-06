@@ -34,6 +34,15 @@
 
 #define NUMBER_OF_AVAILABLE_CHANNELS_FOR_JOYSTICK 3
 #define MAX_TIMER_FOR_KEY_RELEASE 700
+
+#define PRESET_MESSAGE_VALUE_EEG "EEG"
+#define PRESET_MESSAGE_VALUE_EMG "EMG"
+#define PRESET_MESSAGE_VALUE_ECG "ECG"
+#define PRESET_MESSAGE_VALUE_INTNEUR "INTNEUR"
+#define PRESET_MESSAGE_VALUE_EXTNEUR "EXTNEUR"
+#define PRESET_MESSAGE_VALUE_CUSTOM "CUSTOM"
+#define PRESET_MESSAGE_VALUE_PLANT "PLANT"
+
 namespace BackyardBrains {
 
 class SampleBuffer;
@@ -121,7 +130,8 @@ public:
     void clearTriggers();
     int getLastEventThresholded(void){return _lastThresholdedEvent;}
     void clearLastEventThresholded(void){_lastThresholdedEvent = -1;}
-
+    void setPresetFilters(int channel, std::string presetName);
+    void setHPFOnSerial(int channel, float hpfFreq){_arduinoSerial.setHPF(channel, hpfFreq);}
 
 	std::vector<SpikeTrain> &spikeTrains() { return _spikeTrains; }
 	const std::list<std::pair<std::string, int64_t> > &markers() const {return _markers;}
