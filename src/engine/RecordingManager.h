@@ -132,7 +132,8 @@ public:
     void clearLastEventThresholded(void){_lastThresholdedEvent = -1;}
     void setPresetFilters(int channel, std::string presetName);
     void setHPFOnSerial(int channel, float hpfFreq){_arduinoSerial.setHPF(channel, hpfFreq);}
-
+    bool checkIfFreqChangedExternaly(){return _freqChangedExternaly;}
+    void resetFlagForFreqChangedExternaly(){_freqChangedExternaly = false;}
 	std::vector<SpikeTrain> &spikeTrains() { return _spikeTrains; }
 	const std::list<std::pair<std::string, int64_t> > &markers() const {return _markers;}
 	void addMarker(const std::string &id, int64_t offset);
@@ -346,7 +347,8 @@ private:
     bool _highPassFilterEnabled = false;
     float _highCornerFreq;
     float _lowCornerFreq;
-
+    bool _freqChangedExternaly = false;
+    
 	int64_t currentPositionOfWaveform;
 
 	bool _fileMode;

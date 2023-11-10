@@ -794,6 +794,7 @@ void RecordingManager::setP300SoundStimmulationOnHardware(bool active)
 // _manager.setHPFOnSerial(0, 22.467);
 void RecordingManager::setPresetFilters(int channel, std::string presetName)
 {
+    _freqChangedExternaly = true;
      if(presetName==PRESET_MESSAGE_VALUE_EEG)
      {
          enableHighPassFilterWithCornerFreq(0);
