@@ -1088,17 +1088,23 @@ void ConfigView::paintEvent() {
     }
     
     //change filter values if they are changed externaly
-    if(((int)_manager.highCornerFrequency())!= lowValueTI->getInt())
+    if(_manager.checkIfFreqChangedExternaly())
     {
-        lowFilterValueChanged(_manager.highCornerFrequency());
-        lowFilterTIValueChanged("");
-    }
-    
-    //change filter values if they are changed externaly
-    if(((int)_manager.lowCornerFrequency())!= highValueTI->getInt())
-    {
+        _manager.resetFlagForFreqChangedExternaly();
+        
         highFilterValueChanged(_manager.lowCornerFrequency());
-        highFilterTIValueChanged("");
+        lowFilterValueChanged(_manager.highCornerFrequency());
+        
+        if(rangeSelector->getLowValue()>_manager.lowCornerFrequency())
+        {
+            rangeSelector->setLowValue(_manager.highCornerFrequency());
+            rangeSelector->setHighValue(_manager.lowCornerFrequency());
+        }
+        else
+        {
+            rangeSelector->setHighValue(_manager.lowCornerFrequency());
+            rangeSelector->setLowValue(_manager.highCornerFrequency());
+        }
     }
     if(changeScreenType)
     {
