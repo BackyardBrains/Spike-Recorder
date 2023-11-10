@@ -2532,6 +2532,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                             _manager->enableLowPassFilterWithCornerFreq(cornerFreq);
                         }
                     }
+                    _manager->setFlagForFreqChangeExternaly();
                     // Parsing successful, channel and value are now set
                     //std::cout << "Channel: " << channel << std::endl;
                     //std::cout << "Value: " << value << std::endl;
