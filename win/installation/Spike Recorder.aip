@@ -22,10 +22,10 @@
     <ROW Property="ARPURLINFOABOUT" Value="https://help.backyardbrains.com/support/home"/>
     <ROW Property="ARPURLUPDATEINFO" Value="https://backyardbrains.com/products/spikerecorder"/>
     <ROW Property="Manufacturer" Value="Backyard Brains"/>
-    <ROW Property="ProductCode" Value="1033:{1A4C05B2-4B53-4FB5-A026-BF108065E380} " Type="16"/>
+    <ROW Property="ProductCode" Value="1033:{031350EE-80C0-498C-A967-AE7C867BFB2F} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="Spike Recorder"/>
-    <ROW Property="ProductVersion" Value="1.9.30"/>
+    <ROW Property="ProductVersion" Value="1.9.32"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND;AI_SETUPEXEPATH;SETUPEXEDIR"/>
     <ROW Property="UpgradeCode" Value="{28EA391C-48E9-4B2A-901E-2CCF5B8E7556}"/>
     <ROW Property="WindowsType9X" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
@@ -40,9 +40,9 @@
   <COMPONENT cid="caphyon.advinst.msicomp.MsiDirsComponent">
     <ROW Directory="APPDIR" Directory_Parent="TARGETDIR" DefaultDir="APPDIR:." IsPseudoRoot="1"/>
     <ROW Directory="BackyardBrains_Dir" Directory_Parent="ProgramFilesFolder" DefaultDir="BACKYA~1|Backyard Brains"/>
-    <ROW Directory="DesktopFolder" Directory_Parent="TARGETDIR" DefaultDir="DESKTO~1|DesktopFolder" IsPseudoRoot="1"/>
     <ROW Directory="FTDIUSBDrivers_Dir" Directory_Parent="drivers_Dir" DefaultDir="FTDIUS~1|FTDI USB Drivers"/>
     <ROW Directory="ProgramFilesFolder" Directory_Parent="TARGETDIR" DefaultDir="PROGRA~1|ProgramFilesFolder" IsPseudoRoot="1"/>
+    <ROW Directory="SHORTCUTDIR" Directory_Parent="TARGETDIR" DefaultDir="SHORTC~1|SHORTCUTDIR" IsPseudoRoot="1"/>
     <ROW Directory="SpikeRecorder_Dir" Directory_Parent="BackyardBrains_Dir" DefaultDir="SPIKER~2|Spike Recorder"/>
     <ROW Directory="Static_Dir" Directory_Parent="FTDIUSBDrivers_Dir" DefaultDir="Static"/>
     <ROW Directory="TARGETDIR" DefaultDir="SourceDir"/>
@@ -69,7 +69,8 @@
     <ROW Component="ProductInformation" ComponentId="{3B60805D-EB29-432D-A91A-F2E887F9402E}" Directory_="APPDIR" Attributes="4" KeyPath="Version"/>
     <ROW Component="SDL2.dll" ComponentId="{EC2E4730-7A69-4415-B1EB-80DFF44244AC}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="SDL2.dll"/>
     <ROW Component="SDL2_image.dll" ComponentId="{764B61A1-F982-42DE-963B-9EE13977590F}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="SDL2_image.dll"/>
-    <ROW Component="SpikeRecorder.exe" ComponentId="{7A78F0B5-D815-47E3-9337-8D21C4814675}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="SpikeRecorder.exe"/>
+    <ROW Component="SHORTCUTDIR" ComponentId="{EC7503E3-66C2-4350-8FFD-337321584FBD}" Directory_="SHORTCUTDIR" Attributes="0"/>
+    <ROW Component="SpikeRecorder.exe" ComponentId="{D6278209-0F3E-4167-97D4-03B1FB8E5753}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="SpikeRecorder.exe"/>
     <ROW Component="analysis.bmp" ComponentId="{E8583EBF-26EA-4D5C-8EFF-DDA03EEF9D93}" Directory_="data_Dir" Attributes="0" KeyPath="analysis.bmp" Type="0"/>
     <ROW Component="arduinoorg.cat" ComponentId="{BA0D36C7-3A2E-4859-A8B8-6E51FAEB6038}" Directory_="drivers_Dir" Attributes="0" KeyPath="arduinoorg.cat" Type="0"/>
     <ROW Component="bass.dll" ComponentId="{79CD145D-27FE-4C73-81E4-B962FE6853A8}" Directory_="SpikeRecorder_Dir" Attributes="0" KeyPath="bass.dll"/>
@@ -458,6 +459,7 @@
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCreateFolderComponent">
     <ROW Directory_="APPDIR" Component_="APPDIR" ManualDelete="true"/>
     <ROW Directory_="firmwares_Dir" Component_="firmwares" ManualDelete="false"/>
+    <ROW Directory_="SHORTCUTDIR" Component_="SHORTCUTDIR" ManualDelete="false"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCustActComponent">
     <ROW Action="AI_AppSearchEx" Type="1" Source="Prereq.dll" Target="DoAppSearchEx"/>
@@ -549,6 +551,7 @@
     <ROW Feature_="MainFeature" Component_="libusb0.sys_2"/>
     <ROW Feature_="MainFeature" Component_="libusb0_x86.dll"/>
     <ROW Feature_="MainFeature" Component_="SpikeRecorder.exe"/>
+    <ROW Feature_="MainFeature" Component_="SHORTCUTDIR"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiIconsComponent">
     <ROW Name="SpikeRecorder.exe" SourcePath="..\build\SpikeRecorder.ico" Index="0"/>
@@ -623,7 +626,7 @@
     <ROW Registry="Version" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Version" Value="[ProductVersion]" Component_="ProductInformation"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiShortsComponent">
-    <ROW Shortcut="SpikeRecorder" Directory_="DesktopFolder" Name="SPIKER~1|Spike Recorder" Component_="SpikeRecorder.exe" Target="[#SpikeRecorder.exe]" Hotkey="0" Icon_="SpikeRecorder.exe" IconIndex="0" ShowCmd="1" WkDir="SpikeRecorder_Dir"/>
+    <ROW Shortcut="SpikeRecorder" Directory_="SHORTCUTDIR" Name="SPIKER~2|Spike Recorder" Component_="SpikeRecorder.exe" Target="[#SpikeRecorder.exe]" Hotkey="0" Icon_="SpikeRecorder.exe" IconIndex="0" ShowCmd="1" WkDir="SpikeRecorder_Dir"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiThemeComponent">
     <ATTRIBUTE name="UsedTheme" value="classic"/>
