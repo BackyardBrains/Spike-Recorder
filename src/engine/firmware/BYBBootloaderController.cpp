@@ -10,7 +10,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <sstream>
-#include <stdint.h>
+#include "stdint.h"
+//#include <stdint.h>
 #if defined(__APPLE__)
 //added for port scan
     #include <sys/uio.h>
