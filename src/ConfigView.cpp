@@ -1179,22 +1179,37 @@ void ConfigView::firmwareBootloaderUpdatePressed()
 void ConfigView:: presetPlantPressed()
 {
     _manager.setPresetFilters(0, PRESET_MESSAGE_VALUE_PLANT);
+    _manager.enable60HzFilter();
+    _60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
+    _50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
 }
 void ConfigView:: presetNeuronPressed()
 {
     _manager.setPresetFilters(0, PRESET_MESSAGE_VALUE_EXTNEUR);
+    _manager.enable60HzFilter();
+    _60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
+    _50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
 }
 void ConfigView:: presetEEGPressed()
 {
     _manager.setPresetFilters(0, PRESET_MESSAGE_VALUE_EEG);
+    _manager.enable60HzFilter();
+    _60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
+    _50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
 }
 void ConfigView:: presetECGPressed()
 {
     _manager.setPresetFilters(0, PRESET_MESSAGE_VALUE_ECG);
+    _manager.enable60HzFilter();
+    _60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
+    _50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
 }
 void ConfigView:: presetEMGPressed()
 {
     _manager.setPresetFilters(0, PRESET_MESSAGE_VALUE_EMG);
+    _manager.enable60HzFilter();
+    _60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
+    _50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
 }
 
 void ConfigView::checkIfWeShouldHighlightPreset()
