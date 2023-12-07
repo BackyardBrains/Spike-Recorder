@@ -803,7 +803,7 @@ void RecordingManager::setPresetFilters(int channel, std::string presetName)
     if(presetName==PRESET_MESSAGE_VALUE_EMG)
     {
         enableHighPassFilterWithCornerFreq(70.0);
-        enableLowPassFilterWithCornerFreq(_sampleRate/2);
+        enableLowPassFilterWithCornerFreq(2500);
     }
     if(presetName==PRESET_MESSAGE_VALUE_PLANT)
     {
