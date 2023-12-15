@@ -207,6 +207,17 @@ void Game::loadResources() {
     Widgets::TextureGL::load("data/p300audio-normal.bmp");
     Widgets::TextureGL::load("data/p300audio-high.bmp");
     Widgets::TextureGL::load("data/p300audio-selected.bmp");
+    
+    Widgets::TextureGL::load("data/preset-neuron.bmp");
+    Widgets::TextureGL::load("data/preset-plant.bmp");
+    Widgets::TextureGL::load("data/preset-eeg.bmp");
+    Widgets::TextureGL::load("data/preset-ecg.bmp");
+    Widgets::TextureGL::load("data/preset-emg.bmp");
+    Widgets::TextureGL::load("data/preset-neuron-high.bmp");
+    Widgets::TextureGL::load("data/preset-plant-high.bmp");
+    Widgets::TextureGL::load("data/preset-eeg-high.bmp");
+    Widgets::TextureGL::load("data/preset-ecg-high.bmp");
+    Widgets::TextureGL::load("data/preset-emg-high.bmp");
 
 }
 

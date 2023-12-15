@@ -85,6 +85,14 @@ private:
     DropDownList * numberOfChannelsWidget;
     Widgets::PushButton *_connectButton;
     
+    Widgets::PushButton *_presetPlantButton;
+    Widgets::PushButton *_presetNeuronButton;
+    Widgets::PushButton *_presetEEGButton;
+    Widgets::PushButton *_presetECGButton;
+    Widgets::PushButton *_presetEMGButton;
+
+    
+    
     std::vector<DropDownList *> joystickKeyDropdowns;
 
 
@@ -123,6 +131,12 @@ private:
     void lowFilterTIValueChanged(std::string newString);
     void highFilterTIValueChanged(std::string newString);
     void calibratePressed();
+    void presetPlantPressed();
+    void presetNeuronPressed();
+    void presetEEGPressed();
+    void presetECGPressed();
+    void presetEMGPressed();
+    void checkIfWeShouldHighlightPreset();
 
     void changeKeysForJoystick(int channelIndex, int keyIndex);
     void testFilterValuesAndConfigHardwareFilter();
