@@ -24,13 +24,13 @@ namespace BackyardBrains {
         }
     }
 
-    void LowPassFilter::setCornerFrequency(float newCornerFrequency)
+    void LowPassFilter::setCornerFrequency(double newCornerFrequency)
     {
             cornerFrequency = newCornerFrequency;
             calculateCoefficients();
     }
 
-    void LowPassFilter::setQ(float newQ)
+    void LowPassFilter::setQ(double newQ)
     {
         Q = newQ;
         calculateCoefficients();

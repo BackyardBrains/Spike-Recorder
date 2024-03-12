@@ -20,13 +20,13 @@ namespace BackyardBrains {
         }
     }
 
-    void NotchFilter::setCenterFrequency(float newCenterFrequency)
+    void NotchFilter::setCenterFrequency(double newCenterFrequency)
     {
             centerFrequency = newCenterFrequency;
             calculateCoefficients();
     }
 
-    void NotchFilter::setQ(float newQ)
+    void NotchFilter::setQ(double newQ)
     {
         Q = newQ;
         calculateCoefficients();
