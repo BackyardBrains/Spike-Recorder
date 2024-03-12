@@ -614,12 +614,14 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                         std::string vid = "VID_2E73";
                         std::string pid = "PID_0005";
                         std::string pidNeuron  = "PID_000A";
+                        std::string pidStation  = "PID_000B";
                         //bootloader neuron 0x9
                         char * isThereVid = strstr((char *)hardwareId, (char *)vid.c_str());
                         char * isTherePid = strstr((char *)hardwareId, (char *)pid.c_str());
                         char * isTherePidNeuron = strstr((char *)hardwareId, (char *)pidNeuron.c_str());
+                        char * isTherePidStation = strstr((char *)hardwareId, (char *)pidStation.c_str());
                         bool foundBootloader = false;
-                        if (isThereVid && (isTherePid || isTherePidNeuron))
+                        if (isThereVid && (isTherePid || isTherePidNeuron || isTherePidStation))
                         {
                             //printf("Found vid and pid for bootloader\n");
                             Log::msg("Found vid and pid for bootloader\n");

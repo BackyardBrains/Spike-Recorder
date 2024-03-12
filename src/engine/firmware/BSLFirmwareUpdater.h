@@ -1,3 +1,10 @@
+/*
+    This class BSLFirmwareUpdater is used to update MSP430 devices 
+    like old HID Muscle and Neuron SpikerBox Pro.
+    Works only on Windows since actual communiation with boothloader uses BSL430.dll for Windows only
+
+*/
+
 #ifndef BSLFIRMWAREUPDATER_H
 #define BSLFIRMWAREUPDATER_H
 

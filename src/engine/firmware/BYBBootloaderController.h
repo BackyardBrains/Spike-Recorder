@@ -4,6 +4,8 @@
 //
 //  Created by Stanislav on 01/04/2022.
 //  Copyright © 2022 BackyardBrains. All rights reserved.
+//  Made to update STM32 microcontrollers. Works with custom bootloader that BYB made.
+//  It is used for devices like Human SpikerBox, Neuron SpikerBox (Mfi) and Spike Station 
 //
 
 #ifndef BYBBootloaderController_h

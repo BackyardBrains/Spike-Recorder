@@ -2784,7 +2784,7 @@ void RecordingManager::putBoardInBootloaderMode()
 
 bool RecordingManager::firmwareUpdateShouldBeActive()
 {
-    return serialMode() && _firmwareForBootloaderAvailable && (_arduinoSerial.currentPort.deviceType==ArduinoSerial::humansb || _arduinoSerial.currentPort.deviceType==ArduinoSerial::sbproneuronmfi);
+    return serialMode() && _firmwareForBootloaderAvailable && (_arduinoSerial.currentPort.deviceType==ArduinoSerial::humansb || _arduinoSerial.currentPort.deviceType==ArduinoSerial::sbproneuronmfi || _arduinoSerial.currentPort.deviceType==ArduinoSerial::unibox);
 }
 
 int RecordingManager::bootloaderState()

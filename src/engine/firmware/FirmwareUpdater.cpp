@@ -1,3 +1,12 @@
+/*
+    This class FirmwareUpdater is used to update MSP430 devices 
+    like old HID Muscle and Neuron SpikerBox Pro.
+    Class takes info about available firmware versions from server 
+    https://backyardbrains.com/products/firmwares/sbpro/compatibility.xml
+    and offers users to update firmware.
+    Works only on Windows since actual communiation with boothloader uses DLL for Windows only
+
+*/
 #include "FirmwareUpdater.h"
 
 //#define ADDRESS_TO_COMPAT_XML "http://unit.rs/stanislav/compatibility.xml"
