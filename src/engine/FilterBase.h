@@ -9,20 +9,20 @@ namespace BackyardBrains {
     class FilterBase {
         public:
             FilterBase();
-            void initWithSamplingRate(float sr);
+            void initWithSamplingRate(double sr);
             void setCoefficients();
             void filterIntData(int16_t * data, int32_t numFrames,bool flush = false);
-            void filterContiguousData( float * data, uint32_t numFrames, bool flush =false);
+            void filterContiguousData( double * data, uint32_t numFrames, bool flush =false);
         protected:
         
-            void intermediateVariables(float Fc, float Q);
-            float zero, one;
-            float samplingRate;
-            float gInputKeepBuffer[2];
-            float gOutputKeepBuffer[2];
-            float omega, omegaS, omegaC, alpha;
-            float coefficients[5];
-            float a0, a1, a2, b0, b1, b2;
+            void intermediateVariables(double Fc, double Q);
+            double zero, one;
+            double samplingRate;
+            double gInputKeepBuffer[2];
+            double gOutputKeepBuffer[2];
+            double omega, omegaS, omegaC, alpha;
+            double coefficients[5];
+            double a0, a1, a2, b0, b1, b2;
             int flushFilterValues;
         private:
     };

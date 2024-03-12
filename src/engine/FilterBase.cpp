@@ -8,7 +8,7 @@ FilterBase::FilterBase() {
 
 }
 
-void FilterBase::initWithSamplingRate(float sr)
+void FilterBase::initWithSamplingRate(double sr)
 {
         samplingRate = sr;
 
@@ -39,12 +39,12 @@ void FilterBase::setCoefficients()
 //
 void FilterBase::filterIntData(int16_t * data, int32_t numFrames, bool flush)
 {
-    float *tempFloatBuffer = (float*) std::malloc(numFrames * sizeof(float));
+    double *tempdoubleBuffer = (double*) std::malloc(numFrames * sizeof(double));
     for(int32_t i=numFrames-1;i>=0;i--)
     {
-        tempFloatBuffer[i] = (float) data[i];
+        tempdoubleBuffer[i] = (double) data[i];
     }
-    filterContiguousData(tempFloatBuffer, numFrames, flush);
+    filterContiguousData(tempdoubleBuffer, numFrames, flush);
     if(flush)
     {
         
@@ -57,25 +57,25 @@ void FilterBase::filterIntData(int16_t * data, int32_t numFrames, bool flush)
     {
         for(int32_t i=numFrames-1;i>=0;i--)
         {
-            data[i] = (int16_t) tempFloatBuffer[i];
+            data[i] = (int16_t) tempdoubleBuffer[i];
         }
     }
-    free(tempFloatBuffer);
+    free(tempdoubleBuffer);
 }
 
 //
 // Filter single channel data
 //
-void FilterBase::filterContiguousData( float * data, uint32_t numFrames, bool flush)
+void FilterBase::filterContiguousData( double * data, uint32_t numFrames, bool flush)
 {
     // Provide buffer for processing
-    float *tInputBuffer = (float*) std::malloc((numFrames + 2) * sizeof(float));
-    float *tOutputBuffer = (float*) std::malloc((numFrames + 2) * sizeof(float));
+    double *tInputBuffer = (double*) std::malloc((numFrames + 2) * sizeof(double));
+    double *tOutputBuffer = (double*) std::malloc((numFrames + 2) * sizeof(double));
 
     // Copy the data
-    memcpy(tInputBuffer, gInputKeepBuffer, 2 * sizeof(float));
-    memcpy(tOutputBuffer, gOutputKeepBuffer, 2 * sizeof(float));
-    memcpy(&(tInputBuffer[2]), data, numFrames * sizeof(float));
+    memcpy(tInputBuffer, gInputKeepBuffer, 2 * sizeof(double));
+    memcpy(tOutputBuffer, gOutputKeepBuffer, 2 * sizeof(double));
+    memcpy(&(tInputBuffer[2]), data, numFrames * sizeof(double));
 
     // Do the processing
     // vDSP_deq22(tInputBuffer, 1, coefficients, tOutputBuffer, 1, numFrames);
@@ -87,15 +87,15 @@ void FilterBase::filterContiguousData( float * data, uint32_t numFrames, bool fl
     }
     
     // Copy the data
-    memcpy(data, tOutputBuffer, numFrames * sizeof(float));
-    memcpy(gInputKeepBuffer, &(tInputBuffer[numFrames]), 2 * sizeof(float));
-    memcpy(gOutputKeepBuffer, &(tOutputBuffer[numFrames]), 2 * sizeof(float));
+    memcpy(data, tOutputBuffer, numFrames * sizeof(double));
+    memcpy(gInputKeepBuffer, &(tInputBuffer[numFrames]), 2 * sizeof(double));
+    memcpy(gOutputKeepBuffer, &(tOutputBuffer[numFrames]), 2 * sizeof(double));
 
     free(tInputBuffer);
     free(tOutputBuffer);
 }
 
-void FilterBase::intermediateVariables(float Fc, float Q)
+void FilterBase::intermediateVariables(double Fc, double Q)
 {
     omega = 2*M_PI*Fc/samplingRate;
     omegaS = sin(omega);

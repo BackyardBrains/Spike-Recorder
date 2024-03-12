@@ -7,11 +7,11 @@ namespace BackyardBrains{
         public:
             NotchFilter();
             void calculateCoefficients();
-            void setCenterFrequency(float newCenterFrequency);
-            void setQ(float newQ);
+            void setCenterFrequency(double newCenterFrequency);
+            void setQ(double newQ);
         protected:
-            float centerFrequency;
-            float Q;
+            double centerFrequency;
+            double Q;
         private:
     };
 }

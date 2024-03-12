@@ -8,11 +8,11 @@ namespace BackyardBrains{
         public:
             LowPassFilter();
             void calculateCoefficients();
-            void setCornerFrequency(float newCornerFrequency);
-            void setQ(float newQ);
+            void setCornerFrequency(double newCornerFrequency);
+            void setQ(double newQ);
         protected:
-            float cornerFrequency;
-            float Q;
+            double cornerFrequency;
+            double Q;
         private:
     };
 }
