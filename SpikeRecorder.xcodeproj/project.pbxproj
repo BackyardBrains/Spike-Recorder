@@ -87,10 +87,12 @@
 		24E8E6EB1BD95DD9003386A6 /* tinyxml2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24E8E6E91BD95DD9003386A6 /* tinyxml2.cpp */; };
 		24F40AB31ACEA94700B3CCE1 /* HIDUsbManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24F40AB11ACEA94700B3CCE1 /* HIDUsbManager.cpp */; };
 		24F40AB81ACEAD1600B3CCE1 /* hid.c in Sources */ = {isa = PBXBuildFile; fileRef = 24F40AB71ACEAD1600B3CCE1 /* hid.c */; };
-		8520F8DD2B21D549004ED5A8 /* libbass.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 85FBE7C52B20B6CD0029C7DD /* libbass.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		8526E78523707D570089E8AF /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8526E78423707D570089E8AF /* SDL2.framework */; };
 		8526E78623707D6B0089E8AF /* SDL2.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8526E78423707D570089E8AF /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8526E78723707D710089E8AF /* SDL2.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8526E78423707D570089E8AF /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		853339552B8F8DDB00E570FC /* libbass.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 853339542B8F8DDB00E570FC /* libbass.dylib */; };
+		853339562B8F8DE600E570FC /* libbass.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 853339542B8F8DDB00E570FC /* libbass.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		853339572B8F8DF600E570FC /* libbass.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 853339542B8F8DDB00E570FC /* libbass.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		85760FFA2180A1A100F197FB /* KeyboardGeneratorMac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85760FF92180A1A100F197FB /* KeyboardGeneratorMac.cpp */; };
 		85AB394727F7176400213B9F /* BYBBootloaderVO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85AB394227F7176400213B9F /* BYBBootloaderVO.cpp */; };
 		85AB394B27F71B9300213B9F /* BYBBootloaderController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85AB394927F71B9300213B9F /* BYBBootloaderController.cpp */; };
@@ -175,8 +177,6 @@
 		85E7C8EF2825175400025C72 /* HDFRecorder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85E7C8ED2825175400025C72 /* HDFRecorder.cpp */; };
 		85E7C8F2282D04D700025C72 /* HDFReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85E7C8F0282D04D700025C72 /* HDFReader.cpp */; };
 		85E7C8F52837B1EC00025C72 /* miniz.c in Sources */ = {isa = PBXBuildFile; fileRef = 85E7C8F32837B1EC00025C72 /* miniz.c */; };
-		85FBE7C62B20B6CD0029C7DD /* libbass.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 85FBE7C52B20B6CD0029C7DD /* libbass.dylib */; };
-		85FBE7C72B20B6F10029C7DD /* libbass.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 85FBE7C52B20B6CD0029C7DD /* libbass.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -186,6 +186,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				853339562B8F8DE600E570FC /* libbass.dylib in CopyFiles */,
 				85E7C8EB2825164600025C72 /* libhdf5_tools.300.dylib in CopyFiles */,
 				85E7C8E7282515FF00025C72 /* libhdf5.300.dylib in CopyFiles */,
 				85E7C8E3282515B800025C72 /* libhdf5_hl_cpp.300.dylib in CopyFiles */,
@@ -194,7 +195,6 @@
 				85E7C8B228241DA100025C72 /* libhdf5_cpp.300.0.1.dylib in CopyFiles */,
 				85E7C8B428241DA100025C72 /* libhdf5_hl.300.0.1.dylib in CopyFiles */,
 				85E7C8B528241DA100025C72 /* libhdf5_tools.300.0.1.dylib in CopyFiles */,
-				85FBE7C72B20B6F10029C7DD /* libbass.dylib in CopyFiles */,
 				85E7C8B328241DA100025C72 /* libhdf5_hl_cpp.300.0.1.dylib in CopyFiles */,
 				85E7C8B628241DA100025C72 /* libhdf5.300.1.0.dylib in CopyFiles */,
 				85E7C8AF28241DA100025C72 /* libchkp.dylib in CopyFiles */,
@@ -220,6 +220,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 6;
 			files = (
+				853339572B8F8DF600E570FC /* libbass.dylib in CopyFiles */,
 				85E7C8EC2825164F00025C72 /* libhdf5_tools.300.dylib in CopyFiles */,
 				85E7C8E82825160C00025C72 /* libhdf5.300.dylib in CopyFiles */,
 				85E7C8E4282515BE00025C72 /* libhdf5_hl_cpp.300.dylib in CopyFiles */,
@@ -247,16 +248,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8520F8DC2B21D528004ED5A8 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 12;
-			dstPath = "";
-			dstSubfolderSpec = 16;
-			files = (
-				8520F8DD2B21D549004ED5A8 /* libbass.dylib in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -264,7 +255,6 @@
 		1C11473E1D8EE07500BDA6DA /* AudioInputConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioInputConfig.h; sourceTree = "<group>"; };
 		1C4060F71F60518900B783F8 /* SerialPortsScanMac.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SerialPortsScanMac.cpp; sourceTree = "<group>"; };
 		1C4060F81F60518900B783F8 /* SerialPortsScan.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SerialPortsScan.h; sourceTree = "<group>"; };
-		1C7EA2521D380C0200D5FCD7 /* libbass.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libbass.dylib; sourceTree = "<group>"; };
 		1CC7E1F61DF1C1E100841669 /* HorizontalColorPicker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HorizontalColorPicker.cpp; sourceTree = "<group>"; };
 		1CC7E1F71DF1C1E100841669 /* HorizontalColorPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HorizontalColorPicker.h; sourceTree = "<group>"; };
 		1CC7E1F91DF2CB9100841669 /* TouchDropDownList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TouchDropDownList.cpp; path = src/widgets/TouchDropDownList.cpp; sourceTree = SOURCE_ROOT; };
@@ -479,6 +469,7 @@
 		8526E78223707C780089E8AF /* SDL_blendmode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDL_blendmode.h; sourceTree = "<group>"; };
 		8526E78323707C780089E8AF /* SDL_opengl_glext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDL_opengl_glext.h; sourceTree = "<group>"; };
 		8526E78423707D570089E8AF /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2.framework; sourceTree = "<group>"; };
+		853339542B8F8DDB00E570FC /* libbass.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libbass.dylib; sourceTree = "<group>"; };
 		85760FF82180A13500F197FB /* KeyboardGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KeyboardGenerator.h; sourceTree = "<group>"; };
 		85760FF92180A1A100F197FB /* KeyboardGeneratorMac.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = KeyboardGeneratorMac.cpp; sourceTree = "<group>"; };
 		85AB394127F7176400213B9F /* BYBBootloaderVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BYBBootloaderVO.h; sourceTree = "<group>"; };
@@ -529,7 +520,6 @@
 		85E7C8F1282D04D700025C72 /* HDFReader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HDFReader.h; sourceTree = "<group>"; };
 		85E7C8F32837B1EC00025C72 /* miniz.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = miniz.c; sourceTree = "<group>"; };
 		85E7C8F42837B1EC00025C72 /* miniz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = miniz.h; sourceTree = "<group>"; };
-		85FBE7C52B20B6CD0029C7DD /* libbass.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libbass.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -540,7 +530,7 @@
 				85E7C8EA2825163F00025C72 /* libhdf5_tools.300.dylib in Frameworks */,
 				85E7C8E6282515F900025C72 /* libhdf5.300.dylib in Frameworks */,
 				85E7C8E2282515AF00025C72 /* libhdf5_hl_cpp.300.dylib in Frameworks */,
-				85FBE7C62B20B6CD0029C7DD /* libbass.dylib in Frameworks */,
+				853339552B8F8DDB00E570FC /* libbass.dylib in Frameworks */,
 				85E7C8DE2825156500025C72 /* libhdf5_cpp.300.dylib in Frameworks */,
 				85E7C8DA2825127F00025C72 /* libhdf5_hl.300.dylib in Frameworks */,
 				85E7C8A128241D5A00025C72 /* libhdf5_hl.300.0.1.dylib in Frameworks */,
@@ -898,7 +888,7 @@
 		248E591E1AAE1B450011707F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				85FBE7C52B20B6CD0029C7DD /* libbass.dylib */,
+				853339542B8F8DDB00E570FC /* libbass.dylib */,
 				85E7C8E92825163F00025C72 /* libhdf5_tools.300.dylib */,
 				85E7C8E5282515F900025C72 /* libhdf5.300.dylib */,
 				85E7C8E1282515AE00025C72 /* libhdf5_hl_cpp.300.dylib */,
@@ -930,7 +920,6 @@
 				85E7C87C282419EB00025C72 /* libszaec.a */,
 				85E7C87A282419EB00025C72 /* libz.a */,
 				8526E78423707D570089E8AF /* SDL2.framework */,
-				1C7EA2521D380C0200D5FCD7 /* libbass.dylib */,
 				247FF9301C919F12004DF81C /* SDL2_image.framework */,
 				2407F6C81C7F497800D215B9 /* SDL2 */,
 				248E591C1AAE1ADE0011707F /* IOKit.framework */,
@@ -977,7 +966,6 @@
 				248E586B1AAE0CF60011707F /* Resources */,
 				24079F3E1AB0CCC200820291 /* CopyFiles */,
 				24079F421AB0CCE600820291 /* CopyFiles */,
-				8520F8DC2B21D528004ED5A8 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -1230,8 +1218,9 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1.9.34;
+				CURRENT_PROJECT_VERSION = 1.9.36;
 				DEVELOPMENT_TEAM = MLGRKD657P;
+				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1262,7 +1251,7 @@
 					"$(PROJECT_DIR)/support/HDF5/1.13.1/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 1.9.34;
+				MARKETING_VERSION = 1.9.35;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = "-v";
 				PRODUCT_BUNDLE_IDENTIFIER = com.backyardbrains.SpikeRecorder;
@@ -1285,8 +1274,9 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1.9.34;
+				CURRENT_PROJECT_VERSION = 1.9.36;
 				DEVELOPMENT_TEAM = MLGRKD657P;
+				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1317,7 +1307,7 @@
 					"$(PROJECT_DIR)/support/HDF5/1.13.1/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 1.9.34;
+				MARKETING_VERSION = 1.9.35;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = "-v";
 				PRODUCT_BUNDLE_IDENTIFIER = com.backyardbrains.SpikeRecorder;
