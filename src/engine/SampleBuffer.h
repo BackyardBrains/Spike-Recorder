@@ -159,10 +159,7 @@ public:
 			if (_head == SIZE)
 				_head = 0;
 		}
-        //std::cout<<"Adding inside: _pos = "<<_pos<<"\n";
 		_pos += len;//add to cumulative number of samples (number of samples since begining of the time)
-		//std::cout<<"After Adding inside: _pos = "<<_pos<<"\n";
-       // std::cout<<"Head: "<<_head<<" Pos: "<<_pos<<"\n";
 	}
 
     //
@@ -237,32 +234,25 @@ public:
 	}
 
 
-
+	//
+	// Get min and max data for the graph 
+	//
 	void getDataEnvelope(std::pair<int16_t, int16_t> *dst, int64_t offset, int64_t len, int skip) const
 	{
-		// qDebug() << "SampleBuffer: CALLING getDataEnvelope(<dst>," << offset << "," << len << "," << skip << ") w/ force =" << force;
-		const int64_t lllleft  = (offset - _pos);//(negative value)
+
+		const int64_t lllleft  = (offset - _pos);
 		const int64_t rrrright = (offset - _pos + len); //(usualy negative value if we don't ask for future)
 		int j = 0;
 		for (int64_t i = lllleft; i < rrrright; j++)
 		{
 			std::pair<int16_t, int16_t> bounding(0, 0);
-
-            //if (i >= -SIZE) we still have that data in circular buffer
-            // (i + skip <= 0) we are not asking for future
 			if (i >= -SIZE && i + skip <= 0)
 			{
-				// qDebug() << "Whole thing...";
-				// we can process the whole thing
-
-                //DEBUG: Stanislav
-
-				uint64_t index = (_head + i + SIZE)%SIZE;// transform index "i" into circular buffer reference frame
+				uint64_t index = (_head + i + SIZE)%SIZE;
 				unsigned int remaining = skip;
 				bounding = std::pair<int16_t, int16_t>(_buffer[index], _buffer[index]);
 				while (remaining > 0)
 				{
-					// qDebug() << "index =" << index;
 					int levels = -1;
 					uint64_t multiplier = 1;
 					while ((index%(multiplier*2) == 0) && (multiplier*2) <= remaining)
@@ -270,13 +260,9 @@ public:
 						multiplier *= 2;
 						levels++;
 					}
-					// qDebug() << "levels =" << levels << " multiplier =" << multiplier;
 					if (levels >= 0 && levels < SIZE_LOG2 && (index/multiplier) < _envelopes[levels].size())
 					{
-						// qDebug() << "A";
-						// qDebug() << "dst[" << j << "] examines Examining _envelopes[" << (levels-1) << "][" << (index/multiplier) << "]" << _envelopes[levels].size();
 						const std::pair<int16_t, int16_t> val = _envelopes[levels][index/multiplier];
-						// qDebug() << "OK";
 						if (val.first < bounding.first)
 							bounding.first = val.first;
 						if (val.second > bounding.second)
@@ -286,7 +272,6 @@ public:
 					}
 					else
 					{
-						// qDebug() << "B";
 						const int16_t val = _buffer[index];
 						if (val > bounding.second)
 							bounding.second = val;
@@ -295,28 +280,19 @@ public:
 						index = (index+1)%SIZE;
 						remaining--;
 					}
-					// qDebug() << "OK2";
 				}
-				// qDebug() << "OK3";
 				i += skip;
 			}
 			else if ((i < -SIZE && i + skip <= -SIZE) || i >= 0)
 			{
-				// qDebug() << "None...";
-				// none of it
 				i += skip;
 			}
 			else
 			{
-				// qDebug() << "Some...";
-				// TODO some of it...
 				i += skip;
 			}
-			//if (j > 1897) qDebug() << "dst[" << j << "] =" << bounding << (len / skip);
 			dst[j] = bounding;
-			// qDebug() << "zZz";
 		}
-		// qDebug() << "SampleBuffer: RETURNING";
 	}
 
 
@@ -368,7 +344,6 @@ public:
 	}
 
 	void reset() {
-      //  std::cout<<"!!!!!!!!!!!!!!!!!! RESET buffer!!!!!!!!!!!\n";
 		_pos = 0;
 		_head = 0;
         memset(segmentsState, 0, sizeof(int[NUMBER_OF_SEGMENTS]));
