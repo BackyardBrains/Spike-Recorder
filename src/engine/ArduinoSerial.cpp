@@ -2494,6 +2494,51 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                 }
             }
         }
+        if(typeOfMessage == "notch")
+        {
+
+            // Find the position of the underscore
+            size_t underscorePos = valueOfMessage.find('_');
+
+            if (underscorePos != std::string::npos)
+            {
+                // Extract the channel and value substrings
+                std::string channelStr = valueOfMessage.substr(0, underscorePos);
+                std::string valueStr = valueOfMessage.substr(underscorePos + 1);
+                
+                // Convert channel and value substrings to integer and float
+                try {
+                    int channel = std::stoi(channelStr);
+                    float notchFreq = std::stof(valueStr);
+                    if(notchFreq<0)
+                    {
+                        //disable notch filter
+                        _manager->disable50HzFilter();
+                        _manager->disable60HzFilter();
+                    }
+                    else
+                    {
+                        if(notchFreq <60)
+                        {
+                            //set 50Hz notch filter
+                            _manager->enable50HzFilter();
+                        }
+                        else
+                        {
+                            //set 60Hz notch filter
+                            _manager->enable60HzFilter();
+                        }
+                    }
+                    _manager->setFlagForFreqChangeExternaly();
+                    // Parsing successful, channel and value are now set
+                    //std::cout << "Channel: " << channel << std::endl;
+                    //std::cout << "Value: " << value << std::endl;
+                } catch (const std::invalid_argument& e) {
+                    std::cerr << "Failed to parse the input string: " << e.what() << std::endl;
+                }
+                
+            }
+        }
         if(typeOfMessage == "hpfilter" || typeOfMessage == "lpfilter")
         {
             

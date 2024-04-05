@@ -1158,6 +1158,21 @@ void ConfigView::paintEvent() {
             rangeSelector->setHighValue(_manager.lowCornerFrequency());
             rangeSelector->setLowValue(_manager.highCornerFrequency());
         }
+        if(_manager.fiftyHzFilterEnabled())
+        {
+            _60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
+            _50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
+        }
+        else if(_manager.sixtyHzFilterEnabled())
+        {
+            _60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
+            _50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
+        }
+        else if(!_manager.sixtyHzFilterEnabled() && !_manager.fiftyHzFilterEnabled())
+        {
+            _60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
+            _50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
+        }
     }
     if(changeScreenType)
     {
