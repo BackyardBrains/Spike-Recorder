@@ -1431,8 +1431,6 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                     {
                        // std::cout<<"Port: "<<list_it->c_str()<<" read\n";
 
-
-                        //askForBoardType();
                         askForBoardType();
                         #if defined(__APPLE__) || defined(__linux__)
 
@@ -1888,6 +1886,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         if(currentPort.deviceType == ArduinoSerial::SerialDevice::unknown)
         {
             askForBoardType();
+            
         }
 
     }
@@ -2213,7 +2212,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         int endOfMessage = 0;
         int startOfMessage = 0;
 
-
+        std::cout<<"\n\n----- execute message ----------------------------------------------------------------\n";
 
         while(stillProcessing)
         {
@@ -2686,6 +2685,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                                             {
                                                                 setDeviceTypeToCurrentPort(ArduinoSerial::unibox);
                                                                 _manager->checkIfFirmwareIsAvailableForBootloader();
+                                                                askForFilterSettings();
                                                             }
                                                             else
                                                             {
@@ -2947,6 +2947,29 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         writeToPort((sstm.str().c_str()),sstm.str().length());
     }
 
+    //
+    // channel - channel for which we want to set notch
+    // frequency - 50 for 50Hz notch; 60 for 60Hz notch; -1 negative number to turn OFF notch
+    //
+    void ArduinoSerial::setNotch(int channel, int frequency)
+    {
+        std::stringstream sstm;
+        if(frequency==50)
+        {
+            sstm << "setnotch:"<<channel<<"_50;\n";
+        }
+        else if (frequency==60)
+        {
+            sstm << "setnotch:"<<channel<<"_60;\n";
+        }
+        else if (frequency<0)
+        {
+            sstm << "setnotch:"<<channel<<"_-1;\n";
+        }
+        writeToPort((sstm.str().c_str()),sstm.str().length());
+    }
+
+
     //        _manager.setHPFOnSerial(0, 22.467);
     void ArduinoSerial::setHPF(int channel, float hpfFreq)
     {
@@ -3026,6 +3049,14 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         Log::msg("askForBoardType - Ask for Board type");
          writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
 
+    }
+
+    void ArduinoSerial::askForFilterSettings()
+    {
+        std::stringstream sstm;
+        sstm << "filter?:;\n";
+        Log::msg("askForBoardType - Ask for Filter settings");
+        writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
     }
 
     void ArduinoSerial::askForP300AudioState()

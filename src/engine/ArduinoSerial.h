@@ -11,7 +11,7 @@
 #define BACKYARDBRAINS_ARDUINOSERIAL_H
 
 
-#define SIZE_OF_MESSAGES_BUFFER 64
+#define SIZE_OF_MESSAGES_BUFFER 512
 #define ESCAPE_SEQUENCE_LENGTH 6
 #define SIZE_OF_INPUT_HARDWARE_CIRC_BUFFER 193152
 
@@ -118,6 +118,7 @@ namespace BackyardBrains {
         void askForBoardType();
         void askForImportantStates();
         void askForP300AudioState();
+        void askForFilterSettings();
         void askForExpansionBoardType();
         void sendMessageToPutBoardIntoBootloaderMode();
         void setBaudRate(int baudRate);
@@ -144,7 +145,7 @@ namespace BackyardBrains {
         void setHPF(int channel, float hpfFreq);
         void setGain(bool active);
         void setHPF(bool active);
-        
+        void setNotch(int channel, int frequency);
         void setP300(bool active);
         void setP300AudioStimulation(bool active);
 

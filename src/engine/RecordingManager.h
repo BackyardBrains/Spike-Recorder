@@ -197,10 +197,10 @@ public:
     int numberOfChannels();
 
 
-    void enable50HzFilter(){ _60HzFilterEnabled = false; _50HzFilterEnabled = true;}
-    void disable50HzFilter(){_50HzFilterEnabled = false;}
-    void enable60HzFilter(){_50HzFilterEnabled = false;_60HzFilterEnabled = true;}
-    void disable60HzFilter(){_60HzFilterEnabled = false;}
+    void enable50HzFilter();
+    void disable50HzFilter();
+    void enable60HzFilter();
+    void disable60HzFilter();
     bool fiftyHzFilterEnabled() {return _50HzFilterEnabled;}
     bool sixtyHzFilterEnabled() {return _60HzFilterEnabled;}
 

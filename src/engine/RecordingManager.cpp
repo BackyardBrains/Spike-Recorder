@@ -2309,6 +2309,59 @@ int RecordingManager::lowCornerFrequency()
     return cornerFrequency;
 }
 
+
+void RecordingManager::enable50HzFilter()
+{
+    if(!_50HzFilterEnabled)
+    {
+        if(_serialMode)
+        {
+            _arduinoSerial.setNotch(1, 50);
+        }
+    }
+    _60HzFilterEnabled = false;
+    _50HzFilterEnabled = true;
+}
+
+void RecordingManager::disable50HzFilter()
+{
+    _50HzFilterEnabled = false;
+    if(!_50HzFilterEnabled && !_60HzFilterEnabled)
+    {
+        if(_serialMode)
+        {
+            //set notch filter off
+            _arduinoSerial.setNotch(1, -1);
+        }
+    }
+}
+
+void RecordingManager::enable60HzFilter()
+{
+    if(!_60HzFilterEnabled)
+    {
+        if(_serialMode)
+        {
+            _arduinoSerial.setNotch(1, 60);
+        }
+    }
+    _50HzFilterEnabled = false;
+    _60HzFilterEnabled = true;
+}
+
+void RecordingManager::disable60HzFilter()
+{
+    _60HzFilterEnabled = false;
+    if(!_50HzFilterEnabled && !_60HzFilterEnabled)
+    {
+        if(_serialMode)
+        {
+            //set notch filter off
+            _arduinoSerial.setNotch(1, -1);
+        }
+    }
+}
+
 void RecordingManager::enableLowPassFilterWithCornerFreq(float cornerFreq)
 {
 
