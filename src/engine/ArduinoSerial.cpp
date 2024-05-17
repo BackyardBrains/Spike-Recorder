@@ -2717,7 +2717,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                 int mnum = (int)((unsigned int)valueOfMessage[0]-48);
                 int64_t offset = 0;
                 _manager->addMarker(std::string(1, mnum+'0'), offset+offsetin);
-
+                
             }//EVNT
             
             if(typeOfMessage == "p300" && portOpened())
