@@ -119,6 +119,7 @@ namespace BackyardBrains {
         void askForImportantStates();
         void askForP300AudioState();
         void askForFilterSettings();
+        void askForPresetSettings();
         void askForExpansionBoardType();
         void sendMessageToPutBoardIntoBootloaderMode();
         void setBaudRate(int baudRate);

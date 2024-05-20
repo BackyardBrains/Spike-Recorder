@@ -2686,6 +2686,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                                                 setDeviceTypeToCurrentPort(ArduinoSerial::unibox);
                                                                 _manager->checkIfFirmwareIsAvailableForBootloader();
                                                                 askForFilterSettings();
+                                                                askForPresetSettings();
                                                             }
                                                             else
                                                             {
@@ -3049,6 +3050,14 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         Log::msg("askForBoardType - Ask for Board type");
          writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
 
+    }
+
+    void ArduinoSerial::askForPresetSettings()
+    {
+        std::stringstream sstm;
+        sstm << "preset?:0;\n";
+        Log::msg("Ask for preset settings");
+        writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
     }
 
     void ArduinoSerial::askForFilterSettings()
