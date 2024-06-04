@@ -2970,8 +2970,16 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         writeToPort((sstm.str().c_str()),sstm.str().length());
     }
 
+    void ArduinoSerial::setLPF(int channel, float lpfFreq)
+    {
+         std::stringstream sstm;
 
-    //        _manager.setHPFOnSerial(0, 22.467);
+        sstm << "setlpf:"<<channel<<"_"<<lpfFreq<<";\n";
+
+        writeToPort((sstm.str().c_str()),sstm.str().length());
+    }
+
+
     void ArduinoSerial::setHPF(int channel, float hpfFreq)
     {
         std::stringstream sstm;

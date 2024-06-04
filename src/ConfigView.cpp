@@ -1504,15 +1504,14 @@ void ConfigView::highFilterValueChanged(int hvalue)
     highValueTI->setInt(hvalue);
     if(hvalue>=_manager.sampleRate()/2)
     {
-        Log::msg("First if");
         _manager.enableLowPassFilterWithCornerFreq(_manager.sampleRate()/2);
         _manager.disableLowPassFilter();
     }
     else
     {
-        Log::msg("In else");
         _manager.enableLowPassFilterWithCornerFreq(hvalue);
     }
+    _manager.setLPFOnSerial(0, hvalue);
     checkIfWeShouldHighlightPreset();
 }
 

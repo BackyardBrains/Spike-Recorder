@@ -143,6 +143,7 @@ namespace BackyardBrains {
 
         void closeCurrentMainSerial(void);
         
+        void setLPF(int channel, float lpfFreq);
         void setHPF(int channel, float hpfFreq);
         void setGain(bool active);
         void setHPF(bool active);

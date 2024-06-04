@@ -30,9 +30,9 @@ const Widgets::Color AudioView::COLORS[] = {
 const Widgets::Color AudioView::ARDUINO_COLORS[] = {
 	Widgets::Colors::black,
     Widgets::Color(25,205,25),//green
+	Widgets::Color(220,20,20),//red
     Widgets::Color(255,255,0),//yellow
 	Widgets::Color(32,178,170),//blue
-	Widgets::Color(220,20,20),//red
 	Widgets::Color(220,220,220),//white
 	Widgets::Color(255,69,0)//orange
 };

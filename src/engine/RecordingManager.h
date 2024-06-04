@@ -132,6 +132,7 @@ public:
     void clearLastEventThresholded(void){_lastThresholdedEvent = -1;}
     void setPresetFilters(int channel, std::string presetName);
     void setHPFOnSerial(int channel, float hpfFreq){_arduinoSerial.setHPF(channel, hpfFreq);}
+    void setLPFOnSerial(int channel, float lpfFreq){_arduinoSerial.setLPF(channel, lpfFreq);}
     void setFlagForFreqChangeExternaly(){_freqChangedExternaly = true;}
     bool checkIfFreqChangedExternaly(){return _freqChangedExternaly;}
     void resetFlagForFreqChangedExternaly(){_freqChangedExternaly = false;}
