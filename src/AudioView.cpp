@@ -361,9 +361,24 @@ static const char *get_unit_str(int unit) {
 	}
 }
 
+void AudioView::drawAmplitudeScale()
+{
+	//change the base log_e(x)/log_e(10) = log_10(x)
+	// int unit = -std::log(_timeScale)/std::log(10);
+	// float shownscalew = scaleWidth()/std::pow(10.f, (float)unit);
+	int yposition = _channels[selectedChannel()].pos*height();
+	float sizeOfAmplitudeTick = 15;
+	std::stringstream o;
+	o << "10mV ";
+	// o << get_unit_str(unit/3);
+	Widgets::Painter::setColor(Widgets::Colors::white);
+	Widgets::Painter::drawRect(Widgets::Rect(width()-sizeOfAmplitudeTick-20,yposition, 19, 1));
+	Widgets::Painter::drawRect(Widgets::Rect(width()-2,yposition, 1, 50));
+	Widgets::Painter::drawRect(Widgets::Rect(width()-sizeOfAmplitudeTick-20,yposition+50, 19, 1));
+	Widgets::Application::font()->draw(o.str().c_str(), width()-sizeOfAmplitudeTick/2-20, 0.4*height()+15, Widgets::AlignHCenter);
+}
 
-
-void AudioView::drawScale() {
+void AudioView::drawTimeScale() {
 	int unit = -std::log(_timeScale)/std::log(10);
 	float shownscalew = scaleWidth()/std::pow(10.f, (float)unit);
 	std::stringstream o;
@@ -785,7 +800,8 @@ void AudioView::paintEvent() {
     }
 
 	drawRulerTime();
-	drawScale();
+	drawTimeScale();
+	//drawAmplitudeScale();
 
 	if(!_manager.fileMode() && _manager.virtualDevices().size() == 0) {
 		Widgets::Application::font()->draw("No input device available", width()/2, height()/2, Widgets::AlignCenter);
@@ -865,7 +881,7 @@ void AudioView::drawThreshold(int screenw) {
 			glVertex3f(std::max((float)DATA_XOFF, std::min((float)DATA_XOFF+screenw, x+dotw*0.7f)), y, 0.f);
 			glEnd();
 		}
-		drawScale();
+		drawTimeScale();
 	} else {
 		Widgets::TextureGL::get("data/threshpin.bmp")->bind();
 		glPushMatrix();
