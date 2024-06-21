@@ -170,6 +170,7 @@ namespace BackyardBrains {
     void FirmwareUpdateView::closePressed() {
         if(typeOfFirmwareUpdater==TYPE_MSP430_UPDATER)
         {
+            closeButton->setVisible(false);
             #if defined(_WIN32)
                 _manager.finishAndCleanFirmwareUpdate();
             #endif

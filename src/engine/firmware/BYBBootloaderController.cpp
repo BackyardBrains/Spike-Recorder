@@ -7,15 +7,17 @@
 //
 //  Made to update STM32 microcontrollers. Works with custom bootloader that BYB made.
 //  It is used for devices like Human SpikerBox, Neuron SpikerBox (Mfi) and Spike Station 
-//  Update goes like this
+//  Update goes like this:
 //  ArduinoSerial calls Recording Manager startBootloaderProcess() if bootloaderPort is found 
 //  On Windows bootloaderPort is searched in registry by VID and PID
 //                        VID "VID_2E73";
 //                        PID Human: "PID_0005";
 //                        PID Neuron: "PID_000A";
+//                        PID Spike Station: "PID_000B"
 //  On Mac bootloaderPort is filtered by USB device name:
 //                        Neuron   "Neuron SB Bootloader"
 //                        Human    "STM32L4_Boot"    
+//                        Spike Station "Spike Station Bootloader"
 // Therefore every time we add new bootloader we have to add USB Name (for MacOS) and VID/PID (for Windows) to the app
 
 
