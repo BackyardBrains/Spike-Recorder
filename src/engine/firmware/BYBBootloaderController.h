@@ -33,6 +33,7 @@
 #include <fcntl.h>
 #include <list>
 #include <string>
+#include <cstdint>
 #include "constants.h"
 
 //just MAC classes

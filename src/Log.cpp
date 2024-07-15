@@ -52,7 +52,7 @@ void Log::msg(const char *fmt, ...) {
 
 	format += "\n";
 	va_list args;
-	va_start(args,format);
+	va_start(args,fmt);
 #ifdef __APPLE__
     char buffer[512];
     vsprintf (buffer,fmt, args);

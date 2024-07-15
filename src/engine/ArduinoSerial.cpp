@@ -1330,7 +1330,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
     {
 
             #ifdef LOG_SCANNING_OF_ARDUINO
-            Log::msg("checkAllPortsForArduino - Check for Arduino boards");
+            Log::msg("checkAllPortsForArduino - Check for Arduino boards!");
             #endif
             getAllPortsList();
             #ifdef LOG_SCANNING_OF_ARDUINO
@@ -1344,7 +1344,9 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             }
 
             ArduinoSerial::openPortLock = true;
-            std::cout<<"checkAllPortsForArduino open port lock true\n";
+            #ifdef LOG_SCANNING_OF_ARDUINO
+                std::cout<<"checkAllPortsForArduino open port lock true\n";
+            #endif
             i = i+1;
             #ifdef LOG_SCANNING_OF_ARDUINO
                 Log::msg("checkAllPortsForArduino After lock");
@@ -1359,10 +1361,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                 std::cout<<"checkAllPortsForArduino Try port: "<<list_it->portName.c_str()<<"\n";
                 #endif
 
-
-
                 std::size_t found=list_it->portName.find(workingArduinoRef->currentPortName());
-
 
                 //
                 // SKIP scanning if we are currently use this port with workingArduinoRef

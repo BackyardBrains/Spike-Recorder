@@ -60,20 +60,27 @@
         "cinttypes": "cpp",
         "typeinfo": "cpp",
         "charconv": "cpp",
-        "optional": "cpp",
         "format": "cpp",
-        "span": "cpp",
-        "text_encoding": "cpp",
-        "variant": "cpp"
-    },
-    "editor.detectIndentation": true,
-    "editor.tabSize": 4,
-    "editor.insertSpaces": false,
-    "[markdown]": {
-        "files.trimTrailingWhitespace": false,
-        "editor.insertSpaces": false
-    },
-    "[makefile]": {
-        "editor.insertSpaces": false
-    },
+        "forward_list": "cpp",
+        "ios": "cpp",
+        "locale": "cpp",
+        "mutex": "cpp",
+        "optional": "cpp",
+        "xfacet": "cpp",
+        "xhash": "cpp",
+        "xiosbase": "cpp",
+        "xlocale": "cpp",
+        "xlocbuf": "cpp",
+        "xlocinfo": "cpp",
+        "xlocmes": "cpp",
+        "xlocmon": "cpp",
+        "xlocnum": "cpp",
+        "xloctime": "cpp",
+        "xmemory": "cpp",
+        "xstddef": "cpp",
+        "xstring": "cpp",
+        "xtr1common": "cpp",
+        "xtree": "cpp",
+        "xutility": "cpp"
+    }
 }

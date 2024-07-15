@@ -393,38 +393,38 @@ void AudioView::drawAmplitudeScale()
 	voltsPerScale = voltsPerScale*pow(10,(wholeValueCoeficient+1)*3);
 	// o << get_unit_str(unit/3);
 	Widgets::Painter::setColor(Widgets::Colors::white);
-	Widgets::Painter::drawRect(Widgets::Rect(width()-sizeOfAmplitudeTick-2,yposition+1, sizeOfAmplitudeTick, 1));
-	Widgets::Painter::drawRect(Widgets::Rect(width()-2,yposition+1, 1, numberOfPixelsForScale));
-	Widgets::Painter::drawRect(Widgets::Rect(width()-sizeOfAmplitudeTick-2,yposition+1+numberOfPixelsForScale, sizeOfAmplitudeTick, 1));
+	// Widgets::Painter::drawRect(Widgets::Rect(width()-sizeOfAmplitudeTick-2,yposition+1, sizeOfAmplitudeTick, 1));
+	// Widgets::Painter::drawRect(Widgets::Rect(width()-2,yposition+1, 1, numberOfPixelsForScale));
+	//Widgets::Painter::drawRect(Widgets::Rect(width()-sizeOfAmplitudeTick-2,yposition+1+numberOfPixelsForScale, sizeOfAmplitudeTick, 1));
 
-	Widgets::Painter::drawRect(Widgets::Rect(width()-sizeOfAmplitudeTick-2,yposition-1, sizeOfAmplitudeTick, 1));
-	Widgets::Painter::drawRect(Widgets::Rect(width()-2,yposition-1-numberOfPixelsForScale, 1, numberOfPixelsForScale));
-	Widgets::Painter::drawRect(Widgets::Rect(width()-sizeOfAmplitudeTick-2,yposition-1-numberOfPixelsForScale, sizeOfAmplitudeTick, 1));
+	// Widgets::Painter::drawRect(Widgets::Rect(width()-sizeOfAmplitudeTick-2,yposition-1, sizeOfAmplitudeTick, 1));
+	// Widgets::Painter::drawRect(Widgets::Rect(width()-2,yposition-1-numberOfPixelsForScale, 1, numberOfPixelsForScale));
+	// Widgets::Painter::drawRect(Widgets::Rect(width()-sizeOfAmplitudeTick-2,yposition-1-numberOfPixelsForScale, sizeOfAmplitudeTick, 1));
 
-	// std::stringstream po;
-	// po <<voltsPerScale<< "-10mV ";
-	// Widgets::Application::font()->draw(po.str().c_str(), width()-sizeOfAmplitudeTick-20, yposition+1+heightOfScale, Widgets::AlignHCenter);
+	// // std::stringstream po;
+	// // po <<voltsPerScale<< "-10mV ";
+	// // Widgets::Application::font()->draw(po.str().c_str(), width()-sizeOfAmplitudeTick-20, yposition+1+heightOfScale, Widgets::AlignHCenter);
 
-	std::stringstream no;
-	no <<"+"<<voltsPerScale;
-	switch (wholeValueCoeficient)
-	{
-	case 0:
-		no <<"V";
-		break;
-	case 1:
-		no <<"mV";
-		break;
-	case 2:
-		no <<"uV";
-		break;	
-	case 3:
-		no <<"nV";
-		break;
-	default:
-		break;
-	}
-	Widgets::Application::font()->draw(no.str().c_str(), width()-sizeOfAmplitudeTick-30, yposition-1-numberOfPixelsForScale-5, Widgets::AlignHCenter);
+	// std::stringstream no;
+	// no <<"+"<<voltsPerScale;
+	// switch (wholeValueCoeficient)
+	// {
+	// case 0:
+	// 	no <<"V";
+	// 	break;
+	// case 1:
+	// 	no <<"mV";
+	// 	break;
+	// case 2:
+	// 	no <<"uV";
+	// 	break;	
+	// case 3:
+	// 	no <<"nV";
+	// 	break;
+	// default:
+	// 	break;
+	// }
+	// Widgets::Application::font()->draw(no.str().c_str(), width()-sizeOfAmplitudeTick-30, yposition-1-numberOfPixelsForScale-5, Widgets::AlignHCenter);
 }
 
 void AudioView::drawTimeScale() {
@@ -850,7 +850,7 @@ void AudioView::paintEvent() {
 
 	drawRulerTime();
 	drawTimeScale();
-	//drawAmplitudeScale();
+	drawAmplitudeScale();
 
 	if(!_manager.fileMode() && _manager.virtualDevices().size() == 0) {
 		Widgets::Application::font()->draw("No input device available", width()/2, height()/2, Widgets::AlignCenter);
