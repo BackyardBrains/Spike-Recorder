@@ -83,7 +83,8 @@ protected:
 	std::vector<Channel> _channels;
 
 	void drawAudio();
-	void drawScale();
+	void drawTimeScale();
+	void drawAmplitudeScale();
 	void drawSpikeTrain();
 	void drawRulerBox();
 	void drawRulerTime();

@@ -132,6 +132,7 @@ public:
     void clearLastEventThresholded(void){_lastThresholdedEvent = -1;}
     void setPresetFilters(int channel, std::string presetName);
     void setHPFOnSerial(int channel, float hpfFreq){_arduinoSerial.setHPF(channel, hpfFreq);}
+    void setLPFOnSerial(int channel, float lpfFreq){_arduinoSerial.setLPF(channel, lpfFreq);}
     void setFlagForFreqChangeExternaly(){_freqChangedExternaly = true;}
     bool checkIfFreqChangedExternaly(){return _freqChangedExternaly;}
     void resetFlagForFreqChangedExternaly(){_freqChangedExternaly = false;}
@@ -197,10 +198,10 @@ public:
     int numberOfChannels();
 
 
-    void enable50HzFilter(){ _60HzFilterEnabled = false; _50HzFilterEnabled = true;}
-    void disable50HzFilter(){_50HzFilterEnabled = false;}
-    void enable60HzFilter(){_50HzFilterEnabled = false;_60HzFilterEnabled = true;}
-    void disable60HzFilter(){_60HzFilterEnabled = false;}
+    void enable50HzFilter();
+    void disable50HzFilter();
+    void enable60HzFilter();
+    void disable60HzFilter();
     bool fiftyHzFilterEnabled() {return _50HzFilterEnabled;}
     bool sixtyHzFilterEnabled() {return _60HzFilterEnabled;}
 

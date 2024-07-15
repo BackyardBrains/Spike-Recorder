@@ -84,7 +84,7 @@ void AnalysisAudioView::paintEvent() {
 	drawMarkers(true);
 
 	drawTargetMarkers();
-	drawScale();
+	drawTimeScale();
  
    // std::cout<<"Spike gain: "<<_channels[0].gain<<" scale:"<<height()*ampScale<<"\n";
 	Widgets::Painter::setColor(Widgets::Colors::white);

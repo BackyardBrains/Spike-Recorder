@@ -30,9 +30,9 @@ const Widgets::Color AudioView::COLORS[] = {
 const Widgets::Color AudioView::ARDUINO_COLORS[] = {
 	Widgets::Colors::black,
     Widgets::Color(25,205,25),//green
+	Widgets::Color(220,20,20),//red
     Widgets::Color(255,255,0),//yellow
 	Widgets::Color(32,178,170),//blue
-	Widgets::Color(220,20,20),//red
 	Widgets::Color(220,220,220),//white
 	Widgets::Color(255,69,0)//orange
 };
@@ -361,9 +361,73 @@ static const char *get_unit_str(int unit) {
 	}
 }
 
+void AudioView::drawAmplitudeScale()
+{
+	//change the base log_e(x)/log_e(10) = log_10(x)
+	// int unit = -std::log(_timeScale)/std::log(10);
+	// float shownscalew = scaleWidth()/std::pow(10.f, (float)unit);
+	int yposition = _channels[selectedChannel()].pos*height();
+	float sizeOfAmplitudeTick = 10;
+	float heightOfScale = 50;
+	float scale = height()*ampScale;
+	heightOfScale = heightOfScale *_channels[selectedChannel()].gain*scale;
 
+	float hardwareGain = 10000.0;
+	float hardwareFilterGain = 0.9;
+	float adcUnitsPerVolt = pow(2,14)/5.0;
+	float softwareDynamicRangeCorrection = 1.0;
+	float softwareFilterGain = 0.9;
+	float pixelsPerSoftwareUnit = _channels[selectedChannel()].gain*scale;
 
-void AudioView::drawScale() {
+	float voltagePerSoftwareUnit = 1/(softwareDynamicRangeCorrection*softwareFilterGain*adcUnitsPerVolt*hardwareFilterGain*hardwareGain);
+	float voltagePerPixel = voltagePerSoftwareUnit/pixelsPerSoftwareUnit;
+	float voltsPerScale = 1;
+	int wholeValueCoeficient = 0;
+	while((voltsPerScale/voltagePerPixel)>0.3*height())
+	{
+		voltsPerScale*=0.1;
+		wholeValueCoeficient++;
+	}
+	wholeValueCoeficient/=3;
+	int numberOfPixelsForScale = voltsPerScale/voltagePerPixel;
+	voltsPerScale = voltsPerScale*pow(10,(wholeValueCoeficient+1)*3);
+	// o << get_unit_str(unit/3);
+	Widgets::Painter::setColor(Widgets::Colors::white);
+	// Widgets::Painter::drawRect(Widgets::Rect(width()-sizeOfAmplitudeTick-2,yposition+1, sizeOfAmplitudeTick, 1));
+	// Widgets::Painter::drawRect(Widgets::Rect(width()-2,yposition+1, 1, numberOfPixelsForScale));
+	//Widgets::Painter::drawRect(Widgets::Rect(width()-sizeOfAmplitudeTick-2,yposition+1+numberOfPixelsForScale, sizeOfAmplitudeTick, 1));
+
+	// Widgets::Painter::drawRect(Widgets::Rect(width()-sizeOfAmplitudeTick-2,yposition-1, sizeOfAmplitudeTick, 1));
+	// Widgets::Painter::drawRect(Widgets::Rect(width()-2,yposition-1-numberOfPixelsForScale, 1, numberOfPixelsForScale));
+	// Widgets::Painter::drawRect(Widgets::Rect(width()-sizeOfAmplitudeTick-2,yposition-1-numberOfPixelsForScale, sizeOfAmplitudeTick, 1));
+
+	// // std::stringstream po;
+	// // po <<voltsPerScale<< "-10mV ";
+	// // Widgets::Application::font()->draw(po.str().c_str(), width()-sizeOfAmplitudeTick-20, yposition+1+heightOfScale, Widgets::AlignHCenter);
+
+	// std::stringstream no;
+	// no <<"+"<<voltsPerScale;
+	// switch (wholeValueCoeficient)
+	// {
+	// case 0:
+	// 	no <<"V";
+	// 	break;
+	// case 1:
+	// 	no <<"mV";
+	// 	break;
+	// case 2:
+	// 	no <<"uV";
+	// 	break;	
+	// case 3:
+	// 	no <<"nV";
+	// 	break;
+	// default:
+	// 	break;
+	// }
+	// Widgets::Application::font()->draw(no.str().c_str(), width()-sizeOfAmplitudeTick-30, yposition-1-numberOfPixelsForScale-5, Widgets::AlignHCenter);
+}
+
+void AudioView::drawTimeScale() {
 	int unit = -std::log(_timeScale)/std::log(10);
 	float shownscalew = scaleWidth()/std::pow(10.f, (float)unit);
 	std::stringstream o;
@@ -785,7 +849,8 @@ void AudioView::paintEvent() {
     }
 
 	drawRulerTime();
-	drawScale();
+	drawTimeScale();
+	drawAmplitudeScale();
 
 	if(!_manager.fileMode() && _manager.virtualDevices().size() == 0) {
 		Widgets::Application::font()->draw("No input device available", width()/2, height()/2, Widgets::AlignCenter);
@@ -865,7 +930,7 @@ void AudioView::drawThreshold(int screenw) {
 			glVertex3f(std::max((float)DATA_XOFF, std::min((float)DATA_XOFF+screenw, x+dotw*0.7f)), y, 0.f);
 			glEnd();
 		}
-		drawScale();
+		drawTimeScale();
 	} else {
 		Widgets::TextureGL::get("data/threshpin.bmp")->bind();
 		glPushMatrix();

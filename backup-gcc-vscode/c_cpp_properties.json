@@ -4,10 +4,6 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "C:\\msys64\\mingw32\\include",
-                "C:\\msys64\\mingw32\\include\\c++\\14.1.0",
-                "C:\\msys64\\mingw32\\include\\c++\\14.1.0\\i686-w64-mingw32",
-                "C:\\msys64\\mingw32\\lib\\gcc\\i686-w64-mingw32\\14.1.0\\include",
                 "${workspaceFolder}/support",
                 "${workspaceFolder}/src/libraries",
                 "${workspaceFolder}/src",

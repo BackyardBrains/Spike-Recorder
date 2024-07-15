@@ -1330,7 +1330,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
     {
 
             #ifdef LOG_SCANNING_OF_ARDUINO
-            Log::msg("checkAllPortsForArduino - Check for Arduino boards");
+            Log::msg("checkAllPortsForArduino - Check for Arduino boards!");
             #endif
             getAllPortsList();
             #ifdef LOG_SCANNING_OF_ARDUINO
@@ -1344,7 +1344,9 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
             }
 
             ArduinoSerial::openPortLock = true;
-            std::cout<<"checkAllPortsForArduino open port lock true\n";
+            #ifdef LOG_SCANNING_OF_ARDUINO
+                std::cout<<"checkAllPortsForArduino open port lock true\n";
+            #endif
             i = i+1;
             #ifdef LOG_SCANNING_OF_ARDUINO
                 Log::msg("checkAllPortsForArduino After lock");
@@ -1359,10 +1361,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                 std::cout<<"checkAllPortsForArduino Try port: "<<list_it->portName.c_str()<<"\n";
                 #endif
 
-
-
                 std::size_t found=list_it->portName.find(workingArduinoRef->currentPortName());
-
 
                 //
                 // SKIP scanning if we are currently use this port with workingArduinoRef
@@ -1431,8 +1430,6 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                     {
                        // std::cout<<"Port: "<<list_it->c_str()<<" read\n";
 
-
-                        //askForBoardType();
                         askForBoardType();
                         #if defined(__APPLE__) || defined(__linux__)
 
@@ -1888,6 +1885,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         if(currentPort.deviceType == ArduinoSerial::SerialDevice::unknown)
         {
             askForBoardType();
+            
         }
 
     }
@@ -2213,7 +2211,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         int endOfMessage = 0;
         int startOfMessage = 0;
 
-
+        std::cout<<"\n\n----- execute message ----------------------------------------------------------------\n";
 
         while(stillProcessing)
         {
@@ -2494,6 +2492,51 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                 }
             }
         }
+        if(typeOfMessage == "notch")
+        {
+
+            // Find the position of the underscore
+            size_t underscorePos = valueOfMessage.find('_');
+
+            if (underscorePos != std::string::npos)
+            {
+                // Extract the channel and value substrings
+                std::string channelStr = valueOfMessage.substr(0, underscorePos);
+                std::string valueStr = valueOfMessage.substr(underscorePos + 1);
+                
+                // Convert channel and value substrings to integer and float
+                try {
+                    int channel = std::stoi(channelStr);
+                    float notchFreq = std::stof(valueStr);
+                    if(notchFreq<0)
+                    {
+                        //disable notch filter
+                        _manager->disable50HzFilter();
+                        _manager->disable60HzFilter();
+                    }
+                    else
+                    {
+                        if(notchFreq <60)
+                        {
+                            //set 50Hz notch filter
+                            _manager->enable50HzFilter();
+                        }
+                        else
+                        {
+                            //set 60Hz notch filter
+                            _manager->enable60HzFilter();
+                        }
+                    }
+                    _manager->setFlagForFreqChangeExternaly();
+                    // Parsing successful, channel and value are now set
+                    //std::cout << "Channel: " << channel << std::endl;
+                    //std::cout << "Value: " << value << std::endl;
+                } catch (const std::invalid_argument& e) {
+                    std::cerr << "Failed to parse the input string: " << e.what() << std::endl;
+                }
+                
+            }
+        }
         if(typeOfMessage == "hpfilter" || typeOfMessage == "lpfilter")
         {
             
@@ -2641,6 +2684,8 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                                                             {
                                                                 setDeviceTypeToCurrentPort(ArduinoSerial::unibox);
                                                                 _manager->checkIfFirmwareIsAvailableForBootloader();
+                                                                askForFilterSettings();
+                                                                askForPresetSettings();
                                                             }
                                                             else
                                                             {
@@ -2672,7 +2717,7 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                 int mnum = (int)((unsigned int)valueOfMessage[0]-48);
                 int64_t offset = 0;
                 _manager->addMarker(std::string(1, mnum+'0'), offset+offsetin);
-
+                
             }//EVNT
             
             if(typeOfMessage == "p300" && portOpened())
@@ -2902,7 +2947,38 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         writeToPort((sstm.str().c_str()),sstm.str().length());
     }
 
-    //        _manager.setHPFOnSerial(0, 22.467);
+    //
+    // channel - channel for which we want to set notch
+    // frequency - 50 for 50Hz notch; 60 for 60Hz notch; -1 negative number to turn OFF notch
+    //
+    void ArduinoSerial::setNotch(int channel, int frequency)
+    {
+        std::stringstream sstm;
+        if(frequency==50)
+        {
+            sstm << "setnotch:"<<channel<<"_50;\n";
+        }
+        else if (frequency==60)
+        {
+            sstm << "setnotch:"<<channel<<"_60;\n";
+        }
+        else if (frequency<0)
+        {
+            sstm << "setnotch:"<<channel<<"_-1;\n";
+        }
+        writeToPort((sstm.str().c_str()),sstm.str().length());
+    }
+
+    void ArduinoSerial::setLPF(int channel, float lpfFreq)
+    {
+         std::stringstream sstm;
+
+        sstm << "setlpf:"<<channel<<"_"<<lpfFreq<<";\n";
+
+        writeToPort((sstm.str().c_str()),sstm.str().length());
+    }
+
+
     void ArduinoSerial::setHPF(int channel, float hpfFreq)
     {
         std::stringstream sstm;
@@ -2981,6 +3057,22 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         Log::msg("askForBoardType - Ask for Board type");
          writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
 
+    }
+
+    void ArduinoSerial::askForPresetSettings()
+    {
+        std::stringstream sstm;
+        sstm << "preset?:0;\n";
+        Log::msg("Ask for preset settings");
+        writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
+    }
+
+    void ArduinoSerial::askForFilterSettings()
+    {
+        std::stringstream sstm;
+        sstm << "filter?:;\n";
+        Log::msg("askForBoardType - Ask for Filter settings");
+        writeToPort(sstm.str().c_str(),(int)(sstm.str().length()));
     }
 
     void ArduinoSerial::askForP300AudioState()

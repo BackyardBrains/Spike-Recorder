@@ -596,8 +596,8 @@ void ConfigView::SetupScreen()
                                                                     
                                                                     if(it->deviceType == ArduinoSerial::unibox)
                                                                     {
-                                                                        touchSerialPortWidget->addItem("UniBox");
-                                                                        Log::msg("Serial dropdown item: UniBox");
+                                                                        touchSerialPortWidget->addItem("Spike Station");
+                                                                        Log::msg("Serial dropdown item: Spike Station");
                                                                     }
                                                                     else
                                                                     {
@@ -740,8 +740,8 @@ void ConfigView::SetupScreen()
                                                                 {
                                                                     if(it->deviceType == ArduinoSerial::unibox)
                                                                     {
-                                                                        serialPortWidget->addItem("UniBox");
-                                                                        Log::msg("Serial dropdown item: UniBox");
+                                                                        serialPortWidget->addItem("Spike Station");
+                                                                        Log::msg("Serial dropdown item: Spike Station");
                                                                     }
                                                                     else
                                                                     {
@@ -777,8 +777,6 @@ void ConfigView::SetupScreen()
             serialHbox->addWidget(serialPortWidget, Widgets::AlignVCenter);
 
             serialHbox->addSpacing(5);
-
-
         }
 
 
@@ -923,8 +921,15 @@ void ConfigView::SetupScreen()
 
             Widgets::BoxLayout *updateBootloaderVbox = new Widgets::BoxLayout(Widgets::Vertical);
 
+            if(_manager.getCurrentPort().deviceType == ArduinoSerial::unibox)
+            {
+                updateBootloaderLabel->setText("Update firmware for Spike Station?");
+            }
+            else
+            {
+                updateBootloaderLabel->setText("Update firmware for SpikerBox?");
+            }
             
-            updateBootloaderLabel->setText("Update firmware for SpikerBox?");
             updateBootloaderLabel->updateSize();
             updateBootloaderHbox->addSpacing(0);
             updateBootloaderVbox->addSpacing(7);
@@ -1157,6 +1162,21 @@ void ConfigView::paintEvent() {
         {
             rangeSelector->setHighValue(_manager.lowCornerFrequency());
             rangeSelector->setLowValue(_manager.highCornerFrequency());
+        }
+        if(_manager.fiftyHzFilterEnabled())
+        {
+            _60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
+            _50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
+        }
+        else if(_manager.sixtyHzFilterEnabled())
+        {
+            _60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxoff.bmp"));
+            _50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
+        }
+        else if(!_manager.sixtyHzFilterEnabled() && !_manager.fiftyHzFilterEnabled())
+        {
+            _60hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
+            _50hzFilter->setNormalTex(Widgets::TextureGL::get("data/ckboxon.bmp"));
         }
     }
     if(changeScreenType)
@@ -1484,15 +1504,14 @@ void ConfigView::highFilterValueChanged(int hvalue)
     highValueTI->setInt(hvalue);
     if(hvalue>=_manager.sampleRate()/2)
     {
-        Log::msg("First if");
         _manager.enableLowPassFilterWithCornerFreq(_manager.sampleRate()/2);
         _manager.disableLowPassFilter();
     }
     else
     {
-        Log::msg("In else");
         _manager.enableLowPassFilterWithCornerFreq(hvalue);
     }
+    _manager.setLPFOnSerial(0, hvalue);
     checkIfWeShouldHighlightPreset();
 }
 
