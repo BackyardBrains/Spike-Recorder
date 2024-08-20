@@ -1,0 +1,318 @@
+<!-- Import global variables -->
+<?include .\variables.wxi ?>
+
+<!-- for quet installation use cmd with admin role and: 
+installer.msi /quiet 
+-->
+
+
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:difx="http://schemas.microsoft.com/wix/DifxAppExtension">
+  <Package Language="1033" 
+       Name="Spike Recorder" Version="$(var.ProductVersion)" Manufacturer="Backyard Brains Inc."
+       UpgradeCode="c8795db6-2426-4f40-a615-671f26fcaf3a" InstallerVersion="200">
+
+      <!-- <UIRef Id="WixUI_Common" /> -->
+<!--
+ <UI>
+      <UIRef Id="WixUI_InstallDir"/>
+      
+      <Publish Dialog="ExitDialog" Control="Finish" Event="EndDialog" Value="Return" Order="999"></Publish>
+   </UI>
+   -->
+
+
+    <Feature Id="ProductFeature" Title="SpikeRecorder.Msi" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+    </Feature>
+  </Package>
+
+  <Fragment>
+    <StandardDirectory Id="ProgramFilesFolder">
+      <Directory Id="INSTALLFOLDER" Name="Backyard Brains">
+        <Directory Id="SpikeRecorderFolder" Name="Spike Recorder">
+          <Directory Id="DataFolder" Name="data" />
+          <Directory Id="DriversFolder" Name="drivers" />
+        </Directory>
+      </Directory>
+    </StandardDirectory>
+
+    <StandardDirectory Id="DesktopFolder" />
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="SpikeRecorderFolder">
+      <Component Directory="SpikeRecorderFolder" Guid="a6828a87-4730-4400-baab-d19e8b365a15">
+        <File Id="SpikeRecorderEXE" Source="$(var.ProjectPathSpikeRecorder)\SpikeRecorder.exe" KeyPath="yes"/>
+
+        <Shortcut Id="DesktopShortcut"
+                  Directory="DesktopFolder"
+                  Name="Spike Recorder"
+                  Description="Spike Recorder"
+                  WorkingDirectory="SpikeRecorderFolder"
+                  Icon="SpikeRecorder.ico"
+                  IconIndex="0"
+                  Advertise="yes" />
+            
+        <Shortcut Name="Spike Recorder" 
+                  Directory="ProgramMenuFolder" 
+                  Icon="SpikeRecorder.ico"
+                  Advertise="yes" 
+                  WorkingDirectory="SpikeRecorderFolder" />
+
+      </Component>
+           <Component Directory="SpikeRecorderFolder" Guid="a92a8cd5-4dec-45c9-8890-b03b1446a684">
+        <File Id="bassDLL" Source="$(var.ProjectPathSpikeRecorder)\bass.dll"/>
+        <File Id="bassalacDLL" Source="$(var.ProjectPathSpikeRecorder)\bassalac.dll"/>
+        <File Id="bass_aacDLL" Source="$(var.ProjectPathSpikeRecorder)\bass_aac.dll"/>
+        <File Id="BSL430DLL" Source="$(var.ProjectPathSpikeRecorder)\BSL430.dll"/>
+        <File Id="BSL430Lib" Source="$(var.ProjectPathSpikeRecorder)\BSL430.lib"/>
+        <File Id="bsltextTXT" Source="$(var.ProjectPathSpikeRecorder)\bsltext.txt"/>
+        <File Id="compatibilityXML" Source="$(var.ProjectPathSpikeRecorder)\compatibility.xml"/>
+        <File Id="configXML" Source="$(var.ProjectPathSpikeRecorder)\config.xml"/>
+        <File Id="hidapiDLL" Source="$(var.ProjectPathSpikeRecorder)\hidapi.dll"/>
+        <File Id="hidapiLib" Source="$(var.ProjectPathSpikeRecorder)\hidapi.lib"/>
+        <File Id="libcurlDLL" Source="$(var.ProjectPathSpikeRecorder)\libcurl.dll"/>
+        <File Id="libeay32DLL" Source="$(var.ProjectPathSpikeRecorder)\libeay32.dll"/>
+        <File Id="libgcc_s_dw2_1DLL" Source="$(var.ProjectPathSpikeRecorder)\libgcc_s_dw2-1.dll"/>
+        <File Id="libjpeg_9DLL" Source="$(var.ProjectPathSpikeRecorder)\libjpeg-9.dll"/>
+        <File Id="libpng16_16DLL" Source="$(var.ProjectPathSpikeRecorder)\libpng16-16.dll"/>
+        <File Id="libssh2DLL" Source="$(var.ProjectPathSpikeRecorder)\libssh2.dll"/>
+        <File Id="libstdc___6DLL" Source="$(var.ProjectPathSpikeRecorder)\libstdc++-6.dll"/>
+        <File Id="libtiff_5DLL" Source="$(var.ProjectPathSpikeRecorder)\libtiff-5.dll"/>
+        <File Id="libwebp_4DLL" Source="$(var.ProjectPathSpikeRecorder)\libwebp-4.dll"/>
+        <File Id="libwinpthread_1DLL" Source="$(var.ProjectPathSpikeRecorder)\libwinpthread-1.dll"/>
+        <File Id="msvcr120DLL" Source="$(var.ProjectPathSpikeRecorder)\msvcr120.dll"/>
+        <File Id="newfirmwareTXT" Source="$(var.ProjectPathSpikeRecorder)\newfirmware.txt"/>
+        <File Id="SDL2DLL" Source="$(var.ProjectPathSpikeRecorder)\SDL2.dll"/>
+        <File Id="SDL2_imageDLL" Source="$(var.ProjectPathSpikeRecorder)\SDL2_image.dll"/>
+        <File Id="SpikeRecorderICO" Source="$(var.ProjectPathSpikeRecorder)\SpikeRecorder.ico"/>
+        <File Id="ssleay32DLL" Source="$(var.ProjectPathSpikeRecorder)\ssleay32.dll"/>
+        <File Id="zlib1DLL" Source="$(var.ProjectPathSpikeRecorder)\zlib1.dll"/>
+      </Component>
+      <Component Directory="DataFolder" Guid="2e086db7-4ca2-47ee-9c51-e6981714f026">
+        <File Id="analysisBMP" Source="$(var.ProjectPathSpikeRecorder)\data\analysis.bmp" />
+        <File Id="analysisSVG" Source="$(var.ProjectPathSpikeRecorder)\data\analysis.svg" />
+        <File Id="analysiscrossedBMP" Source="$(var.ProjectPathSpikeRecorder)\data\analysiscrossed.bmp" />
+        <File Id="analysiscrossedSVG" Source="$(var.ProjectPathSpikeRecorder)\data\analysiscrossed.svg" />
+        <File Id="analysishighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\analysishigh.bmp" />
+        <File Id="asciiBMP" Source="$(var.ProjectPathSpikeRecorder)\data\ascii.bmp" />
+        <File Id="backwardBMP" Source="$(var.ProjectPathSpikeRecorder)\data\backward.bmp" />
+        <File Id="backwardSVG" Source="$(var.ProjectPathSpikeRecorder)\data\backward.svg" />
+        <File Id="backwardhighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\backwardhigh.bmp" />
+        <File Id="bconnectedhighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\bconnected-high.bmp" />
+        <File Id="bconnectedBMP" Source="$(var.ProjectPathSpikeRecorder)\data\bconnected.bmp" />
+        <File Id="bdisconnectedhighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\bdisconnected-high.bmp" />
+        <File Id="bdisconnectedBMP" Source="$(var.ProjectPathSpikeRecorder)\data\bdisconnected.bmp" />
+        <File Id="bncconnBMP" Source="$(var.ProjectPathSpikeRecorder)\data\bncconn.bmp" />
+        <File Id="bncconnSVG" Source="$(var.ProjectPathSpikeRecorder)\data\bncconn.svg" />
+        <File Id="bncconnhighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\bncconnhigh.bmp" />
+        <File Id="bupdatehighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\bupdate-high.bmp" />
+        <File Id="bupdateBMP" Source="$(var.ProjectPathSpikeRecorder)\data\bupdate.bmp" />
+        <File Id="calibratebtnhighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\calibratebtn-high.bmp" />
+        <File Id="calibratebtnnormalBMP" Source="$(var.ProjectPathSpikeRecorder)\data\calibratebtn-normal.bmp" />
+        <File Id="cancelhighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\cancel-high.bmp" />
+        <File Id="cancelnormalBMP" Source="$(var.ProjectPathSpikeRecorder)\data\cancel-normal.bmp" />
+        <File Id="ckboxoffBMP" Source="$(var.ProjectPathSpikeRecorder)\data\ckboxoff.bmp" />
+        <File Id="ckboxoffSVG" Source="$(var.ProjectPathSpikeRecorder)\data\ckboxoff.svg" />
+        <File Id="ckboxonBMP" Source="$(var.ProjectPathSpikeRecorder)\data\ckboxon.bmp" />
+        <File Id="ckboxonSVG" Source="$(var.ProjectPathSpikeRecorder)\data\ckboxon.svg" />
+        <File Id="configBMP" Source="$(var.ProjectPathSpikeRecorder)\data\config.bmp" />
+        <File Id="configSVG" Source="$(var.ProjectPathSpikeRecorder)\data\config.svg" />
+        <File Id="configcrossedBMP" Source="$(var.ProjectPathSpikeRecorder)\data\configcrossed.bmp" />
+        <File Id="configcrossedSVG" Source="$(var.ProjectPathSpikeRecorder)\data\configcrossed.svg" />
+        <File Id="confighighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\confighigh.bmp" />
+        <File Id="conne1BMP" Source="$(var.ProjectPathSpikeRecorder)\data\conne1.bmp" />
+        <File Id="conne2BMP" Source="$(var.ProjectPathSpikeRecorder)\data\conne2.bmp" />
+        <File Id="conne3BMP" Source="$(var.ProjectPathSpikeRecorder)\data\conne3.bmp" />
+        <File Id="conne4BMP" Source="$(var.ProjectPathSpikeRecorder)\data\conne4.bmp" />
+        <File Id="conne5BMP" Source="$(var.ProjectPathSpikeRecorder)\data\conne5.bmp" />
+        <File Id="conne6BMP" Source="$(var.ProjectPathSpikeRecorder)\data\conne6.bmp" />
+        <File Id="connectedhighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\connected-high.bmp" />
+        <File Id="connectedBMP" Source="$(var.ProjectPathSpikeRecorder)\data\connected.bmp" />
+        <File Id="connectedSVG" Source="$(var.ProjectPathSpikeRecorder)\data\connected.svg" />
+        <File Id="connm1BMP" Source="$(var.ProjectPathSpikeRecorder)\data\connm1.bmp" />
+        <File Id="connm2BMP" Source="$(var.ProjectPathSpikeRecorder)\data\connm2.bmp" />
+        <File Id="connm3BMP" Source="$(var.ProjectPathSpikeRecorder)\data\connm3.bmp" />
+        <File Id="connm4BMP" Source="$(var.ProjectPathSpikeRecorder)\data\connm4.bmp" />
+        <File Id="connm5BMP" Source="$(var.ProjectPathSpikeRecorder)\data\connm5.bmp" />
+        <File Id="connm6BMP" Source="$(var.ProjectPathSpikeRecorder)\data\connm6.bmp" />
+        <File Id="connp1BMP" Source="$(var.ProjectPathSpikeRecorder)\data\connp1.bmp" />
+        <File Id="connp2BMP" Source="$(var.ProjectPathSpikeRecorder)\data\connp2.bmp" />
+        <File Id="connp3BMP" Source="$(var.ProjectPathSpikeRecorder)\data\connp3.bmp" />
+        <File Id="connp4BMP" Source="$(var.ProjectPathSpikeRecorder)\data\connp4.bmp" />
+        <File Id="connp5BMP" Source="$(var.ProjectPathSpikeRecorder)\data\connp5.bmp" />
+        <File Id="connp6BMP" Source="$(var.ProjectPathSpikeRecorder)\data\connp6.bmp" />
+        <File Id="dconne1BMP" Source="$(var.ProjectPathSpikeRecorder)\data\dconne1.bmp" />
+        <File Id="dconne2BMP" Source="$(var.ProjectPathSpikeRecorder)\data\dconne2.bmp" />
+        <File Id="dconne3BMP" Source="$(var.ProjectPathSpikeRecorder)\data\dconne3.bmp" />
+        <File Id="dconne4BMP" Source="$(var.ProjectPathSpikeRecorder)\data\dconne4.bmp" />
+        <File Id="dconne5BMP" Source="$(var.ProjectPathSpikeRecorder)\data\dconne5.bmp" />
+        <File Id="dconne6BMP" Source="$(var.ProjectPathSpikeRecorder)\data\dconne6.bmp" />
+        <File Id="dconnm1BMP" Source="$(var.ProjectPathSpikeRecorder)\data\dconnm1.bmp" />
+        <File Id="dconnm2BMP" Source="$(var.ProjectPathSpikeRecorder)\data\dconnm2.bmp" />
+        <File Id="dconnm3BMP" Source="$(var.ProjectPathSpikeRecorder)\data\dconnm3.bmp" />
+        <File Id="dconnm4BMP" Source="$(var.ProjectPathSpikeRecorder)\data\dconnm4.bmp" />
+        <File Id="dconnm5BMP" Source="$(var.ProjectPathSpikeRecorder)\data\dconnm5.bmp" />
+        <File Id="dconnm6BMP" Source="$(var.ProjectPathSpikeRecorder)\data\dconnm6.bmp" />
+        <File Id="dconnp1BMP" Source="$(var.ProjectPathSpikeRecorder)\data\dconnp1.bmp" />
+        <File Id="dconnp2BMP" Source="$(var.ProjectPathSpikeRecorder)\data\dconnp2.bmp" />
+        <File Id="dconnp3BMP" Source="$(var.ProjectPathSpikeRecorder)\data\dconnp3.bmp" />
+        <File Id="dconnp4BMP" Source="$(var.ProjectPathSpikeRecorder)\data\dconnp4.bmp" />
+        <File Id="dconnp5BMP" Source="$(var.ProjectPathSpikeRecorder)\data\dconnp5.bmp" />
+        <File Id="dconnp6BMP" Source="$(var.ProjectPathSpikeRecorder)\data\dconnp6.bmp" />
+        <File Id="devbrdBMP" Source="$(var.ProjectPathSpikeRecorder)\data\devbrd.bmp" />
+        <File Id="devbrdSVG" Source="$(var.ProjectPathSpikeRecorder)\data\devbrd.svg" />
+        <File Id="devbrdhighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\devbrdhigh.bmp" />
+        <File Id="disconnectedhighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\disconnected-high.bmp" />
+        <File Id="disconnectedBMP" Source="$(var.ProjectPathSpikeRecorder)\data\disconnected.bmp" />
+        <File Id="disconnectedSVG" Source="$(var.ProjectPathSpikeRecorder)\data\disconnected.svg" />
+        <File Id="dropdownBMP" Source="$(var.ProjectPathSpikeRecorder)\data\dropdown.bmp" />
+        <File Id="dropdownSVG" Source="$(var.ProjectPathSpikeRecorder)\data\dropdown.svg" />
+        <File Id="drumWAV" Source="$(var.ProjectPathSpikeRecorder)\data\drum.wav" />
+        <File Id="e1BMP" Source="$(var.ProjectPathSpikeRecorder)\data\e1.bmp" />
+        <File Id="e1SVG" Source="$(var.ProjectPathSpikeRecorder)\data\e1.svg" />
+        <File Id="e10BMP" Source="$(var.ProjectPathSpikeRecorder)\data\e10.bmp" />
+        <File Id="e2BMP" Source="$(var.ProjectPathSpikeRecorder)\data\e2.bmp" />
+        <File Id="e2SVG" Source="$(var.ProjectPathSpikeRecorder)\data\e2.svg" />
+        <File Id="e3BMP" Source="$(var.ProjectPathSpikeRecorder)\data\e3.bmp" />
+        <File Id="e3SVG" Source="$(var.ProjectPathSpikeRecorder)\data\e3.svg" />
+        <File Id="e4BMP" Source="$(var.ProjectPathSpikeRecorder)\data\e4.bmp" />
+        <File Id="e4SVG" Source="$(var.ProjectPathSpikeRecorder)\data\e4.svg" />
+        <File Id="e5BMP" Source="$(var.ProjectPathSpikeRecorder)\data\e5.bmp" />
+        <File Id="e5SVG" Source="$(var.ProjectPathSpikeRecorder)\data\e5.svg" />
+        <File Id="e6BMP" Source="$(var.ProjectPathSpikeRecorder)\data\e6.bmp" />
+        <File Id="e6SVG" Source="$(var.ProjectPathSpikeRecorder)\data\e6.svg" />
+        <File Id="e7BMP" Source="$(var.ProjectPathSpikeRecorder)\data\e7.bmp" />
+        <File Id="e7SVG" Source="$(var.ProjectPathSpikeRecorder)\data\e7.svg" />
+        <File Id="e8BMP" Source="$(var.ProjectPathSpikeRecorder)\data\e8.bmp" />
+        <File Id="e8SVG" Source="$(var.ProjectPathSpikeRecorder)\data\e8.svg" />
+        <File Id="e9BMP" Source="$(var.ProjectPathSpikeRecorder)\data\e9.bmp" />
+        <File Id="e9SVG" Source="$(var.ProjectPathSpikeRecorder)\data\e9.svg" />
+        <File Id="ekgBMP" Source="$(var.ProjectPathSpikeRecorder)\data\ekg.bmp" />
+        <File Id="ekgSVG" Source="$(var.ProjectPathSpikeRecorder)\data\ekg.svg" />
+        <File Id="ekgWAV" Source="$(var.ProjectPathSpikeRecorder)\data\ekg.wav" />
+        <File Id="ekghighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\ekghigh.bmp" />
+        <File Id="emgproconBMP" Source="$(var.ProjectPathSpikeRecorder)\data\emgprocon.bmp" />
+        <File Id="emgproconhighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\emgproconhigh.bmp" />
+        <File Id="emgprodisconBMP" Source="$(var.ProjectPathSpikeRecorder)\data\emgprodiscon.bmp" />
+        <File Id="fftBMP" Source="$(var.ProjectPathSpikeRecorder)\data\fft.bmp" />
+        <File Id="fftSVG" Source="$(var.ProjectPathSpikeRecorder)\data\fft.svg" />
+        <File Id="fftcrossedBMP" Source="$(var.ProjectPathSpikeRecorder)\data\fftcrossed.bmp" />
+        <File Id="fftcrossedSVG" Source="$(var.ProjectPathSpikeRecorder)\data\fftcrossed.svg" />
+        <File Id="ffthighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\ffthigh.bmp" />
+        <File Id="fileBMP" Source="$(var.ProjectPathSpikeRecorder)\data\file.bmp" />
+        <File Id="fileSVG" Source="$(var.ProjectPathSpikeRecorder)\data\file.svg" />
+        <File Id="filehighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\filehigh.bmp" />
+        <File Id="forwardBMP" Source="$(var.ProjectPathSpikeRecorder)\data\forward.bmp" />
+        <File Id="forwardSVG" Source="$(var.ProjectPathSpikeRecorder)\data\forward.svg" />
+        <File Id="forwardhighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\forwardhigh.bmp" />
+        <File Id="gaindownBMP" Source="$(var.ProjectPathSpikeRecorder)\data\gaindown.bmp" />
+        <File Id="gainupBMP" Source="$(var.ProjectPathSpikeRecorder)\data\gainup.bmp" />
+        <File Id="gainupSVG" Source="$(var.ProjectPathSpikeRecorder)\data\gainup.svg" />
+        <File Id="heartBMP" Source="$(var.ProjectPathSpikeRecorder)\data\heart.bmp" />
+        <File Id="heartSVG" Source="$(var.ProjectPathSpikeRecorder)\data\heart.svg" />
+        <File Id="heartconBMP" Source="$(var.ProjectPathSpikeRecorder)\data\heartcon.bmp" />
+        <File Id="heartconhighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\heartconhigh.bmp" />
+        <File Id="heartdisconBMP" Source="$(var.ProjectPathSpikeRecorder)\data\heartdiscon.bmp" />
+        <File Id="muscleconBMP" Source="$(var.ProjectPathSpikeRecorder)\data\musclecon.bmp" />
+        <File Id="muscleconhighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\muscleconhigh.bmp" />
+        <File Id="muscledisconBMP" Source="$(var.ProjectPathSpikeRecorder)\data\musclediscon.bmp" />
+        <File Id="neuronproconBMP" Source="$(var.ProjectPathSpikeRecorder)\data\neuronprocon.bmp" />
+        <File Id="neuronproconhighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\neuronproconhigh.bmp" />
+        <File Id="neuronprodisconBMP" Source="$(var.ProjectPathSpikeRecorder)\data\neuronprodiscon.bmp" />
+        <File Id="okbtn_highBMP" Source="$(var.ProjectPathSpikeRecorder)\data\okbtn-high.bmp" />
+        <File Id="okbtnnormalBMP" Source="$(var.ProjectPathSpikeRecorder)\data\okbtn-normal.bmp" />
+        <File Id="okbtnBMP" Source="$(var.ProjectPathSpikeRecorder)\data\okbtn.bmp" />
+        <File Id="okbtnSVG" Source="$(var.ProjectPathSpikeRecorder)\data\okbtn.svg" />
+        <File Id="okbtnhighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\okbtnhigh.bmp" />
+        <File Id="p300audiohighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\p300audio-high.bmp" />
+        <File Id="p300audionormalBMP" Source="$(var.ProjectPathSpikeRecorder)\data\p300audio-normal.bmp" />
+        <File Id="p300audioselectedBMP" Source="$(var.ProjectPathSpikeRecorder)\data\p300audio-selected.bmp" />
+        <File Id="p300highBMP" Source="$(var.ProjectPathSpikeRecorder)\data\p300high.bmp" />
+        <File Id="p300normalBMP" Source="$(var.ProjectPathSpikeRecorder)\data\p300normal.bmp" />
+        <File Id="p300selectedBMP" Source="$(var.ProjectPathSpikeRecorder)\data\p300selected.bmp" />
+        <File Id="pauseBMP" Source="$(var.ProjectPathSpikeRecorder)\data\pause.bmp" />
+        <File Id="pauseSVG" Source="$(var.ProjectPathSpikeRecorder)\data\pause.svg" />
+        <File Id="pausehighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\pausehigh.bmp" />
+        <File Id="pinBMP" Source="$(var.ProjectPathSpikeRecorder)\data\pin.bmp" />
+        <File Id="pinSVG" Source="$(var.ProjectPathSpikeRecorder)\data\pin.svg" />
+        <File Id="plantconBMP" Source="$(var.ProjectPathSpikeRecorder)\data\plantcon.bmp" />
+        <File Id="plantconhighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\plantconhigh.bmp" />
+        <File Id="plantdisconBMP" Source="$(var.ProjectPathSpikeRecorder)\data\plantdiscon.bmp" />
+        <File Id="playBMP" Source="$(var.ProjectPathSpikeRecorder)\data\play.bmp" />
+        <File Id="playSVG" Source="$(var.ProjectPathSpikeRecorder)\data\play.svg" />
+        <File Id="playhighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\playhigh.bmp" />
+        <File Id="plotviewBMP" Source="$(var.ProjectPathSpikeRecorder)\data\plotview.bmp" />
+        <File Id="plotviewSVG" Source="$(var.ProjectPathSpikeRecorder)\data\plotview.svg" />
+        <File Id="plotviewdownBMP" Source="$(var.ProjectPathSpikeRecorder)\data\plotviewdown.bmp" />
+        <File Id="plotviewdownhighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\plotviewdownhigh.bmp" />
+        <File Id="plotviewhighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\plotviewhigh.bmp" />
+        <File Id="presetecghighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\preset-ecg-high.bmp" />
+        <File Id="presetecgBMP" Source="$(var.ProjectPathSpikeRecorder)\data\preset-ecg.bmp" />
+        <File Id="preseteeghighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\preset-eeg-high.bmp" />
+        <File Id="preseteegBMP" Source="$(var.ProjectPathSpikeRecorder)\data\preset-eeg.bmp" />
+        <File Id="presetemghighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\preset-emg-high.bmp" />
+        <File Id="presetemgBMP" Source="$(var.ProjectPathSpikeRecorder)\data\preset-emg.bmp" />
+        <File Id="presetneuronhighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\preset-neuron-high.bmp" />
+        <File Id="presetneuronBMP" Source="$(var.ProjectPathSpikeRecorder)\data\preset-neuron.bmp" />
+        <File Id="presetplanthighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\preset-plant-high.bmp" />
+        <File Id="presetplantBMP" Source="$(var.ProjectPathSpikeRecorder)\data\preset-plant.bmp" />
+        <File Id="recBMP" Source="$(var.ProjectPathSpikeRecorder)\data\rec.bmp" />
+        <File Id="recSVG" Source="$(var.ProjectPathSpikeRecorder)\data\rec.svg" />
+        <File Id="rechighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\rechigh.bmp" />
+        <File Id="rtimerBMP" Source="$(var.ProjectPathSpikeRecorder)\data\rtimer.bmp" />
+        <File Id="rtimerSVG" Source="$(var.ProjectPathSpikeRecorder)\data\rtimer.svg" />
+        <File Id="rtimerhighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\rtimerhigh.bmp" />
+        <File Id="saveBMP" Source="$(var.ProjectPathSpikeRecorder)\data\save.bmp" />
+        <File Id="saveSVG" Source="$(var.ProjectPathSpikeRecorder)\data\save.svg" />
+        <File Id="savehighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\savehigh.bmp" />
+        <File Id="speakerBMP" Source="$(var.ProjectPathSpikeRecorder)\data\speaker.bmp" />
+        <File Id="speakerSVG" Source="$(var.ProjectPathSpikeRecorder)\data\speaker.svg" />
+        <File Id="speakeroffBMP" Source="$(var.ProjectPathSpikeRecorder)\data\speakeroff.bmp" />
+        <File Id="threshBMP" Source="$(var.ProjectPathSpikeRecorder)\data\thresh.bmp" />
+        <File Id="threshSVG" Source="$(var.ProjectPathSpikeRecorder)\data\thresh.svg" />
+        <File Id="threshcrossedBMP" Source="$(var.ProjectPathSpikeRecorder)\data\threshcrossed.bmp" />
+        <File Id="threshcrossedSVG" Source="$(var.ProjectPathSpikeRecorder)\data\threshcrossed.svg" />
+        <File Id="threshhighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\threshhigh.bmp" />
+        <File Id="threshpinBMP" Source="$(var.ProjectPathSpikeRecorder)\data\threshpin.bmp" />
+        <File Id="threshpinSVG" Source="$(var.ProjectPathSpikeRecorder)\data\threshpin.svg" />
+        <File Id="triggerBMP" Source="$(var.ProjectPathSpikeRecorder)\data\trigger.bmp" />
+        <File Id="triggerSVG" Source="$(var.ProjectPathSpikeRecorder)\data\trigger.svg" />
+        <File Id="triggerhighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\triggerhigh.bmp" />
+        <File Id="updatehighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\update-high.bmp" />
+        <File Id="updateBMP" Source="$(var.ProjectPathSpikeRecorder)\data\update.bmp" />
+        <File Id="usbconBMP" Source="$(var.ProjectPathSpikeRecorder)\data\usbcon.bmp" />
+        <File Id="usbconhighBMP" Source="$(var.ProjectPathSpikeRecorder)\data\usbconhigh.bmp" />
+        <File Id="usbdisconBMP" Source="$(var.ProjectPathSpikeRecorder)\data\usbdiscon.bmp" />
+      </Component>
+
+      <!-- <Component Id='DirArduinoDriver' Directory="DriversFolder" Guid='8c64e674-5476-46e4-93cd-ba1ae78622df'>
+          <File Id='ArduinoINF' Name='arduino.inf' DiskId='1' Source='$(var.ProjectPathSpikeRecorder)\win\drivers\arduino.inf' />
+          <File Id='ArduinoCAT' Name='arduino.cat' DiskId='1' Source='$(var.ProjectPathSpikeRecorder)\win\drivers\arduino.cat' />
+          <difx:Driver Legacy='yes' />
+      </Component> -->
+    </ComponentGroup>
+  </Fragment>
+
+    <!-- Icon -->
+  <Fragment>
+    <Icon Id="SpikeRecorder.ico" SourceFile="$(var.ProjectPathSpikeRecorder)\SpikeRecorder.ico" />
+    <Property Id="ARPPRODUCTICON" Value="SpikeRecorder.ico" />
+  </Fragment>
+
+  <!-- <Fragment>
+        <Feature Id='Complete' Level='1'>
+            <ComponentRef Id='DirArduinoDriver' />
+        </Feature>
+  </Fragment> -->
+
+  <!-- Features -->
+  <Fragment>
+    <Feature Id="MainFeature" Title="Spike Recorder" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+    </Feature>
+    <!-- <Feature Id='Complete' Level='1'>
+            <ComponentRef Id='DirArduinoDriver' />
+    </Feature> -->
+  </Fragment>
+</Wix>

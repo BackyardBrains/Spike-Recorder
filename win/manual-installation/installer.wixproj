@@ -1,0 +1,22 @@
+<Project Sdk="WixToolset.Sdk/5.0.0">
+  <PropertyGroup>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <Platforms>x86;x64</Platforms>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OutputType>Package</OutputType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DefineConstants>Debug</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Product.wxs" />
+    <!--<WixExtension Include="WixUIExtension" />
+    <WixExtension Include="WixToolset.Util.wixext" />
+    <WixExtension Include="WixDifxAppExtension" />
+    -->
+  </ItemGroup>
+  <PropertyGroup>
+    <Platforms>x86;x64</Platforms>
+  </PropertyGroup>
+</Project>
