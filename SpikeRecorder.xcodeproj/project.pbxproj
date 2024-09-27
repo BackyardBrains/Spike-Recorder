@@ -93,6 +93,7 @@
 		853339552B8F8DDB00E570FC /* libbass.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 853339542B8F8DDB00E570FC /* libbass.dylib */; };
 		853339562B8F8DE600E570FC /* libbass.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 853339542B8F8DDB00E570FC /* libbass.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		853339572B8F8DF600E570FC /* libbass.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 853339542B8F8DDB00E570FC /* libbass.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		854BABB12C1B1C34008FCD11 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 854BABB02C1B1C34008FCD11 /* Info.plist */; };
 		85760FFA2180A1A100F197FB /* KeyboardGeneratorMac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85760FF92180A1A100F197FB /* KeyboardGeneratorMac.cpp */; };
 		85AB394727F7176400213B9F /* BYBBootloaderVO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85AB394227F7176400213B9F /* BYBBootloaderVO.cpp */; };
 		85AB394B27F71B9300213B9F /* BYBBootloaderController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85AB394927F71B9300213B9F /* BYBBootloaderController.cpp */; };
@@ -312,7 +313,6 @@
 		248BA1F61B3E42D500EEB5E4 /* SwitchLayout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SwitchLayout.cpp; sourceTree = "<group>"; };
 		248BA1F71B3E42D500EEB5E4 /* SwitchLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchLayout.h; sourceTree = "<group>"; };
 		248E586D1AAE0CF60011707F /* SpikeRecorder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpikeRecorder.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		248E58711AAE0CF60011707F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; name = Info.plist; path = src/xcode/Info.plist; sourceTree = "<group>"; };
 		248E58901AAE19570011707F /* AnalysisAudioView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AnalysisAudioView.cpp; path = src/AnalysisAudioView.cpp; sourceTree = SOURCE_ROOT; };
 		248E58911AAE19570011707F /* AnalysisAudioView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AnalysisAudioView.h; path = src/AnalysisAudioView.h; sourceTree = SOURCE_ROOT; };
 		248E58921AAE19570011707F /* AnalysisView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AnalysisView.cpp; path = src/AnalysisView.cpp; sourceTree = SOURCE_ROOT; };
@@ -470,6 +470,7 @@
 		8526E78323707C780089E8AF /* SDL_opengl_glext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDL_opengl_glext.h; sourceTree = "<group>"; };
 		8526E78423707D570089E8AF /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2.framework; sourceTree = "<group>"; };
 		853339542B8F8DDB00E570FC /* libbass.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libbass.dylib; sourceTree = "<group>"; };
+		854BABB02C1B1C34008FCD11 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; name = Info.plist; path = src/xcode/Info.plist; sourceTree = SOURCE_ROOT; };
 		85760FF82180A13500F197FB /* KeyboardGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KeyboardGenerator.h; sourceTree = "<group>"; };
 		85760FF92180A1A100F197FB /* KeyboardGeneratorMac.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = KeyboardGeneratorMac.cpp; sourceTree = "<group>"; };
 		85AB394127F7176400213B9F /* BYBBootloaderVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BYBBootloaderVO.h; sourceTree = "<group>"; };
@@ -728,7 +729,7 @@
 		248E58701AAE0CF60011707F /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				248E58711AAE0CF60011707F /* Info.plist */,
+				854BABB02C1B1C34008FCD11 /* Info.plist */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -1033,6 +1034,7 @@
 				24079FA91AB1C90E00820291 /* data in Resources */,
 				2407F7101C7F53FF00D215B9 /* Media.xcassets in Resources */,
 				24079F361AB0CBE700820291 /* icon_256x256.png in Resources */,
+				854BABB12C1B1C34008FCD11 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1215,10 +1217,10 @@
 				CLANG_LINK_OBJC_RUNTIME = YES;
 				CODE_SIGN_ENTITLEMENTS = SpikeRecorder.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1.9.42;
+				CURRENT_PROJECT_VERSION = 1.9.48;
 				DEVELOPMENT_TEAM = MLGRKD657P;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1251,7 +1253,7 @@
 					"$(PROJECT_DIR)/support/HDF5/1.13.1/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 1.9.35;
+				MARKETING_VERSION = 1.9.37;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = "-v";
 				PRODUCT_BUNDLE_IDENTIFIER = com.backyardbrains.SpikeRecorder;
@@ -1259,6 +1261,7 @@
 				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx;
 				VALID_ARCHS = x86_64;
+				d = test;
 			};
 			name = Debug;
 		};
@@ -1271,10 +1274,10 @@
 				CLANG_LINK_OBJC_RUNTIME = YES;
 				CODE_SIGN_ENTITLEMENTS = SpikeRecorder.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1.9.42;
+				CURRENT_PROJECT_VERSION = 1.9.48;
 				DEVELOPMENT_TEAM = MLGRKD657P;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1307,7 +1310,7 @@
 					"$(PROJECT_DIR)/support/HDF5/1.13.1/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 1.9.35;
+				MARKETING_VERSION = 1.9.37;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = "-v";
 				PRODUCT_BUNDLE_IDENTIFIER = com.backyardbrains.SpikeRecorder;
@@ -1315,6 +1318,7 @@
 				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx;
 				VALID_ARCHS = x86_64;
+				d = test;
 			};
 			name = Release;
 		};
