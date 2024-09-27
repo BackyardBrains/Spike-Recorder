@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- for quet installation use cmd with admin role and: 
+installer.msi /quiet 
+-->
+<Include>
+  <?define ProductVersion = "1.9.37" ?>
+  <?define ProjectPathSpikeRecorder = "C:\p\sr\win\build" ?>
+</Include>
