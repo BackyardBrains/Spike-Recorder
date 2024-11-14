@@ -9,6 +9,7 @@
 #include <sstream>
 #include <iostream>
 #include <unistd.h>
+#include <cstring>
 
 namespace BackyardBrains {
 

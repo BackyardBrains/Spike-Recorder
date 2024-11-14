@@ -128,9 +128,11 @@ namespace BackyardBrains {
             while (getline(&contents, &len, _file) != -1)
         {
         #elif _WIN32
-         while (getline2(&contents, &len, _file) != -1)
-        {
+	  while (getline2(&contents, &len, _file) != -1)
+        #elif (__linux__)
+	  while (getline(&contents, &len, _file) != -1)
         #endif
+        {
             //printf("%s", contents);
             parseLineOfHex(contents);
             //free(contents);
@@ -249,10 +251,10 @@ namespace BackyardBrains {
         #endif // defined
         #if defined(__linux__)
             int bits;
-            if (size == 0 && ioctl(fd, TIOCMGET, &bits) < 0)
-            {
-                //error
-            }
+            // if (size == 0 && ioctl(fd, TIOCMGET, &bits) < 0)
+            // {
+            //     //error
+            // }
         #endif
         #if defined(_WIN32)
             COMSTAT st;

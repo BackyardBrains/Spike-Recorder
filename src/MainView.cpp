@@ -992,7 +992,7 @@ void MainView::paintEvent()
         {
             typeOfFirmwareUpgradeProcesss = TYPE_STM32_BOOTLOADER;
         }
-        FirmwareUpdateView *c = new FirmwareUpdateView(_manager, *_audioView, typeOfFirmwareUpgradeProcesss);
+        FirmwareUpdateView *c = new FirmwareUpdateView(_manager, *_audioView, typeOfFirmwareUpgradeProcesss, nullptr);
         c->setDeleteOnClose(true);
         c->setGeometry(rect());
         Widgets::Application::getInstance()->addWindow(c);
