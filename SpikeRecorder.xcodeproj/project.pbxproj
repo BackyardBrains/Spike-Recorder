@@ -93,7 +93,6 @@
 		853339552B8F8DDB00E570FC /* libbass.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 853339542B8F8DDB00E570FC /* libbass.dylib */; };
 		853339562B8F8DE600E570FC /* libbass.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 853339542B8F8DDB00E570FC /* libbass.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		853339572B8F8DF600E570FC /* libbass.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 853339542B8F8DDB00E570FC /* libbass.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		854BABB12C1B1C34008FCD11 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 854BABB02C1B1C34008FCD11 /* Info.plist */; };
 		85760FFA2180A1A100F197FB /* KeyboardGeneratorMac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85760FF92180A1A100F197FB /* KeyboardGeneratorMac.cpp */; };
 		85AB394727F7176400213B9F /* BYBBootloaderVO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85AB394227F7176400213B9F /* BYBBootloaderVO.cpp */; };
 		85AB394B27F71B9300213B9F /* BYBBootloaderController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85AB394927F71B9300213B9F /* BYBBootloaderController.cpp */; };
@@ -1034,7 +1033,6 @@
 				24079FA91AB1C90E00820291 /* data in Resources */,
 				2407F7101C7F53FF00D215B9 /* Media.xcassets in Resources */,
 				24079F361AB0CBE700820291 /* icon_256x256.png in Resources */,
-				854BABB12C1B1C34008FCD11 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1220,7 +1218,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1.9.48;
+				CURRENT_PROJECT_VERSION = 1.9.51;
 				DEVELOPMENT_TEAM = MLGRKD657P;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1277,7 +1275,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1.9.48;
+				CURRENT_PROJECT_VERSION = 1.9.51;
 				DEVELOPMENT_TEAM = MLGRKD657P;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
