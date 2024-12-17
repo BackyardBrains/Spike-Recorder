@@ -926,26 +926,30 @@ void RecordingManager::initRecordingDevices() {
 	setSampleRate(DEFAULT_SAMPLE_RATE);
 	int i;
 	for(i = 0; BASS_RecordGetDeviceInfo(i, &info); i++) {
-		_devices.push_back(Device(i,2,_sampleRate));
-		_devices.back().type = Device::Audio;
-
-		// do not add virtualDevices for devices that are not enabled.
-		if(!(info.flags & BASS_DEVICE_ENABLED))
-			continue;
-		for (int j = 0; j < 2; j++)	{
-			virtualDevice.device = i;
-			virtualDevice.channel = j;
-			virtualDevice.name = std::string(info.name) + ((j == 0) ? " [Left]" : " [Right]");
-			virtualDevice.threshold = 100;
-			virtualDevice.bound = false;
-
-			_virtualDevices.push_back(virtualDevice);
-		}
+//        if(info.driver!=NULL)
+//        {
+            _devices.push_back(Device(i,2,_sampleRate));
+            _devices.back().type = Device::Audio;
+            
+            // do not add virtualDevices for devices that are not enabled.
+            if(!(info.flags & BASS_DEVICE_ENABLED))
+                continue;
+            for (int j = 0; j < 2; j++)	{
+                virtualDevice.device = i;
+                virtualDevice.channel = j;
+                virtualDevice.name = std::string(info.name) + ((j == 0) ? " [Left]" : " [Right]");
+                virtualDevice.threshold = 100;
+                virtualDevice.bound = false;
+                
+                _virtualDevices.push_back(virtualDevice);
+            }
+//        }
 	}
 	if(i > 0) {
 		bindVirtualDevice(0);
 	}
 
+    
 	_player.setVolume(0);
 	_player.stop();
 	_player.start(_sampleRate);
@@ -975,6 +979,7 @@ void RecordingManager::initRecordingDevices() {
     weAreReceivingAMSignal = false;
     initDefaultJoystickKeys();
 
+    //bindVirtualDevice(1);
 }
 
 

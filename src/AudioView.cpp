@@ -366,7 +366,7 @@ void AudioView::drawAmplitudeScale()
 	//change the base log_e(x)/log_e(10) = log_10(x)
 	// int unit = -std::log(_timeScale)/std::log(10);
 	// float shownscalew = scaleWidth()/std::pow(10.f, (float)unit);
-	int yposition = _channels[selectedChannel()].pos*height();
+/*	int yposition = _channels[selectedChannel()].pos*height();
 	float sizeOfAmplitudeTick = 10;
 	float heightOfScale = 50;
 	float scale = height()*ampScale;
@@ -425,6 +425,7 @@ void AudioView::drawAmplitudeScale()
 	// 	break;
 	// }
 	// Widgets::Application::font()->draw(no.str().c_str(), width()-sizeOfAmplitudeTick-30, yposition-1-numberOfPixelsForScale-5, Widgets::AlignHCenter);
+ */
 }
 
 void AudioView::drawTimeScale() {
