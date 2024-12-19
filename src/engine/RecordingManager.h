@@ -16,7 +16,7 @@
 #include "HighPassFilter.h"
 #include "AudioInputConfig.h"
 #include "defaults/DefaultConfig.h"
-#include "BYBBootloaderController.h"
+#include "firmware/BYBBootloaderController.h"
 
 #if defined(_WIN32)
     #include "FirmwareUpdater.h"

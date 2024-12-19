@@ -8,7 +8,9 @@
 #include <cstdlib>
 #include <SDL.h>
 
-
+#if defined(__linux__)
+    #include <cmath>
+#endif
 
 #if defined(_WIN32)
     #include <unistd.h>
