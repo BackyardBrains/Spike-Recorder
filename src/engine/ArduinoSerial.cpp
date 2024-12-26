@@ -881,51 +881,46 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
 
         //traditional setup of baud rates
         //------------------------ traditional setup of baud rates for Mac and Linux --------------
-        /*cfsetispeed(&options, B230400);
+        /*
+        cfsetispeed(&options, B230400);
         cfsetospeed(&options, B230400);
+        */
         // set the new port options
-        tcsetattr(portDescriptor, TCSANOW, &options);*/
+        tcsetattr(portDescriptor, TCSANOW, &options);
         //------------------------ traditional setup of baud rates for Mac and Linux --------------
 
-        //--------------------------- Patch for Mac for nonstandard bauds --------------------------
+#endif
+
+/*
+// Linux and OSX/BSD have a set of default baudrates. We are using rates not in this list.
+// Setting these non-standard rates requires some finagling
+        Explanation from blog post: http://stackoverflow.com/questions/9366249/boostasioserialport-alternative-that-supports-non-standard-baud-rates
+*/
+
+#if defined(__linux__)
+        //--------------------------- Linux nonstandard bauds --------------------------
+        struct serial_struct ser;
+        ioctl (portDescriptor, TIOCGSERIAL, &ser);
+        // set custom divisor
+        ser.custom_divisor = ser.baud_base / currentTestingBaudRate;
+        // update flags
+        ser.flags &= ~ASYNC_SPD_MASK;
+        ser.flags |= ASYNC_SPD_CUST;
+
+        if (ioctl (portDescriptor, TIOCSSERIAL, ser) < 0)
+        {
+            std::cout<<"Error setting speed";
+        }
+#endif
+
+#if defined(__APPLE__)
+
+        //------------------- Mac for nonstandard bauds --------------------------        
         speed_t speed = currentTestingBaudRate;//2000000; // Set 2Mbaud
-         if (ioctl(portDescriptor, IOSSIOSPEED, &speed) == -1) {
-         std::cout<<"Error setting speed";
-         }
+        if (ioctl(portDescriptor, IOSSIOSPEED, &speed) == -1) {
+            std::cout<<"Error setting speed";
+        }
 
-
-
-        /*
-
-         Explanation from blog post:
-         http://stackoverflow.com/questions/9366249/boostasioserialport-alternative-that-supports-non-standard-baud-rates
-
-         If you only want to use ioctl and termios you can do:
-
-         #define IOSSIOSPEED _IOW('T', 2, speed_t)
-         int new_baud = static_cast<int> (baudrate_);
-         ioctl (portDescriptor_, IOSSIOSPEED, &new_baud, 1);
-         And it will let you set the baud rate to any value in OS X, but that is OS specific. for Linux you need to do:
-
-         struct serial_struct ser;
-         ioctl (portDescriptor_, TIOCGSERIAL, &ser);
-         // set custom divisor
-         ser.custom_divisor = ser.baud_base / baudrate_;
-         // update flags
-         ser.flags &= ~ASYNC_SPD_MASK;
-         ser.flags |= ASYNC_SPD_CUST;
-
-         if (ioctl (portDescriptor_, TIOCSSERIAL, ser) < 0)
-         {
-         // error
-         }
-         For any other OS your gonna have to go read some man pages or it might not even work at all, its very OS dependent.
-
-         */
-
-
-
-        //--------------------------- Patch for Mac for nonstandard bauds --------------------------
 #endif
 
 #ifdef _WIN32
