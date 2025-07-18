@@ -125,7 +125,7 @@ void AudioView::loadAndApplyAudioInputConfig()
 }
 
 static bool compare_second(const std::pair<int, int> &a, const std::pair<int, int> &b) {
-	return a.second <= b.second;
+	return a.second < b.second;
 }
 
 void AudioView::constructMetadata(MetadataChunk *m) const {

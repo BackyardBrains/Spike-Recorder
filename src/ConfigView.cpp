@@ -112,59 +112,59 @@ void ConfigView::SetupScreen()
 		Log::msg("Add layout for mute checkbox");
 		gvbox->addLayout(mutehbox);
 		gvbox->addSpacing(30);
-	}
 
-    //-------------- Preset buttons ----------------------------------------
-    Widgets::BoxLayout *presetBox = new Widgets::BoxLayout(Widgets::Horizontal);
-    
-    _presetPlantButton = new Widgets::PushButton(group);
-    _presetPlantButton->clicked.connect(this, &ConfigView::presetPlantPressed);
-    _presetPlantButton->setNormalTex(Widgets::TextureGL::get("data/preset-plant.bmp"));
-    _presetPlantButton->setHoverTex(Widgets::TextureGL::get("data/preset-plant-high.bmp"));
-    _presetPlantButton->setSizeHint(Widgets::Size(66,40));
-    
-    
-    _presetNeuronButton = new Widgets::PushButton(group);
-    _presetNeuronButton->clicked.connect(this, &ConfigView::presetNeuronPressed);
-    _presetNeuronButton->setNormalTex(Widgets::TextureGL::get("data/preset-neuron.bmp"));
-    _presetNeuronButton->setHoverTex(Widgets::TextureGL::get("data/preset-neuron-high.bmp"));
-    _presetNeuronButton->setSizeHint(Widgets::Size(66,40));
-    
-    
-    _presetEEGButton = new Widgets::PushButton(group);
-    _presetEEGButton->clicked.connect(this, &ConfigView::presetEEGPressed);
-    _presetEEGButton->setNormalTex(Widgets::TextureGL::get("data/preset-eeg.bmp"));
-    _presetEEGButton->setHoverTex(Widgets::TextureGL::get("data/preset-eeg-high.bmp"));
-    _presetEEGButton->setSizeHint(Widgets::Size(66,40));
-    
-    _presetECGButton = new Widgets::PushButton(group);
-    _presetECGButton->clicked.connect(this, &ConfigView::presetECGPressed);
-    _presetECGButton->setNormalTex(Widgets::TextureGL::get("data/preset-ecg.bmp"));
-    _presetECGButton->setHoverTex(Widgets::TextureGL::get("data/preset-ecg-high.bmp"));
-    _presetECGButton->setSizeHint(Widgets::Size(66,40));
-    
-    _presetEMGButton = new Widgets::PushButton(group);
-    _presetEMGButton->clicked.connect(this, &ConfigView::presetEMGPressed);
-    _presetEMGButton->setNormalTex(Widgets::TextureGL::get("data/preset-emg.bmp"));
-    _presetEMGButton->setHoverTex(Widgets::TextureGL::get("data/preset-emg-high.bmp"));
-    _presetEMGButton->setSizeHint(Widgets::Size(66,40));
-    
-    checkIfWeShouldHighlightPreset();
-    
-    presetBox->addSpacing(40);
-    presetBox->addWidget(_presetECGButton);
-    presetBox->addSpacing(20);
-    presetBox->addWidget(_presetEEGButton);
-    presetBox->addSpacing(20);
-    presetBox->addWidget(_presetEMGButton);
-    presetBox->addSpacing(20);
-    presetBox->addWidget(_presetPlantButton);
-    presetBox->addSpacing(20);
-    presetBox->addWidget(_presetNeuronButton);
 
-    gvbox->addLayout(presetBox);
-    gvbox->addSpacing(30);
-    
+        //-------------- Preset buttons ----------------------------------------
+        Widgets::BoxLayout *presetBox = new Widgets::BoxLayout(Widgets::Horizontal);
+        
+        _presetPlantButton = new Widgets::PushButton(group);
+        _presetPlantButton->clicked.connect(this, &ConfigView::presetPlantPressed);
+        _presetPlantButton->setNormalTex(Widgets::TextureGL::get("data/preset-plant.bmp"));
+        _presetPlantButton->setHoverTex(Widgets::TextureGL::get("data/preset-plant-high.bmp"));
+        _presetPlantButton->setSizeHint(Widgets::Size(66,40));
+        
+        
+        _presetNeuronButton = new Widgets::PushButton(group);
+        _presetNeuronButton->clicked.connect(this, &ConfigView::presetNeuronPressed);
+        _presetNeuronButton->setNormalTex(Widgets::TextureGL::get("data/preset-neuron.bmp"));
+        _presetNeuronButton->setHoverTex(Widgets::TextureGL::get("data/preset-neuron-high.bmp"));
+        _presetNeuronButton->setSizeHint(Widgets::Size(66,40));
+        
+        
+        _presetEEGButton = new Widgets::PushButton(group);
+        _presetEEGButton->clicked.connect(this, &ConfigView::presetEEGPressed);
+        _presetEEGButton->setNormalTex(Widgets::TextureGL::get("data/preset-eeg.bmp"));
+        _presetEEGButton->setHoverTex(Widgets::TextureGL::get("data/preset-eeg-high.bmp"));
+        _presetEEGButton->setSizeHint(Widgets::Size(66,40));
+        
+        _presetECGButton = new Widgets::PushButton(group);
+        _presetECGButton->clicked.connect(this, &ConfigView::presetECGPressed);
+        _presetECGButton->setNormalTex(Widgets::TextureGL::get("data/preset-ecg.bmp"));
+        _presetECGButton->setHoverTex(Widgets::TextureGL::get("data/preset-ecg-high.bmp"));
+        _presetECGButton->setSizeHint(Widgets::Size(66,40));
+        
+        _presetEMGButton = new Widgets::PushButton(group);
+        _presetEMGButton->clicked.connect(this, &ConfigView::presetEMGPressed);
+        _presetEMGButton->setNormalTex(Widgets::TextureGL::get("data/preset-emg.bmp"));
+        _presetEMGButton->setHoverTex(Widgets::TextureGL::get("data/preset-emg-high.bmp"));
+        _presetEMGButton->setSizeHint(Widgets::Size(66,40));
+        
+        checkIfWeShouldHighlightPreset();
+        
+        presetBox->addSpacing(40);
+        presetBox->addWidget(_presetECGButton);
+        presetBox->addSpacing(20);
+        presetBox->addWidget(_presetEEGButton);
+        presetBox->addSpacing(20);
+        presetBox->addWidget(_presetEMGButton);
+        presetBox->addSpacing(20);
+        presetBox->addWidget(_presetPlantButton);
+        presetBox->addSpacing(20);
+        presetBox->addWidget(_presetNeuronButton);
+
+        gvbox->addLayout(presetBox);
+        gvbox->addSpacing(30);
+    }
     //---------- Calibrator code --------------------------------------
     /*
 	if(!_manager.fileMode()) {
