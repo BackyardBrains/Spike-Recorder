@@ -13,7 +13,7 @@
 #include <sstream>
 #include <stdint.h>
 #include "RecordingManager.h"
-#include "BYBBootloaderController.h"
+#include "firmware/BYBBootloaderController.h"
 
 #define NUMBER_OF_TIMES_TO_SCAN_UNKNOWN_PORT 10
 
@@ -879,20 +879,22 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
         options.c_cflag &= ~(PARENB | CSTOPB);
 
 
-        //traditional setup of baud rates
+#if defined(__linux__)
+	//traditional setup of baud rates
         //------------------------ traditional setup of baud rates for Mac and Linux --------------
-        /*cfsetispeed(&options, B230400);
+        cfsetispeed(&options, B230400);
         cfsetospeed(&options, B230400);
         // set the new port options
-        tcsetattr(portDescriptor, TCSANOW, &options);*/
+        tcsetattr(portDescriptor, TCSANOW, &options);
         //------------------------ traditional setup of baud rates for Mac and Linux --------------
 
         //--------------------------- Patch for Mac for nonstandard bauds --------------------------
+#else
         speed_t speed = currentTestingBaudRate;//2000000; // Set 2Mbaud
          if (ioctl(portDescriptor, IOSSIOSPEED, &speed) == -1) {
          std::cout<<"Error setting speed";
          }
-
+#endif
 
 
         /*
@@ -1361,7 +1363,10 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                 std::cout<<"checkAllPortsForArduino Try port: "<<list_it->portName.c_str()<<"\n";
                 #endif
 
+
+
                 std::size_t found=list_it->portName.find(workingArduinoRef->currentPortName());
+
 
                 //
                 // SKIP scanning if we are currently use this port with workingArduinoRef
@@ -1430,6 +1435,8 @@ void ArduinoSerial::scanPortsThreadFunction(ArduinoSerial * selfRef, ArduinoSeri
                     {
                        // std::cout<<"Port: "<<list_it->c_str()<<" read\n";
 
+
+                        //askForBoardType();
                         askForBoardType();
                         #if defined(__APPLE__) || defined(__linux__)
 
