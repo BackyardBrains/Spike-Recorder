@@ -23,7 +23,6 @@ LIBS = \
 	-lSDL2main \
 	-lSDL2 \
 	-lSDL2_image \
-	-lstdc++ \
 	-mwindows \
 	-luser32 \
 	-lgdi32 \
@@ -199,7 +198,7 @@ TARGET = ./win/build/SpikeRecorder.exe
 
 # Build rule
 $(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) $(INCLUDE_DIRS) -o $@ $(OBJS) $(LIB_DIRS) $(LIBS)
+	$(CXX) $(CXXFLAGS) $(INCLUDE_DIRS) -o $@ $(OBJS) $(LIB_DIRS) $(LIBS) -static-libstdc++ -static-libgcc
 
 # Compile rule
 %.o: %.cpp
