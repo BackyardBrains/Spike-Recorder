@@ -13,7 +13,11 @@ Game::Game() : _anaman(_manager), _fileRec(_manager) {
 
 	addWindow(new MainView(_manager, _anaman, _fileRec));
 	createWindow(800,600);
+#ifdef __APPLE__
+	setWindowTitle("Spike Recorder Classic");
+#else
 	setWindowTitle("BYB Spike Recorder");
+#endif
 
 	Log::msg("Starting GUI...");
     roundingDifference = 0;
