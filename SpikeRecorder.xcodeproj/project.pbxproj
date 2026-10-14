@@ -309,7 +309,7 @@
 		248BA1F41B3E42AD00EEB5E4 /* ThresholdPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThresholdPanel.h; path = src/ThresholdPanel.h; sourceTree = SOURCE_ROOT; };
 		248BA1F61B3E42D500EEB5E4 /* SwitchLayout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SwitchLayout.cpp; sourceTree = "<group>"; };
 		248BA1F71B3E42D500EEB5E4 /* SwitchLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchLayout.h; sourceTree = "<group>"; };
-		248E586D1AAE0CF60011707F /* SpikeRecorder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpikeRecorder.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		248E586D1AAE0CF60011707F /* Spike Recorder Classic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Spike Recorder Classic.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		248E58901AAE19570011707F /* AnalysisAudioView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AnalysisAudioView.cpp; path = src/AnalysisAudioView.cpp; sourceTree = SOURCE_ROOT; };
 		248E58911AAE19570011707F /* AnalysisAudioView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AnalysisAudioView.h; path = src/AnalysisAudioView.h; sourceTree = SOURCE_ROOT; };
 		248E58921AAE19570011707F /* AnalysisView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AnalysisView.cpp; path = src/AnalysisView.cpp; sourceTree = SOURCE_ROOT; };
@@ -667,7 +667,7 @@
 		248E586E1AAE0CF60011707F /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				248E586D1AAE0CF60011707F /* SpikeRecorder.app */,
+				248E586D1AAE0CF60011707F /* Spike Recorder Classic.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -971,7 +971,7 @@
 			);
 			name = SpikeRecorder;
 			productName = SpikeRecorder;
-			productReference = 248E586D1AAE0CF60011707F /* SpikeRecorder.app */;
+			productReference = 248E586D1AAE0CF60011707F /* Spike Recorder Classic.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -1158,7 +1158,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -1198,7 +1198,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 			};
@@ -1207,6 +1207,7 @@
 		248E588B1AAE0CF60011707F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = x86_64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -1216,7 +1217,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1.9.53;
+				CURRENT_PROJECT_VERSION = 87877549;
 				DEVELOPMENT_TEAM = MLGRKD657P;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1248,12 +1249,12 @@
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/support/HDF5/1.13.1/lib",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 1.9.38;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 1.9.39;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = "-v";
 				PRODUCT_BUNDLE_IDENTIFIER = com.backyardbrains.SpikeRecorder;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Spike Recorder Classic";
 				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx;
 				VALID_ARCHS = x86_64;
@@ -1264,6 +1265,7 @@
 		248E588C1AAE0CF60011707F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = x86_64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -1273,7 +1275,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1.9.53;
+				CURRENT_PROJECT_VERSION = 87877549;
 				DEVELOPMENT_TEAM = MLGRKD657P;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1305,12 +1307,12 @@
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/support/HDF5/1.13.1/lib",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 1.9.38;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 1.9.39;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = "-v";
 				PRODUCT_BUNDLE_IDENTIFIER = com.backyardbrains.SpikeRecorder;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Spike Recorder Classic";
 				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx;
 				VALID_ARCHS = x86_64;
